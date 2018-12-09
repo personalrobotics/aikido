@@ -61,6 +61,11 @@ ConfigurationToEndEffectorOffsetPlanner::getEndEffectorDirection() const
   return util::getEndEffectorDirection(mEndEffectorBodyNode);
 }
 
+//==============================================================================
+bool ConfigurationToEndEffectorOffsetPlanner::stopPlanning()
+{
+  return false;
+}
 
 } // namespace dart
 } // namespace planner

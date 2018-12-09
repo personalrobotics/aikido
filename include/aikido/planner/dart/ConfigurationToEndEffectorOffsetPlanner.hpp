@@ -54,6 +54,8 @@ public:
   void setEndEffectorBodyNode(
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode);
 
+  // Documentation inherited.
+  virtual bool stopPlanning() override;
 
 protected:
 

@@ -77,5 +77,12 @@ PlannerPtr SnapConfigurationToConfigurationPlanner::clone(
     (mStateSpace, mInterpolator);
 }
 
+//==============================================================================
+bool SnapConfigurationToConfigurationPlanner::stopPlanning()
+{
+  //  Does not allow stop planning
+  return false;
+}
+
 } // namespace planner
 } // namespace aikido

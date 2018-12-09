@@ -35,7 +35,6 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::
 {
   if (endEffectorBodyNode)
   {
-    std::cout << "Set endeffectorBodyNode" << std::endl;
     setEndEffectorBodyNode(endEffectorBodyNode);
   }
 }
@@ -45,30 +44,49 @@ trajectory::TrajectoryPtr
 ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     const ConfigurationToTSR& problem, Planner::Result* result)
 {
-  std::cout << "ConfigurationToConfiguration_to_ConfigurationToTSR" << std::endl;
+  {
+    std::lock_guard<std::mutex> lock(mMutex);
+    mPlanning = true;
+  }
+
   if(!mEndEffectorBodyNode)
+  {
+    std::lock_guard<std::mutex> lock(mMutex);
+    mPlanning = false;
     throw std::runtime_error(
         "ConfigurationToConfiguration_to_ConfigurationToTSR needs to set mEndEffectorBodyNode");
-
+  }
   // TODO: Check equality between state space of this planner and given problem.
 
   // TODO: DART may be updated to check for single skeleton
   if (mMetaSkeleton->getNumDofs() == 0)
+  {
+    std::lock_guard<std::mutex> lock(mMutex);
+    mPlanning = false;
     throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
+  }
 
   auto skeleton = mMetaSkeleton->getDof(0)->getSkeleton();
   for (std::size_t i = 1; i < mMetaSkeleton->getNumDofs(); ++i)
   {
     if (mMetaSkeleton->getDof(i)->getSkeleton() != skeleton)
+    {
+      std::lock_guard<std::mutex> lock(mMutex);
+      mPlanning = false;
       throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
+    }
   }
 
   // Create an IK solver with MetaSkeleton DOFs
   auto matchingNodes
       = skeleton->getBodyNodes(mEndEffectorBodyNode->getName());
   if (matchingNodes.empty())
+  {
+    std::lock_guard<std::mutex> lock(mMutex);
+    mPlanning = false;
     throw std::invalid_argument(
         "End-effector BodyNode not found in Planner's MetaSkeleton.");
+  }
   ::dart::dynamics::BodyNodePtr endEffectorBodyNode = matchingNodes.front();
 
   auto ik = InverseKinematics::create(endEffectorBodyNode);
@@ -97,7 +115,15 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto goalState = mMetaSkeletonStateSpace->createState();
   while (generator->canSample())
   {
-    std::cout << "ConfigurationToConfiguration_to_ConfigurationToTSR sample" << std::endl;
+    {
+      std::lock_guard<std::mutex> lock(mMutex);
+      if (!mPlanning)
+      {
+        std::cout << "ConfigurationToConfiguration_to_ConfigurationToTSR stop planning" << std::endl;
+        return nullptr;
+      }
+    }
+
     // Sample from TSR
     {
       std::lock_guard<std::mutex> lock(skeleton->getMutex());
@@ -117,10 +143,18 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
     auto traj = mDelegate->plan(delegateProblem, result);
     if (traj)
+    {
+      std::lock_guard<std::mutex> lock(mMutex);
+      mPlanning = false;
       return traj;
+    }
   }
 
-  return nullptr;
+  {
+    std::lock_guard<std::mutex> lock(mMutex);
+    mPlanning = false;
+    return nullptr;
+  }
 }
 
 //==============================================================================
@@ -179,6 +213,15 @@ PlannerPtr ConfigurationToConfiguration_to_ConfigurationToTSR::clone(
       clonedCastedDelegate,
       metaSkeleton,
       clonedBodyNode);
+}
+
+//==============================================================================
+bool ConfigurationToConfiguration_to_ConfigurationToTSR::stopPlanning()
+{
+  //  Does not allow stop planning
+  std::lock_guard<std::mutex> lock(mMutex);
+  mPlanning = false;
+  return true;
 }
 
 

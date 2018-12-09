@@ -35,6 +35,13 @@ PlannerPtr OMPLConfigurationToConfigurationPlanner<PlannerType>::clone(
 
 //==============================================================================
 template <class PlannerType>
+bool OMPLConfigurationToConfigurationPlanner<PlannerType>::stopPlanning()
+{
+  return false;
+}
+
+//==============================================================================
+template <class PlannerType>
 OMPLConfigurationToConfigurationPlanner<PlannerType>::
     OMPLConfigurationToConfigurationPlanner(
         statespace::ConstStateSpacePtr stateSpace,

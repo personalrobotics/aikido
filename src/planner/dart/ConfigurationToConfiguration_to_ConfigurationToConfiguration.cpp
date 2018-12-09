@@ -77,6 +77,14 @@ PlannerPtr ConfigurationToConfiguration_to_ConfigurationToConfiguration::clone(
       metaSkeleton);
 }
 
+//==============================================================================
+bool ConfigurationToConfiguration_to_ConfigurationToConfiguration::stopPlanning()
+{
+  //  Does not allow stop planning
+  return false;
+}
+
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido

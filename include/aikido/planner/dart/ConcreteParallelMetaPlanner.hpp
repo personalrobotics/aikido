@@ -56,12 +56,15 @@ public:
       const Problem& problem, Result* result = nullptr) override;
 
   // Documentation inherited.
-  virtual PlannerPtr clone(common::RNG* rng = nullptr) const override final;
+  PlannerPtr clone(common::RNG* rng = nullptr) const override final;
 
   // Documentation inherited.
-  virtual PlannerPtr clone(
+  PlannerPtr clone(
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
       common::RNG* rng = nullptr) const override final;
+
+  // Documentation inherited.
+  bool stopPlanning() override final;
 
 private:
   // Protects mRunning

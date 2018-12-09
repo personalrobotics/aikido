@@ -51,6 +51,10 @@ public:
       const Problem& problem, Result* result = nullptr)
       = 0;
 
+  /// Abort planning if its running.
+  /// Returns true if successfully stopped or not running a plan.
+  virtual bool stopPlanning() = 0;
+
 protected:
   /// State space associated with this planner.
   statespace::ConstStateSpacePtr mStateSpace;

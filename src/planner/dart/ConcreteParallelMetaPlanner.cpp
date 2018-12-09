@@ -170,6 +170,9 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
         {
           std::cout << i << "th future succeeded." << std::endl;
           // TODO: kill them forcefully (need a stopable thread)
+          for(auto planner : mPlanners)
+            planner->stopPlanning();
+
           for(auto& thread: threads)
             if (thread.joinable())
               thread.join();
@@ -234,6 +237,13 @@ PlannerPtr ConcreteParallelMetaPlanner::clone(
 {
   throw std::runtime_error("Cloning MetaPlanner is not suported.");
 }
+
+//==============================================================================
+bool ConcreteParallelMetaPlanner::stopPlanning()
+{
+  return false;
+}
+
 } // namespace dart
 } // namespace planner
 } // namespace aikido

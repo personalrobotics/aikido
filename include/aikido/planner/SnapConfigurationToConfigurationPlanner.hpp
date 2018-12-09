@@ -57,6 +57,9 @@ public:
   // Documentation inherited.
   virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
 
+  // Documentation inherited.
+  virtual bool stopPlanning() override;
+
 protected:
   /// Interpolator used to produce the output trajectory.
   statespace::ConstInterpolatorPtr mInterpolator;

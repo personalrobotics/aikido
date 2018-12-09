@@ -23,5 +23,11 @@ PlannerPtr SequenceMetaPlanner::clone(common::RNG* rng) const
   throw std::runtime_error("Cloning MetaPlanner is not suported.");
 }
 
+//==============================================================================
+bool SequenceMetaPlanner::stopPlanning()
+{
+  return false;
+}
+
 } // namespace planner
 } // namespace aikido

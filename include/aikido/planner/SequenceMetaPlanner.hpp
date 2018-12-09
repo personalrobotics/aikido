@@ -19,6 +19,8 @@ public:
 
   // Documentation inherited.
   virtual PlannerPtr clone(common::RNG* rng = nullptr) const override;
+
+  virtual bool stopPlanning() override;
 };
 
 } // namespace planner

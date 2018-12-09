@@ -38,6 +38,9 @@ public:
   virtual PlannerPtr clone(
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
       common::RNG* rng = nullptr) const override;
+
+  // Documentation inherited.
+  virtual bool stopPlanning() override;
 };
 
 } // namespace dart

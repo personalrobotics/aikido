@@ -20,7 +20,6 @@ public:
   virtual PlannerPtr clone(
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
       common::RNG* rng = nullptr) const= 0;
-
 };
 
 } // namespace dart

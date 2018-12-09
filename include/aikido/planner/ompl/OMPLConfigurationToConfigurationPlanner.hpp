@@ -32,6 +32,9 @@ public:
   // Documentation inherited.
   PlannerPtr clone(common::RNG* rng = nullptr) const override;
 
+  // Documentation inherited.
+  bool stopPlanning() override;
+
   /// Constructor.
   ///
   /// \param[in] stateSpace State space that this planner associated with.
