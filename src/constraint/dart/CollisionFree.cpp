@@ -173,6 +173,7 @@ std::size_t getNodeIndexOf(
     exit(1);
   }
 
+
   for (std::size_t i = 0u; i < group.getNumShapeFrames(); ++i)
   {
     const ShapeFrame* shapeFrame = group.getShapeFrame(i);
@@ -180,6 +181,11 @@ std::size_t getNodeIndexOf(
     assert(shapeNode); // shapeFrame is assumed to be ShapeNode
     assert(shapeNode->getBodyNodePtr());
     const BodyNode* bodyNode = shapeNode->getBodyNodePtr().get();
+
+    std::cout << "Skeleton ids." << std::endl;
+    std::cout << "Original :" << skeletonOriginal.getBodyNode(0)->getSkeleton().get() << std::endl;
+    std::cout << "Clone    :" << skeletonClone.getBodyNode(0)->getSkeleton().get() << std::endl;
+    std::cout << "BodyNode :" << bodyNode->getSkeleton().get() << std::endl;
 
     if (!skeletonOriginal.hasBodyNode(bodyNode))
     {
@@ -196,8 +202,11 @@ std::size_t getNodeIndexOf(
                   << "\n"
                   << "  - bodyNode instance                    : "
                   << bodyNode << "\n";
+        std::cout << "BodyNode has parent name " << bodyNode->getSkeleton()->getName() << std::endl;
       }
-      exit(1);
+
+      groupClone->addShapeFrame(shapeNode);
+      continue;
     }
 
     // GL: shouldn't the clone not have this bodyNode?
