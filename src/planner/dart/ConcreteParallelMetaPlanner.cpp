@@ -5,6 +5,7 @@
 
 #include <thread>
 #include <future>
+#include <boost/timer.hpp>
 
 namespace aikido {
 namespace planner {
@@ -17,10 +18,16 @@ static void _plan(
       const ConstProblemPtr& problem,
       const std::shared_ptr<Planner::Result>& result)
 {
+  boost::timer planningTimer;
   trajectory::TrajectoryPtr trajectory = planner->plan(*problem, result.get());
   if (trajectory)
   {
     promise->set_value(trajectory);
+    // Record the planning time here.
+       // Log this data
+    std::ofstream logFile;
+    logFile.open("/home/adityavk/workspaces/lab-ws/src/herb3_demos/planTimes.txt", std::ios_base::app);
+    logFile << planningTimer.elapsed() << std::endl;
     return;
   }
 
@@ -175,8 +182,11 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
             planner->stopPlanning();
 
           for(auto& thread: threads)
-            if (thread.joinable())
-              thread.join();
+	  {
+		  if (thread.joinable())
+			  thread.join();
+	  }
+//            thread.detach();
 
           // Return
           {
