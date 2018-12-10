@@ -142,7 +142,8 @@ Quaternion sampleQuaternion(
 std::vector<std::unique_ptr<common::RNG>> cloneRNGsFrom(
     RNG& _engine,
     std::size_t _numOutputs,
-    std::size_t _numSeeds = NUM_DEFAULT_SEEDS);
+    std::size_t _numSeeds = NUM_DEFAULT_SEEDS,
+    bool fixedSeeds = false);
 
 /// Deterministically create a random number generator of the same type as the
 /// input \c _engine. This is implemented by using \c _engine to generate \c
