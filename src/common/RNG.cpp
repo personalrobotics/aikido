@@ -11,7 +11,8 @@ constexpr std::size_t RNG::NUM_BITS;
 std::vector<std::unique_ptr<common::RNG>> cloneRNGsFrom(
     RNG& _engine, std::size_t _numOutputs,
     std::size_t _numSeeds,
-    bool fixedSeeds
+    bool fixedSeeds,
+    int baseSeed
 ) {
   // Create the random number generators of the same type as the input _engine.
   std::vector<std::unique_ptr<common::RNG>> output;
@@ -19,7 +20,7 @@ std::vector<std::unique_ptr<common::RNG>> cloneRNGsFrom(
 
   if (fixedSeeds)
   {
-    for (int curSeed = 0; curSeed < _numOutputs; curSeed++)
+    for (int curSeed = baseSeed; curSeed < baseSeed + _numOutputs; curSeed++)
       output.emplace_back(_engine.clone(curSeed));
   }
   else
