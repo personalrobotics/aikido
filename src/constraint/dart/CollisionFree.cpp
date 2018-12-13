@@ -234,7 +234,7 @@ const ::dart::dynamics::BodyNode* getBodyNode(
     const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton)
 {
   const ::dart::dynamics::BodyNode* bodyNodeClone
-      = metaSkeleton->getBodyNode(bodyNode->getName());
+      = metaSkeleton->getBodyNode(0)->getSkeleton()->getBodyNode(bodyNode->getName());
 
   // Assume bodyNode is meant to be cloned but a bodyNode shared over envs
   if (!bodyNodeClone)
@@ -254,15 +254,21 @@ TestablePtr CollisionFree::clone(
   if (mMetaSkeleton->getBodyNode(0)->getSkeleton()
       == metaSkeleton->getBodyNode(0)->getSkeleton())
   {
-    std::cout << "CollisionFree has metaSkeleton "
+    std::stringstream ss;
+    ss << "CollisionFree has metaSkeleton "
               << mMetaSkeleton->getBodyNode(0)->getSkeleton()->getName()
               << " and uses cloned MetaSkeleton: "
               << metaSkeleton->getBodyNode(0)->getSkeleton()->getName()
+              << std::endl
+              << "Cloned BodyNode0 " << metaSkeleton->getBodyNode(0)->getName()
               << std::endl;
-    std::cout << "Cloned BodyNode0 " << metaSkeleton->getBodyNode(0)->getName()
-              << std::endl;
-    exit(1);
+    throw std::runtime_error(ss.str());
   }
+
+  // GL: probably not the right place to put this.
+  auto parentSkeleton = metaSkeleton->getBodyNode(0)->getSkeleton();
+  parentSkeleton->enableSelfCollisionCheck();
+  parentSkeleton->disableAdjacentBodyCheck();
 
   auto collOptionClone = mCollisionOptions;
   auto bodyNodeCollisionFilter

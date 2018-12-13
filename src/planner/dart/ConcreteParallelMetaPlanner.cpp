@@ -6,6 +6,8 @@
 #include <thread>
 #include <future>
 #include <boost/timer.hpp>
+#include <fstream>
+#include <iostream>
 
 namespace aikido {
 namespace planner {
