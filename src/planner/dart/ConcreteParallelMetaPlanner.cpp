@@ -26,9 +26,8 @@ static void _plan(
   {
     promise->set_value(trajectory);
     // Record the planning time here.
-       // Log this data
     std::ofstream logFile;
-    logFile.open("/home/adityavk/workspaces/lab-ws/src/herb3_demos/planTimes.txt", std::ios_base::app);
+    logFile.open("planTimes.txt", std::ios_base::app);
     logFile << planningTimer.elapsed() << std::endl;
     return;
   }
@@ -141,7 +140,9 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     {
       auto shared_problem = dart_problem->clone(mCollisionDetectors[i],
           mClonedMetaSkeletons[i]);
-      threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problem, result));
+
+      auto thread = std::thread(_plan, mPlanners[i], promise, shared_problem, result);
+      thread.detach();
     }
     else
     {
@@ -152,9 +153,9 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     futures.push_back(promise->get_future());
   }
 
-  std::cout << "Total of [" << threads.size() << "] threads running." << std::endl;
+  std::cout << "Total of [" << futures.size() << "] threads running." << std::endl;
 
-  if (threads.size() == 0)
+  if (futures.size() == 0)
   {
     std::lock_guard<std::mutex> lock(mMutex);
     mRunning = false;
@@ -164,7 +165,6 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
   std::vector<bool> future_retrieved(results.size(), false);
   do
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     std::size_t num_failures = 0;
     for(std::size_t i = 0; i < futures.size(); ++i)
     {
@@ -183,13 +183,6 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
           for(auto planner : mPlanners)
             planner->stopPlanning();
 
-          for(auto& thread: threads)
-	  {
-		  if (thread.joinable())
-			  thread.join();
-	  }
-//            thread.detach();
-
           // Return
           {
             std::lock_guard<std::mutex> lock(mMutex);
@@ -205,10 +198,6 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     }
     if (num_failures == futures.size())
     {
-      // TODO: make this into a separate function
-      for(auto& thread: threads)
-        if (thread.joinable())
-          thread.join();
       {
         std::lock_guard<std::mutex> lock(mMutex);
         mRunning = false;
@@ -218,10 +207,6 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     }
   }while(true);
 
-  // TODO: kill them forcefully (need a stopable thread)
-  for(auto& thread: threads)
-    if (thread.joinable())
-      thread.join();
   {
     std::lock_guard<std::mutex> lock(mMutex);
     mRunning = false;

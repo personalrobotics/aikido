@@ -265,11 +265,6 @@ TestablePtr CollisionFree::clone(
     throw std::runtime_error(ss.str());
   }
 
-  // GL: probably not the right place to put this.
-  auto parentSkeleton = metaSkeleton->getBodyNode(0)->getSkeleton();
-  parentSkeleton->enableSelfCollisionCheck();
-  parentSkeleton->disableAdjacentBodyCheck();
-
   auto collOptionClone = mCollisionOptions;
   auto bodyNodeCollisionFilter
       = std::dynamic_pointer_cast<BodyNodeCollisionFilter>(
