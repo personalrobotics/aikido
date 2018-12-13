@@ -142,7 +142,10 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
           mClonedMetaSkeletons[i]);
 
       auto thread = std::thread(_plan, mPlanners[i], promise, shared_problem, result);
-      thread.detach();
+      
+      if (thread.joinable())
+        thread.join();
+      // thread.detach();
     }
     else
     {
