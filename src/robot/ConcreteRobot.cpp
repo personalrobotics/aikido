@@ -235,23 +235,6 @@ Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
   return getSymmetricAccelerationLimits(metaSkeleton, asymmetryTolerance);
 }
 
-//=============================================================================
-const dart::dynamics::BodyNode* getBodyNode(
-    const dart::dynamics::BodyNode* bodyNode,
-    const MetaSkeletonPtr& metaSkeleton)
-{
-  const dart::dynamics::BodyNode* bodyNodeClone
-      = metaSkeleton->getBodyNode(bodyNode->getName());
-
-  if (!bodyNodeClone)
-  {
-    exit(1);
-    return bodyNode;
-  }
-
-  return bodyNodeClone;
-}
-
 //==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
     const ConstMetaSkeletonStateSpacePtr& space,
@@ -267,26 +250,8 @@ CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
 
   // TODO: Switch to PRIMITIVE once this is fixed in DART.
   // mCollisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
-  
-  auto newCollisionFilter = std::make_shared<dart::collision::BodyNodeCollisionFilter>();
-  const dart::collision::detail::UnorderedPairs<dart::dynamics::BodyNode>& pairs 
-      = mSelfCollisionFilter->getPairs();
-  const auto& map = pairs.getMap();
-  for (const auto& leftAndRights : map)
-  {
-    const auto& left = leftAndRights.first;
-    const auto& rights = leftAndRights.second;
-
-    for (const auto& right : rights)
-    {
-      newCollisionFilter->addBodyNodePairToBlackList(
-          getBodyNode(left, metaSkeleton),
-          getBodyNode(right, metaSkeleton));
-    }
-  }
-  
   auto collisionOption
-      = dart::collision::CollisionOption(false, 1, newCollisionFilter);
+      = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
   auto collisionFreeConstraint = std::make_shared<CollisionFree>(
       space, metaSkeleton, mCollisionDetector, collisionOption);
   collisionFreeConstraint->addSelfCheck(

@@ -1,5 +1,7 @@
 #include "aikido/constraint/dart/CollisionFree.hpp"
 
+#include <dart/collision/collision.hpp>
+
 namespace aikido {
 namespace constraint {
 namespace dart {
@@ -226,11 +228,29 @@ std::size_t getNodeIndexOf(
   return groupClone;
 }
 
+//=============================================================================
+const ::dart::dynamics::BodyNode* getBodyNode(
+    const ::dart::dynamics::BodyNode* bodyNode,
+    const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton)
+{
+  const ::dart::dynamics::BodyNode* bodyNodeClone
+      = metaSkeleton->getBodyNode(bodyNode->getName());
+
+  // Assume bodyNode is meant to be cloned but a bodyNode shared over envs
+  if (!bodyNodeClone)
+    return bodyNode;
+
+  return bodyNodeClone;
+}
+
 //==============================================================================
 TestablePtr CollisionFree::clone(
     ::dart::collision::CollisionDetectorPtr collisionDetector,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton) const
 {
+  using namespace ::dart::collision;
+  using namespace ::dart::dynamics;
+
   if (mMetaSkeleton->getBodyNode(0)->getSkeleton()
       == metaSkeleton->getBodyNode(0)->getSkeleton())
   {
@@ -244,11 +264,40 @@ TestablePtr CollisionFree::clone(
     exit(1);
   }
 
+  auto collOptionClone = mCollisionOptions;
+  auto bodyNodeCollisionFilter
+      = std::dynamic_pointer_cast<BodyNodeCollisionFilter>(
+        mCollisionOptions.collisionFilter);
+  if (bodyNodeCollisionFilter)
+  {
+    auto newCollisionFilter = std::make_shared<BodyNodeCollisionFilter>();
+    const ::dart::collision::detail::UnorderedPairs<BodyNode>& pairs
+        = bodyNodeCollisionFilter->getPairs();
+    const auto& map = pairs.getMap();
+    for (const auto& leftAndRights : map)
+    {
+      const auto& left = leftAndRights.first;
+      const auto& rights = leftAndRights.second;
+
+      for (const auto& right : rights)
+      {
+        newCollisionFilter->addBodyNodePairToBlackList(
+            getBodyNode(left, metaSkeleton),
+            getBodyNode(right, metaSkeleton));
+      }
+    }
+    collOptionClone.collisionFilter = newCollisionFilter;
+  }
+  else
+  {
+    collOptionClone.collisionFilter = mCollisionOptions.collisionFilter;
+  }
+
   auto cloned = std::make_shared<CollisionFree>(
       mMetaSkeletonStateSpace,
       metaSkeleton,
       collisionDetector,
-      mCollisionOptions);
+      collOptionClone);
 
   for (const auto& group : mGroupsToSelfCheck)
   {
