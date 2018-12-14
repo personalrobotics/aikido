@@ -18,7 +18,10 @@ static void _plan(
       const PlannerPtr& planner,
       const std::shared_ptr<std::promise<trajectory::TrajectoryPtr>>& promise,
       const ConstProblemPtr& problem,
-      const std::shared_ptr<Planner::Result>& result)
+      const std::shared_ptr<Planner::Result>& result,
+      const std::string& filename,
+      std::size_t planner_id
+      )
 {
   boost::timer planningTimer;
   trajectory::TrajectoryPtr trajectory = planner->plan(*problem, result.get());
@@ -27,11 +30,14 @@ static void _plan(
     promise->set_value(trajectory);
     // Record the planning time here.
     std::ofstream logFile;
-    logFile.open("planTimes.txt", std::ios_base::app);
-    logFile << planningTimer.elapsed() << std::endl;
+    logFile.open(filename, std::ios_base::app);
+    logFile << planner_id << "th planner: " << planningTimer.elapsed() << std::endl;
     return;
   }
 
+  std::ofstream logFile;
+  logFile.open(filename, std::ios_base::app);
+  logFile << planner_id << "th planner [fail]: " << planningTimer.elapsed() << std::endl;
   promise->set_value(nullptr);
 }
 
@@ -126,6 +132,8 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
 
   results.reserve(mPlanners.size());
 
+  std::string filename = std::to_string(mPlanners.size()) + "_planners.txt";
+
   for (std::size_t i = 0; i < mPlanners.size(); ++i)
   {
     if (!mPlanners[i]->canSolve(problem))
@@ -136,21 +144,20 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
     results.push_back(result);
     auto promise = std::make_shared<std::promise<trajectory::TrajectoryPtr>>();
 
+
     if (dart_problem)
     {
       auto shared_problem = dart_problem->clone(mCollisionDetectors[i],
           mClonedMetaSkeletons[i]);
 
-      auto thread = std::thread(_plan, mPlanners[i], promise, shared_problem, result);
-      
-      if (thread.joinable())
-        thread.join();
-      // thread.detach();
+      auto thread = std::thread(_plan, mPlanners[i], promise, shared_problem, result, filename, i);
+      thread.detach();
     }
     else
     {
       std::cout << "Not dart problem" << std::endl;
-      threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problem, result));
+      throw std::runtime_error("Not supported");
+      threads.push_back(std::thread(_plan, mPlanners[i], promise, shared_problem, result, filename, i));
     }
 
     futures.push_back(promise->get_future());
@@ -169,12 +176,13 @@ trajectory::TrajectoryPtr ConcreteParallelMetaPlanner::plan(
   do
   {
     std::size_t num_failures = 0;
+    std::this_thread::sleep_for(std::chrono::nanoseconds(1));
     for(std::size_t i = 0; i < futures.size(); ++i)
     {
       if (future_retrieved[i])
         continue;
 
-      auto status = futures[i].wait_for(std::chrono::milliseconds(1));
+      auto status = futures[i].wait_for(std::chrono::milliseconds(0));
       if (status == std::future_status::ready)
       {
         future_retrieved[i] = true;
