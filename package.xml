@@ -32,7 +32,7 @@
   <depend>trajectory_msgs</depend>
   <depend>visualization_msgs</depend>
   <depend>pr_control_msgs</depend>
-  <depend>pr-ompl</depend>
+  <depend>octomap_ros</depend>
 
   <doc_depend>doxygen</doc_depend>
 
@@ -43,7 +43,6 @@
   <exec_depend>catkin</exec_depend>
 
   <buildtool_depend>cmake</buildtool_depend>
-  <buildtool_depend>clang-format-3.8</buildtool_depend>
   <buildtool_depend>lcov</buildtool_depend>
 
   <export>

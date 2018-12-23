@@ -40,9 +40,8 @@ public:
   /// \param timepoint Time to simulate to
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
-  /// Abort the current trajectory.
-  /// \note This is currently only supported in simulation.
-  virtual void abort() = 0;
+  /// Cancel the current trajectory.
+  virtual void cancel() = 0;
 
 protected:
   /// Set of trajectories validated by executor

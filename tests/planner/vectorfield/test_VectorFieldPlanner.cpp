@@ -333,10 +333,10 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
 
   double positionTolerance = 0.01;
   double angularTolerance = 0.15;
-  double initialStepSize = 0.001;
+  double initialStepSize = 0.01;
   double jointLimitTolerance = 1e-3;
-  double constraintCheckResolution = 1e-3;
-  std::chrono::duration<double> timelimit(10.0);
+  double constraintCheckResolution = 1e-2;
+  std::chrono::duration<double> timelimit(60.0);
 
   // Create problem.
   auto offsetProblem = ConfigurationToEndEffectorOffset(
@@ -458,9 +458,9 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   double poseErrorTolerance = 0.01;
   double initialStepSize = 0.05;
   double r = 1.0;
-  double jointLimitTolerance = 1e-3;
-  double constraintCheckResolution = 1e-3;
-  std::chrono::duration<double> timelimit(5.);
+  double jointLimitTolerance = 1e-2;
+  double constraintCheckResolution = 1e-2;
+  std::chrono::duration<double> timelimit(300.);
 
   mSkel->setPositions(mStartConfig);
 

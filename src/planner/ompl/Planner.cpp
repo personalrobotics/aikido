@@ -114,7 +114,8 @@ namespace ompl {
       std::move(_dmetric),
       std::move(_sampler),
       _boundsConstraint,
-      std::move(_boundsProjector));
+      std::move(_boundsProjector),
+      _maxDistanceBtwValidityChecks);
 
   // Space Information
   auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));

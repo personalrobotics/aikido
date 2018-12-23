@@ -21,15 +21,15 @@ class SE2BoxConstraintTests : public ::testing::Test
 {
 protected:
 #ifndef NDEBUG
-  static constexpr std::size_t NUM_A_TARGETS{5};
   static constexpr std::size_t NUM_X_TARGETS{5};
   static constexpr std::size_t NUM_Y_TARGETS{5};
-  static constexpr std::size_t NUM_SAMPLES{100};
-  static constexpr double DISTANCE_THRESHOLD{0.9};
+  static constexpr std::size_t NUM_A_TARGETS{5};
+  static constexpr std::size_t NUM_SAMPLES{125};
+  static constexpr double DISTANCE_THRESHOLD{1.5};
 #else
-  static constexpr std::size_t NUM_A_TARGETS{10};
   static constexpr std::size_t NUM_X_TARGETS{10};
   static constexpr std::size_t NUM_Y_TARGETS{10};
+  static constexpr std::size_t NUM_A_TARGETS{10};
   static constexpr std::size_t NUM_SAMPLES{1000};
   static constexpr double DISTANCE_THRESHOLD{0.8};
 #endif
@@ -45,19 +45,19 @@ protected:
     mUpperLimits = Vector2d(1., 2.);
 
     mGoodValues.resize(3);
-    mGoodValues[0] = Vector3d(0.0, -0.9, 1.1);
-    mGoodValues[1] = Vector3d(M_PI_2, 0.0, 1.5);
-    mGoodValues[2] = Vector3d(-M_PI_4, 0.9, 1.9);
+    mGoodValues[0] = Vector3d(-0.9, 1.1, 0.0);
+    mGoodValues[1] = Vector3d(0.0, 1.5, M_PI_2);
+    mGoodValues[2] = Vector3d(0.9, 1.9, -M_PI_4);
 
     mBadValues.resize(8);
-    mBadValues[0] = Vector3d(0.0, -1.1, 1.5);
-    mBadValues[1] = Vector3d(M_PI_2, 1.1, 1.5);
-    mBadValues[2] = Vector3d(M_PI, 0.0, 0.9);
-    mBadValues[3] = Vector3d(3.0 * M_PI_2, 0.0, 2.1);
-    mBadValues[4] = Vector3d(2.0 * M_PI, -1.1, 0.9);
-    mBadValues[5] = Vector3d(-M_PI_2, -1.1, 2.1);
-    mBadValues[6] = Vector3d(-M_PI, 1.1, 0.9);
-    mBadValues[7] = Vector3d(-3.0 * M_PI_2, 1.1, 2.1);
+    mBadValues[0] = Vector3d(-1.1, 1.5, 0.0);
+    mBadValues[1] = Vector3d(1.1, 1.5, M_PI_2);
+    mBadValues[2] = Vector3d(0.0, 0.9, M_PI);
+    mBadValues[3] = Vector3d(0.0, 2.1, 3.0 * M_PI_2);
+    mBadValues[4] = Vector3d(-1.1, 0.9, 2.0 * M_PI);
+    mBadValues[5] = Vector3d(-1.1, 2.1, -M_PI_2);
+    mBadValues[6] = Vector3d(1.1, 0.9, -M_PI);
+    mBadValues[7] = Vector3d(1.1, 2.1, -3.0 * M_PI_2);
 
     mTargets.clear();
     mTargets.reserve(NUM_A_TARGETS * NUM_X_TARGETS * NUM_Y_TARGETS);
@@ -154,7 +154,7 @@ TEST_F(SE2BoxConstraintTests, isSatisfiedTrue)
   for (const auto& value : mGoodValues)
   {
     Isometry2d pose = Eigen::Isometry2d::Identity();
-    pose = pose.translate(Vector2d(value[1], value[2])).rotate(value[0]);
+    pose = pose.translate(Vector2d(value[0], value[1])).rotate(value[2]);
     state.setIsometry(pose);
     EXPECT_TRUE(constraint.isSatisfied(state));
   }
@@ -171,7 +171,7 @@ TEST_F(SE2BoxConstraintTests, isSatisfiedFalse)
   for (const auto& value : mBadValues)
   {
     Isometry2d pose = Eigen::Isometry2d::Identity();
-    pose = pose.translate(Vector2d(value[1], value[2])).rotate(value[0]);
+    pose = pose.translate(Vector2d(value[0], value[1])).rotate(value[2]);
     state.setIsometry(pose);
     EXPECT_FALSE(constraint.isSatisfied(state));
   }
@@ -189,7 +189,7 @@ TEST_F(SE2BoxConstraintTests, projectSatisfiedConstraintDoesNothing)
   for (const auto& value : mGoodValues)
   {
     Isometry2d pose = Eigen::Isometry2d::Identity();
-    pose = pose.translate(Vector2d(value[1], value[2])).rotate(value[0]);
+    pose = pose.translate(Vector2d(value[0], value[1])).rotate(value[2]);
 
     inState.setIsometry(pose);
     EXPECT_TRUE(constraint.project(inState, outState));
@@ -209,7 +209,7 @@ TEST_F(SE2BoxConstraintTests, projectUnSatisfiedConstraintProjects)
   for (const auto& value : mBadValues)
   {
     Isometry2d pose = Eigen::Isometry2d::Identity();
-    pose = pose.translate(Vector2d(value[1], value[2])).rotate(value[0]);
+    pose = pose.translate(Vector2d(value[0], value[1])).rotate(value[2]);
 
     inState.setIsometry(pose);
     EXPECT_TRUE(constraint.project(inState, outState));

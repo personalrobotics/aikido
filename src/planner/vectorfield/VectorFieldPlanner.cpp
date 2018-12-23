@@ -228,29 +228,6 @@ std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
       metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
-  stateSpace->setState(metaskeleton.get(), &startState);
-
-  auto vectorfield
-      = dart::common::make_aligned_shared<MoveEndEffectorTwistVectorField>(
-          stateSpace,
-          metaskeleton,
-          bn,
-          twistSeq,
-          durationSeq,
-          positionTolerance,
-          angularTolerance,
-          initialStepSize,
-          jointLimitTolerance);
-
-  auto compoundConstraint
-      = std::make_shared<constraint::TestableIntersection>(stateSpace);
-
-  if (constraint)
-    compoundConstraint->addConstraint(constraint);
-
-  compoundConstraint->addConstraint(
-      constraint::dart::createTestableBounds(stateSpace));
-
   return followVectorField(
       *vectorfield,
       startState,

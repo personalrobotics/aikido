@@ -4,6 +4,7 @@ namespace aikido {
 namespace distance {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
+using statespace::dart::MetaSkeletonStateSpace;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
@@ -20,50 +21,25 @@ ConfigurationRanker::ConfigurationRanker(
     throw std::invalid_argument("MetaSkeleton is nullptr.");
 
   mDistanceMetric = createDistanceMetricFor(
-      std::dynamic_pointer_cast<statespace::CartesianProduct>(
-          std::const_pointer_cast<statespace::dart::MetaSkeletonStateSpace>(
-              mMetaSkeletonStateSpace)));
-}
-
-//==============================================================================
-statespace::ConstStateSpacePtr ConfigurationRanker::getStateSpace() const
-{
-  return mMetaSkeletonStateSpace;
+      std::dynamic_pointer_cast<const statespace::CartesianProduct>(
+          mMetaSkeletonStateSpace));
 }
 
 //==============================================================================
 void ConfigurationRanker::rankConfigurations(
-    std::vector<statespace::CartesianProduct::State*>& configurations)
+    std::vector<MetaSkeletonStateSpace::ScopedState>& configurations)
 {
-  std::vector<std::pair<statespace::CartesianProduct::State*, double>>
-      scoredConfigurations(configurations.size());
+  std::unordered_map<const MetaSkeletonStateSpace::State*, double> costs;
+  costs.reserve(configurations.size());
   for (std::size_t i = 0; i < configurations.size(); ++i)
-  {
-    scoredConfigurations[i].first = configurations[i];
-    scoredConfigurations[i].second = evaluateConfiguration(configurations[i]);
-  }
+    costs[configurations[i]] = evaluateConfiguration(configurations[i]);
 
-  struct sortingFunction
-  {
-    bool operator()(
-        const std::pair<statespace::CartesianProduct::State*, double>& left,
-        const std::pair<statespace::CartesianProduct::State*, double>& right)
-    {
-      return left.second < right.second;
-    }
-  };
   std::sort(
-      scoredConfigurations.begin(),
-      scoredConfigurations.end(),
-      sortingFunction());
-
-  configurations.clear();
-  std::transform(
-      scoredConfigurations.begin(),
-      scoredConfigurations.end(),
-      std::back_inserter(configurations),
-      [](const std::pair<statespace::CartesianProduct::State*, int>& item) {
-        return item.first;
+      configurations.begin(),
+      configurations.end(),
+      [&](const MetaSkeletonStateSpace::ScopedState& left,
+          const MetaSkeletonStateSpace::ScopedState& right) {
+        return costs[left] < costs[right];
       });
 }
 

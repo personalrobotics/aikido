@@ -1,10 +1,8 @@
 #ifndef AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 #define AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 
-#include "aikido/distance/CartesianProductWeighted.hpp"
 #include "aikido/distance/DistanceMetric.hpp"
 #include "aikido/distance/defaults.hpp"
-#include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 #include <dart/dynamics/dynamics.hpp>
@@ -12,13 +10,16 @@
 namespace aikido {
 namespace distance {
 
+/// ConfigurationRanker is a base class for ranking configurations.
+/// The rule for evaluating the costs of configurations to rank them
+/// is specified by the concrete classes.
 class ConfigurationRanker
 {
 public:
   /// Constructor
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
-  /// \param[in] metaskeleton Metaskeleton of the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
   ConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
@@ -26,17 +27,18 @@ public:
   /// Destructor
   virtual ~ConfigurationRanker() = default;
 
-  /// Returns the statespace.
-  statespace::ConstStateSpacePtr getStateSpace() const;
-
-  /// Returns the vector of ranked configurations.
+  /// Ranks the vector of configurations in increasing order of costs.
+  /// \param[in, out] configurations Vector of configurations to rank.
   void rankConfigurations(
-      std::vector<statespace::CartesianProduct::State*>& configurations);
+      std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState>&
+          configurations);
 
 protected:
-  /// Returns the score of the configuration
+  /// Returns the cost of the configuration.
+  /// \param[in] solution Configuration to evaluate.
   virtual double evaluateConfiguration(
-      statespace::StateSpace::State* solution) const = 0;
+      const statespace::dart::MetaSkeletonStateSpace::State* solution)
+      const = 0;
 
   /// Statespace of the skeleton.
   statespace::dart::ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;

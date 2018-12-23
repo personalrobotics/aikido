@@ -28,6 +28,8 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
+#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
+
 namespace aikido {
 namespace robot {
 namespace util {
@@ -57,6 +59,7 @@ using common::cloneRNGFrom;
 using common::RNG;
 using planner::ConfigurationToConfiguration;
 using planner::SnapConfigurationToConfigurationPlanner;
+using planner::ompl::OMPLConfigurationToConfigurationPlanner;
 
 using dart::collision::FCLCollisionDetector;
 using dart::common::make_unique;
@@ -78,7 +81,8 @@ trajectory::TrajectoryPtr planToConfiguration(
     RNG* rng,
     double timelimit)
 {
-  using planner::ompl::planLRAstar;
+  DART_UNUSED(timelimit);
+
   using planner::ompl::planOMPL;
   using planner::ConfigurationToConfiguration;
   using planner::SnapConfigurationToConfigurationPlanner;
@@ -161,19 +165,12 @@ trajectory::TrajectoryPtr planToConfiguration(
     return returnTrajectory;
   }
 
-  // Plan with sampling-based methods
-  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit,
-      collisionResolution);
+  auto plannerOMPL = std::
+      make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
+                                                              RRTConnect>>(
+          space, rng);
+
+  untimedTrajectory = plannerOMPL->plan(problem, &pResult);
 
   if (untimedTrajectory)
   {
@@ -196,6 +193,7 @@ trajectory::TrajectoryPtr planToConfigurations(
 {
   using planner::ompl::planLRAstar;
   using planner::ompl::planOMPL;
+  DART_UNUSED(timelimit);
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
@@ -224,53 +222,15 @@ trajectory::TrajectoryPtr planToConfigurations(
     }
   }
 
-  // Next try graph-based methods
-  for (const auto& goalState : goalStates)
-  {
-    TrajectoryPtr untimedTrajectory = planLRAstar(
-        startState,
-        goalState,
-        space,
-        std::make_shared<GeodesicInterpolator>(space),
-        createDistanceMetric(space),
-        createSampleableBounds(space, rng->clone()),
-        collisionTestable,
-        createTestableBounds(space),
-        createProjectableBounds(space),
-        timelimit,
-        collisionResolution,
-        "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_20_8000.graphml",
-        1000);
+    auto plannerOMPL = std::
+        make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
+                                                                RRTConnect>>(
+            space, rng);
+
+    untimedTrajectory = plannerOMPL->plan(problem, &pResult);
 
     if (untimedTrajectory)
-    {
-      std::cout << "[utils:PlanToConfigurations] LRA* Successful" << std::endl;
       return untimedTrajectory;
-    }
-  }
-
-  // Finally try sampling-based methods
-  for (const auto& goalState : goalStates)
-  {
-    TrajectoryPtr untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
-        startState,
-        goalState,
-        space,
-        std::make_shared<GeodesicInterpolator>(space),
-        createDistanceMetric(space),
-        createSampleableBounds(space, rng->clone()),
-        collisionTestable,
-        createTestableBounds(space),
-        createProjectableBounds(space),
-        timelimit,
-        collisionResolution);
-
-    if (untimedTrajectory)
-    {
-      std::cout << "[utils:PlanToConfigurations] RRTConnect Successful"
-                << std::endl;
-      return untimedTrajectory;
-    }
   }
 
   return nullptr;
