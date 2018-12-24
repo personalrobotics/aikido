@@ -1,5 +1,4 @@
 add_subdirectory("parabolic")
-add_subdirectory("kinodynamic")
 add_subdirectory("ompl")
 add_subdirectory("vectorfield")
 add_subdirectory("kunzretimer")
