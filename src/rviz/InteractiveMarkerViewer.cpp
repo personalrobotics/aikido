@@ -129,7 +129,10 @@ TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
   return marker;
 }
 
-bool InteractiveMarkerViewer::removeTrajectoryMarker(const TrajectoryMarkerPtr& trajectoryMarkerToRemove) {
+//==============================================================================
+bool InteractiveMarkerViewer::removeTrajectoryMarker(
+  const TrajectoryMarkerPtr& trajectoryMarkerToRemove)
+{
   return mTrajectoryMarkers.erase(trajectoryMarkerToRemove) > 0;
 }
 
