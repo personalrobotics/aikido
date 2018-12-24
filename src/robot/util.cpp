@@ -7,14 +7,12 @@
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
-#include "aikido/constraint/SequentialSampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
 #include "aikido/constraint/dart/FrameTestable.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
-#include "aikido/distance/NominalConfigurationRanker.hpp"
 #include "aikido/distance/defaults.hpp"
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
@@ -34,8 +32,6 @@ namespace aikido {
 namespace robot {
 namespace util {
 
-using constraint::FiniteSampleable;
-using constraint::SequentialSampleable;
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::InverseKinematicsSampleable;
 using constraint::dart::TSR;
@@ -45,7 +41,6 @@ using constraint::dart::createProjectableBounds;
 using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
 using distance::createDistanceMetric;
-using distance::NominalConfigurationRanker;
 using statespace::GeodesicInterpolator;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
@@ -107,63 +102,7 @@ trajectory::TrajectoryPtr planToConfiguration(
 
   // Return if the trajectory is non-empty
   if (untimedTrajectory)
-  {
-    std::cout << "[utils:PlanToConfiguration] SnapPlanner Successful"
-              << std::endl;
     return untimedTrajectory;
-  }
-
-  // Plan with graph-based methods
-  untimedTrajectory = planLRAstar(
-      startState,
-      goalState,
-      space,
-      std::make_shared<GeodesicInterpolator>(space),
-      createDistanceMetric(space),
-      createSampleableBounds(space, rng->clone()),
-      collisionTestable,
-      createTestableBounds(space),
-      createProjectableBounds(space),
-      timelimit,
-      collisionResolution,
-      "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_20_8000.graphml",
-      1000);
-
-  if (untimedTrajectory)
-  {
-    std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
-    auto interpolatedTrajectory = std::dynamic_pointer_cast<aikido::trajectory::Interpolated>(
-          (untimedTrajectory));
-
-    Eigen::VectorXd trajPoint;
-    auto trajState = space->createState();
-    for (std::size_t i = 0; i < interpolatedTrajectory->getNumWaypoints(); ++i)
-    {
-      auto waypoint = interpolatedTrajectory->getWaypoint(i);
-      space->copyState(waypoint, trajState);
-      space->convertStateToPositions(trajState, trajPoint);
-    }
-    auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
-        space,
-        std::make_shared<GeodesicInterpolator>(space),
-        createDistanceMetric(space),
-        createSampleableBounds(space, rng->clone()),
-        collisionTestable,
-        createTestableBounds(space),
-        createProjectableBounds(space),
-        0.1,
-        20.0,
-        20,
-        interpolatedTrajectory);
-
-    // Simplification results
-    auto simplifiedTraj = std::move(simplifiedPair.first);
-    bool shorten_success = simplifiedPair.second;
-
-    std::cout << "Shortening Success: " << shorten_success << std::endl;
-    InterpolatedPtr returnTrajectory = std::move(simplifiedTraj);
-    return returnTrajectory;
-  }
 
   auto plannerOMPL = std::
       make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
@@ -172,26 +111,18 @@ trajectory::TrajectoryPtr planToConfiguration(
 
   untimedTrajectory = plannerOMPL->plan(problem, &pResult);
 
-  if (untimedTrajectory)
-  {
-    std::cout << "[utils:PlanToConfiguration] RRTConnect Successful"
-              << std::endl;
-    return untimedTrajectory;
-  }
-
-  return nullptr;
+  return untimedTrajectory;
 }
 
 //==============================================================================
 trajectory::TrajectoryPtr planToConfigurations(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<statespace::StateSpace::State*>& goalStates,
+    const std::vector<StateSpace::State*>& goalStates,
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit)
 {
-  using planner::ompl::planLRAstar;
   using planner::ompl::planOMPL;
   DART_UNUSED(timelimit);
 
@@ -206,21 +137,16 @@ trajectory::TrajectoryPtr planToConfigurations(
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
 
-  // First test with Snap Planner
   for (const auto& goalState : goalStates)
   {
+    // First test with Snap Planner
     auto problem = ConfigurationToConfiguration(
         space, startState, goalState, collisionTestable);
     TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
 
     // Return if the trajectory is non-empty
     if (untimedTrajectory)
-    {
-      std::cout << "[utils:PlanToConfigurations] SnapPlanner Successful"
-                << std::endl;
       return untimedTrajectory;
-    }
-  }
 
     auto plannerOMPL = std::
         make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
@@ -242,15 +168,11 @@ trajectory::TrajectoryPtr planToTSR(
     const MetaSkeletonPtr& metaSkeleton,
     const BodyNodePtr& bn,
     const TSRPtr& tsr,
-    const Eigen::VectorXd& nominalPosition,
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit,
     std::size_t maxNumTrials)
 {
-  using planner::ompl::planOMPL;
-  using planner::ompl::planLRAstar;
-
   // Create an IK solver with metaSkeleton dofs.
   auto ik = InverseKinematics::create(bn);
 
@@ -267,33 +189,31 @@ trajectory::TrajectoryPtr planToTSR(
 
   ik->setDofs(metaSkeleton->getDofs());
 
-  // Create a sequential sampleable to provide seeds for IK solver
-  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-
-  std::vector<constraint::ConstSampleablePtr> sampleables
-      = {std::make_shared<FiniteSampleable>(space, startState),
-         createSampleableBounds(space, rng->clone())};
-  auto sampleable = std::make_shared<SequentialSampleable>(space, sampleables);
-
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
-      space, metaSkeleton, tsr, sampleable, ik, maxNumTrials);
+      space,
+      metaSkeleton,
+      tsr,
+      createSampleableBounds(space, rng->clone()),
+      ik,
+      maxNumTrials);
 
   auto generator = ikSampleable.createSampleGenerator();
 
   // Goal state
   auto goalState = space->createState();
 
+  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+
   // TODO: Change this to timelimit once we use a fail-fast planner
   double timelimitPerSample = timelimit / maxNumTrials;
-  DART_UNUSED(timelimitPerSample);
 
   // Save the current state of the space
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{1000};
+  static const std::size_t maxSnapSamples{100};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -302,215 +222,54 @@ trajectory::TrajectoryPtr planToTSR(
       space, startState, goalState, collisionTestable);
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
-
-  // Collect and rank configurations
-  auto sampleState = space->createState();
-  auto nominalState = space->createState();
-
-  if (nominalPosition.size())
+  while (snapSamples < maxSnapSamples && generator->canSample())
   {
-    space->convertPositionsToState(nominalPosition, nominalState);
-  }
-  else
-  {
-    space->copyState(startState, nominalState);
-  }
+    // Sample from TSR
+    {
+      std::lock_guard<std::mutex> lock(robot->getMutex());
+      bool sampled = generator->sample(goalState);
+      if (!sampled)
+        continue;
 
-  std::vector<statespace::CartesianProduct::ScopedState> configurations;
-  NominalConfigurationRanker ranker(space, metaSkeleton, nominalState);
+      // Set to start state
+      space->setState(metaSkeleton.get(), startState);
+    }
+    ++snapSamples;
+
+    auto traj = planner->plan(problem, &pResult);
+
+    if (traj)
+      return traj;
+  }
 
   // Start the timer
   dart::common::Timer timer;
   timer.start();
-  while (timer.getElapsedTime() < timelimit && snapSamples < maxSnapSamples
-         && generator->canSample())
+  while (timer.getElapsedTime() < timelimit && generator->canSample())
   {
     // Sample from TSR
-    std::lock_guard<std::mutex> lock(robot->getMutex());
-    bool sampled = generator->sample(sampleState);
-    if (!sampled)
-      continue;
-
-    configurations.emplace_back(sampleState.clone());
-    ++snapSamples;
-  }
-  if (configurations.size() == 0)
-  {
-    std::cout << "planToTSR: No configurations found!" << std::endl;
-  }
-
-  std::vector<statespace::CartesianProduct::State*> configurations_raw(
-      configurations.size());
-  for (std::size_t i = 0; i < configurations.size(); ++i)
-    configurations_raw[i] = configurations[i];
-  ranker.rankConfigurations(configurations_raw);
-
-  // TODO (avk): Replace this with planToConfigurations?
-
-  // First test with Snap Planner
-  Eigen::VectorXd goalPosition(6);
-  for (std::size_t i = 0; i < configurations_raw.size(); ++i)
-  {
-    auto problem = ConfigurationToConfiguration(
-        space, startState, configurations_raw[i], collisionTestable);
-    TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
-
-    // Return if the trajectory is non-empty
-    if (untimedTrajectory)
-    {
-      std::cout << "[utils:PlanToTSR] SnapPlanner Successful." << std::endl;
-      space->convertStateToPositions(configurations_raw[i], goalPosition);
-      //std::cout << goalPosition.transpose() << std::endl;
-      return untimedTrajectory;
-    }
-  }
-
-  for (std::size_t i = 0; i < configurations_raw.size(); ++i)
     {
       std::lock_guard<std::mutex> lock(robot->getMutex());
-
-      aikido::constraint::dart::CollisionFreeOutcome collisionCheckOutcome;
-      if (!collisionTestable->isSatisfied(configurations_raw[i]))
-      {
-        std::cout << "Collision Detected!" << std::endl;
+      bool sampled = generator->sample(goalState);
+      if (!sampled)
         continue;
-      }
-      std::cout << "Collision-Free! Planning" << std::endl;
 
-      // Plan with graph-based methods
-      TrajectoryPtr untimedTrajectory = planLRAstar(
-          startState,
-          configurations_raw[i],
-          space,
-          std::make_shared<GeodesicInterpolator>(space),
-          createDistanceMetric(space),
-          createSampleableBounds(space, rng->clone()),
-          collisionTestable,
-          createTestableBounds(space),
-          createProjectableBounds(space),
-          timelimit,
-          collisionResolution,
-          "/home/lllapierre/NIPS_UW/src/planning_dataset/data/ada/graph_20_8000.graphml",
-          1000);
+      // Set to start state
+      space->setState(metaSkeleton.get(), startState);
+    }
 
-      if (untimedTrajectory)
-      {
-        // return untimedTrajectory;
-        std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
-        auto interpolatedTrajectory = std::dynamic_pointer_cast<aikido::trajectory::Interpolated>(
-              (untimedTrajectory));
+    auto traj = planToConfiguration(
+        space,
+        metaSkeleton,
+        goalState,
+        collisionTestable,
+        rng,
+        std::min(timelimitPerSample, timelimit - timer.getElapsedTime()));
 
-        Eigen::VectorXd trajPoint;
-        auto trajState = space->createState();
-        for (std::size_t i = 0; i < interpolatedTrajectory->getNumWaypoints(); ++i)
-        {
-          auto waypoint = interpolatedTrajectory->getWaypoint(i);
-          space->copyState(waypoint, trajState);
-          space->convertStateToPositions(trajState, trajPoint);
-          std::cout << "Planned Point: " << trajPoint.transpose() << std::endl;
-        }
-        auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
-            space,
-            std::make_shared<GeodesicInterpolator>(space),
-            createDistanceMetric(space),
-            createSampleableBounds(space, rng->clone()),
-            collisionTestable,
-            createTestableBounds(space),
-            createProjectableBounds(space),
-            0.1,
-            20.0,
-            20,
-            interpolatedTrajectory);
-
-        // Simplification results
-        auto simplifiedTraj = std::move(simplifiedPair.first);
-        bool shorten_success = simplifiedPair.second;
-
-        std::cout << "Shortening Success: " << shorten_success << std::endl;
-        InterpolatedPtr returnTrajectory = std::move(simplifiedTraj);
-        for (std::size_t i = 0; i < returnTrajectory->getNumWaypoints(); ++i)
-        {
-          auto waypoint = returnTrajectory->getWaypoint(i);
-          space->copyState(waypoint, trajState);
-          space->convertStateToPositions(trajState, trajPoint);
-          std::cout << "Short Point: " << trajPoint.transpose() << std::endl;
-        }
-
-        return returnTrajectory;  
-      }
+    if (traj)
+      return traj;
   }
 
-  // std::cout << "[utils:PlanToTSR] SnapPlanner Failed. Trying LRAstar." <<
-  // std::endl;
-
-  // // Next try graph-based methods
-  // for (std::size_t i = 0; i < configurations_raw.size(); ++i)
-  // {
-  //   std::lock_guard<std::mutex> lock(robot->getMutex());
-
-  //   aikido::constraint::dart::CollisionFreeOutcome collisionCheckOutcome;
-  //   if (!collisionTestable->isSatisfied(configurations_raw[i]))
-  //   {
-  //     std::cout << "Collision Detected!" << std::endl;
-  //     continue;
-  //   }
-  //   std::cout << "Collision-Free! Planning" << std::endl;
-
-  //   // Plan with graph-based methods
-  //   TrajectoryPtr untimedTrajectory = planLRAstar(
-  //       startState,
-  //       configurations_raw[i],
-  //       space,
-  //       std::make_shared<GeodesicInterpolator>(space),
-  //       createDistanceMetric(space),
-  //       createSampleableBounds(space, rng->clone()),
-  //       collisionTestable,
-  //       createTestableBounds(space),
-  //       createProjectableBounds(space),
-  //       timelimit,
-  //       collisionResolution,
-  //       "/home/herb/Workspace/ada_ws/src/planning_dataset/data/ada/graph_20_5000.graphml",
-  //       1000);
-
-  //   if (untimedTrajectory)
-  //   {
-  //     // return untimedTrajectory;
-  //     std::cout << "[utils:PlanToConfiguration] LRA* Successful" << std::endl;
-  //     auto interpolatedTrajectory = std::dynamic_pointer_cast<aikido::trajectory::Interpolated>(
-  //           (untimedTrajectory));
-
-  //     Eigen::VectorXd trajPoint;
-  //     auto trajState = space->createState();
-  //     for (std::size_t i = 0; i < interpolatedTrajectory->getNumWaypoints(); ++i)
-  //     {
-  //       auto waypoint = interpolatedTrajectory->getWaypoint(i);
-  //       space->copyState(waypoint, trajState);
-  //       space->convertStateToPositions(trajState, trajPoint);
-  //     }
-  //     auto simplifiedPair = aikido::planner::ompl::simplifyOMPL(
-  //         space,
-  //         std::make_shared<GeodesicInterpolator>(space),
-  //         createDistanceMetric(space),
-  //         createSampleableBounds(space, rng->clone()),
-  //         collisionTestable,
-  //         createTestableBounds(space),
-  //         createProjectableBounds(space),
-  //         0.1,
-  //         20.0,
-  //         20,
-  //         interpolatedTrajectory);
-
-  //     // Simplification results
-  //     auto simplifiedTraj = std::move(simplifiedPair.first);
-  //     bool shorten_success = simplifiedPair.second;
-
-  //     std::cout << "Shortening Success: " << shorten_success << std::endl;
-  //     InterpolatedPtr returnTrajectory = std::move(simplifiedTraj);
-  //     return returnTrajectory;
-  //   }
-  // }
-   
-  std::cout << "Planning Failed" << std::endl;
   return nullptr;
 }
 
@@ -643,8 +402,8 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
 
   auto traj = planner::vectorfield::planToEndEffectorOffset(
-      *startState,
       space,
+      *startState,
       metaSkeleton,
       bodyNode,
       collisionTestable,
@@ -729,57 +488,6 @@ InterpolatedPtr planToEndEffectorOffsetByCRRT(
 
   return untimedTrajectory;
 }
-
-//==============================================================================
-trajectory::TrajectoryPtr planWithEndEffectorTwist(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bodyNode,
-    const Eigen::Vector6d& twistSeq,
-    double durationSeq,
-    const constraint::TestablePtr& collisionTestable,
-    double timelimit,
-    double positionTolerance,
-    double angularTolerance,
-    const VectorFieldPlannerParameters& vfParameters)
-{
-  // if twist is a zero vector
-  if (twistSeq.norm() == 0)
-  {
-    throw std::runtime_error("Twists vector cannot be empty");
-  }
-
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
-
-  auto startState = space->createState();
-  space->getState(metaSkeleton.get(), startState);
-
-  // Using the twist and duration, compute the vectorfield, generate trajectory.
-  trajectory::TrajectoryPtr untimedTrajectory
-      = planner::vectorfield::planWithEndEffectorTwist(
-          space,
-          *startState,
-          metaSkeleton,
-          bodyNode,
-          twistSeq,
-          durationSeq,
-          collisionTestable,
-          positionTolerance,
-          angularTolerance,
-          0.1,
-          0.1,
-          0.1,
-          std::chrono::duration<double>(timelimit));
-  DART_UNUSED(vfParameters);
-  //          vfParameters.initialStepSize,
-  //          vfParameters.jointLimitTolerance,
-  //          vfParameters.constraintCheckResolution,
-  //          std::chrono::duration<double>(timelimit));
-
-  return std::move(untimedTrajectory);
-}
-
 //==============================================================================
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node)

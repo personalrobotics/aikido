@@ -106,51 +106,6 @@ trajectory::InterpolatedPtr planOMPL(
     double _maxPlanTime,
     double _maxDistanceBtwValidityChecks);
 
-/// Use LRA* planner to plan a path that moves from the
-/// start to a goal region given a graph to search on
-/// \param[in] start The start state
-/// \param[in] goal The goal state
-/// \param[in] statespace The StateSpace that the planner must plan within
-/// \param[in] interpolator An Interpolator defined on the StateSpace. This is
-/// used
-/// to interpolate between two points within the space.
-/// \param[in] dmetric A valid distance metric defined on the StateSpace
-/// \param[in] sampler A Sampleable that can sample states from the
-/// StateSpace. Warning: Many OMPL planners internally assume this sampler
-/// samples uniformly. Care should be taken when using a non-uniform sampler.
-/// \param[in] validityConstraint A constraint used to test validity during
-/// planning. This should include collision checking and any other constraints
-/// that must be satisfied for a state to be considered valid.
-/// \param[in] boundsConstraint A constraint used to determine whether states
-/// encountered during planning fall within any bounds specified on the
-/// StateSpace. In addition to the _validityConstraint, this must also be
-/// satsified for a state to be considered valid.
-/// \param[in] boundsProjector A Projectable that projects a state back within
-/// valid bounds defined on the StateSpace
-/// \param[in] maxPlanTime The maximum time to allow the planner to search for a
-/// solution
-/// \param[in] maxDistanceBtwProjections The maximum distance (under dmetric)
-/// between projecting and validity checking two successive points on a tree
-/// extension
-/// \param[in] roadmapPath The path to the graph to be used
-/// \param[in] lookahead The number of edges over which lazy search is
-/// performed.
-/// The lookahead helps interpolate between LWA* and LazySP
-trajectory::InterpolatedPtr planLRAstar(
-    const statespace::StateSpace::State* start,
-    const statespace::StateSpace::State* goal,
-    statespace::StateSpacePtr stateSpace,
-    statespace::InterpolatorPtr interpolator,
-    distance::DistanceMetricPtr dmetric,
-    constraint::SampleablePtr sampler,
-    constraint::TestablePtr validityConstraint,
-    constraint::TestablePtr boundsConstraint,
-    constraint::ProjectablePtr boundsProjector,
-    double maxPlanTime,
-    double maxDistanceBtwProjections,
-    std::string roadmapPath,
-    double lookahead = 1000);
-
 /// Use the CRRT planner to plan a trajectory that moves from the
 /// start to a goal region while respecting a constraint
 /// \param _start The start state
