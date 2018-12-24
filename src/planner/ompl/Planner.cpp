@@ -438,12 +438,10 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   } while (time_current - time_before <= time_limit
            && empty_steps <= _maxEmptySteps);
 
-
   // Set the parameters for termination of simplification process
   std::chrono::system_clock::time_point const time_before_2
       = std::chrono::system_clock::now();
   empty_steps = 0;
-
 
   do
   {
