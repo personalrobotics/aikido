@@ -10,7 +10,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 endif()
 
-find_package(pr-ompl QUIET)
 #==============================================================================
 # Libraries
 #
@@ -31,7 +30,6 @@ target_include_directories("${PROJECT_NAME}_planner_ompl" SYSTEM
   PUBLIC
     ${DART_INCLUDE_DIRS}
     ${OMPL_INCLUDE_DIRS}
-    ${pr-ompl_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_planner_ompl"
   PUBLIC
@@ -43,7 +41,6 @@ target_link_libraries("${PROJECT_NAME}_planner_ompl"
     "${PROJECT_NAME}_planner"
     ${DART_LIBRARIES}
     ${OMPL_LIBRARIES}
-    ${pr-ompl_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_planner_ompl"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
