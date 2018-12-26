@@ -426,26 +426,6 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
   do
   {
     bool const shortened
-        = simplifier.reduceVertices(path, 1, _maxEmptySteps, 1.0);
-    if (shortened)
-      empty_steps = 0;
-    else
-      empty_steps += 1;
-
-    time_current = std::chrono::system_clock::now();
-    shorten_success = shorten_success || shortened;
-
-  } while (time_current - time_before <= time_limit
-           && empty_steps <= _maxEmptySteps);
-
-  // Set the parameters for termination of simplification process
-  std::chrono::system_clock::time_point const time_before_2
-      = std::chrono::system_clock::now();
-  empty_steps = 0;
-
-  do
-  {
-    bool const shortened
         = simplifier.shortcutPath(path, 1, _maxEmptySteps, 1.0, 0.0);
     if (shortened)
       empty_steps = 0;
@@ -455,7 +435,7 @@ std::pair<std::unique_ptr<trajectory::Interpolated>, bool> simplifyOMPL(
     time_current = std::chrono::system_clock::now();
     shorten_success = shorten_success || shortened;
 
-  } while (time_current - time_before_2 <= time_limit
+  } while (time_current - time_before <= time_limit
            && empty_steps <= _maxEmptySteps);
 
   // Step 4: Convert the simplified geomteric path to AIKIDO untimed trajectory
