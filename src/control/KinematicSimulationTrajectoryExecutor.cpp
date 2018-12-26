@@ -54,8 +54,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
   if (!space)
   {
     throw std::invalid_argument(
-        "[KinematicSimulationTrajectoryExecutor] Trajectory is not in a "
-        "MetaSkeletonStateSpace.");
+        "Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
   // TODO: Delete this line once the skeleton is locked by isCompatible
@@ -134,9 +133,6 @@ void KinematicSimulationTrajectoryExecutor::step(
 
   auto state = mStateSpace->createState();
   mTraj->evaluate(executionTime, state);
-
-  Eigen::VectorXd position;
-  mStateSpace->convertStateToPositions(state, position);
 
   mStateSpace->setState(mMetaSkeleton.get(), state);
 

@@ -235,8 +235,7 @@ Eigen::VectorXd extractTrajectoryPoint(
   else
   {
     auto interpolator
-      = std::make_shared<aikido::statespace::GeodesicInterpolator>(
-          space);
+        = std::make_shared<aikido::statespace::GeodesicInterpolator>(space);
 
     auto prevState = space->createState();
     space->convertPositionsToState(previousPoint, prevState);
@@ -459,7 +458,8 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
 
   auto compoundSpace
       = std::make_shared<const aikido::statespace::CartesianProduct>(subspaces);
-  std::unique_ptr<SplineTrajectory> trajectory{new SplineTrajectory{compoundSpace}};
+  std::unique_ptr<SplineTrajectory> trajectory{
+      new SplineTrajectory{compoundSpace}};
   auto currState = compoundSpace->createState();
 
   const auto& waypoints = jointTrajectory.points;
@@ -587,7 +587,8 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   for (std::size_t i = 0; i < numWaypoints; ++i)
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
-    previousPoint = extractTrajectoryPoint(space, trajectory, timeSequence[i], waypoint, previousPoint);
+    previousPoint = extractTrajectoryPoint(
+        space, trajectory, timeSequence[i], waypoint, previousPoint);
     jointTrajectory.points.emplace_back(waypoint);
   }
 
