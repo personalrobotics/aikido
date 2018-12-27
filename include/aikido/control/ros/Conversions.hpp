@@ -45,6 +45,11 @@ std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
 /// Supports only 1D RnJoints and SO2Joints.
 /// \param[in] trajectory Aikido trajectory to be converted.
 /// \param[in] timestep Timestep between two consecutive waypoints.
+
+// TODO (avk): Correct the logic in the conversion.
+// The "converted" previous point has to be taken to get the current appropriate
+// point.
+
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
     const aikido::trajectory::ConstTrajectoryPtr& trajectory, double timestep);
 
