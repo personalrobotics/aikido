@@ -46,10 +46,6 @@ std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
 /// \param[in] trajectory Aikido trajectory to be converted.
 /// \param[in] timestep Timestep between two consecutive waypoints.
 
-// TODO (avk): Correct the logic in the conversion.
-// The "converted" previous point has to be taken to get the current appropriate
-// point.
-
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
     const aikido::trajectory::ConstTrajectoryPtr& trajectory, double timestep);
 
@@ -60,16 +56,6 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 sensor_msgs::JointState positionsToJointState(
     const Eigen::VectorXd& goalPositions,
     const std::vector<std::string>& jointNames);
-
-/// Converts a trajectory in the cartesian product space of SO(2) and R1 joints
-/// to a trajectory in cartesian product space of strictly only R1 joints.
-/// \param[in] space MetaSkeletonStateSpace for input trajectory.
-///             Subspaces must be either R1Joint or SO2Joint.
-/// \param[in] trajectory Trajectory to be converted.
-/// \return Converted trajectory.
-aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const aikido::trajectory::TrajectoryPtr trajectory);
 
 } // namespace ros
 } // namespace control

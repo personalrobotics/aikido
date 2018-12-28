@@ -1,6 +1,7 @@
 #ifndef AIKIDO_TRAJECTORY_UTIL_HPP_
 #define AIKIDO_TRAJECTORY_UTIL_HPP_
 
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
@@ -88,6 +89,15 @@ double findTimeOfClosestStateOnTrajectory(
 /// \return The new partial trajectory
 UniqueSplinePtr createPartialTrajectory(
     const Spline& traj, double partialStartTime);
+
+/// Converts a trajectory in the cartesian product space of SO(2) and R1 joints
+/// to a trajectory in cartesian product space of strictly only R1 joints.
+/// \param[in] space MetaSkeletonStateSpace for input trajectory.
+/// \param[in] trajectory Trajectory to be converted.
+/// \return Converted trajectory.
+aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const aikido::trajectory::TrajectoryPtr trajectory);
 
 } // namespace trajectory
 } // namespace aikido
