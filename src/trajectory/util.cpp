@@ -88,6 +88,51 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
   }
 }
 
+// TOOD (avk): only for interpolated trajectory?
+void checkValidityOfSpaceAndTrajectory(
+    const MetaSkeletonStateSpacePtr& space, const InterpolatedPtr trajectory)
+{
+  if (!space)
+    throw std::invalid_argument("StateSpace is null.");
+
+  if (!trajectory)
+    throw std::invalid_argument("Trajectory is null.");
+
+  const auto trajectorySpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+          trajectory->getStateSpace());
+  if (!trajectorySpace)
+  {
+    throw std::invalid_argument(
+        "[Conversions:checkValidityOfSpaceAndTrajectory] Trajectory is not in "
+        "a MetaSkeletonStateSpace.");
+  }
+
+  // Check that all joints are R1Joint or SO2Joint state spaces.
+  for (std::size_t i = 0; i < space->getDimension(); ++i)
+  {
+    auto subspace = space->getSubspace(i);
+    auto jointSpace = space->getJointSpace(i);
+    auto properties = jointSpace->getProperties();
+
+    auto r1subspace = std::dynamic_pointer_cast<const R1>(subspace);
+    auto so2subspace = std::dynamic_pointer_cast<const SO2>(subspace);
+
+    // auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
+    // auto so2Joint = std::dynamic_pointer_cast<const SO2Joint>(jointSpace);
+
+    if (properties.getNumDofs() != 1 || (!r1subspace && !so2subspace))
+    {
+      std::stringstream message;
+      message << "Only R1Joint and SO2Joint are supported. Joint "
+              << properties.getName() << "(index: " << i << ") is a "
+              << properties.getType() << " with " << properties.getNumDofs()
+              << " DOFs.";
+      throw std::invalid_argument{message.str()};
+    }
+  }
+}
+
 } // (anonymous) namespace
 
 //==============================================================================
@@ -327,7 +372,7 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
   if (!trajectory)
     throw std::invalid_argument("Input trajectory needs to be interpolated");
 
-  // checkValidityOfSpaceAndTrajectory(space, trajectory);
+  checkValidityOfSpaceAndTrajectory(space, trajectory);
 
   auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
       trajectory->getInterpolator());

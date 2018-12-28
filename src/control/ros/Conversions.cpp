@@ -19,48 +19,6 @@ using aikido::statespace::dart::R1Joint;
 using aikido::statespace::dart::SO2Joint;
 using aikido::trajectory::TrajectoryPtr;
 
-namespace {
-
-void checkValidityOfSpaceAndTrajectory(
-    const MetaSkeletonStateSpacePtr& space, const InterpolatedPtr trajectory)
-{
-  if (!space)
-    throw std::invalid_argument("StateSpace is null.");
-
-  if (!trajectory)
-    throw std::invalid_argument("Trajectory is null.");
-
-  const auto trajectorySpace
-      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-          trajectory->getStateSpace());
-  if (!trajectorySpace)
-  {
-    throw std::invalid_argument(
-        "[Conversions:checkValidityOfSpaceAndTrajectory] Trajectory is not in "
-        "a MetaSkeletonStateSpace.");
-  }
-
-  // Check that all joints are R1Joint or SO2Joint state spaces.
-  for (std::size_t i = 0; i < space->getDimension(); ++i)
-  {
-    auto jointSpace = space->getJointSpace(i);
-    auto properties = jointSpace->getProperties();
-    auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
-    auto so2Joint = std::dynamic_pointer_cast<const SO2Joint>(jointSpace);
-
-    if (properties.getNumDofs() != 1 || (!r1Joint && !so2Joint))
-    {
-      std::stringstream message;
-      message << "Only R1Joint and SO2Joint are supported. Joint "
-              << properties.getName() << "(index: " << i << ") is a "
-              << properties.getType() << " with " << properties.getNumDofs()
-              << " DOFs.";
-      throw std::invalid_argument{message.str()};
-    }
-  }
-}
-}
-
 namespace aikido {
 namespace control {
 namespace ros {
