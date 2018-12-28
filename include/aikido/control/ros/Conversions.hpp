@@ -5,7 +5,6 @@
 #include <sensor_msgs/JointState.h>
 #include <trajectory_msgs/JointTrajectory.h>
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
@@ -45,7 +44,6 @@ std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
 /// Supports only 1D RnJoints and SO2Joints.
 /// \param[in] trajectory Aikido trajectory to be converted.
 /// \param[in] timestep Timestep between two consecutive waypoints.
-
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
     const aikido::trajectory::ConstTrajectoryPtr& trajectory, double timestep);
 

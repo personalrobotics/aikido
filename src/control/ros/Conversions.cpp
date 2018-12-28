@@ -11,13 +11,9 @@
 
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using SplineTrajectory = aikido::trajectory::Spline;
-using aikido::trajectory::Interpolated;
-using aikido::trajectory::InterpolatedPtr;
 using aikido::statespace::dart::R1Joint;
 using aikido::statespace::dart::SO2Joint;
-using aikido::trajectory::TrajectoryPtr;
 
 namespace aikido {
 namespace control {
