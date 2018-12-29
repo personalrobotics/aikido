@@ -162,12 +162,12 @@ void extractJointTrajectoryPoint(
 }
 
 //==============================================================================
-Eigen::VectorXd extractTrajectoryPoint(
+void extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
     double timeFromStart,
     trajectory_msgs::JointTrajectoryPoint& waypoint,
-    Eigen::VectorXd previousPoint)
+    Eigen::VectorXd& previousPoint)
 {
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
@@ -178,29 +178,22 @@ Eigen::VectorXd extractTrajectoryPoint(
   Eigen::VectorXd returnVector(space->getDimension());
 
   auto state = space->createState();
-  if (previousPoint.size() == 0)
+
+  auto interpolator
+      = std::make_shared<aikido::statespace::GeodesicInterpolator>(space);
+
+  auto prevState = space->createState();
+  space->convertPositionsToState(previousPoint, prevState);
+
+  trajectory->evaluate(timeAbsolute, state);
+  space->convertStateToPositions(state, tangentVector);
+
+  auto diff = interpolator->getTangentVector(prevState, state);
+  tangentVector = previousPoint + diff;
+
+  for (int i = 0; i < tangentVector.size(); ++i)
   {
-    trajectory->evaluate(timeAbsolute, state);
-    space->logMap(state, tangentVector);
-    for (int i = 0; i < tangentVector.size(); ++i)
-      returnVector(i) = tangentVector(i);
-  }
-  else
-  {
-    auto interpolator
-        = std::make_shared<aikido::statespace::GeodesicInterpolator>(space);
-
-    auto prevState = space->createState();
-    space->convertPositionsToState(previousPoint, prevState);
-
-    trajectory->evaluate(timeAbsolute, state);
-    space->convertStateToPositions(state, tangentVector);
-
-    auto diff = interpolator->getTangentVector(prevState, state);
-    tangentVector = previousPoint + diff;
-
-    for (int i = 0; i < tangentVector.size(); ++i)
-      returnVector(i) = tangentVector(i);
+    previousPoint(i) = tangentVector(i);
   }
 
   assert(tangentVector.size() == numDof);
@@ -220,7 +213,6 @@ Eigen::VectorXd extractTrajectoryPoint(
     derivatives[iDerivative - 1]->assign(
         tangentVector.data(), tangentVector.data() + tangentVector.size());
   }
-  return returnVector;
 }
 
 //==============================================================================
@@ -481,8 +473,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   if (!space)
   {
     throw std::invalid_argument(
-        "[Conversions: toRosJointTrajectory] Trajectory is not in a "
-        "MetaSkeletonStateSpace.");
+        "Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
   for (std::size_t i = 0; i < space->getNumSubspaces(); ++i)
@@ -534,13 +525,13 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
-  Eigen::VectorXd previousPoint(0);
+  Eigen::VectorXd previousPoint(Eigen::VectorXd::Zero(space->getDimension()));
   jointTrajectory.points.reserve(numWaypoints);
 
   for (std::size_t i = 0; i < numWaypoints; ++i)
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
-    previousPoint = extractTrajectoryPoint(
+    extractTrajectoryPoint(
         space, trajectory, timeSequence[i], waypoint, previousPoint);
     jointTrajectory.points.emplace_back(waypoint);
   }
