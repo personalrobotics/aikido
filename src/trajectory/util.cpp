@@ -372,6 +372,9 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
   if (!trajectory)
     throw std::invalid_argument("Input trajectory needs to be interpolated");
 
+  // TODO (avk): Why only interpolated. Take in a TrajectoryPtr instead.
+  // Should work for both kinds of trajectories.
+
   checkValidityOfSpaceAndTrajectory(space, trajectory);
 
   auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
@@ -403,12 +406,12 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
     const auto tangentVector = interpolator->getTangentVector(
         trajectory->getWaypoint(i), trajectory->getWaypoint(i + 1));
 
-    space->logMap(trajectory->getWaypoint(i), sourceVector);
     rSpace->expMap(sourceVector, sourceState);
     rSpace->expMap(tangentVector, tangentState);
     rSpace->compose(sourceState, tangentState, targetState);
 
     rTrajectory->addWaypoint(i + 1, targetState);
+    rSpace->logMap(targetState, sourceVector);
   }
 
   return rTrajectory;

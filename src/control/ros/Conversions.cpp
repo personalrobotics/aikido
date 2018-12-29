@@ -8,6 +8,7 @@
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/statespace/dart/RnJoint.hpp>
 #include <aikido/statespace/dart/SO2Joint.hpp>
+#include <aikido/statespace/GeodesicInterpolator.hpp>
 
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
