@@ -175,10 +175,7 @@ void extractTrajectoryPoint(
   DART_UNUSED(numDof);
 
   Eigen::VectorXd tangentVector;
-  Eigen::VectorXd returnVector(space->getDimension());
-
   auto state = space->createState();
-
   auto interpolator
       = std::make_shared<aikido::statespace::GeodesicInterpolator>(space);
 
