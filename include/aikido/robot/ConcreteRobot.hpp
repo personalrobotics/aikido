@@ -66,7 +66,8 @@ public:
   virtual aikido::trajectory::UniqueSplinePtr retimePathWithKunzTimer(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path,
-      double maxDeviation, double timestep) override;
+      double maxDeviation,
+      double timestep) override;
 
   // Documentation inherited.
   virtual std::future<void> executeTrajectory(

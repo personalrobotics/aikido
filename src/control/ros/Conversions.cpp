@@ -44,7 +44,7 @@ void checkVector(
     Eigen::VectorXd& output);
 
 /// Fits a polynomial between two states [t, position, velocity, acceleration].
-/// \param[in] currTime Start time. 
+/// \param[in] currTime Start time.
 /// \param[in] currPosition Start position.
 /// \param[in] currVelocity Start Velocity.
 /// \param[in] currAcceleration Start Acceleration.
@@ -67,16 +67,23 @@ Eigen::MatrixXd fitPolynomial(
 /// Extract a state on the joint trajectory given an index.
 /// \param[in] trajectory Joint trajectory to extract points from.
 /// \param[in] index Index of the point on the trajectory to extract.
-/// \param[in] positions Extracted positions on the trajectory indexed appropriately.
+/// \param[in] positions Extracted positions on the trajectory indexed
+/// appropriately.
 /// \param[in] positionsRequired True if positions are required to be extracted.
 /// \param[in] velocities Extracted velocities corresponding to \c positions.
-/// \param[in] velocitiesRequired True if velocities are required to be extracted.
-/// \param[in] accelerations Extracted accelerations corresponding to \c positions.
-/// \param[in] accelerationsRequired True if accelerations are required to be extracted.
-/// \param[in] indexMap Map denoting the correct ordering of trajectory data required.
-/// This is required in case the trajectory's joint indexing is different to metaskeleton
+/// \param[in] velocitiesRequired True if velocities are required to be
+/// extracted.
+/// \param[in] accelerations Extracted accelerations corresponding to \c
+/// positions.
+/// \param[in] accelerationsRequired True if accelerations are required to be
+/// extracted.
+/// \param[in] indexMap Map denoting the correct ordering of trajectory data
+/// required.
+/// This is required in case the trajectory's joint indexing is different to
+/// metaskeleton
 /// joint indexing.
-/// \param[in] unspecifiedJoints Joints whose data is not required. Assumed to be static
+/// \param[in] unspecifiedJoints Joints whose data is not required. Assumed to
+/// be static
 /// at the current position.
 /// \param[in] startPositions Start positions of the joints.
 void extractJointTrajectoryPoint(
@@ -98,7 +105,7 @@ void extractJointTrajectoryPoint(
 /// \param[in] trajectory Trajectory to extract point from.
 /// \param[in] timeFromStart Timepoint to extract trajectory point at.
 /// \param[in] waypoint The extracted trajectory point.
-/// \param[in] previousPoint previously extracted trajectory point to 
+/// \param[in] previousPoint previously extracted trajectory point to
 /// ensure continuity in representation when extracting multiple points.
 /// Set to zero vector if not required.
 void extractTrajectoryPoint(
@@ -107,7 +114,6 @@ void extractTrajectoryPoint(
     double timeFromStart,
     trajectory_msgs::JointTrajectoryPoint& waypoint,
     Eigen::VectorXd& previousPoint);
-
 
 //==============================================================================
 void reorder(
