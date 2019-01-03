@@ -17,7 +17,9 @@ using aikido::statespace::R;
 using aikido::statespace::R1;
 using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
+using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
+using aikido::statespace::StateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using dart::common::make_unique;
@@ -88,12 +90,12 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
   }
 }
 
-// TOOD (avk): only for interpolated trajectory?
 void checkValidityOfSpaceAndTrajectory(
-    const MetaSkeletonStateSpacePtr& space, const InterpolatedPtr trajectory)
+    ConstStateSpacePtr& space, ConstTrajectoryPtr trajectory)
 {
-  if (!space)
-    throw std::invalid_argument("StateSpace is null.");
+  auto metaskeletonStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
+  if (!metaskeletonStateSpace)
+    throw std::invalid_argument("StateSpace is not a valid metaskeletonStateSpace.");
 
   if (!trajectory)
     throw std::invalid_argument("Trajectory is null.");
@@ -109,17 +111,14 @@ void checkValidityOfSpaceAndTrajectory(
   }
 
   // Check that all joints are R1Joint or SO2Joint state spaces.
-  for (std::size_t i = 0; i < space->getDimension(); ++i)
+  for (std::size_t i = 0; i < metaskeletonStateSpace->getDimension(); ++i)
   {
-    auto subspace = space->getSubspace(i);
-    auto jointSpace = space->getJointSpace(i);
+    auto subspace = metaskeletonStateSpace->getSubspace(i);
+    auto jointSpace = metaskeletonStateSpace->getJointSpace(i);
     auto properties = jointSpace->getProperties();
 
     auto r1subspace = std::dynamic_pointer_cast<const R1>(subspace);
     auto so2subspace = std::dynamic_pointer_cast<const SO2>(subspace);
-
-    // auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
-    // auto so2Joint = std::dynamic_pointer_cast<const SO2Joint>(jointSpace);
 
     if (properties.getNumDofs() != 1 || (!r1subspace && !so2subspace))
     {
@@ -133,7 +132,7 @@ void checkValidityOfSpaceAndTrajectory(
   }
 }
 
-} // (anonymous) namespace
+} // ns
 
 //==============================================================================
 UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
@@ -365,15 +364,11 @@ UniqueSplinePtr createPartialTrajectory(
 }
 
 //==============================================================================
-aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
-    const MetaSkeletonStateSpacePtr& space, const TrajectoryPtr inputTrajectory)
+aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
+    ConstStateSpacePtr& space, ConstInterpolatedPtr& trajectory)
 {
-  auto trajectory = std::dynamic_pointer_cast<Interpolated>(inputTrajectory);
   if (!trajectory)
-    throw std::invalid_argument("Input trajectory needs to be interpolated");
-
-  // TODO (avk): Why only interpolated. Take in a TrajectoryPtr instead.
-  // Should work for both kinds of trajectories.
+    throw std::invalid_argument("Trajectory is null.");
 
   checkValidityOfSpaceAndTrajectory(space, trajectory);
 
@@ -415,6 +410,25 @@ aikido::trajectory::TrajectoryPtr toRevoluteJointTrajectory(
   }
 
   return rTrajectory;
+}
+
+//==============================================================================
+aikido::trajectory::ConstSplinePtr toR1JointTrajectory(
+    ConstStateSpacePtr& space, ConstSplinePtr& trajectory)
+{
+  if (!trajectory)
+    throw std::invalid_argument("Trajectory is null.");
+
+  checkValidityOfSpaceAndTrajectory(space, trajectory);
+
+  aikido::statespace::ConstInterpolatorPtr interpolator
+      = std::make_shared<statespace::GeodesicInterpolator>(space);
+
+  ConstInterpolatedPtr interpolatedTrajectory = std::move(convertToInterpolated(*trajectory.get(), interpolator));
+  auto r1JointTrajectory = toR1JointTrajectory(space, interpolatedTrajectory);
+  auto splineTrajectory = convertToSpline(*r1JointTrajectory.get());
+
+  return std::move(splineTrajectory);
 }
 
 } // namespace trajectory
