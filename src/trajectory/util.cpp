@@ -93,9 +93,11 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 void checkValidityOfSpaceAndTrajectory(
     ConstStateSpacePtr& space, ConstTrajectoryPtr trajectory)
 {
-  auto metaskeletonStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
+  auto metaskeletonStateSpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
   if (!metaskeletonStateSpace)
-    throw std::invalid_argument("StateSpace is not a valid metaskeletonStateSpace.");
+    throw std::invalid_argument(
+        "StateSpace is not a valid metaskeletonStateSpace.");
 
   if (!trajectory)
     throw std::invalid_argument("Trajectory is null.");
@@ -375,7 +377,8 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
   auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
       trajectory->getInterpolator());
   if (!interpolator)
-    throw std::invalid_argument("The interpolator of trajectory should be a GeodesicInterpolator");
+    throw std::invalid_argument(
+        "The interpolator of trajectory should be a GeodesicInterpolator");
 
   // Create new trajectory space.
   std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
@@ -426,7 +429,8 @@ aikido::trajectory::ConstSplinePtr toR1JointTrajectory(
   aikido::statespace::ConstInterpolatorPtr interpolator
       = std::make_shared<statespace::GeodesicInterpolator>(space);
 
-  ConstInterpolatedPtr interpolatedTrajectory = std::move(convertToInterpolated(*trajectory.get(), interpolator));
+  ConstInterpolatedPtr interpolatedTrajectory
+      = std::move(convertToInterpolated(*trajectory.get(), interpolator));
   auto r1JointTrajectory = toR1JointTrajectory(space, interpolatedTrajectory);
   auto splineTrajectory = convertToSpline(*r1JointTrajectory.get());
 

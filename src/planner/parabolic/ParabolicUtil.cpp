@@ -133,7 +133,8 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     bool _preserveWaypointVelocity)
 {
   auto inputStateSpace = _inputTrajectory.getStateSpace();
-  auto inputTrajectory = std::make_shared<const aikido::trajectory::Spline>(_inputTrajectory);
+  auto inputTrajectory
+      = std::make_shared<const aikido::trajectory::Spline>(_inputTrajectory);
   const auto numWaypoints = inputTrajectory->getNumWaypoints();
 
   auto trajectory = toR1JointTrajectory(inputStateSpace, inputTrajectory);
@@ -179,7 +180,9 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     const Eigen::VectorXd& _maxAcceleration)
 {
   auto inputStateSpace = _inputTrajectory.getStateSpace();
-  auto inputTrajectory = std::make_shared<const aikido::trajectory::Interpolated>(_inputTrajectory);
+  auto inputTrajectory
+      = std::make_shared<const aikido::trajectory::Interpolated>(
+          _inputTrajectory);
 
   auto trajectory = toR1JointTrajectory(inputStateSpace, inputTrajectory);
   auto stateSpace = trajectory->getStateSpace();
