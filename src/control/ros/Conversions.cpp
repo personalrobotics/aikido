@@ -1,14 +1,14 @@
-#include <aikido/control/ros/Conversions.hpp>
+#include "aikido/control/ros/Conversions.hpp"
 
 #include <sstream>
 #include <unordered_set>
 #include <dart/dynamics/Joint.hpp>
-#include <aikido/common/Spline.hpp>
-#include <aikido/common/StepSequence.hpp>
-#include <aikido/control/ros/Conversions.hpp>
-#include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/statespace/dart/RnJoint.hpp>
-#include <aikido/statespace/dart/SO2Joint.hpp>
+#include "aikido/common/Spline.hpp"
+#include "aikido/common/StepSequence.hpp"
+#include "aikido/control/ros/Conversions.hpp"
+#include "aikido/statespace/GeodesicInterpolator.hpp"
+#include "aikido/statespace/dart/RnJoint.hpp"
+#include "aikido/statespace/dart/SO2Joint.hpp"
 
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
@@ -21,10 +21,105 @@ namespace control {
 namespace ros {
 namespace {
 
+/// The rows of inVector is reordered in outVector.
+/// \param[in] indexMap Map denoting the reordering between in and out vectors.
+/// \param[in] inVector Vector to reorder.
+/// \param[in] outVector Reordered vector.
 void reorder(
     const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
     const Eigen::VectorXd& inVector,
     Eigen::VectorXd& outVector);
+
+/// Checks if a vector is valid.
+/// \param[in] name Name. Provides context to what the vector is representing.
+/// \param[in] values The vector to check.
+/// \param[in] expectedLength Expected size of the vector.
+/// \param[in] isRequired True if the vector is expected to contain entries.
+/// \param[in] output Eigen map from values to the size of vector.
+void checkVector(
+    const std::string& name,
+    const std::vector<double>& values,
+    std::size_t expectedLength,
+    bool isRequired,
+    Eigen::VectorXd& output);
+
+/// Fits a polynomial between two states [t, position, velocity, acceleration].
+/// \param[in] currTime Start time. 
+/// \param[in] currPosition Start position.
+/// \param[in] currVelocity Start Velocity.
+/// \param[in] currAcceleration Start Acceleration.
+/// \param[in] nextTime End time.
+/// \param[in] nextPosition End Position.
+/// \param[in] nextVelocity End Velocity.
+/// \param[in] nextAcceleration End Acceleration.
+/// \param[in] numCoefficients Degree of the polynomial to fit.
+Eigen::MatrixXd fitPolynomial(
+    double currTime,
+    const Eigen::VectorXd& currPosition,
+    const Eigen::VectorXd& currVelocity,
+    const Eigen::VectorXd& currAcceleration,
+    double nextTime,
+    const Eigen::VectorXd& nextPosition,
+    const Eigen::VectorXd& nextVelocity,
+    const Eigen::VectorXd& nextAcceleration,
+    std::size_t numCoefficients);
+
+/// Extract a state on the joint trajectory given an index.
+/// \param[in] trajectory Joint trajectory to extract points from.
+/// \param[in] index Index of the point on the trajectory to extract.
+/// \param[in] positions Extracted positions on the trajectory indexed appropriately.
+/// \param[in] positionsRequired True if positions are required to be extracted.
+/// \param[in] velocities Extracted velocities corresponding to \c positions.
+/// \param[in] velocitiesRequired True if velocities are required to be extracted.
+/// \param[in] accelerations Extracted accelerations corresponding to \c positions.
+/// \param[in] accelerationsRequired True if accelerations are required to be extracted.
+/// \param[in] indexMap Map denoting the correct ordering of trajectory data required.
+/// This is required in case the trajectory's joint indexing is different to metaskeleton
+/// joint indexing.
+/// \param[in] unspecifiedJoints Joints whose data is not required. Assumed to be static
+/// at the current position.
+/// \param[in] startPositions Start positions of the joints.
+void extractJointTrajectoryPoint(
+    const trajectory_msgs::JointTrajectory& _trajectory,
+    std::size_t index,
+    std::size_t numDofs,
+    Eigen::VectorXd& positions,
+    bool positionsRequired,
+    Eigen::VectorXd& velocities,
+    bool velocitiesRequired,
+    Eigen::VectorXd& accelerations,
+    bool accelerationsRequired,
+    const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
+    const std::vector<std::size_t>& unspecifiedJoints,
+    const Eigen::VectorXd& startPositions);
+
+/// Extract a state on the trajectory given a timepoint.
+/// \param[in] space MetaSkeletonStateSpace of the trajectory.
+/// \param[in] trajectory Trajectory to extract point from.
+/// \param[in] timeFromStart Timepoint to extract trajectory point at.
+/// \param[in] waypoint The extracted trajectory point.
+/// \param[in] previousPoint previously extracted trajectory point to 
+/// ensure continuity in representation when extracting multiple points.
+/// Set to zero vector if not required.
+void extractTrajectoryPoint(
+    const std::shared_ptr<const MetaSkeletonStateSpace>& space,
+    const aikido::trajectory::ConstTrajectoryPtr& trajectory,
+    double timeFromStart,
+    trajectory_msgs::JointTrajectoryPoint& waypoint,
+    Eigen::VectorXd& previousPoint);
+
+
+//==============================================================================
+void reorder(
+    const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
+    const Eigen::VectorXd& inVector,
+    Eigen::VectorXd& outVector)
+{
+  assert(indexMap.size() == static_cast<std::size_t>(inVector.size()));
+  outVector.resize(inVector.size());
+  for (auto index : indexMap)
+    outVector[index.second] = inVector[index.first];
+}
 
 //==============================================================================
 void checkVector(
@@ -212,20 +307,7 @@ void extractTrajectoryPoint(
   }
 }
 
-//==============================================================================
-// The rows of inVector is reordered in outVector.
-void reorder(
-    const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
-    const Eigen::VectorXd& inVector,
-    Eigen::VectorXd& outVector)
-{
-  assert(indexMap.size() == static_cast<std::size_t>(inVector.size()));
-  outVector.resize(inVector.size());
-  for (auto index : indexMap)
-    outVector[index.second] = inVector[index.first];
-}
-
-} // namespace
+} // ns
 
 //==============================================================================
 std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(

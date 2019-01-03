@@ -1,7 +1,6 @@
 #ifndef AIKIDO_TRAJECTORY_UTIL_HPP_
 #define AIKIDO_TRAJECTORY_UTIL_HPP_
 
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
 
@@ -93,7 +92,7 @@ UniqueSplinePtr createPartialTrajectory(
 /// Converts an interpolated trajectory in the cartesian product space of SO(2)
 /// and R1 joints
 /// to a trajectory in cartesian product space of strictly only R1 joints.
-/// \param[in] space MetaSkeletonStateSpace for input trajectory.
+/// \param[in] space Statespace the input trajectory is in.
 /// \param[in] trajectory Trajectory to be converted.
 /// \return Converted trajectory.
 aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
@@ -103,7 +102,7 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
 /// Converts a spline trajectory in the cartesian product space of SO(2) and R1
 /// joints
 /// to a trajectory in cartesian product space of strictly only R1 joints.
-/// \param[in] space MetaSkeletonStateSpace for input trajectory.
+/// \param[in] space Statespace the input trajectory is in.
 /// \param[in] trajectory Trajectory to be converted.
 /// \return Converted trajectory.
 aikido::trajectory::ConstSplinePtr toR1JointTrajectory(

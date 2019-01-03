@@ -8,6 +8,7 @@
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SO2.hpp"
