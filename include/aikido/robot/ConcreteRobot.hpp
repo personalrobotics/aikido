@@ -11,6 +11,7 @@
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/robot/Robot.hpp"
@@ -58,6 +59,11 @@ public:
 
   // Documentation inherited.
   virtual aikido::trajectory::UniqueSplinePtr retimePath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path) override;
+
+  // Documentation inherited.
+  virtual aikido::trajectory::UniqueSplinePtr retimePathWithKunzTimer(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path) override;
 

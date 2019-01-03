@@ -11,6 +11,7 @@ using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
 using constraint::ConstTestablePtr;
 using planner::TrajectoryPostProcessor;
+using planner::kunzretimer::KunzRetimer;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
 using statespace::dart::MetaSkeletonStateSpace;
@@ -149,6 +150,27 @@ UniqueSplinePtr ConcreteRobot::retimePath(
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
   auto retimer
       = std::make_shared<ParabolicTimer>(velocityLimits, accelerationLimits);
+
+  auto interpolated = dynamic_cast<const Interpolated*>(path);
+  if (interpolated)
+    return retimer->postprocess(*interpolated, *(cloneRNG().get()));
+
+  auto spline = dynamic_cast<const Spline*>(path);
+  if (spline)
+    return retimer->postprocess(*spline, *(cloneRNG().get()));
+
+  throw std::invalid_argument("Path should be either Spline or Interpolated.");
+}
+
+//==============================================================================
+UniqueSplinePtr ConcreteRobot::retimePathWithKunzTimer(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const aikido::trajectory::Trajectory* path)
+{
+  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
+  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
+  auto retimer
+      = std::make_shared<KunzRetimer>(velocityLimits, accelerationLimits, 0.1, 0.1);
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)

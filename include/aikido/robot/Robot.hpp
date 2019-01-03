@@ -45,6 +45,15 @@ public:
       const aikido::trajectory::Trajectory* path)
       = 0;
 
+  /// Returns a timed trajectory that can be executed by the robot.
+  /// Uses the Kunz Retimer.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] path Geometric path to execute.
+  virtual std::unique_ptr<aikido::trajectory::Spline> retimePathWithKunzTimer(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path)
+      = 0;
+
   /// Executes a trajectory
   /// \param[in] trajectory Timed trajectory to execute
   virtual std::future<void> executeTrajectory(
