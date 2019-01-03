@@ -374,6 +374,8 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
 
   auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
       trajectory->getInterpolator());
+  if (!interpolator)
+    throw std::invalid_argument("The interpolator of trajectory should be a GeodesicInterpolator");
 
   // Create new trajectory space.
   std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
