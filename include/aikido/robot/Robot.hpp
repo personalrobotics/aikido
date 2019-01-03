@@ -49,9 +49,12 @@ public:
   /// Uses the Kunz Retimer.
   /// \param[in] metaSkeleton Metaskeleton of the path.
   /// \param[in] path Geometric path to execute.
+  /// \param[in] maxDeviation Maximum deviation allowed from original path.
+  /// \param[in] timestep Time step between trajectory points.
   virtual std::unique_ptr<aikido::trajectory::Spline> retimePathWithKunzTimer(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path)
+      const aikido::trajectory::Trajectory* path,
+      double maxDeviation, double timestep)
       = 0;
 
   /// Executes a trajectory
