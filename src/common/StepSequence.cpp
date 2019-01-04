@@ -42,7 +42,22 @@ StepSequence::StepSequence(
     throw std::runtime_error("Step size is zero");
   }
 
-  updateLength();
+  updateNumSteps();
+}
+
+//==============================================================================
+StepSequence::StepSequence(
+    double startPoint,
+    double endPoint,
+    std::size_t numSteps,
+    bool includeEndpoint)
+  : mIncludeStartPoint(true)
+  , mIncludeEndPoint(includeEndpoint)
+  , mStartPoint(startPoint)
+  , mEndPoint(endPoint)
+  , mNumSteps(numSteps)
+{
+  updateStepSize();
 }
 
 //==============================================================================
@@ -101,7 +116,7 @@ std::size_t StepSequence::getLength() const
 }
 
 //==============================================================================
-void StepSequence::updateLength()
+void StepSequence::updateNumSteps()
 {
   const double stepRatio = (mEndPoint - mStartPoint) / mStepSize;
   const double floorStepRatio = std::floor(stepRatio);
@@ -124,6 +139,24 @@ void StepSequence::updateLength()
   {
     if (!mIncludeEndPoint && mNumSteps > 0)
       --mNumSteps;
+  }
+}
+
+//==============================================================================
+void StepSequence::updateStepSize()
+{
+  if (mNumSteps > 1u)
+  {
+    const std::size_t m = mIncludeEndPoint ? mNumSteps - 1u : mNumSteps;
+    mStepSize = (mEndPoint - mStartPoint) / m;
+  }
+  else
+  {
+    // This is unnecessary because:
+    // (1) mStepSize shouldn't be used if mNumSteps == 1
+    // (2) mStepSize shouldn't be used or just multiplied by zero if
+    // mNumSteps == 0
+    mStepSize = 0.0;
   }
 }
 

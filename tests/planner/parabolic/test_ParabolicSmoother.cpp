@@ -8,6 +8,7 @@
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SO3.hpp>
+#include <aikido/trajectory/util.hpp>
 #include "eigen_tests.hpp"
 
 using Eigen::Vector2d;
@@ -20,8 +21,8 @@ using aikido::statespace::SO2;
 using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
 using aikido::constraint::Satisfied;
+using aikido::trajectory::convertToSpline;
 using aikido::planner::parabolic::computeParabolicTiming;
-using aikido::planner::parabolic::convertToSpline;
 using aikido::planner::parabolic::doShortcut;
 using aikido::planner::parabolic::doBlend;
 using aikido::planner::parabolic::doShortcutAndBlend;
