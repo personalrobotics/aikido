@@ -207,7 +207,8 @@ public:
       const aikido::constraint::dart::TSRPtr& tsr,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit,
-      std::size_t maxNumTrials);
+      std::size_t maxNumTrials,
+      const Eigen::VectorXd& nominalPosition = Eigen::VectorXd(0));
 
   /// TODO: Replace this with Problem interface.
   /// Returns a Trajectory that moves the configuration of the metakeleton such

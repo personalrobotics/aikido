@@ -227,9 +227,13 @@ trajectory::TrajectoryPtr planToTSR(
     // Sample from TSR
     {
       std::lock_guard<std::mutex> lock(robot->getMutex());
+
       bool sampled = generator->sample(goalState);
       if (!sampled)
+      {
+        ++snapSamples;
         continue;
+      }
 
       // Set to start state
       space->setState(metaSkeleton.get(), startState);
@@ -269,7 +273,6 @@ trajectory::TrajectoryPtr planToTSR(
     if (traj)
       return traj;
   }
-
   return nullptr;
 }
 

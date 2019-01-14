@@ -424,11 +424,13 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const TSRPtr& tsr,
     const CollisionFreePtr& collisionFree,
     double timelimit,
-    std::size_t maxNumTrials)
+    std::size_t maxNumTrials,
+    const Eigen::VectorXd& nominalPosition)
 {
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
+  // TODO: need to handle nominalPosition
   return util::planToTSR(
       stateSpace,
       metaSkeleton,
@@ -439,6 +441,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
       timelimit,
       maxNumTrials);
 }
+
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
