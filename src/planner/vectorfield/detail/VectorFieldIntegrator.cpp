@@ -16,8 +16,6 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const std::vector<Knot>& knots,
     aikido::statespace::ConstStateSpacePtr stateSpace)
 {
-  using dart::common::make_unique;
-
   std::size_t dimension = stateSpace->getDimension();
 
   auto outputTrajectory = ::dart::common::make_unique<aikido::trajectory::Spline>(stateSpace);

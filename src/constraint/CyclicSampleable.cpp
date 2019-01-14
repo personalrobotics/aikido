@@ -157,7 +157,7 @@ statespace::ConstStateSpacePtr CyclicSampleable::getStateSpace() const
 //==============================================================================
 std::unique_ptr<SampleGenerator> CyclicSampleable::createSampleGenerator() const
 {
-  return dart::common::make_unique<FiniteCyclicSampleGenerator>(
+  return ::dart::common::make_unique<FiniteCyclicSampleGenerator>(
       mSampleable->createSampleGenerator());
 }
 

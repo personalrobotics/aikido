@@ -92,7 +92,7 @@ std::unique_ptr<SampleGenerator> RejectionSampleable::createSampleGenerator()
     const
 {
   auto sampler = mSampleable->createSampleGenerator();
-  return dart::common::make_unique<RejectionSampler>(
+  return ::dart::common::make_unique<RejectionSampler>(
       mStateSpace, std::move(sampler), mTestable, mMaxTrialPerSample);
 }
 

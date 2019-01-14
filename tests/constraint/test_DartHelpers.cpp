@@ -10,7 +10,6 @@
 using Vector0d = Eigen::Matrix<double, 0, 1>;
 using Vector1d = Eigen::Matrix<double, 1, 1>;
 
-using dart::common::make_unique;
 using dart::dynamics::BallJoint;
 using dart::dynamics::BodyNode;
 using dart::dynamics::Joint;
@@ -147,7 +146,7 @@ TEST_F(RnJointHelpersTests, createDifferentiableBounds)
 //==============================================================================
 TEST_F(RnJointHelpersTests, createSampleableBounds)
 {
-  auto rng = make_unique<RNGWrapper<std::default_random_engine>>(0);
+  auto rng = ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
   const auto testableConstraint = createTestableBoundsFor<R1Joint>(mStateSpace);
   const auto sampleableConstraint
       = createSampleableBoundsFor<R1Joint>(mStateSpace, std::move(rng));
@@ -218,7 +217,7 @@ TEST_F(SO2JointHelpersTests, createDifferentiableBounds)
 TEST_F(SO2JointHelpersTests, createSampleableBounds)
 {
   const auto sampleableConstraint = createSampleableBoundsFor<SO2Joint>(
-      mStateSpace, make_unique<RNGWrapper<std::default_random_engine>>(0));
+      mStateSpace, ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0));
 
   ASSERT_TRUE(!!sampleableConstraint);
   EXPECT_EQ(mStateSpace, sampleableConstraint->getStateSpace());
@@ -286,7 +285,7 @@ TEST_F(SO3JointHelpersTests, createDifferentiableBounds)
 TEST_F(SO3JointHelpersTests, createSampleableBounds)
 {
   const auto sampleableConstraint = createSampleableBoundsFor<SO3Joint>(
-      mStateSpace, make_unique<RNGWrapper<std::default_random_engine>>(0));
+      mStateSpace, ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0));
 
   ASSERT_TRUE(!!sampleableConstraint);
   EXPECT_EQ(mStateSpace, sampleableConstraint->getStateSpace());

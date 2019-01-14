@@ -25,7 +25,7 @@ std::unique_ptr<Path> convertToKunzPath(
     waypoints.push_back(tmpVec);
   }
 
-  auto path = dart::common::make_unique<Path>(waypoints, maxDeviation);
+  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
   return path;
 }
 
@@ -44,7 +44,7 @@ std::unique_ptr<Path> convertToKunzPath(
     waypoints.push_back(tmpVec);
   }
 
-  auto path = dart::common::make_unique<Path>(waypoints, maxDeviation);
+  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
   return path;
 }
 
@@ -63,7 +63,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 
   // create spline
   auto outputTrajectory
-      = dart::common::make_unique<aikido::trajectory::Spline>(stateSpace, startTime);
+      = ::dart::common::make_unique<aikido::trajectory::Spline>(stateSpace, startTime);
 
   // create a sequence of time steps from start time to end time by time step
   aikido::common::StepSequence sequence(

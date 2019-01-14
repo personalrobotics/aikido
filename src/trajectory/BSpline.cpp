@@ -167,7 +167,7 @@ BSpline& BSpline::operator=(BSpline&& other)
 //==============================================================================
 std::unique_ptr<Trajectory> BSpline::clone() const
 {
-  return dart::common::make_unique<BSpline>(*this);
+  return ::dart::common::make_unique<BSpline>(*this);
 }
 
 //==============================================================================
