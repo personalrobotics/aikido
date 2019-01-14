@@ -10,7 +10,7 @@ TEST(SE2, Clone)
 
   for (auto i = 0u; i < 5u; ++i)
   {
-    const auto angle = dart::math::random(-M_PI, M_PI);
+    const auto angle = dart::math::Random::uniform(-M_PI, M_PI);
     Eigen::Isometry2d pose = Eigen::Isometry2d::Identity();
     pose.rotate(Eigen::Rotation2Dd(angle));
     pose.translation() = Eigen::Vector2d::Random();

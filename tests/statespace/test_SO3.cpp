@@ -10,7 +10,7 @@ TEST(SO3, Clone)
 
   for (auto i = 0u; i < 5u; ++i)
   {
-    const auto angle = dart::math::random(-M_PI, M_PI);
+    const auto angle = dart::math::Random::uniform(-M_PI, M_PI);
     const auto axis = Eigen::Vector3d::Random().normalized();
     const auto angleAxis = Eigen::AngleAxisd(angle, axis);
     const Eigen::Quaterniond quat(angleAxis);

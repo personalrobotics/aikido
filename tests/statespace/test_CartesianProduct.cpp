@@ -20,7 +20,7 @@ TEST(CartesianProduct, Clone)
   for (auto i = 0u; i < 5u; ++i)
   {
     auto s1 = space.createState();
-    const auto angle = dart::math::random(-M_PI, M_PI);
+    const auto angle = dart::math::Random::uniform(-M_PI, M_PI);
     s1.getSubStateHandle<SO2>(0).fromAngle(angle);
     s1.getSubStateHandle<R2>(1).setValue(Eigen::Vector2d::Random());
 

@@ -33,7 +33,7 @@ TEST(SO2, Clone)
 
   for (auto i = 0u; i < 5u; ++i)
   {
-    const auto angle = dart::math::random(-M_PI, M_PI);
+    const auto angle = dart::math::Random::uniform(-M_PI, M_PI);
 
     auto s1 = so2.createState();
     s1.fromAngle(angle);
