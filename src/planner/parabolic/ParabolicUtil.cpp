@@ -14,7 +14,6 @@
 
 using Eigen::Vector2d;
 using aikido::statespace::StateSpace;
-using dart::common::make_unique;
 
 using CubicSplineProblem
     = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
@@ -92,7 +91,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(_inputPath, timePrev, positionPrev, velocityPrev);
 
-  auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(
+  auto _outputTrajectory = dart::common::make_unique<aikido::trajectory::Spline>(
       _stateSpace, timePrev + _startTime);
   auto segmentStartState = _stateSpace->createState();
 
@@ -152,7 +151,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     velocities.emplace_back(toVector(tangentVector));
   }
 
-  auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
+  auto outputPath = dart::common::make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
   if (_preserveWaypointVelocity)
   {
@@ -189,7 +188,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     milestones.emplace_back(toVector(currVec));
   }
 
-  auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
+  auto outputPath = dart::common::make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
   outputPath->SetMilestones(milestones);
   if (!outputPath->IsValid())
