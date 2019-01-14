@@ -4,8 +4,6 @@
 namespace aikido {
 namespace constraint {
 
-using dart::common::make_unique;
-
 //==============================================================================
 class SubspaceSampleGenerator : public SampleGenerator
 {
@@ -133,7 +131,7 @@ CartesianProductSampleable::createSampleGenerator() const
   for (const auto& constraint : mConstraints)
     generators.emplace_back(constraint->createSampleGenerator());
 
-  return make_unique<SubspaceSampleGenerator>(
+  return ::dart::common::make_unique<SubspaceSampleGenerator>(
       mStateSpace, std::move(generators));
 }
 

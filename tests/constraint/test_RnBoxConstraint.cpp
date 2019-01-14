@@ -14,7 +14,6 @@ using aikido::distance::R2Euclidean;
 using aikido::distance::RnEuclidean;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
-using dart::common::make_unique;
 using Eigen::Vector2d;
 using Eigen::Matrix2d;
 
@@ -32,7 +31,7 @@ protected:
     mRxStateSpace = std::make_shared<Rn>(2);
     mR2Distance = std::make_shared<R2Euclidean>(mR2StateSpace);
     mRxDistance = std::make_shared<RnEuclidean>(mRxStateSpace);
-    mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
+    mRng = ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mLowerLimits = Vector2d(-1., 1.);
     mUpperLimits = Vector2d(1., 2.);

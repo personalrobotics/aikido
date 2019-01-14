@@ -10,7 +10,6 @@ using aikido::constraint::SampleGenerator;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
 using aikido::distance::SO2Angular;
-using dart::common::make_unique;
 
 class SO2UniformSamplerTests : public ::testing::Test
 {
@@ -23,7 +22,7 @@ protected:
   {
     mStateSpace = std::make_shared<SO2>();
     mDistance = std::make_shared<SO2Angular>(mStateSpace);
-    mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
+    mRng = ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
     for (std::size_t i = 0; i < NUM_TARGETS; ++i)
