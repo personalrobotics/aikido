@@ -108,7 +108,7 @@ endif()
 set(gtest_build_include_dirs
   "${gtest_SOURCE_DIR}/include"
   "${gtest_SOURCE_DIR}")
-include_directories(${gtest_build_include_dirs})
+include_directories(SYSTEM ${gtest_build_include_dirs})
 
 # Summary of tuple support for Microsoft Visual Studio:
 # Compiler    version(MS)  version(cmake)  Support
