@@ -88,21 +88,45 @@ bool CollisionFree::isSatisfied(
 //==============================================================================
 bool CollisionFree::completeIsSatisfied(
     const aikido::statespace::StateSpace::State* _state,
-    std::vector<::dart::collision::narrowPhaseData>& partialRes) const
+    TestableOutcome* outcome) const
 {
-  auto skelStatePtr = static_cast<const aikido::statespace::dart::
-                                      MetaSkeletonStateSpace::State*>(_state);
-  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
-
   auto fclDetector
       = std::static_pointer_cast<::dart::collision::FCLCollisionDetector>(
           mCollisionDetector);
 
-  ::dart::collision::CollisionResult collisionResult;
-  bool collision = fclDetector->completeNarrowEval(
-    partialRes, mCollisionOptions, &collisionResult);
+  auto collisionFreeOutcome
+      = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);
 
-  return !collision;
+  if (collisionFreeOutcome)
+  {
+    collisionFreeOutcome->clear();
+  }
+
+  auto skelStatePtr = static_cast<const aikido::statespace::dart::
+                                      MetaSkeletonStateSpace::State*>(_state);
+  mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
+
+  bool collision = false;
+  ::dart::collision::CollisionResult collisionResult;
+  for (const auto& groups : mGroupsToPairwiseCheck)
+  {
+    collision = fclDetector->completeNarrowEval(
+        groups.first.get(),
+        groups.second.get(),
+        mCollisionOptions,
+        &collisionResult);
+
+    if (collision)
+    {
+      if (collisionFreeOutcome)
+      {
+        collisionFreeOutcome->mPairwiseContacts = collisionResult.getContacts();
+      }
+      return false;
+    }
+  }
+
+  return true;
 }
 
 //==============================================================================

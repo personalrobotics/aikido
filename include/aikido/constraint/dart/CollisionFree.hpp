@@ -60,7 +60,7 @@ public:
   /// NOTE: Finish partial evaluation.
   bool completeIsSatisfied(
       const aikido::statespace::StateSpace::State* _state,
-      std::vector<::dart::collision::narrowPhaseData>& partialRes) const;
+      TestableOutcome* outcome = nullptr) const;
 
   /// \copydoc Testable::createOutcome()
   /// \note Returns an instance of CollisionFreeOutcome.
