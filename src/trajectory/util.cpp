@@ -109,8 +109,8 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
 
-  auto outputTrajectory
-      = ::dart::common::make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
+  auto outputTrajectory = ::dart::common::make_unique<Spline>(
+      stateSpace, inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
@@ -144,8 +144,8 @@ UniqueInterpolatedPtr convertToInterpolated(
     const Spline& traj, statespace::ConstInterpolatorPtr interpolator)
 {
   auto stateSpace = traj.getStateSpace();
-  auto outputTrajectory
-      = ::dart::common::make_unique<Interpolated>(stateSpace, std::move(interpolator));
+  auto outputTrajectory = ::dart::common::make_unique<Interpolated>(
+      stateSpace, std::move(interpolator));
 
   auto state = stateSpace->createState();
   for (std::size_t i = 0; i < traj.getNumWaypoints(); ++i)
@@ -253,7 +253,8 @@ UniqueSplinePtr createPartialTrajectory(
 
   const auto stateSpace = traj.getStateSpace();
   const int dimension = static_cast<int>(stateSpace->getDimension());
-  auto outputTrajectory = ::dart::common::make_unique<Spline>(stateSpace, traj.getStartTime());
+  auto outputTrajectory
+      = ::dart::common::make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;

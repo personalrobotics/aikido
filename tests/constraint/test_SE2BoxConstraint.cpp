@@ -38,7 +38,8 @@ protected:
     mSE2StateSpace = dart::common::make_aligned_shared<SE2>();
     mSE2Distance
         = dart::common::make_aligned_shared<SE2Weighted>(mSE2StateSpace);
-    mRng = ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
+    mRng = ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(
+        0);
 
     mLowerLimits = Vector2d(-1., 1.);
     mUpperLimits = Vector2d(1., 2.);

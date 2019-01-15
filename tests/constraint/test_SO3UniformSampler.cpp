@@ -23,7 +23,8 @@ protected:
   {
     mStateSpace = std::make_shared<SO3>();
     mDistance = std::make_shared<SO3Angular>(mStateSpace);
-    mRng = ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
+    mRng = ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(
+        0);
 
     mTargets.clear();
 

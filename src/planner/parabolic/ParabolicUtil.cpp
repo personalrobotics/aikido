@@ -91,8 +91,9 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(_inputPath, timePrev, positionPrev, velocityPrev);
 
-  auto _outputTrajectory = ::dart::common::make_unique<aikido::trajectory::Spline>(
-      _stateSpace, timePrev + _startTime);
+  auto _outputTrajectory
+      = ::dart::common::make_unique<aikido::trajectory::Spline>(
+          _stateSpace, timePrev + _startTime);
   auto segmentStartState = _stateSpace->createState();
 
   for (const auto timeCurr : transitionTimes)

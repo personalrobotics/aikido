@@ -47,7 +47,8 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
   // TODO: We should std::move constraints here, but we can't because
   // DifferentiableIntersection does not take by value.
-  return ::dart::common::make_unique<DifferentiableIntersection>(constraints, _metaSkeleton);
+  return ::dart::common::make_unique<DifferentiableIntersection>(
+      constraints, _metaSkeleton);
 }
 
 //==============================================================================
