@@ -24,6 +24,16 @@ public:
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
 
+  /// Constructor
+  ///
+  /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
+  /// \param[in] weights Weights over the joints to compute distance.
+  ConfigurationRanker(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+      std::vector<double> weights);
+
   /// Destructor
   virtual ~ConfigurationRanker() = default;
 
