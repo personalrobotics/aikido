@@ -22,6 +22,22 @@ NominalConfigurationRanker::NominalConfigurationRanker(
 }
 
 //==============================================================================
+NominalConfigurationRanker::NominalConfigurationRanker(
+    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    ConstMetaSkeletonPtr metaSkeleton,
+    std::vector<double> weights,
+    const statespace::CartesianProduct::State* nominalConfiguration)
+  : ConfigurationRanker(
+        std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
+  , mNominalConfiguration(nominalConfiguration)
+{
+  if (!mNominalConfiguration)
+    mNominalConfiguration
+        = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
+            mMetaSkeleton.get());
+}
+
+//==============================================================================
 double NominalConfigurationRanker::evaluateConfiguration(
     const statespace::dart::MetaSkeletonStateSpace::State* solution) const
 {

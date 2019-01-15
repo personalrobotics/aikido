@@ -23,6 +23,20 @@ public:
       const statespace::CartesianProduct::State* nominalConfiguration
       = nullptr);
 
+  /// Constructor
+  ///
+  /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
+  /// \param[in] weights Weights over the joints to compute distance.
+  /// \param[in] nominalConfiguration Nominal configuration. The current
+  /// configuration of \c metaSkeleton is considered if set to \c nullptr.
+  NominalConfigurationRanker(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+      std::vector<double> weights,
+      const statespace::CartesianProduct::State* nominalConfiguration
+      = nullptr);
+
 protected:
   /// Returns cost as distance from the Nominal Configuration.
   double evaluateConfiguration(
