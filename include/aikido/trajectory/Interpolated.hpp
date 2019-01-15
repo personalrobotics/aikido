@@ -22,6 +22,8 @@ public:
       statespace::ConstStateSpacePtr _stateSpace,
       statespace::ConstInterpolatorPtr _interpolator);
 
+  virtual ~Interpolated();
+
   /// Add a waypoint to the trajectory at the given time.
   ///
   /// \param _t time of the waypoint
@@ -81,6 +83,9 @@ private:
 
     /// Comparator to allow sorting waypoints based on time
     bool operator<(double rhs) const;
+
+    // Free state. Should be used for destruction.
+    void free(const statespace::ConstStateSpacePtr& stateSpace);
 
     double t;
     statespace::StateSpace::State* state;

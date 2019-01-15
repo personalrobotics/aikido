@@ -5,9 +5,12 @@
 #include <dart/common/StlHelpers.hpp>
 #include "aikido/common/Spline.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "DynamicPath.h"
 #include "HauserParabolicSmootherHelpers.hpp"
 #include "ParabolicUtil.hpp"
+
+using aikido::statespace::ConstStateSpacePtr;
 
 namespace aikido {
 namespace planner {
@@ -25,9 +28,10 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
+  ConstStateSpacePtr outputStateSpace;
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration);
+      _inputTrajectory, _maxVelocity, _maxAcceleration, outputStateSpace);
 
   detail::doShortcut(
       *dynamicPath,
@@ -38,7 +42,7 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
       _rng);
 
   auto outputTrajectory
-      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
+      = detail::convertToSpline(*dynamicPath, startTime, outputStateSpace);
 
   return outputTrajectory;
 }
@@ -55,9 +59,10 @@ std::unique_ptr<trajectory::Spline> doBlend(
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
+  ConstStateSpacePtr outputStateSpace;
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration);
+      _inputTrajectory, _maxVelocity, _maxAcceleration, outputStateSpace);
 
   detail::doBlend(
       *dynamicPath,
@@ -68,7 +73,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
       _tolerance);
 
   auto outputTrajectory
-      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
+      = detail::convertToSpline(*dynamicPath, startTime, outputStateSpace);
 
   return outputTrajectory;
 }
@@ -87,9 +92,10 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
 
+  ConstStateSpacePtr outputStateSpace;
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration);
+      _inputTrajectory, _maxVelocity, _maxAcceleration, outputStateSpace);
 
   detail::doShortcut(
       *dynamicPath,
@@ -108,7 +114,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
       _tolerance);
 
   auto outputTrajectory
-      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
+      = detail::convertToSpline(*dynamicPath, startTime, outputStateSpace);
 
   return outputTrajectory;
 }

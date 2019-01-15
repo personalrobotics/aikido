@@ -4,12 +4,14 @@
 #include <set>
 #include <dart/common/StlHelpers.hpp>
 #include "aikido/common/Spline.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "DynamicPath.h"
 #include "ParabolicUtil.hpp"
 
 using Eigen::Vector2d;
 using dart::common::make_unique;
+using aikido::statespace::ConstStateSpacePtr;
 
 namespace aikido {
 namespace planner {
@@ -44,11 +46,14 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   }
 
   double startTime = _inputTrajectory.getStartTime();
+
+  ConstStateSpacePtr outputStateSpace;
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration);
+      _inputTrajectory, _maxVelocity, _maxAcceleration, outputStateSpace);
 
   auto outputTrajectory
-      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
+      = detail::convertToSpline(*dynamicPath, startTime, outputStateSpace);
+
   return outputTrajectory;
 }
 
@@ -81,11 +86,13 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   }
 
   double startTime = _inputTrajectory.getStartTime();
+
+  ConstStateSpacePtr outputStateSpace;
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration, false);
+      _inputTrajectory, _maxVelocity, _maxAcceleration, outputStateSpace, false);
 
   auto outputTrajectory
-      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
+      = detail::convertToSpline(*dynamicPath, startTime, outputStateSpace);
   return outputTrajectory;
 }
 

@@ -92,7 +92,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 }
 
 void checkValidityOfSpaceAndTrajectory(
-    ConstStateSpacePtr& space, ConstTrajectoryPtr trajectory)
+    ConstStateSpacePtr& space, const Trajectory* trajectory)
 {
   auto metaskeletonStateSpace
       = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
@@ -368,15 +368,12 @@ UniqueSplinePtr createPartialTrajectory(
 
 //==============================================================================
 aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
-    ConstStateSpacePtr& space, ConstInterpolatedPtr& trajectory)
+    ConstStateSpacePtr& space, const Interpolated& trajectory)
 {
-  if (!trajectory)
-    throw std::invalid_argument("Trajectory is null.");
-
-  checkValidityOfSpaceAndTrajectory(space, trajectory);
+  checkValidityOfSpaceAndTrajectory(space, &trajectory);
 
   auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
-      trajectory->getInterpolator());
+      trajectory.getInterpolator());
   if (!interpolator)
     throw std::invalid_argument(
         "The interpolator of trajectory should be a GeodesicInterpolator");
@@ -394,7 +391,7 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
   auto sourceState = rSpace->createState();
 
   // Add the first waypoint
-  space->logMap(trajectory->getWaypoint(0), sourceVector);
+  space->logMap(trajectory.getWaypoint(0), sourceVector);
   rSpace->expMap(sourceVector, sourceState);
   rTrajectory->addWaypoint(0, sourceState);
 
@@ -402,10 +399,10 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
   auto targetState = rSpace->createState();
 
   // Add the remaining waypoints
-  for (std::size_t i = 0; i < trajectory->getNumWaypoints() - 1; ++i)
+  for (std::size_t i = 0; i < trajectory.getNumWaypoints() - 1; ++i)
   {
     const auto tangentVector = interpolator->getTangentVector(
-        trajectory->getWaypoint(i), trajectory->getWaypoint(i + 1));
+        trajectory.getWaypoint(i), trajectory.getWaypoint(i + 1));
 
     rSpace->expMap(sourceVector, sourceState);
     rSpace->expMap(tangentVector, tangentState);
@@ -420,19 +417,16 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
 
 //==============================================================================
 aikido::trajectory::ConstSplinePtr toR1JointTrajectory(
-    ConstStateSpacePtr& space, ConstSplinePtr& trajectory)
+    ConstStateSpacePtr& space, const Spline& trajectory)
 {
-  if (!trajectory)
-    throw std::invalid_argument("Trajectory is null.");
-
-  checkValidityOfSpaceAndTrajectory(space, trajectory);
+  checkValidityOfSpaceAndTrajectory(space, &trajectory);
 
   aikido::statespace::ConstInterpolatorPtr interpolator
       = std::make_shared<statespace::GeodesicInterpolator>(space);
 
   ConstInterpolatedPtr interpolatedTrajectory
-      = std::move(convertToInterpolated(*trajectory.get(), interpolator));
-  auto r1JointTrajectory = toR1JointTrajectory(space, interpolatedTrajectory);
+      = std::move(convertToInterpolated(trajectory, interpolator));
+  auto r1JointTrajectory = toR1JointTrajectory(space, *interpolatedTrajectory.get());
   auto splineTrajectory = convertToSpline(*r1JointTrajectory.get());
 
   return std::move(splineTrajectory);

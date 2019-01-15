@@ -1,4 +1,5 @@
 #include <aikido/trajectory/Interpolated.hpp>
+#include <iostream>
 
 using aikido::statespace::GeodesicInterpolator;
 
@@ -16,6 +17,13 @@ Interpolated::Interpolated(
   // Do nothing
 }
 
+//==============================================================================
+Interpolated::~Interpolated()
+{
+  for (auto waypoint : mWaypoints)
+    waypoint.free(mStateSpace);
+
+}
 //==============================================================================
 statespace::ConstStateSpacePtr Interpolated::getStateSpace() const
 {
@@ -208,6 +216,14 @@ bool Interpolated::Waypoint::operator<(const Waypoint& rhs) const
 bool Interpolated::Waypoint::operator<(double rhs) const
 {
   return t < rhs;
+}
+
+//==============================================================================
+void Interpolated::Waypoint::free(
+  const statespace::ConstStateSpacePtr& stateSpace)
+{
+  if (state)
+    stateSpace->freeState(state);
 }
 
 } // namespace trajectory

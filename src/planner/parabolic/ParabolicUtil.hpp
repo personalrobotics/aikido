@@ -58,6 +58,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath>
     convertToDynamicPath(const aikido::trajectory::Spline& _inputTrajectory,
                          const Eigen::VectorXd& _maxVelocity,
                          const Eigen::VectorXd& _maxAcceleration,
+                         statespace::ConstStateSpacePtr& _outputStateSpace,
                          bool _preserveWaypointVelocity = true);
 
 /// Convert an interpolated trajectory to a dynamic path
@@ -68,7 +69,8 @@ std::unique_ptr<ParabolicRamp::DynamicPath>
 std::unique_ptr<ParabolicRamp::DynamicPath>
     convertToDynamicPath(const aikido::trajectory::Interpolated& _inputTrajectory,
                          const Eigen::VectorXd& _maxVelocity,
-                         const Eigen::VectorXd& _maxAcceleration);
+                         const Eigen::VectorXd& _maxAcceleration,
+                         statespace::ConstStateSpacePtr& _outputStateSpace);
 
 } // namespace detail
 } // namespace parabolic
