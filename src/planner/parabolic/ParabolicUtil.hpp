@@ -52,6 +52,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 /// \param _inputTrajectory a spline trajectory
 /// \param _maxVelocity maximum velocity in each dimension
 /// \param _maxAcceleration maximum acceleration in each dimension
+/// \param[out] _outputStateSpace Statespace of the converted path.
 /// \param _preserveWaypointVelocity preserve waypoint velocity in conversion
 /// \return a dynamic path
 std::unique_ptr<ParabolicRamp::DynamicPath>
@@ -65,6 +66,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath>
 /// \param _inputTrajectory a spline trajectory
 /// \param _maxVelocity maximum velocity in each dimension
 /// \param _maxAcceleration maximum acceleration in each dimension
+/// \param[out] _outputStateSpace Statespace of the converted path.
 /// \return a dynamic path
 std::unique_ptr<ParabolicRamp::DynamicPath>
     convertToDynamicPath(const aikido::trajectory::Interpolated& _inputTrajectory,
