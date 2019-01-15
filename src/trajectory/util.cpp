@@ -426,7 +426,8 @@ aikido::trajectory::ConstSplinePtr toR1JointTrajectory(
 
   ConstInterpolatedPtr interpolatedTrajectory
       = std::move(convertToInterpolated(trajectory, interpolator));
-  auto r1JointTrajectory = toR1JointTrajectory(space, *interpolatedTrajectory.get());
+  auto r1JointTrajectory
+      = toR1JointTrajectory(space, *interpolatedTrajectory.get());
   auto splineTrajectory = convertToSpline(*r1JointTrajectory.get());
 
   return std::move(splineTrajectory);

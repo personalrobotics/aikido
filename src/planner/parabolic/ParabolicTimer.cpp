@@ -89,7 +89,11 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
 
   ConstStateSpacePtr outputStateSpace;
   auto dynamicPath = detail::convertToDynamicPath(
-      _inputTrajectory, _maxVelocity, _maxAcceleration, outputStateSpace, false);
+      _inputTrajectory,
+      _maxVelocity,
+      _maxAcceleration,
+      outputStateSpace,
+      false);
 
   auto outputTrajectory
       = detail::convertToSpline(*dynamicPath, startTime, outputStateSpace);

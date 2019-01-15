@@ -166,12 +166,13 @@ UniqueSplinePtr ConcreteRobot::retimePath(
 UniqueSplinePtr ConcreteRobot::retimePathWithKunzTimer(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const aikido::trajectory::Trajectory* path,
-    double maxDeviation, double timestep)
+    double maxDeviation,
+    double timestep)
 {
   Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto retimer
-      = std::make_shared<KunzRetimer>(velocityLimits, accelerationLimits, maxDeviation, timestep);
+  auto retimer = std::make_shared<KunzRetimer>(
+      velocityLimits, accelerationLimits, maxDeviation, timestep);
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)
@@ -441,7 +442,6 @@ TrajectoryPtr ConcreteRobot::planToTSR(
       timelimit,
       maxNumTrials);
 }
-
 
 //==============================================================================
 TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(

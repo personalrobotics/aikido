@@ -139,7 +139,8 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     bool _preserveWaypointVelocity)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
-  auto metaSkeletonStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
+  auto metaSkeletonStateSpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
 
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
 
@@ -194,7 +195,8 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     statespace::ConstStateSpacePtr& _outputStateSpace)
 {
   auto stateSpace = _inputTrajectory.getStateSpace();
-  auto metaSkeletonStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
+  auto metaSkeletonStateSpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
 
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
 
