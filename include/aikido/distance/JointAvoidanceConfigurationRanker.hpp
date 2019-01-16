@@ -20,7 +20,20 @@ public:
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
 
+  /// Constructor
+  ///
+  /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
+  /// \param[in] weights Weights over joints to compute distance.
+  JointAvoidanceConfigurationRanker(
+      statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+      std::vector<double> weights);
+
 protected:
+  /// Set limits appropriately to account for infinite limits.
+  void setupJointLimits();
+
   /// Returns cost as negative of distance from position limits.
   double evaluateConfiguration(
       const statespace::dart::MetaSkeletonStateSpace::State* solution)

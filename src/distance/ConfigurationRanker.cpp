@@ -1,3 +1,5 @@
+#include <dart/common/StlHelpers.hpp>
+
 #include "aikido/distance/ConfigurationRanker.hpp"
 
 namespace aikido {
@@ -5,6 +7,7 @@ namespace distance {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
+using dart::common::make_unique;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
@@ -23,6 +26,49 @@ ConfigurationRanker::ConfigurationRanker(
   mDistanceMetric = createDistanceMetricFor(
       std::dynamic_pointer_cast<const statespace::CartesianProduct>(
           mMetaSkeletonStateSpace));
+}
+
+//==============================================================================
+ConfigurationRanker::ConfigurationRanker(
+    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    ConstMetaSkeletonPtr metaSkeleton,
+    std::vector<double> weights)
+  : mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
+  , mMetaSkeleton(std::move(metaSkeleton))
+{
+  if (!mMetaSkeletonStateSpace)
+    throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
+
+  if (!mMetaSkeleton)
+    throw std::invalid_argument("MetaSkeleton is nullptr.");
+
+  if (mMetaSkeletonStateSpace->getDimension() != weights.size())
+    throw std::invalid_argument(
+        "Weights should have the same dimension as the "
+        "MetaSkeletonStateSpace.");
+
+  for (std::size_t i = 0; i < weights.size(); ++i)
+  {
+    if (weights[i] < 0)
+      throw std::invalid_argument("Weights should all be non-negative.");
+  }
+
+  // Create a temporary statespace to setup distance metric with weights.
+  auto _sspace = std::dynamic_pointer_cast<statespace::CartesianProduct>(
+      std::const_pointer_cast<MetaSkeletonStateSpace>(mMetaSkeletonStateSpace));
+
+  std::vector<std::pair<DistanceMetricPtr, double>> metrics;
+  metrics.reserve(_sspace->getNumSubspaces());
+
+  for (std::size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
+  {
+    auto subspace = _sspace->getSubspace<>(i);
+    auto metric = createDistanceMetric(std::move(subspace));
+    metrics.emplace_back(std::make_pair(std::move(metric), weights[i]));
+  }
+
+  mDistanceMetric = make_unique<CartesianProductWeighted>(
+      std::move(_sspace), std::move(metrics));
 }
 
 //==============================================================================

@@ -15,6 +15,25 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
   , mLowerLimitsState(mMetaSkeletonStateSpace->createState())
   , mUpperLimitsState(mMetaSkeletonStateSpace->createState())
 {
+  setupJointLimits();
+}
+
+//==============================================================================
+JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
+    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    ConstMetaSkeletonPtr metaSkeleton,
+    std::vector<double> weights)
+  : ConfigurationRanker(
+        std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
+  , mLowerLimitsState(mMetaSkeletonStateSpace->createState())
+  , mUpperLimitsState(mMetaSkeletonStateSpace->createState())
+{
+  setupJointLimits();
+}
+
+//==============================================================================
+void JointAvoidanceConfigurationRanker::setupJointLimits()
+{
   auto lowerLimits = mMetaSkeleton->getPositionLowerLimits();
   auto upperLimits = mMetaSkeleton->getPositionUpperLimits();
 
