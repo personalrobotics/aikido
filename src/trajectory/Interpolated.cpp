@@ -17,13 +17,6 @@ Interpolated::Interpolated(
 }
 
 //==============================================================================
-Interpolated::~Interpolated()
-{
-  for (auto waypoint : mWaypoints)
-    waypoint.free(mStateSpace);
-}
-
-//==============================================================================
 statespace::ConstStateSpacePtr Interpolated::getStateSpace() const
 {
   return mStateSpace;
@@ -152,12 +145,12 @@ void Interpolated::evaluateDerivative(
 //==============================================================================
 void Interpolated::addWaypoint(double _t, const State* _state)
 {
-  State* state = mStateSpace->allocateState();
-  mStateSpace->copyState(_state, state);
+  // State* state = mStateSpace->allocateState();
+  // mStateSpace->copyState(_state, state);
 
   // Maintain a sorted list of waypoints
   auto it = std::lower_bound(mWaypoints.begin(), mWaypoints.end(), _t);
-  mWaypoints.insert(it, Waypoint(_t, state));
+  mWaypoints.insert(it, Waypoint(_t, mStateSpace->cloneState(_state)));
 }
 
 //==============================================================================
@@ -215,14 +208,6 @@ bool Interpolated::Waypoint::operator<(const Waypoint& rhs) const
 bool Interpolated::Waypoint::operator<(double rhs) const
 {
   return t < rhs;
-}
-
-//==============================================================================
-void Interpolated::Waypoint::free(
-    const statespace::ConstStateSpacePtr& stateSpace)
-{
-  if (state)
-    stateSpace->freeState(state);
 }
 
 } // namespace trajectory
