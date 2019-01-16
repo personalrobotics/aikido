@@ -82,19 +82,22 @@ TEST_F(JointAvoidanceConfigurationRankerTest, Constructor)
 
   std::vector<double> negativeWeights{-1, 0};
   EXPECT_THROW(
-      JointAvoidanceConfigurationRanker(mStateSpace, mManipulator, negativeWeights),
+      JointAvoidanceConfigurationRanker(
+          mStateSpace, mManipulator, negativeWeights),
       std::invalid_argument);
 
   std::vector<double> wrongDimensionWeights{1};
   EXPECT_THROW(
-      JointAvoidanceConfigurationRanker(mStateSpace, mManipulator, wrongDimensionWeights),
+      JointAvoidanceConfigurationRanker(
+          mStateSpace, mManipulator, wrongDimensionWeights),
       std::invalid_argument);
 
   JointAvoidanceConfigurationRanker rankerOne(mStateSpace, mManipulator);
   DART_UNUSED(rankerOne);
 
   std::vector<double> goodWeights{1, 2};
-  JointAvoidanceConfigurationRanker rankerTwo(mStateSpace, mManipulator, goodWeights);
+  JointAvoidanceConfigurationRanker rankerTwo(
+      mStateSpace, mManipulator, goodWeights);
   DART_UNUSED(rankerTwo);
 }
 

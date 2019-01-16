@@ -43,7 +43,9 @@ ConfigurationRanker::ConfigurationRanker(
     throw std::invalid_argument("MetaSkeleton is nullptr.");
 
   if (mMetaSkeletonStateSpace->getDimension() != weights.size())
-    throw std::invalid_argument("Weights should have the same dimension as the MetaSkeletonStateSpace.");
+    throw std::invalid_argument(
+        "Weights should have the same dimension as the "
+        "MetaSkeletonStateSpace.");
 
   for (std::size_t i = 0; i < weights.size(); ++i)
   {
@@ -53,9 +55,8 @@ ConfigurationRanker::ConfigurationRanker(
 
   // Create a temporary statespace to setup distance metric with weights.
   auto _sspace = std::dynamic_pointer_cast<statespace::CartesianProduct>(
-          std::const_pointer_cast<MetaSkeletonStateSpace>(
-              mMetaSkeletonStateSpace));
-  
+      std::const_pointer_cast<MetaSkeletonStateSpace>(mMetaSkeletonStateSpace));
+
   std::vector<std::pair<DistanceMetricPtr, double>> metrics;
   metrics.reserve(_sspace->getNumSubspaces());
 
