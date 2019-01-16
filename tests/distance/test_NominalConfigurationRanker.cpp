@@ -82,6 +82,25 @@ TEST_F(NominalConfigurationRankerTest, Constructor)
 
   std::vector<double> goodWeights{1, 2};
   NominalConfigurationRanker rankerTwo(mStateSpace, mManipulator, goodWeights);
+
+  std::vector<double> negativeWeights{-1, 0};
+  EXPECT_THROW(
+      NominalConfigurationRanker(
+          mStateSpace, mManipulator, negativeWeights, nullptr),
+      std::invalid_argument);
+
+  std::vector<double> wrongDimensionWeights{1};
+  EXPECT_THROW(
+      NominalConfigurationRanker(
+          mStateSpace, mManipulator, wrongDimensionWeights, nullptr),
+      std::invalid_argument);
+
+  NominalConfigurationRanker rankerOne(mStateSpace, mManipulator, nullptr);
+  DART_UNUSED(rankerOne);
+
+  std::vector<double> goodWeights{1, 2};
+  NominalConfigurationRanker rankerTwo(
+      mStateSpace, mManipulator, goodWeights, nullptr);
   DART_UNUSED(rankerTwo);
 }
 
@@ -107,6 +126,40 @@ TEST_F(NominalConfigurationRankerTest, OrderTest)
   jointPositions[0] = Eigen::Vector2d(0.1, 0.1);
   jointPositions[1] = Eigen::Vector2d(0.2, 0.2);
   jointPositions[2] = Eigen::Vector2d(0.3, 0.3);
+  for (std::size_t i = 0; i < states.size(); ++i)
+  {
+    mStateSpace->convertStateToPositions(states[i], rankedState);
+    EXPECT_EIGEN_EQUAL(rankedState, jointPositions[i], EPS);
+  }
+}
+
+TEST_F(NominalConfigurationRankerTest, WeightedOrderTest)
+{
+  std::vector<Eigen::Vector2d> jointPositions{Eigen::Vector2d(0.2, 0.5),
+                                              Eigen::Vector2d(0.1, 0.6),
+                                              Eigen::Vector2d(0.5, 0.1)};
+
+  std::vector<aikido::statespace::CartesianProduct::ScopedState> states;
+  for (std::size_t i = 0; i < jointPositions.size(); ++i)
+  {
+    auto state = mStateSpace->createState();
+    mStateSpace->convertPositionsToState(jointPositions[i], state);
+    states.emplace_back(state.clone());
+  }
+
+  mManipulator->setPositions(Eigen::Vector2d(0.0, 0.0));
+  std::vector<double> weights{10, 1};
+  NominalConfigurationRanker ranker(
+      mStateSpace,
+      mManipulator,
+      weights,
+      mStateSpace->getScopedStateFromMetaSkeleton(mManipulator.get()));
+  ranker.rankConfigurations(states);
+
+  Eigen::VectorXd rankedState(2);
+  jointPositions[0] = Eigen::Vector2d(0.1, 0.6);
+  jointPositions[1] = Eigen::Vector2d(0.2, 0.5);
+  jointPositions[2] = Eigen::Vector2d(0.5, 0.1);
   for (std::size_t i = 0; i < states.size(); ++i)
   {
     mStateSpace->convertStateToPositions(states[i], rankedState);

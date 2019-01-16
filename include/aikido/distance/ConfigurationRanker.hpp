@@ -10,6 +10,8 @@
 namespace aikido {
 namespace distance {
 
+AIKIDO_DECLARE_POINTERS(ConfigurationRanker)
+
 /// ConfigurationRanker is a base class for ranking configurations.
 /// The rule for evaluating the costs of configurations to rank them
 /// is specified by the concrete classes.

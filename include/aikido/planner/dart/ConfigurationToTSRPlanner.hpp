@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PLANNER_DART_CONFIGURATIONTOTSRPLANNER_HPP_
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOTSRPLANNER_HPP_
 
+#include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/planner/dart/ConfigurationToTSR.hpp"
 #include "aikido/planner/dart/SingleProblemPlanner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -26,9 +27,11 @@ public:
   ///
   /// \param[in] stateSpace State space that this planner associated with.
   /// \param[in] metaSkeleton MetaSkeleton to use for planning.
+  /// \param[in] configurationRanker Ranker to rank configurations.
   ConfigurationToTSRPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-      ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      distance::ConfigurationRankerPtr configurationRanker = nullptr);
 
   /// Solves \c problem returning the result to \c result.
   ///
@@ -38,6 +41,9 @@ public:
       const SolvableProblem& problem, Result* result = nullptr)
       = 0;
   // Note: SolvableProblem is defined in SingleProblemPlanner.
+
+protected:
+  distance::ConfigurationRankerPtr mConfigurationRanker;
 };
 
 } // namespace dart

@@ -86,6 +86,12 @@ TEST_F(JointAvoidanceConfigurationRankerTest, Constructor)
           mStateSpace, mManipulator, negativeWeights),
       std::invalid_argument);
 
+  std::vector<double> wrongDimensionWeights{1};
+  EXPECT_THROW(
+      JointAvoidanceConfigurationRanker(
+          mStateSpace, mManipulator, wrongDimensionWeights),
+      std::invalid_argument);
+
   JointAvoidanceConfigurationRanker rankerOne(mStateSpace, mManipulator);
   DART_UNUSED(rankerOne);
 
