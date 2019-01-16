@@ -426,7 +426,8 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const CollisionFreePtr& collisionFree,
     double timelimit,
     std::size_t maxNumTrials,
-    const Eigen::VectorXd& nominalPosition)
+    const Eigen::VectorXd& nominalPosition,
+    const distance::ConfigurationRankerPtr& ranker)
 {
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
@@ -441,7 +442,8 @@ TrajectoryPtr ConcreteRobot::planToTSR(
       cloneRNG().get(),
       timelimit,
       maxNumTrials,
-      nominalPosition);
+      nominalPosition,
+      ranker);
 }
 
 //==============================================================================

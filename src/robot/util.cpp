@@ -260,20 +260,20 @@ trajectory::TrajectoryPtr planToTSR(
     configurations.emplace_back(goalState.clone());
   }
 
-  if (configurations.size() == 0)
   {
     // Set to start state
+    std::lock_guard<std::mutex> lock(robot->getMutex());
     space->setState(metaSkeleton.get(), startState);
-    return nullptr;
   }
+
+  if (configurations.size() == 0)
+    return nullptr;
 
   _ranker->rankConfigurations(configurations);
 
   // Try snap planner first
   for (std::size_t i = 0; i < configurations.size(); ++i)
   {
-    std::lock_guard<std::mutex> lock(robot->getMutex());
-
     auto problem = ConfigurationToConfiguration(
         space, startState, configurations[i], collisionTestable);
 
@@ -290,8 +290,6 @@ trajectory::TrajectoryPtr planToTSR(
   timer.start();
   for (std::size_t i = 0; i < configurations.size(); ++i)
   {
-    std::lock_guard<std::mutex> lock(robot->getMutex());
-
     auto problem = ConfigurationToConfiguration(
         space, startState, configurations[i], collisionTestable);
 
@@ -304,17 +302,9 @@ trajectory::TrajectoryPtr planToTSR(
         std::min(timelimitPerSample, timelimit - timer.getElapsedTime()));
 
     if (traj)
-    {
-      space->setState(metaSkeleton.get(), startState);
       return traj;
-    }
   }
-
-  {
-    std::lock_guard<std::mutex> lock(robot->getMutex());
-    space->setState(metaSkeleton.get(), startState);
-    return nullptr;
-  }
+  return nullptr;
 }
 
 //==============================================================================
