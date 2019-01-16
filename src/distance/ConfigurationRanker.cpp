@@ -13,24 +13,6 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 //==============================================================================
 ConfigurationRanker::ConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-    ConstMetaSkeletonPtr metaSkeleton)
-  : mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
-  , mMetaSkeleton(std::move(metaSkeleton))
-{
-  if (!mMetaSkeletonStateSpace)
-    throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
-
-  if (!mMetaSkeleton)
-    throw std::invalid_argument("MetaSkeleton is nullptr.");
-
-  mDistanceMetric = createDistanceMetricFor(
-      std::dynamic_pointer_cast<const statespace::CartesianProduct>(
-          mMetaSkeletonStateSpace));
-}
-
-//==============================================================================
-ConfigurationRanker::ConfigurationRanker(
-    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     std::vector<double> weights)
   : mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
@@ -42,15 +24,21 @@ ConfigurationRanker::ConfigurationRanker(
   if (!mMetaSkeleton)
     throw std::invalid_argument("MetaSkeleton is nullptr.");
 
-  if (mMetaSkeletonStateSpace->getDimension() != weights.size())
-    throw std::invalid_argument(
-        "Weights should have the same dimension as the "
-        "MetaSkeletonStateSpace.");
-
-  for (std::size_t i = 0; i < weights.size(); ++i)
+  if (weights.size() != 0)
   {
-    if (weights[i] < 0)
-      throw std::invalid_argument("Weights should all be non-negative.");
+    for (std::size_t i = 0; i < weights.size(); ++i)
+    {
+      if (weights[i] < 0)
+        throw std::invalid_argument("Weights should all be non-negative.");
+    }
+  }
+  else
+  {
+    weights.resize(mMetaSkeletonStateSpace->getDimension());
+    for (std::size_t i = 0; i < weights.size(); ++i)
+    {
+      weights[i] = 1;
+    } 
   }
 
   // Create a temporary statespace to setup distance metric with weights.

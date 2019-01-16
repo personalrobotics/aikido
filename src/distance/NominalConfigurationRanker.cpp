@@ -10,21 +10,6 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
-    const statespace::CartesianProduct::State* nominalConfiguration)
-  : ConfigurationRanker(
-        std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
-  , mNominalConfiguration(nominalConfiguration)
-{
-  if (!mNominalConfiguration)
-    mNominalConfiguration
-        = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
-            mMetaSkeleton.get());
-}
-
-//==============================================================================
-NominalConfigurationRanker::NominalConfigurationRanker(
-    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-    ConstMetaSkeletonPtr metaSkeleton,
     std::vector<double> weights,
     const statespace::CartesianProduct::State* nominalConfiguration)
   : ConfigurationRanker(
