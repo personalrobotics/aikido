@@ -13,6 +13,7 @@
 #include "aikido/constraint/dart/FrameTestable.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
+#include "aikido/distance/NominalConfigurationRanker.hpp"
 #include "aikido/distance/defaults.hpp"
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
@@ -32,6 +33,8 @@ namespace aikido {
 namespace robot {
 namespace util {
 
+using common::cloneRNGFrom;
+using common::RNG;
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::InverseKinematicsSampleable;
 using constraint::dart::TSR;
@@ -41,6 +44,11 @@ using constraint::dart::createProjectableBounds;
 using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
 using distance::createDistanceMetric;
+using distance::ConfigurationRankerPtr;
+using distance::NominalConfigurationRanker;
+using planner::ConfigurationToConfiguration;
+using planner::SnapConfigurationToConfigurationPlanner;
+using planner::ompl::OMPLConfigurationToConfigurationPlanner;
 using statespace::GeodesicInterpolator;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
@@ -50,11 +58,6 @@ using trajectory::TrajectoryPtr;
 using trajectory::Interpolated;
 using trajectory::InterpolatedPtr;
 using trajectory::SplinePtr;
-using common::cloneRNGFrom;
-using common::RNG;
-using planner::ConfigurationToConfiguration;
-using planner::SnapConfigurationToConfigurationPlanner;
-using planner::ompl::OMPLConfigurationToConfigurationPlanner;
 
 using dart::collision::FCLCollisionDetector;
 using dart::common::make_unique;
@@ -171,7 +174,9 @@ trajectory::TrajectoryPtr planToTSR(
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit,
-    std::size_t maxNumTrials)
+    std::size_t maxNumTrials,
+    const Eigen::VectorXd& nominalPosition,
+    const distance::ConfigurationRankerPtr& ranker)
 {
   // Create an IK solver with metaSkeleton dofs.
   auto ik = InverseKinematics::create(bn);
@@ -213,54 +218,82 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{100};
+  static const std::size_t maxSnapSamples{1000};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   SnapConfigurationToConfigurationPlanner::Result pResult;
   auto problem = ConfigurationToConfiguration(
       space, startState, goalState, collisionTestable);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+  auto snapPlanner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
+
+  std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
+
+  ConfigurationRankerPtr _ranker(ranker);
+  if (!ranker)
+  {
+    auto nominalState = space->createState();
+
+    if (nominalPosition.size())
+      space->convertPositionsToState(nominalPosition, nominalState);
+    else
+      space->copyState(startState, nominalState);
+
+    _ranker = std::make_shared<NominalConfigurationRanker>(
+        space, metaSkeleton, std::vector<double>(), nominalState);
+  }
+
   while (snapSamples < maxSnapSamples && generator->canSample())
   {
     // Sample from TSR
-    {
-      std::lock_guard<std::mutex> lock(robot->getMutex());
 
-      bool sampled = generator->sample(goalState);
-      if (!sampled)
-      {
-        ++snapSamples;
-        continue;
-      }
+    std::lock_guard<std::mutex> lock(robot->getMutex());
 
-      // Set to start state
-      space->setState(metaSkeleton.get(), startState);
-    }
+    bool sampled = generator->sample(goalState);
+
     ++snapSamples;
 
-    auto traj = planner->plan(problem, &pResult);
+    if (!sampled)
+      continue;
 
-    if (traj)
-      return traj;
+    configurations.emplace_back(goalState.clone());
   }
 
-  // Start the timer
+  if (configurations.size() == 0)
+  {
+    // Set to start state
+    space->setState(metaSkeleton.get(), startState);
+    return nullptr;
+  }
+
+  _ranker->rankConfigurations(configurations);
+
+  // Try snap planner first
+  for (std::size_t i = 0; i < configurations.size(); ++i)
+  {
+    std::lock_guard<std::mutex> lock(robot->getMutex());
+
+    auto problem = ConfigurationToConfiguration(
+        space, startState, configurations[i], collisionTestable);
+
+    auto traj = snapPlanner->plan(problem, &pResult);
+
+    if (traj)
+    {
+      space->setState(metaSkeleton.get(), startState);
+      return traj;
+    }
+  }
+
   dart::common::Timer timer;
   timer.start();
-  while (timer.getElapsedTime() < timelimit && generator->canSample())
+  for (std::size_t i = 0; i < configurations.size(); ++i)
   {
-    // Sample from TSR
-    {
-      std::lock_guard<std::mutex> lock(robot->getMutex());
-      bool sampled = generator->sample(goalState);
-      if (!sampled)
-        continue;
+    std::lock_guard<std::mutex> lock(robot->getMutex());
 
-      // Set to start state
-      space->setState(metaSkeleton.get(), startState);
-    }
+    auto problem = ConfigurationToConfiguration(
+        space, startState, configurations[i], collisionTestable);
 
     auto traj = planToConfiguration(
         space,
@@ -271,9 +304,17 @@ trajectory::TrajectoryPtr planToTSR(
         std::min(timelimitPerSample, timelimit - timer.getElapsedTime()));
 
     if (traj)
+    {
+      space->setState(metaSkeleton.get(), startState);
       return traj;
+    }
   }
-  return nullptr;
+
+  {
+    std::lock_guard<std::mutex> lock(robot->getMutex());
+    space->setState(metaSkeleton.get(), startState);
+    return nullptr;
+  }
 }
 
 //==============================================================================

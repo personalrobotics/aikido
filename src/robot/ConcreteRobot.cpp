@@ -440,7 +440,8 @@ TrajectoryPtr ConcreteRobot::planToTSR(
       collisionConstraint,
       cloneRNG().get(),
       timelimit,
-      maxNumTrials);
+      maxNumTrials,
+      nominalPosition);
 }
 
 //==============================================================================
