@@ -38,7 +38,7 @@ ConfigurationRanker::ConfigurationRanker(
     for (std::size_t i = 0; i < weights.size(); ++i)
     {
       weights[i] = 1;
-    } 
+    }
   }
 
   // Create a temporary statespace to setup distance metric with weights.
