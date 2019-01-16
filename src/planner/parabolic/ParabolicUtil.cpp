@@ -17,7 +17,6 @@
 using Eigen::Vector2d;
 using aikido::statespace::StateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::trajectory::toR1JointTrajectory;
 using aikido::trajectory::ConstSplinePtr;
 using aikido::trajectory::ConstInterpolatedPtr;
@@ -31,6 +30,7 @@ namespace planner {
 namespace parabolic {
 namespace detail {
 
+//==============================================================================
 ParabolicRamp::Vector toVector(const Eigen::VectorXd& _x)
 {
   ParabolicRamp::Vector output(_x.size());
@@ -41,6 +41,7 @@ ParabolicRamp::Vector toVector(const Eigen::VectorXd& _x)
   return output;
 }
 
+//==============================================================================
 Eigen::VectorXd toEigen(const ParabolicRamp::Vector& _x)
 {
   Eigen::VectorXd output(_x.size());
@@ -51,6 +52,7 @@ Eigen::VectorXd toEigen(const ParabolicRamp::Vector& _x)
   return output;
 }
 
+//==============================================================================
 void evaluateAtTime(
     const ParabolicRamp::DynamicPath& _path,
     double _t,
@@ -66,6 +68,7 @@ void evaluateAtTime(
   _velocity = toEigen(velocityVector);
 }
 
+//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const ParabolicRamp::DynamicPath& _inputPath,
     double _startTime,
@@ -131,6 +134,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   return _outputTrajectory;
 }
 
+//==============================================================================
 std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     const aikido::trajectory::Spline& _inputTrajectory,
     const Eigen::VectorXd& _maxVelocity,
@@ -142,14 +146,17 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   auto metaSkeletonStateSpace
       = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
 
-  const auto numWaypoints = _inputTrajectory.getNumWaypoints();
+  const aikido::trajectory::Spline* trajectory = &_inputTrajectory;
 
   ConstSplinePtr r1Trajectory;
   if (metaSkeletonStateSpace)
   {
     r1Trajectory = toR1JointTrajectory(stateSpace, _inputTrajectory);
     stateSpace = r1Trajectory->getStateSpace();
+    trajectory = r1Trajectory.get();
   }
+
+  const auto numWaypoints = _inputTrajectory.getNumWaypoints();
 
   std::vector<ParabolicRamp::Vector> milestones;
   std::vector<ParabolicRamp::Vector> velocities;
@@ -161,12 +168,13 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
   {
     auto currentState = stateSpace->createState();
-    _inputTrajectory.getWaypoint(iwaypoint, currentState);
+    trajectory->getWaypoint(iwaypoint, currentState);
 
     stateSpace->logMap(currentState, currVec);
     milestones.emplace_back(toVector(currVec));
 
-    _inputTrajectory.getWaypointDerivative(iwaypoint, 1, tangentVector);
+    trajectory->getWaypointDerivative(iwaypoint, 1, tangentVector);
+
     velocities.emplace_back(toVector(tangentVector));
   }
 
@@ -188,6 +196,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   return outputPath;
 }
 
+//==============================================================================
 std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     const aikido::trajectory::Interpolated& _inputTrajectory,
     const Eigen::VectorXd& _maxVelocity,
@@ -200,11 +209,14 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
 
+  const aikido::trajectory::Interpolated* trajectory = &_inputTrajectory;
+
   ConstInterpolatedPtr r1Trajectory;
   if (metaSkeletonStateSpace)
   {
     r1Trajectory = toR1JointTrajectory(stateSpace, _inputTrajectory);
     stateSpace = r1Trajectory->getStateSpace();
+    trajectory = r1Trajectory.get();
   }
 
   std::vector<ParabolicRamp::Vector> milestones;
@@ -216,7 +228,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints; ++iwaypoint)
   {
-    auto currentState = _inputTrajectory.getWaypoint(iwaypoint);
+    auto currentState = trajectory->getWaypoint(iwaypoint);
     stateSpace->logMap(currentState, currVec);
     milestones.emplace_back(toVector(currVec));
   }
