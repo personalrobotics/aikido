@@ -26,6 +26,10 @@ ConfigurationRanker::ConfigurationRanker(
 
   if (weights.size() != 0)
   {
+    if (weights.size() != mMetaSkeletonStateSpace->getDimension())
+      throw std::invalid_argument(
+        "Weights size should match MetaSkeletonStateSpace dimension.");
+
     for (std::size_t i = 0; i < weights.size(); ++i)
     {
       if (weights[i] < 0)
