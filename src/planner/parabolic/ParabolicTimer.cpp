@@ -9,7 +9,6 @@
 #include "ParabolicUtil.hpp"
 
 using Eigen::Vector2d;
-using dart::common::make_unique;
 
 namespace aikido {
 namespace planner {

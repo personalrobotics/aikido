@@ -17,7 +17,6 @@ using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::SO2;
 using aikido::trajectory::TrajectoryPtr;
 using aikido::trajectory::Interpolated;
-using ::dart::common::make_unique;
 using ::dart::dynamics::Group;
 using ::dart::dynamics::Skeleton;
 using ::dart::dynamics::SkeletonPtr;
