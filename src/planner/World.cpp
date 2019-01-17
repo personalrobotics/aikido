@@ -40,7 +40,7 @@ std::unique_ptr<World> World::clone(const std::string& newName) const
   {
 #if DART_VERSION_AT_LEAST(6,7,0)
     const auto clonedSkeleton = mSkeletons[i]->cloneSkeleton();
-#elif
+#else
     const auto clonedSkeleton = mSkeletons[i]->clone();
 #endif
     clonedSkeleton->setConfiguration(mSkeletons[i]->getConfiguration());
