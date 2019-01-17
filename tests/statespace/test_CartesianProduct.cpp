@@ -20,7 +20,7 @@ TEST(CartesianProduct, Clone)
   for (auto i = 0u; i < 5u; ++i)
   {
     auto s1 = space.createState();
-#if DART_VERSION_AT_LEAST(6,7,0)
+#if DART_VERSION_AT_LEAST(6, 7, 0)
     const auto angle = dart::math::Random::uniform(-M_PI, M_PI);
 #else
     const auto angle = dart::math::random(-M_PI, M_PI);
