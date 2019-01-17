@@ -12,7 +12,11 @@ TEST(SE3, Clone)
   for (auto i = 0u; i < 5u; ++i)
   {
     Eigen::Isometry3d pose = Eigen::Isometry3d::Identity();
+#if DART_VERSION_AT_LEAST(6, 7, 0)
+    const auto angle = dart::math::Random::uniform(-M_PI, M_PI);
+#else
     const auto angle = dart::math::random(-M_PI, M_PI);
+#endif
     const auto axis = Eigen::Vector3d::Random().normalized();
     const auto angleAxis = Eigen::AngleAxisd(angle, axis);
     pose.linear() = angleAxis.toRotationMatrix();
