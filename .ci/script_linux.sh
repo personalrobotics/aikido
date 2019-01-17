@@ -26,12 +26,12 @@ fi
 
 # Run tests and measure test coverage if CodeCov is on.
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  ./scripts/internal-run.sh make -C build/aikido aikido_coverage
+  ./scripts/internal-run.sh make -C build/aikido aikido_coverage > /dev/null
 else
   ./scripts/internal-run.sh env CTEST_OUTPUT_ON_FAILURE=true make -C build/aikido test
 fi
 
 # Uploading report to CodeCov
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  bash <(curl -s https://codecov.io/bash) > /dev/null || echo "Codecov did not collect coverage reports"
+  bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
 fi
