@@ -77,6 +77,7 @@
   * Defined optional dependencies: [#376](https://github.com/personalrobotics/aikido/pull/376)
   * Fixed compilation bug with Eigen 3.3.5: [#452](https://github.com/personalrobotics/aikido/pull/452)
   * Updated gtest version to 1.8.1: [#478](https://github.com/personalrobotics/aikido/pull/478)
+  * Added DART 6.7 support: [#480](https://github.com/personalrobotics/aikido/pull/480)
 
 ### 0.2.0 (2018-01-09)
 
