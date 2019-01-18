@@ -57,6 +57,8 @@ public:
       double timelimit,
       double checkConstraintResolution);
 
+  virtual ~VectorFieldIntegrator();
+
   /// Called before doing integration.
   ///
   void start();
@@ -115,7 +117,7 @@ protected:
   double mConstraintCheckResolution;
 
   /// Current state in integration
-  aikido::statespace::StateSpace::ScopedState mState;
+  aikido::statespace::StateSpace::State* mState;
 
   /// Last evaluation time in checking trajectory
   double mLastEvaluationTime;

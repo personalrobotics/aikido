@@ -55,8 +55,8 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 /// \param[out] result information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const ::dart::dynamics::ConstBodyNodePtr& bn,
     const aikido::constraint::ConstTestablePtr& constraint,
@@ -99,6 +99,22 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double conversionRatioInGeodesicDistance,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double constraintCheckResolution,
+    std::chrono::duration<double> timelimit,
+    planner::Planner::Result* result = nullptr);
+
+std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
+    const aikido::constraint::ConstTestablePtr& constraint,
+    double positionTolerance,
+    double angularTolerance,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,

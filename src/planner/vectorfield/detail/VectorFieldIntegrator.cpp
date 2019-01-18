@@ -58,10 +58,17 @@ VectorFieldIntegrator::VectorFieldIntegrator(
   , mDimension(mVectorField->getStateSpace()->getDimension())
   , mTimelimit(timelimit)
   , mConstraintCheckResolution(checkConstraintResolution)
-  , mState(mVectorField->getStateSpace()->createState())
+  , mState(mVectorField->getStateSpace()->allocateState())
   , mLastEvaluationTime(0.0)
 {
-  // Do nothing
+  //Do Nothing
+}
+
+//==============================================================================
+VectorFieldIntegrator::~VectorFieldIntegrator()
+{
+  mVectorField->getStateSpace()->freeState(mState);
+  mState = nullptr;
 }
 
 //==============================================================================

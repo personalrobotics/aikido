@@ -1,20 +1,20 @@
-#include "aikido/planner/vectorfield/VectorFieldPlanner.hpp"
-
 #include <boost/numeric/odeint.hpp>
-
-#include "aikido/constraint/TestableIntersection.hpp"
-#include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
-#include "aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp"
-#include "aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp"
-#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
-#include "aikido/trajectory/Spline.hpp"
+#include <aikido/constraint/TestableIntersection.hpp>
+#include <aikido/constraint/dart/JointStateSpaceHelpers.hpp>
+#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
+#include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
+#include <aikido/planner/vectorfield/MoveEndEffectorTwistVectorField.hpp>
+#include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
+#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
+#include <aikido/trajectory/Spline.hpp>
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
 using aikido::planner::vectorfield::detail::VectorFieldIntegrator;
 using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
 using aikido::planner::vectorfield::MoveEndEffectorPoseVectorField;
+using aikido::planner::vectorfield::MoveEndEffectorTwistVectorField;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
 
 namespace aikido {
@@ -119,7 +119,8 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
             lastEvaluationTime,
             true))
     {
-      result->setMessage("Constraint violated.");
+        // TODO
+    //   result->setMessage("Constraint violated.");
       return nullptr;
     }
   }
@@ -128,8 +129,8 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
-    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::ConstBodyNodePtr& bn,
     const aikido::constraint::ConstTestablePtr& constraint,
@@ -151,6 +152,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   }
   auto robot = metaskeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
+  // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference());
   // TODO(JS): The above code should be replaced by
   // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
   // once https://github.com/dartsim/dart/pull/1011 is released.
@@ -182,6 +184,73 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
+  return followVectorField(
+      *vectorfield,
+      startState,
+      *compoundConstraint,
+      timelimit,
+      initialStepSize,
+      constraintCheckResolution,
+      result);
+}
+
+std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
+    const aikido::constraint::ConstTestablePtr& constraint,
+    double positionTolerance,
+    double angularTolerance,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double constraintCheckResolution,
+    std::chrono::duration<double> timelimit,
+    planner::Planner::Result* result)
+{
+  // ensure that no two planners run at the same time
+  if (metaskeleton->getNumBodyNodes() == 0)
+  {
+    throw std::runtime_error("MetaSkeleton doesn't have any body nodes.");
+  }
+  auto robot = metaskeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
+  // TODO(JS): The above code should be replaced by
+  // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
+  // once https://github.com/dartsim/dart/pull/1011 is released.
+
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+
+  // Save the current state of the space
+  auto saver = MetaSkeletonStateSaver(
+      metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
+  DART_UNUSED(saver);
+
+  stateSpace->setState(metaskeleton.get(), &startState);
+
+  auto vectorfield
+      = dart::common::make_aligned_shared<MoveEndEffectorTwistVectorField>(
+          stateSpace,
+          metaskeleton,
+          bn,
+          twistSeq,
+          durationSeq,
+          positionTolerance,
+          angularTolerance,
+          initialStepSize,
+          jointLimitTolerance);
+
+  auto compoundConstraint
+      = std::make_shared<constraint::TestableIntersection>(stateSpace);
+
+  if (constraint)
+    compoundConstraint->addConstraint(constraint);
+
+  compoundConstraint->addConstraint(
+      constraint::dart::createTestableBounds(stateSpace));
+
   return followVectorField(
       *vectorfield,
       startState,
