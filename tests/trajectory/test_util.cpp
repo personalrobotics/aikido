@@ -99,4 +99,8 @@ TEST_F(TrajectoryConversionTest, SuccessfulConversionToR1)
     outputStateSpace->logMap(sstate, stateVector);
     EXPECT_EQ(stateVector(0), testVector(i));
   }
+  auto sstate = outputStateSpace->createState();
+  convertedTrajectory->evaluate(convertedTrajectory->getDuration()*0.75, sstate);
+  outputStateSpace->logMap(sstate, stateVector);
+  EXPECT_EQ(stateVector(0), (testVector(2) + testVector(1))/2.0);
 }
