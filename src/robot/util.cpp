@@ -7,6 +7,7 @@
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
+#include "aikido/constraint/SequentialSampleable.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
@@ -27,14 +28,12 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
-#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
-
 namespace aikido {
 namespace robot {
 namespace util {
 
-using common::cloneRNGFrom;
-using common::RNG;
+using constraint::FiniteSampleable;
+using constraint::SequentialSampleable;
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::InverseKinematicsSampleable;
 using constraint::dart::TSR;
@@ -44,11 +43,7 @@ using constraint::dart::createProjectableBounds;
 using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
 using distance::createDistanceMetric;
-using distance::ConfigurationRankerPtr;
 using distance::NominalConfigurationRanker;
-using planner::ConfigurationToConfiguration;
-using planner::SnapConfigurationToConfigurationPlanner;
-using planner::ompl::OMPLConfigurationToConfigurationPlanner;
 using statespace::GeodesicInterpolator;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSaver;
@@ -58,6 +53,10 @@ using trajectory::TrajectoryPtr;
 using trajectory::Interpolated;
 using trajectory::InterpolatedPtr;
 using trajectory::SplinePtr;
+using common::cloneRNGFrom;
+using common::RNG;
+using planner::ConfigurationToConfiguration;
+using planner::SnapConfigurationToConfigurationPlanner;
 
 using dart::collision::FCLCollisionDetector;
 using dart::common::make_unique;
@@ -79,8 +78,6 @@ trajectory::TrajectoryPtr planToConfiguration(
     RNG* rng,
     double timelimit)
 {
-  DART_UNUSED(timelimit);
-
   using planner::ompl::planOMPL;
   using planner::ConfigurationToConfiguration;
   using planner::SnapConfigurationToConfigurationPlanner;
@@ -107,12 +104,18 @@ trajectory::TrajectoryPtr planToConfiguration(
   if (untimedTrajectory)
     return untimedTrajectory;
 
-  auto plannerOMPL = std::
-      make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
-                                                              RRTConnect>>(
-          space, rng);
-
-  untimedTrajectory = plannerOMPL->plan(problem, &pResult);
+  untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
+      startState,
+      goalState,
+      space,
+      std::make_shared<GeodesicInterpolator>(space),
+      createDistanceMetric(space),
+      createSampleableBounds(space, rng->clone()),
+      collisionTestable,
+      createTestableBounds(space),
+      createProjectableBounds(space),
+      timelimit,
+      collisionResolution);
 
   return untimedTrajectory;
 }
@@ -127,7 +130,6 @@ trajectory::TrajectoryPtr planToConfigurations(
     double timelimit)
 {
   using planner::ompl::planOMPL;
-  DART_UNUSED(timelimit);
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
@@ -140,9 +142,9 @@ trajectory::TrajectoryPtr planToConfigurations(
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
 
+  // First test with Snap Planner
   for (const auto& goalState : goalStates)
   {
-    // First test with Snap Planner
     auto problem = ConfigurationToConfiguration(
         space, startState, goalState, collisionTestable);
     TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
@@ -151,16 +153,30 @@ trajectory::TrajectoryPtr planToConfigurations(
     if (untimedTrajectory)
       return untimedTrajectory;
 
-    auto plannerOMPL = std::
-        make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
-                                                                RRTConnect>>(
-            space, rng);
-
-    untimedTrajectory = plannerOMPL->plan(problem, &pResult);
-
-    if (untimedTrajectory)
-      return untimedTrajectory;
   }
+
+  // Next try RRTConnect
+  for (const auto& goalState : goalStates)
+  {
+    TrajectoryPtr untimedTrajectory = planOMPL<ompl::geometric::RRTConnect>(
+        startState,
+        goalState,
+        space,
+        std::make_shared<GeodesicInterpolator>(space),
+        createDistanceMetric(space),
+        createSampleableBounds(space, rng->clone()),
+        collisionTestable,
+        createTestableBounds(space),
+        createProjectableBounds(space),
+        timelimit,
+        collisionResolution);
+
+    return untimedTrajectory;
+
+  }
+
+
+    
 
   return nullptr;
 }
@@ -174,10 +190,10 @@ trajectory::TrajectoryPtr planToTSR(
     const TestablePtr& collisionTestable,
     RNG* rng,
     double timelimit,
-    std::size_t maxNumTrials,
-    const Eigen::VectorXd& nominalPosition,
-    const distance::ConfigurationRankerPtr& ranker)
+    std::size_t maxNumTrials)
 {
+  using planner::ompl::planOMPL;
+
   // Create an IK solver with metaSkeleton dofs.
   auto ik = InverseKinematics::create(bn);
 
@@ -194,21 +210,22 @@ trajectory::TrajectoryPtr planToTSR(
 
   ik->setDofs(metaSkeleton->getDofs());
 
+  // Create a sequential sampleable to provide seeds for IK solver
+  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+
+  std::vector<constraint::ConstSampleablePtr> sampleables
+      = {std::make_shared<FiniteSampleable>(space, startState),
+         createSampleableBounds(space, rng->clone())};
+  auto sampleable = std::make_shared<SequentialSampleable>(space, sampleables);
+
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
-      space,
-      metaSkeleton,
-      tsr,
-      createSampleableBounds(space, rng->clone()),
-      ik,
-      maxNumTrials);
+      space, metaSkeleton, tsr, sampleable, ik, maxNumTrials);
 
   auto generator = ikSampleable.createSampleGenerator();
 
   // Goal state
   auto goalState = space->createState();
-
-  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
   // TODO: Change this to timelimit once we use a fail-fast planner
   double timelimitPerSample = timelimit / maxNumTrials;
@@ -218,92 +235,84 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{1000};
+  static const std::size_t maxSnapSamples{300};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   SnapConfigurationToConfigurationPlanner::Result pResult;
   auto problem = ConfigurationToConfiguration(
       space, startState, goalState, collisionTestable);
-  auto snapPlanner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
 
-  std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
+  // Collect and rank configurations
+  auto sampleState = space->createState();
+  std::vector<statespace::CartesianProduct::ScopedState> configurations;
+  NominalConfigurationRanker ranker(space, metaSkeleton, startState);
 
-  ConfigurationRankerPtr _ranker(ranker);
-  if (!ranker)
-  {
-    auto nominalState = space->createState();
-
-    if (nominalPosition.size())
-      space->convertPositionsToState(nominalPosition, nominalState);
-    else
-      space->copyState(startState, nominalState);
-
-    _ranker = std::make_shared<NominalConfigurationRanker>(
-        space, metaSkeleton, std::vector<double>(), nominalState);
-  }
-
-  while (snapSamples < maxSnapSamples && generator->canSample())
+  // Start the timer
+  dart::common::Timer timer;
+  timer.start();
+  while (timer.getElapsedTime() < timelimit && snapSamples < maxSnapSamples
+         && generator->canSample())
   {
     // Sample from TSR
-
     std::lock_guard<std::mutex> lock(robot->getMutex());
-
-    bool sampled = generator->sample(goalState);
-
-    ++snapSamples;
-
+    bool sampled = generator->sample(sampleState);
     if (!sampled)
       continue;
 
-    configurations.emplace_back(goalState.clone());
+    configurations.emplace_back(sampleState.clone());
+    ++snapSamples;
+  }
+  if (configurations.size() == 0) {
+      std::cout << "planToTSR: No configurations found!" << std::endl;
   }
 
+  std::vector<statespace::CartesianProduct::State*> configurations_raw(
+      configurations.size());
+  for (auto i = 0; i < configurations.size(); ++i)
+    configurations_raw[i] = configurations[i];
+  ranker.rankConfigurations(configurations_raw);
+
+  for (int i = 0; i < configurations_raw.size(); ++i)
   {
-    // Set to start state
-    std::lock_guard<std::mutex> lock(robot->getMutex());
     space->setState(metaSkeleton.get(), startState);
-  }
+    space->copyState(configurations_raw[i], goalState);
 
-  if (configurations.size() == 0)
-    return nullptr;
+    auto traj = planner->plan(problem, &pResult);
 
-  _ranker->rankConfigurations(configurations);
-
-  // Try snap planner first
-  for (std::size_t i = 0; i < configurations.size(); ++i)
-  {
-    auto problem = ConfigurationToConfiguration(
-        space, startState, configurations[i], collisionTestable);
-
-    auto traj = snapPlanner->plan(problem, &pResult);
-
-    if (traj)
-    {
-      space->setState(metaSkeleton.get(), startState);
+    if (traj) {
       return traj;
     }
+
+
+    
+
   }
+  std::cout << "SnapPlanner failed. Planning with RRT" << std::endl;
 
-  dart::common::Timer timer;
-  timer.start();
-  for (std::size_t i = 0; i < configurations.size(); ++i)
+  for (int i = 0; i < configurations_raw.size(); ++i)
   {
-    auto problem = ConfigurationToConfiguration(
-        space, startState, configurations[i], collisionTestable);
-
-    auto traj = planToConfiguration(
-        space,
-        metaSkeleton,
-        goalState,
-        collisionTestable,
-        rng,
-        std::min(timelimitPerSample, timelimit - timer.getElapsedTime()));
+    space->setState(metaSkeleton.get(), startState);
+    space->copyState(configurations_raw[i], goalState);
+    auto traj = planOMPL<ompl::geometric::RRTConnect>(
+      startState,
+      goalState,
+      space,
+      std::make_shared<GeodesicInterpolator>(space),
+      createDistanceMetric(space),
+      createSampleableBounds(space, rng->clone()),
+      collisionTestable,
+      createTestableBounds(space),
+      createProjectableBounds(space),
+      timelimit/configurations_raw.size(),
+      collisionResolution);
 
     if (traj)
-      return traj;
+        return traj;
   }
+  std::cout << "RRT also failed." << std::endl;
   return nullptr;
 }
 
@@ -436,8 +445,8 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
 
   auto traj = planner::vectorfield::planToEndEffectorOffset(
-      space,
       *startState,
+      space,
       metaSkeleton,
       bodyNode,
       collisionTestable,
@@ -522,6 +531,53 @@ InterpolatedPtr planToEndEffectorOffsetByCRRT(
 
   return untimedTrajectory;
 }
+
+//==============================================================================
+trajectory::TrajectoryPtr planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
+    const constraint::TestablePtr& collisionTestable,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance,
+    const VectorFieldPlannerParameters& vfParameters)
+{
+  // if twist is a zero vector
+  if (twistSeq.norm() == 0)
+  {
+    throw std::runtime_error("Twists vector cannot be empty");
+  }
+
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
+
+  auto startState = space->createState();
+  space->getState(metaSkeleton.get(), startState);
+
+  // Using the twist and duration, compute the vectorfield, generate trajectory.
+  trajectory::TrajectoryPtr untimedTrajectory
+      = planner::vectorfield::planWithEndEffectorTwist(
+          space,
+          *startState,
+          metaSkeleton,
+          bodyNode,
+          twistSeq,
+          durationSeq,
+          collisionTestable,
+          positionTolerance,
+          angularTolerance,
+        0.1, 0.1, 0.1, std::chrono::duration<double>(timelimit));
+//          vfParameters.initialStepSize,
+//          vfParameters.jointLimitTolerance,
+//          vfParameters.constraintCheckResolution,
+//          std::chrono::duration<double>(timelimit));
+
+  return std::move(untimedTrajectory);
+}
+
 //==============================================================================
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node)

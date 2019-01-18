@@ -9,7 +9,6 @@
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
-#include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/io/yaml.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
@@ -134,8 +133,6 @@ trajectory::TrajectoryPtr planToConfigurations(
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
 /// \param[in] maxNumTrials Number of retries before failure.
-/// \param[in] nominalPosition Nominal position to start planning from.
-/// \param[in] ranker Ranker to rank the resulting configurations.
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::TrajectoryPtr planToTSR(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -145,9 +142,7 @@ trajectory::TrajectoryPtr planToTSR(
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
     double timelimit,
-    std::size_t maxNumTrials,
-    const Eigen::VectorXd& nominalPosition = Eigen::VectorXd(0),
-    const distance::ConfigurationRankerPtr& ranker = nullptr);
+    std::size_t maxNumTrials);
 
 /// Returns a Trajectory that moves the configuration of the metakeleton such
 /// that the specified bodynode is set to a sample in a goal TSR and
@@ -224,6 +219,32 @@ trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
     double positionTolerance = 1e-3,
     double angularTolerance = 1e-3,
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
+
+/// Plan with a desired end-effector twist.
+/// \param[in] space StateSpace for the metaskeleton
+/// \param[in] metaSkeleton Metaskeleton to plan with
+/// \param[in] body Bodynode for the end-effector
+/// \param[in] twist Twist for the end-effector
+/// \param[in] duration Time to plan with the desired twist
+/// \param[in] collisionTestable Collision constraint to check. Self-collision
+/// is checked by default.
+/// \param[in] timelimit Timelimit for the plan to be generated
+/// \param[in] positionTolerance Tolerance in position // do I need this?
+/// \param[in] angularTolerance Tolerance in angle // do I need this?
+/// \param[in] vfParameters VectorFieldPlanenr parameters
+/// \return Output trajectory
+trajectory::TrajectoryPtr planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector6d& twists,
+    double durations,
+    const constraint::TestablePtr& collisionTestable,
+    double timelimit,
+    double positionTolerance = 1e-3,
+    double angularTolerance = 1e-3,
+    const VectorFieldPlannerParameters& vfParameters
+    = VectorFieldPlannerParameters());
 
 /// Parses YAML node for named configurtaions
 /// \param[in] node YAML node containing named configurations
