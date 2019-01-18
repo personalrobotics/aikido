@@ -1,5 +1,4 @@
 #include "aikido/robot/ConcreteManipulator.hpp"
-#include "aikido/planner/dart/util.hpp"
 #include "aikido/robot/util.hpp"
 
 namespace aikido {
@@ -33,18 +32,6 @@ std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::retimePath(
     const aikido::trajectory::Trajectory* path)
 {
   return mRobot->retimePath(metaSkeleton, path);
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline>
-ConcreteManipulator::retimePathWithKunzTimer(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    double maxDeviation,
-    double timestep)
-{
-  return mRobot->retimePathWithKunzTimer(
-      metaSkeleton, path, maxDeviation, timestep);
 }
 
 //==============================================================================
@@ -152,6 +139,44 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
 }
 
 //==============================================================================
+trajectory::TrajectoryPtr ConcreteManipulator::planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector6d& twists,
+    double durations,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance)
+{
+
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  auto trajectory = util::planWithEndEffectorTwist(
+      space,
+      metaSkeleton,
+      body,
+      twists,
+      durations,
+      collision,
+      timelimit,
+      positionTolerance,
+      angularTolerance,
+      mVectorFieldParameters);
+
+  return trajectory;
+}
+
+//==============================================================================
+Eigen::Vector3d ConcreteManipulator::getEndEffectorDirection(
+    const dart::dynamics::BodyNodePtr& body) const
+{
+  const std::size_t zDirection = 2;
+  return body->getWorldTransform().linear().col(zDirection).normalized();
+}
+
+//==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -165,8 +190,7 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
   auto collision
       = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
 
-  Eigen::Vector3d direction
-      = planner::dart::util::getEndEffectorDirection(body);
+  Eigen::Vector3d direction = getEndEffectorDirection(body);
 
   if (distance < 0)
   {
