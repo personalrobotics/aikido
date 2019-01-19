@@ -19,7 +19,7 @@ Interpolated::Interpolated(
 //==============================================================================
 Interpolated::~Interpolated()
 {
-  for (auto waypoint : mWaypoints)
+  for (auto& waypoint : mWaypoints)
     waypoint.free(mStateSpace);
 }
 
