@@ -12,17 +12,21 @@
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SO2.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/statespace/dart/CartesianProductMetaSkeletonStateSpace.hpp"
+
 #include "aikido/trajectory/Interpolated.hpp"
 
 using aikido::statespace::R;
 using aikido::statespace::R1;
 using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
+using aikido::statespace::CartesianProductPtr;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+using aikido::statespace::dart::CartesianProductMetaSkeletonStateSpace;
 using dart::common::make_unique;
 
 using Eigen::Vector2d;
@@ -383,7 +387,16 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
   for (std::size_t i = 0; i < space->getDimension(); ++i)
     subspaces.emplace_back(std::make_shared<const R1>());
 
-  auto rSpace = std::make_shared<CartesianProduct>(subspaces);
+  // rSpace needs to contain metaSkeletonStateSpace
+  // if the original space is MetaSkeletonStateSpace.
+  CartesianProductPtr rSpace;
+  auto metaSkeletonStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
+  if (metaSkeletonStateSpace)
+    rSpace = std::make_shared<CartesianProductMetaSkeletonStateSpace>(
+      subspaces, metaSkeletonStateSpace);
+  else
+    rSpace = std::make_shared<CartesianProduct>(subspaces);
+
   auto rInterpolator = std::make_shared<GeodesicInterpolator>(rSpace);
   auto rTrajectory = std::make_shared<Interpolated>(rSpace, rInterpolator);
 
