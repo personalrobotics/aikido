@@ -10,10 +10,13 @@ namespace dart {
 
 AIKIDO_DECLARE_POINTERS(CartesianProductMetaSkeletonStateSpace)
 
-/// \c StateSpace of a DART \c MetaSkeleton with artificially created state space.
-/// It is a CartesianProduct but has access to the original MetaSkeletonStateSpace.
-/// This class is necessary when a different state space from MetaSkeletonStateSpace
-/// needs to be used, e.g. for the control of SO2 joint..
+/// \c StateSpace of a DART \c MetaSkeleton with artificially created state
+/// space.
+/// It is a CartesianProduct but has access to the original
+/// MetaSkeletonStateSpace.
+/// This class is necessary when a different state space from
+/// MetaSkeletonStateSpace
+/// needs to be used, e.g. for the control of SO2 joint.
 class CartesianProductMetaSkeletonStateSpace : public CartesianProduct
 {
 public:
@@ -21,8 +24,8 @@ public:
   /// \param[in] subspaces vector of subspaces
   /// \param[in] metaSkeletonStateSpace
   explicit CartesianProductMetaSkeletonStateSpace(
-    std::vector<ConstStateSpacePtr> subspaces,
-    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace);
+      std::vector<ConstStateSpacePtr> subspaces,
+      ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace);
 
   /// \return MetaSkeletonStateSpace associated with this statespace.
   ConstMetaSkeletonStateSpacePtr getMetaSkeletonStateSpace() const;

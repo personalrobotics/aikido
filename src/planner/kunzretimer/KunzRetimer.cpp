@@ -24,7 +24,8 @@ namespace kunzretimer {
 namespace detail {
 //==============================================================================
 std::unique_ptr<Path> convertToKunzPath(
-    const aikido::trajectory::Interpolated& traj, double maxDeviation,
+    const aikido::trajectory::Interpolated& traj,
+    double maxDeviation,
     statespace::ConstStateSpacePtr& outputStateSpace)
 {
   auto stateSpace = traj.getStateSpace();
@@ -57,7 +58,8 @@ std::unique_ptr<Path> convertToKunzPath(
 
 //==============================================================================
 std::unique_ptr<Path> convertToKunzPath(
-    const aikido::trajectory::Spline& traj, double maxDeviation,
+    const aikido::trajectory::Spline& traj,
+    double maxDeviation,
     statespace::ConstStateSpacePtr& outputStateSpace)
 {
   auto stateSpace = traj.getStateSpace();
@@ -180,11 +182,12 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 
   ConstStateSpacePtr outputStateSpace;
   auto path = detail::convertToKunzPath(
-    inputTrajectory, maxDeviation, outputStateSpace);
+      inputTrajectory, maxDeviation, outputStateSpace);
 
   Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
 
-  return detail::convertToSpline(trajectory, outputStateSpace, timeStep, startTime);
+  return detail::convertToSpline(
+      trajectory, outputStateSpace, timeStep, startTime);
 }
 
 //==============================================================================
@@ -221,11 +224,12 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 
   ConstStateSpacePtr outputStateSpace;
   auto path = detail::convertToKunzPath(
-    inputTrajectory, maxDeviation, outputStateSpace);
+      inputTrajectory, maxDeviation, outputStateSpace);
 
   Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
 
-  return detail::convertToSpline(trajectory, outputStateSpace, timeStep, startTime);
+  return detail::convertToSpline(
+      trajectory, outputStateSpace, timeStep, startTime);
 }
 
 //==============================================================================

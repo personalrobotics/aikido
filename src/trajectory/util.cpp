@@ -11,8 +11,8 @@
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SO2.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/statespace/dart/CartesianProductMetaSkeletonStateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 #include "aikido/trajectory/Interpolated.hpp"
 
@@ -390,10 +390,11 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
   // rSpace needs to contain metaSkeletonStateSpace
   // if the original space is MetaSkeletonStateSpace.
   CartesianProductPtr rSpace;
-  auto metaSkeletonStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
+  auto metaSkeletonStateSpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
   if (metaSkeletonStateSpace)
     rSpace = std::make_shared<CartesianProductMetaSkeletonStateSpace>(
-      subspaces, metaSkeletonStateSpace);
+        subspaces, metaSkeletonStateSpace);
   else
     rSpace = std::make_shared<CartesianProduct>(subspaces);
 

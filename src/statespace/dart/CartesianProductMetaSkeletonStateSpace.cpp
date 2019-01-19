@@ -6,16 +6,17 @@ namespace dart {
 
 //==============================================================================
 CartesianProductMetaSkeletonStateSpace::CartesianProductMetaSkeletonStateSpace(
-  std::vector<ConstStateSpacePtr> subspaces,
-  ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace)
-: CartesianProduct(std::move(subspaces))
-, mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
+    std::vector<ConstStateSpacePtr> subspaces,
+    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace)
+  : CartesianProduct(std::move(subspaces))
+  , mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
 {
   // do nothing.
 }
 
 //==============================================================================
-ConstMetaSkeletonStateSpacePtr CartesianProductMetaSkeletonStateSpace::getMetaSkeletonStateSpace() const
+ConstMetaSkeletonStateSpacePtr
+CartesianProductMetaSkeletonStateSpace::getMetaSkeletonStateSpace() const
 {
   return mMetaSkeletonStateSpace;
 }

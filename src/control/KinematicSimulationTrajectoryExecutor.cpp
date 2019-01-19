@@ -57,8 +57,9 @@ void KinematicSimulationTrajectoryExecutor::validate(
 
   if (!space)
   {
-    const auto cpSpace = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
-      traj->getStateSpace());
+    const auto cpSpace = std::
+        dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
+            traj->getStateSpace());
 
     if (cpSpace)
     {
@@ -70,8 +71,9 @@ void KinematicSimulationTrajectoryExecutor::validate(
         if (!r1)
         {
           std::stringstream message;
-          message << "Trajectory is not in a MetaSkeletonStateSpace"
-          << " or in CartesianProductMetaSkeletonStateSpace of R1 spaces.";
+          message
+              << "Trajectory is not in a MetaSkeletonStateSpace"
+              << " or in CartesianProductMetaSkeletonStateSpace of R1 spaces.";
           throw std::invalid_argument(message.str());
         }
       }
@@ -80,7 +82,7 @@ void KinematicSimulationTrajectoryExecutor::validate(
     {
       std::stringstream message;
       message << "Trajectory is not in a MetaSkeletonStateSpace"
-      << "nor in CartesianProductMetaSkeletonStateSpace.";
+              << "nor in CartesianProductMetaSkeletonStateSpace.";
       throw std::invalid_argument(message.str());
     }
   }
@@ -117,17 +119,19 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
 
     if (!mStateSpace)
     {
-      auto cpSpace = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
-        mTraj->getStateSpace());
+      auto cpSpace = std::
+          dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
+              mTraj->getStateSpace());
       if (!cpSpace)
         throw std::invalid_argument("Invalid");
       mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-        cpSpace->getMetaSkeletonStateSpace());
+          cpSpace->getMetaSkeletonStateSpace());
     }
 
     if (!mStateSpace)
       throw std::invalid_argument(
-        "Statespace needs to be either MetaSkeletonStateSpace or CartesianProduct.");
+          "Statespace needs to be either MetaSkeletonStateSpace or "
+          "CartesianProduct.");
 
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
@@ -176,8 +180,9 @@ void KinematicSimulationTrajectoryExecutor::step(
   if (executionTime < 0)
     return;
 
-  const auto cpSpace = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
-        mTraj->getStateSpace());
+  const auto cpSpace
+      = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
+          mTraj->getStateSpace());
 
   if (!cpSpace)
   {

@@ -1,15 +1,14 @@
 #include <tuple>
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
-#include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/statespace/SO2.hpp>
-#include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
+#include <aikido/statespace/GeodesicInterpolator.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/util.hpp>
-
 
 using std::shared_ptr;
 using std::make_shared;
@@ -59,7 +58,7 @@ TEST_F(TrajectoryConversionTest, SuccessfulConversionToR1)
 
   // Add waypoints
   Eigen::VectorXd stateVector(stateSpace->getDimension());
-  
+
   stateVector << 3.0;
   auto s1 = stateSpace->createState();
   stateSpace->convertPositionsToState(stateVector, s1);
@@ -78,7 +77,8 @@ TEST_F(TrajectoryConversionTest, SuccessfulConversionToR1)
   // Convert the trajectory.
   ConstStateSpacePtr outputStateSpace;
   outputStateSpace = std::move(stateSpace);
-  auto convertedTrajectory = toR1JointTrajectory(outputStateSpace, *(trajectory.get()));
+  auto convertedTrajectory
+      = toR1JointTrajectory(outputStateSpace, *(trajectory.get()));
 
   // // Test the states in the interpolated trajectory.
   std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
@@ -92,7 +92,7 @@ TEST_F(TrajectoryConversionTest, SuccessfulConversionToR1)
   EXPECT_EQ(3, convertedTrajectory->getNumWaypoints());
 
   Eigen::VectorXd testVector(convertedTrajectory->getNumWaypoints());
-  testVector << 3.0, M_PI, 2*M_PI - 3.0;
+  testVector << 3.0, M_PI, 2 * M_PI - 3.0;
   for (std::size_t i = 0; i < convertedTrajectory->getNumWaypoints(); ++i)
   {
     auto sstate = convertedTrajectory->getWaypoint(i);
@@ -100,7 +100,8 @@ TEST_F(TrajectoryConversionTest, SuccessfulConversionToR1)
     EXPECT_EQ(stateVector(0), testVector(i));
   }
   auto sstate = outputStateSpace->createState();
-  convertedTrajectory->evaluate(convertedTrajectory->getDuration()*0.75, sstate);
+  convertedTrajectory->evaluate(
+      convertedTrajectory->getDuration() * 0.75, sstate);
   outputStateSpace->logMap(sstate, stateVector);
-  EXPECT_EQ(stateVector(0), (testVector(2) + testVector(1))/2.0);
+  EXPECT_EQ(stateVector(0), (testVector(2) + testVector(1)) / 2.0);
 }
