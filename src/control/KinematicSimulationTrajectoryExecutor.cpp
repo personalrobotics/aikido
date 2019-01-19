@@ -52,12 +52,12 @@ void KinematicSimulationTrajectoryExecutor::validate(
   if (mValidatedTrajectories.find(traj) != mValidatedTrajectories.end())
     return;
 
-  auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+  const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
   if (!space)
   {
-    auto cpSpace = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
+    const auto cpSpace = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
       traj->getStateSpace());
 
     if (cpSpace)
@@ -176,7 +176,7 @@ void KinematicSimulationTrajectoryExecutor::step(
   if (executionTime < 0)
     return;
 
-  auto cpSpace = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
+  const auto cpSpace = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
         mTraj->getStateSpace());
 
   if (!cpSpace)
