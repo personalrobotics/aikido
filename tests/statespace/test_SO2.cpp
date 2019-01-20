@@ -33,7 +33,11 @@ TEST(SO2, Clone)
 
   for (auto i = 0u; i < 5u; ++i)
   {
+#if DART_VERSION_AT_LEAST(6, 7, 0)
+    const auto angle = dart::math::Random::uniform(-M_PI, M_PI);
+#else
     const auto angle = dart::math::random(-M_PI, M_PI);
+#endif
 
     auto s1 = so2.createState();
     s1.fromAngle(angle);
