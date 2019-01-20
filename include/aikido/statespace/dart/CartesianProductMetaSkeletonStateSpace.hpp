@@ -21,7 +21,7 @@ class CartesianProductMetaSkeletonStateSpace : public CartesianProduct
 {
 public:
   /// Constructor.
-  /// \param[in] subspaces vector of subspaces
+  /// \param[in] subspaces Vector of subspaces
   /// \param[in] metaSkeletonStateSpace
   explicit CartesianProductMetaSkeletonStateSpace(
       std::vector<ConstStateSpacePtr> subspaces,
