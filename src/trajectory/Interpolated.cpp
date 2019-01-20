@@ -222,7 +222,10 @@ void Interpolated::Waypoint::free(
     const statespace::ConstStateSpacePtr& stateSpace)
 {
   if (state)
+  {
     stateSpace->freeState(state);
+    state = nullptr;
+  }
 }
 
 } // namespace trajectory
