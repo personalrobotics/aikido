@@ -15,7 +15,6 @@ using aikido::constraint::CyclicSampleable;
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
 using State = aikido::statespace::StateSpace::State;
-using dart::common::make_unique;
 using aikido::common::RNGWrapper;
 using aikido::common::RNG;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
@@ -24,7 +23,7 @@ EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2d)
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
-  return make_unique<RNGWrapper<std::default_random_engine>>(0);
+  return ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
 }
 
 TEST(CyclicSampleableTest, ConstructorThrowsOnNullConstraint)

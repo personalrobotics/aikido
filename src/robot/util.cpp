@@ -57,7 +57,6 @@ using planner::SnapConfigurationToConfigurationPlanner;
 using planner::ompl::OMPLConfigurationToConfigurationPlanner;
 
 using dart::collision::FCLCollisionDetector;
-using dart::common::make_unique;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::ChainPtr;
 using dart::dynamics::InverseKinematics;
