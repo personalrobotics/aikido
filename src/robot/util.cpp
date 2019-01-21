@@ -60,6 +60,7 @@ using trajectory::InterpolatedPtr;
 using trajectory::SplinePtr;
 
 using dart::collision::FCLCollisionDetector;
+using dart::common::make_unique;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::ChainPtr;
 using dart::dynamics::InverseKinematics;
@@ -521,6 +522,56 @@ InterpolatedPtr planToEndEffectorOffsetByCRRT(
 
   return untimedTrajectory;
 }
+
+//==============================================================================
+trajectory::TrajectoryPtr planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
+    const constraint::TestablePtr& collisionTestable,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance,
+    const VectorFieldPlannerParameters& vfParameters)
+{
+  // if twist is a zero vector
+  if (twistSeq.norm() == 0)
+  {
+    throw std::runtime_error("Twists vector cannot be empty");
+  }
+
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
+
+  auto startState = space->createState();
+  space->getState(metaSkeleton.get(), startState);
+
+  // Using the twist and duration, compute the vectorfield, generate trajectory.
+  trajectory::TrajectoryPtr untimedTrajectory
+      = planner::vectorfield::planWithEndEffectorTwist(
+          space,
+          *startState,
+          metaSkeleton,
+          bodyNode,
+          twistSeq,
+          durationSeq,
+          collisionTestable,
+          positionTolerance,
+          angularTolerance,
+          0.1,
+          0.1,
+          0.1,
+          std::chrono::duration<double>(timelimit));
+  //          vfParameters.initialStepSize,
+  //          vfParameters.jointLimitTolerance,
+  //          vfParameters.constraintCheckResolution,
+  //          std::chrono::duration<double>(timelimit));
+
+  return std::move(untimedTrajectory);
+}
+
 //==============================================================================
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node)

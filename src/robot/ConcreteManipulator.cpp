@@ -191,6 +191,36 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
 }
 
 //==============================================================================
+trajectory::TrajectoryPtr ConcreteManipulator::planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector6d& twists,
+    double durations,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance)
+{
+
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  auto trajectory = util::planWithEndEffectorTwist(
+      space,
+      metaSkeleton,
+      body,
+      twists,
+      durations,
+      collision,
+      timelimit,
+      positionTolerance,
+      angularTolerance,
+      mVectorFieldParameters);
+
+  return trajectory;
+}
+
+//==============================================================================
 void ConcreteManipulator::setVectorFieldPlannerParameters(
     const util::VectorFieldPlannerParameters& vfParameters)
 {
