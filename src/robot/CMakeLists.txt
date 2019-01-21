@@ -33,6 +33,7 @@ target_link_libraries("${PROJECT_NAME}_robot"
     "${PROJECT_NAME}_planner_ompl"
     "${PROJECT_NAME}_planner_parabolic"
     "${PROJECT_NAME}_planner_vectorfield"
+    "${PROJECT_NAME}_planner_kunzretimer"
     "${PROJECT_NAME}_constraint"
     "${PROJECT_NAME}_distance"
     "${PROJECT_NAME}_trajectory"
@@ -53,6 +54,7 @@ add_component_dependencies(${PROJECT_NAME} robot
   planner_ompl
   planner_parabolic
   planner_vectorfield
+  planner_kunzretimer
   constraint
   distance
   statespace
