@@ -98,12 +98,20 @@ TEST(MetaSkeletonStateSpace, RevoluteJoint_CompatibleSkeletons)
       withBoundSpace.checkCompatibility(withoutBound.get()),
       std::invalid_argument);
 
+#if DART_VERSION_AT_LEAST(6, 7, 0)
+  auto withoutBoundClone = withoutBound->cloneSkeleton();
+#else
   auto withoutBoundClone = withoutBound->clone();
+#endif
   EXPECT_TRUE(withoutBoundSpace.isCompatible(withoutBoundClone.get()));
   EXPECT_NO_THROW(
       withoutBoundSpace.checkCompatibility(withoutBoundClone.get()));
 
+#if DART_VERSION_AT_LEAST(6, 7, 0)
+  auto withBoundClone = withBound->cloneSkeleton();
+#else
   auto withBoundClone = withBound->clone();
+#endif
   EXPECT_TRUE(withBoundSpace.isCompatible(withBoundClone.get()));
   EXPECT_NO_THROW(withBoundSpace.checkCompatibility(withBoundClone.get()));
 
