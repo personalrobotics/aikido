@@ -4,8 +4,6 @@
 namespace aikido {
 namespace constraint {
 
-using dart::common::make_unique;
-
 //==============================================================================
 CartesianProductTestable::CartesianProductTestable(
     std::shared_ptr<const statespace::CartesianProduct> _stateSpace,

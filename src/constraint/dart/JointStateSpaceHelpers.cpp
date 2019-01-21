@@ -11,8 +11,6 @@ namespace aikido {
 namespace constraint {
 namespace dart {
 
-using ::dart::common::make_unique;
-
 //==============================================================================
 std::unique_ptr<Differentiable> createDifferentiableBounds(
     std::shared_ptr<const statespace::dart::JointStateSpace> _stateSpace)
@@ -49,7 +47,8 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
   // TODO: We should std::move constraints here, but we can't because
   // DifferentiableIntersection does not take by value.
-  return make_unique<DifferentiableIntersection>(constraints, _metaSkeleton);
+  return ::dart::common::make_unique<DifferentiableIntersection>(
+      constraints, _metaSkeleton);
 }
 
 //==============================================================================
@@ -80,7 +79,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<CartesianProductProjectable>(
+  return ::dart::common::make_unique<CartesianProductProjectable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
@@ -112,7 +111,7 @@ std::unique_ptr<Testable> createTestableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<CartesianProductTestable>(
+  return ::dart::common::make_unique<CartesianProductTestable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
@@ -150,7 +149,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return make_unique<CartesianProductSampleable>(
+  return ::dart::common::make_unique<CartesianProductSampleable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 

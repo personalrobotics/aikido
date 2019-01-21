@@ -15,8 +15,6 @@ namespace detail {
 std::unique_ptr<Path> convertToKunzPath(
     const aikido::trajectory::Interpolated& traj, double maxDeviation)
 {
-  using dart::common::make_unique;
-
   std::list<Eigen::VectorXd> waypoints;
   auto stateSpace = traj.getStateSpace();
   Eigen::VectorXd tmpVec(stateSpace->getDimension());
@@ -27,7 +25,7 @@ std::unique_ptr<Path> convertToKunzPath(
     waypoints.push_back(tmpVec);
   }
 
-  auto path = make_unique<Path>(waypoints, maxDeviation);
+  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
   return path;
 }
 
@@ -35,8 +33,6 @@ std::unique_ptr<Path> convertToKunzPath(
 std::unique_ptr<Path> convertToKunzPath(
     const aikido::trajectory::Spline& traj, double maxDeviation)
 {
-  using dart::common::make_unique;
-
   std::list<Eigen::VectorXd> waypoints;
   auto stateSpace = traj.getStateSpace();
   Eigen::VectorXd tmpVec(stateSpace->getDimension());
@@ -48,7 +44,7 @@ std::unique_ptr<Path> convertToKunzPath(
     waypoints.push_back(tmpVec);
   }
 
-  auto path = make_unique<Path>(waypoints, maxDeviation);
+  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
   return path;
 }
 
@@ -59,7 +55,6 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     double timeStep,
     double startTime)
 {
-  using dart::common::make_unique;
   using CubicSplineProblem = aikido::common::
       SplineProblem<double, int, 4, Eigen::Dynamic, Eigen::Dynamic>;
 
@@ -68,7 +63,8 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
 
   // create spline
   auto outputTrajectory
-      = make_unique<aikido::trajectory::Spline>(stateSpace, startTime);
+      = ::dart::common::make_unique<aikido::trajectory::Spline>(
+          stateSpace, startTime);
 
   // create a sequence of time steps from start time to end time by time step
   aikido::common::StepSequence sequence(

@@ -76,6 +76,9 @@
   * Fixed Eigen memory alignment issues on 32bit Ubuntu: [#368](https://github.com/personalrobotics/aikido/pull/368)
   * Defined optional dependencies: [#376](https://github.com/personalrobotics/aikido/pull/376)
   * Fixed compilation bug with Eigen 3.3.5: [#452](https://github.com/personalrobotics/aikido/pull/452)
+  * Updated gtest version to 1.8.1: [#478](https://github.com/personalrobotics/aikido/pull/478)
+  * Added DART 6.7 support: [#480](https://github.com/personalrobotics/aikido/pull/480)
+  * Fixed use of dart::common::make_unique for C++14 enabled compilers: [#481](https://github.com/personalrobotics/aikido/pull/481)
 
 ### 0.2.0 (2018-01-09)
 
