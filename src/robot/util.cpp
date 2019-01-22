@@ -60,7 +60,6 @@ using trajectory::InterpolatedPtr;
 using trajectory::SplinePtr;
 
 using dart::collision::FCLCollisionDetector;
-using dart::common::make_unique;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::ChainPtr;
 using dart::dynamics::InverseKinematics;
