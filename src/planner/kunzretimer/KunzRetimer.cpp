@@ -184,8 +184,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 
   Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
 
-  return detail::convertToSpline(
-      trajectory, outputStateSpace, timeStep, startTime);
+  return detail::convertToSpline(trajectory, stateSpace, timeStep, startTime);
 }
 
 //==============================================================================
@@ -226,8 +225,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 
   Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
 
-  return detail::convertToSpline(
-      trajectory, outputStateSpace, timeStep, startTime);
+  return detail::convertToSpline(trajectory, stateSpace, timeStep, startTime);
 }
 
 //==============================================================================

@@ -73,7 +73,7 @@ std::unique_ptr<trajectory::Spline> doBlend(
       _tolerance);
 
   auto outputTrajectory
-      = detail::convertToSpline(*dynamicPath, startTime, outputStateSpace);
+      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }
@@ -114,7 +114,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
       _tolerance);
 
   auto outputTrajectory
-      = detail::convertToSpline(*dynamicPath, startTime, outputStateSpace);
+      = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
 
   return outputTrajectory;
 }

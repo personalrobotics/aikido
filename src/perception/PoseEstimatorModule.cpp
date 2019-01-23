@@ -28,6 +28,8 @@ PoseEstimatorModule::PoseEstimatorModule(
   , mReferenceFrameId(std::move(referenceFrameId))
   , mReferenceLink(std::move(referenceLink))
   , mTfListener(mNodeHandle)
+  , mProjectObjectToFixedHeight(false)
+  , mProjectionHeight(0.0)
 {
   // Do nothing
 
@@ -148,6 +150,11 @@ bool PoseEstimatorModule::detectObjects(
     Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
     obj_pose = link_offset * obj_pose;
 
+    if (mProjectObjectToFixedHeight)
+    {
+      obj_pose.translation()[2] = mProjectionHeight;
+    }
+
     bool is_new_obj;
     dart::dynamics::SkeletonPtr obj_skeleton;
 
@@ -232,6 +239,12 @@ YAML::Node PoseEstimatorModule::getObjInfo(const std::string& obj_id)
   }
 
   return targetNode;
+}
+
+void PoseEstimatorModule::setObjectProjectionHeight(double projectionHeight)
+{
+  mProjectObjectToFixedHeight = true;
+  mProjectionHeight = projectionHeight;
 }
 
 } // namespace perception

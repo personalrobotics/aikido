@@ -63,6 +63,9 @@ public:
   /// information
   YAML::Node getObjInfo(const std::string& obj_id);
 
+  /// If this is set, all objects are projected to this height.
+  void setObjectProjectionHeight(double projectionHeight);
+
 private:
   /// For the ROS node that will work with the April Tags module
   ros::NodeHandle mNodeHandle;
@@ -90,6 +93,9 @@ private:
 
   int skeletonFrameIdx = 0;
   std::array<std::vector<std::string>, 5> perceivedSkeletonNames;
+
+  bool mProjectObjectToFixedHeight;
+  double mProjectionHeight;
 };
 
 } // namespace perception

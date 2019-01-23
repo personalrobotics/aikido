@@ -1,4 +1,6 @@
 #include "aikido/robot/util.hpp"
+
+#include <algorithm>
 #include <dart/common/Console.hpp>
 #include <dart/common/StlHelpers.hpp>
 #include <dart/common/Timer.hpp>
@@ -217,7 +219,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{1000};
+  static const std::size_t maxSnapSamples{100};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -265,6 +267,7 @@ trajectory::TrajectoryPtr planToTSR(
     space->setState(metaSkeleton.get(), startState);
   }
 
+  std::cout << "Got " << configurations.size() << " samples" << std::endl;
   if (configurations.size() == 0)
     return nullptr;
 
@@ -284,6 +287,8 @@ trajectory::TrajectoryPtr planToTSR(
       return traj;
     }
   }
+
+  std::cout << "Snap failed" << std::endl;
 
   dart::common::Timer timer;
   timer.start();
@@ -431,7 +436,8 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
   auto startState = space->createState();
   space->getState(metaSkeleton.get(), startState);
 
-  auto minDistance = distance - vfParameters.negativeDistanceTolerance;
+  auto minDistance
+      = std::max(0.0, distance - vfParameters.negativeDistanceTolerance);
   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
 
   auto traj = planner::vectorfield::planToEndEffectorOffset(
