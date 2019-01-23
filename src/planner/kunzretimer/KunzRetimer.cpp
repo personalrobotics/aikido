@@ -24,9 +24,7 @@ namespace kunzretimer {
 namespace detail {
 //==============================================================================
 std::unique_ptr<Path> convertToKunzPath(
-    const aikido::trajectory::Interpolated& traj,
-    double maxDeviation,
-    statespace::ConstStateSpacePtr& outputStateSpace)
+    const aikido::trajectory::Interpolated& traj, double maxDeviation)
 {
   auto stateSpace = traj.getStateSpace();
   auto metaSkeletonStateSpace
@@ -37,6 +35,7 @@ std::unique_ptr<Path> convertToKunzPath(
   ConstInterpolatedPtr r1Trajectory;
   if (metaSkeletonStateSpace)
   {
+    std::cout << "Convert To R1" << std::endl;
     r1Trajectory = toR1JointTrajectory(stateSpace, traj);
     stateSpace = r1Trajectory->getStateSpace();
     trajectory = r1Trajectory.get();
@@ -51,15 +50,12 @@ std::unique_ptr<Path> convertToKunzPath(
     waypoints.push_back(tmpVec);
   }
   auto path = make_unique<Path>(waypoints, maxDeviation);
-  outputStateSpace = std::move(stateSpace);
   return path;
 }
 
 //==============================================================================
 std::unique_ptr<Path> convertToKunzPath(
-    const aikido::trajectory::Spline& traj,
-    double maxDeviation,
-    statespace::ConstStateSpacePtr& outputStateSpace)
+    const aikido::trajectory::Spline& traj, double maxDeviation)
 {
   auto stateSpace = traj.getStateSpace();
   auto metaSkeletonStateSpace
@@ -88,7 +84,6 @@ std::unique_ptr<Path> convertToKunzPath(
   }
 
   auto path = make_unique<Path>(waypoints, maxDeviation);
-  outputStateSpace = std::move(stateSpace);
   return path;
 }
 
@@ -178,9 +173,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 
   double startTime = inputTrajectory.getStartTime();
 
-  ConstStateSpacePtr outputStateSpace;
-  auto path = detail::convertToKunzPath(
-      inputTrajectory, maxDeviation, outputStateSpace);
+  auto path = detail::convertToKunzPath(inputTrajectory, maxDeviation);
 
   Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
 
@@ -219,9 +212,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 
   double startTime = inputTrajectory.getStartTime();
 
-  ConstStateSpacePtr outputStateSpace;
-  auto path = detail::convertToKunzPath(
-      inputTrajectory, maxDeviation, outputStateSpace);
+  auto path = detail::convertToKunzPath(inputTrajectory, maxDeviation);
 
   Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
 

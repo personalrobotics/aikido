@@ -3,10 +3,8 @@
 #include <dart/common/StlHelpers.hpp>
 #include "aikido/control/TrajectoryRunningException.hpp"
 #include "aikido/statespace/Rn.hpp"
-#include "aikido/statespace/dart/CartesianProductMetaSkeletonStateSpace.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::dart::CartesianProductMetaSkeletonStateSpace;
 using aikido::statespace::R1;
 
 namespace aikido {
@@ -56,42 +54,12 @@ void KinematicSimulationTrajectoryExecutor::validate(
       traj->getStateSpace());
 
   if (!space)
-  {
-    const auto cpSpace = std::
-        dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
-            traj->getStateSpace());
+    throw std::invalid_argument(
+      "Trajectory is not in a MetaSkeletonStateSpace.");
 
-    if (cpSpace)
-    {
-      // Check that all joints are R1 state spaces.
-      for (std::size_t i = 0; i < cpSpace->getNumSubspaces(); ++i)
-      {
-        auto subSpace = cpSpace->getSubspace(i);
-        auto r1 = std::dynamic_pointer_cast<const R1>(subSpace);
-        if (!r1)
-        {
-          std::stringstream message;
-          message
-              << "Trajectory is not in a MetaSkeletonStateSpace"
-              << " or in CartesianProductMetaSkeletonStateSpace of R1 spaces.";
-          throw std::invalid_argument(message.str());
-        }
-      }
-    }
-    else
-    {
-      std::stringstream message;
-      message << "Trajectory is not in a MetaSkeletonStateSpace"
-              << "nor in CartesianProductMetaSkeletonStateSpace.";
-      throw std::invalid_argument(message.str());
-    }
-  }
-  else
-  {
-    // TODO: Delete this line once the skeleton is locked by isCompatible
-    std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
-    space->checkIfContained(mSkeleton.get());
-  }
+  // TODO: Delete this line once the skeleton is locked by isCompatible
+  std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
+  space->checkIfContained(mSkeleton.get());
 
   mValidatedTrajectories.emplace(traj);
 }
@@ -116,22 +84,6 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     mTraj = std::move(traj);
     mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
         mTraj->getStateSpace());
-
-    if (!mStateSpace)
-    {
-      auto cpSpace = std::
-          dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
-              mTraj->getStateSpace());
-      if (!cpSpace)
-        throw std::invalid_argument("Invalid");
-      mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-          cpSpace->getMetaSkeletonStateSpace());
-    }
-
-    if (!mStateSpace)
-      throw std::invalid_argument(
-          "Statespace needs to be either MetaSkeletonStateSpace or "
-          "CartesianProduct.");
 
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
@@ -180,26 +132,10 @@ void KinematicSimulationTrajectoryExecutor::step(
   if (executionTime < 0)
     return;
 
-  const auto cpSpace
-      = std::dynamic_pointer_cast<const CartesianProductMetaSkeletonStateSpace>(
-          mTraj->getStateSpace());
+  auto state = mStateSpace->createState();
+  mTraj->evaluate(executionTime, state);
 
-  if (!cpSpace)
-  {
-    auto state = mStateSpace->createState();
-    mTraj->evaluate(executionTime, state);
-    mStateSpace->setState(mMetaSkeleton.get(), state);
-  }
-  else
-  {
-    auto state = cpSpace->createState();
-    mTraj->evaluate(executionTime, state);
-
-    // Convert to position vector and then set the metaskeleton.
-    Eigen::VectorXd tangent;
-    cpSpace->logMap(state, tangent);
-    mMetaSkeleton->setPositions(tangent);
-  }
+  mStateSpace->setState(mMetaSkeleton.get(), state);
 
   // Check if trajectory has completed.
   if (executionTime >= mTraj->getEndTime())

@@ -7,7 +7,6 @@ set(sources
   SO2.cpp
   SO3.cpp
   GeodesicInterpolator.cpp
-  dart/CartesianProductMetaSkeletonStateSpace.cpp
   dart/JointStateSpace.cpp
   dart/JointStateSpaceHelpers.cpp
   dart/MetaSkeletonStateSpace.cpp
