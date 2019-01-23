@@ -33,5 +33,5 @@ fi
 
 # Uploading report to CodeCov
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+  bash <(curl -s https://codecov.io/bash) -X gcov || echo "Codecov did not collect coverage reports"
 fi
