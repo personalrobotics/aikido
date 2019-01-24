@@ -33,5 +33,6 @@ fi
 
 # Uploading report to CodeCov
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
+  ls "${HOME}/workspace/build/aikido"
   bash <(curl -s https://codecov.io/bash) -X gcov -f "${HOME}/workspace/build/aikido/coverage.info.cleaned" || echo "Codecov did not collect coverage reports"
 fi
