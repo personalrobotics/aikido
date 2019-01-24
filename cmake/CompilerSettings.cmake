@@ -15,7 +15,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     )
   endif()
 
-  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
+  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11 -fext-numeric-literals)
 
   add_compile_options(-Wall -Wextra -Wpedantic)
   if(TREAT_WARNINGS_AS_ERRORS)
