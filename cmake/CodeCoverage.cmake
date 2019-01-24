@@ -133,6 +133,9 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
 	SET(coverage_info "${CMAKE_BINARY_DIR}/${_outputname}.info")
 	SET(coverage_cleaned "${coverage_info}.cleaned")
 
+        SET(codecov_download "${CMAKE_BINARY_DIR}/.codecov.sh")
+        SET(codecov_run "${CMAKE_BINARY_DIR}/codecov.sh")
+
 	SEPARATE_ARGUMENTS(test_command UNIX_COMMAND "${_testrunner}")
 
 	# Setup target
@@ -148,6 +151,14 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
 		COMMAND ${LCOV_PATH} --directory . --capture --output-file ${coverage_info}
 		COMMAND ${LCOV_PATH} --remove ${coverage_info} 'tests/*' '/usr/*' --output-file ${coverage_cleaned}
 		COMMAND ${GENHTML_PATH} -o ${_outputname} ${coverage_cleaned}
+
+		# Upload to Codecov
+		COMMAND file(DOWNLOAD "https://codecov.io/bash" ${codecov_download})
+		COMMAND file(COPY ${codecov_download} DESTINATION ${codecov_run} FILE_PERMISSIONS OWNER_EXECUTE)
+		COMMAND ${codecov_run} -X gcov -f ${coverage_cleaned}
+
+		# Clean up reports
+		COMMAND ${CMAKE_COMMAND} -E remove ${coverage_info} ${coverage_cleaned}
 
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
