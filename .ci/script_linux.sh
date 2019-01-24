@@ -33,6 +33,6 @@ fi
 
 # Uploading report to CodeCov
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  ls "${HOME}/workspace/build/aikido"
+  # TODO: programmatically upload to CodeCov from cmake/CodeCoverage.cmake
   bash <(curl -s https://codecov.io/bash) -X gcov -f "${HOME}/workspace/build/aikido/coverage.info.cleaned" || echo "Codecov did not collect coverage reports"
 fi
