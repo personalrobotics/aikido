@@ -20,9 +20,10 @@ Interpolated::Interpolated(
 //==============================================================================
 Interpolated::~Interpolated()
 {
-  for (auto waypoint : mWaypoints)
+  for (auto& waypoint : mWaypoints)
     waypoint.free(mStateSpace);
 }
+
 //==============================================================================
 statespace::ConstStateSpacePtr Interpolated::getStateSpace() const
 {
@@ -222,7 +223,10 @@ void Interpolated::Waypoint::free(
     const statespace::ConstStateSpacePtr& stateSpace)
 {
   if (state)
+  {
     stateSpace->freeState(state);
+    state = nullptr;
+  }
 }
 
 } // namespace trajectory

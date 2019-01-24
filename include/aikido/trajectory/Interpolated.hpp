@@ -84,7 +84,8 @@ private:
     /// Comparator to allow sorting waypoints based on time
     bool operator<(double rhs) const;
 
-    // Free state. Should be used for destruction.
+    /// Free state. Should be used for destruction.
+    /// \param[in] stateSpace StateSpace for the state this Waypoint contains.
     void free(const statespace::ConstStateSpacePtr& stateSpace);
 
     double t;
