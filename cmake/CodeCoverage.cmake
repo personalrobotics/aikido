@@ -137,6 +137,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
         SET(codecov_run "${CMAKE_BINARY_DIR}/codecov.sh")
 
 	SEPARATE_ARGUMENTS(test_command UNIX_COMMAND "${_testrunner}")
+	SEPARATE_ARGUMENTS(codecov_command UNIX_COMMAND "${codecov_run} -X gcov -f ${coverage_cleaned}")
 
 	# Setup target
 	ADD_CUSTOM_TARGET(${_targetname}
@@ -155,7 +156,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
 		# Upload to Codecov
 		COMMAND file(DOWNLOAD "https://codecov.io/bash" ${codecov_download})
 		COMMAND file(COPY ${codecov_download} DESTINATION ${codecov_run} FILE_PERMISSIONS OWNER_EXECUTE)
-		COMMAND ${codecov_run} -X gcov -f ${coverage_cleaned}
+		COMMAND ${codecov_command}
 
 		# Clean up reports
 		COMMAND ${CMAKE_COMMAND} -E remove ${coverage_info} ${coverage_cleaned}

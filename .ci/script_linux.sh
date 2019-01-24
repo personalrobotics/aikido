@@ -27,6 +27,7 @@ fi
 # Run tests and measure test coverage if CodeCov is on.
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
   ./scripts/internal-run.sh make -C build/aikido aikido_coverage
+  ls -lh "${HOME}/workspace/build/aikido"
 else
   ./scripts/internal-run.sh env CTEST_OUTPUT_ON_FAILURE=true make -C build/aikido test
 fi
