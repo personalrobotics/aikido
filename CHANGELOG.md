@@ -7,6 +7,7 @@
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
+  * Fixed bug in compiling with Boost 1.58 on Kinetic + Xenial: [#490](https://github.com/personalrobotics/aikido/pull/490)
 
 * Distance
 
@@ -79,6 +80,7 @@
   * Updated gtest version to 1.8.1: [#478](https://github.com/personalrobotics/aikido/pull/478)
   * Added DART 6.7 support: [#480](https://github.com/personalrobotics/aikido/pull/480)
   * Fixed use of dart::common::make_unique for C++14 enabled compilers: [#481](https://github.com/personalrobotics/aikido/pull/481)
+  * Changed to use own build script for GoogleTest: [#485](https://github.com/personalrobotics/aikido/pull/485)
 
 ### 0.2.0 (2018-01-09)
 
