@@ -7,6 +7,7 @@
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
+  * Fixed bug in compiling with Boost 1.58 on Kinetic + Xenial: [#490](https://github.com/personalrobotics/aikido/pull/490)
 
 * Distance
 
