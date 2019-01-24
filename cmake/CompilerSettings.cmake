@@ -15,6 +15,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     )
   endif()
 
+  # Adding -fext-numeric-literals based on
+  # https://svn.boost.org/trac10/ticket/9240.
   set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11 -fext-numeric-literals)
 
   add_compile_options(-Wall -Wextra -Wpedantic)
