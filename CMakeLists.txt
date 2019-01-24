@@ -102,21 +102,6 @@ macro(aikido_check_package variable component dependency)
 endmacro()
 
 #==============================================================================
-# Register an Aikido test.
-#
-set_property(GLOBAL PROPERTY AIKIDO_TESTS)
-
-function(aikido_add_test target_name)
-  add_executable("${target_name}" ${ARGN})
-  add_test("${target_name}" "${target_name}")
-
-  target_link_libraries("${target_name}" gtest gtest_main)
-
-  set_property(GLOBAL APPEND PROPERTY AIKIDO_TESTS "${target_name}")
-  format_add_sources(${ARGN})
-endfunction()
-
-#==============================================================================
 # Required Dependencies
 #
 include(Components)
