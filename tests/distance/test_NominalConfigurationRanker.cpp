@@ -67,12 +67,10 @@ protected:
 TEST_F(NominalConfigurationRankerTest, Constructor)
 {
   EXPECT_THROW(
-      NominalConfigurationRanker(nullptr, mManipulator),
-      std::invalid_argument);
+      NominalConfigurationRanker(nullptr, mManipulator), std::invalid_argument);
 
   EXPECT_THROW(
-      NominalConfigurationRanker(mStateSpace, nullptr),
-      std::invalid_argument);
+      NominalConfigurationRanker(mStateSpace, nullptr), std::invalid_argument);
 
   std::vector<double> negativeWeights{-1, 0};
   EXPECT_THROW(
@@ -110,9 +108,7 @@ TEST_F(NominalConfigurationRankerTest, OrderTest)
   }
 
   mManipulator->setPositions(Eigen::Vector2d(0.0, 0.0));
-  NominalConfigurationRanker ranker(
-      mStateSpace,
-      mManipulator);
+  NominalConfigurationRanker ranker(mStateSpace, mManipulator);
   ranker.rankConfigurations(states);
 
   Eigen::VectorXd rankedState(2);

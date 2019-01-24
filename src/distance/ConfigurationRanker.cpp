@@ -30,7 +30,7 @@ ConfigurationRanker::ConfigurationRanker(
     {
       std::stringstream ss;
       ss << "Size of weights should match "
-        "the dimension of MetaSkeletonStateSpace.";
+            "the dimension of MetaSkeletonStateSpace.";
       throw std::invalid_argument(ss.str());
     }
 
