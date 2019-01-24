@@ -10,9 +10,10 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
+    std::vector<double> weights,
     const statespace::CartesianProduct::State* nominalConfiguration)
   : ConfigurationRanker(
-        std::move(metaSkeletonStateSpace), std::move(metaSkeleton))
+        std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
   , mNominalConfiguration(nominalConfiguration)
 {
   if (!mNominalConfiguration)
