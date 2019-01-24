@@ -7,9 +7,11 @@ namespace dart {
 //==============================================================================
 ConfigurationToTSRPlanner::ConfigurationToTSRPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-    ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+    distance::ConfigurationRankerPtr configurationRanker)
   : dart::SingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>(
         std::move(stateSpace), std::move(metaSkeleton))
+  , mConfigurationRanker(std::move(configurationRanker))
 {
   // Do nothing
 }

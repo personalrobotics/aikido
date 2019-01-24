@@ -80,8 +80,25 @@ TEST_F(JointAvoidanceConfigurationRankerTest, Constructor)
       JointAvoidanceConfigurationRanker(mStateSpace, nullptr),
       std::invalid_argument);
 
-  JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator);
-  DART_UNUSED(ranker);
+  std::vector<double> negativeWeights{-1, 0};
+  EXPECT_THROW(
+      JointAvoidanceConfigurationRanker(
+          mStateSpace, mManipulator, negativeWeights),
+      std::invalid_argument);
+
+  std::vector<double> wrongDimensionWeights{1};
+  EXPECT_THROW(
+      JointAvoidanceConfigurationRanker(
+          mStateSpace, mManipulator, wrongDimensionWeights),
+      std::invalid_argument);
+
+  JointAvoidanceConfigurationRanker rankerOne(mStateSpace, mManipulator);
+  DART_UNUSED(rankerOne);
+
+  std::vector<double> goodWeights{1, 2};
+  JointAvoidanceConfigurationRanker rankerTwo(
+      mStateSpace, mManipulator, goodWeights);
+  DART_UNUSED(rankerTwo);
 }
 
 TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
@@ -99,6 +116,35 @@ TEST_F(JointAvoidanceConfigurationRankerTest, OrderTest)
   }
 
   JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator);
+  ranker.rankConfigurations(states);
+
+  Eigen::VectorXd rankedState(2);
+  jointPositions[0] = Eigen::Vector2d(0.3, 0.1);
+  jointPositions[1] = Eigen::Vector2d(0.2, 0.1);
+  jointPositions[2] = Eigen::Vector2d(0.1, 0.4);
+  for (std::size_t i = 0; i < states.size(); ++i)
+  {
+    mStateSpace->convertStateToPositions(states[i], rankedState);
+    EXPECT_EIGEN_EQUAL(rankedState, jointPositions[i], EPS);
+  }
+}
+
+TEST_F(JointAvoidanceConfigurationRankerTest, WeightedOrderTest)
+{
+  std::vector<Eigen::Vector2d> jointPositions{Eigen::Vector2d(0.3, 0.1),
+                                              Eigen::Vector2d(0.1, 0.4),
+                                              Eigen::Vector2d(0.2, 0.1)};
+
+  std::vector<aikido::statespace::CartesianProduct::ScopedState> states;
+  for (std::size_t i = 0; i < jointPositions.size(); ++i)
+  {
+    auto state = mStateSpace->createState();
+    mStateSpace->convertPositionsToState(jointPositions[i], state);
+    states.emplace_back(state.clone());
+  }
+
+  std::vector<double> weights{10, 1};
+  JointAvoidanceConfigurationRanker ranker(mStateSpace, mManipulator, weights);
   ranker.rankConfigurations(states);
 
   Eigen::VectorXd rankedState(2);
