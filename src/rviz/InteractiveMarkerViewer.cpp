@@ -100,6 +100,8 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
   }
 
   auto tsrMarker = std::make_shared<TSRMarker>(std::move(tsrFrames));
+  mTSRMarkers.insert(tsrMarker);
+
   return tsrMarker;
 }
 

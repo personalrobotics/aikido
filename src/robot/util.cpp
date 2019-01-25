@@ -176,7 +176,6 @@ trajectory::TrajectoryPtr planToTSR(
     RNG* rng,
     double timelimit,
     std::size_t maxNumTrials,
-    const Eigen::VectorXd& nominalPosition,
     const distance::ConfigurationRankerPtr& ranker)
 {
   // Create an IK solver with metaSkeleton dofs.
@@ -235,12 +234,7 @@ trajectory::TrajectoryPtr planToTSR(
   if (!ranker)
   {
     auto nominalState = space->createState();
-
-    if (nominalPosition.size())
-      space->convertPositionsToState(nominalPosition, nominalState);
-    else
-      space->copyState(startState, nominalState);
-
+    space->copyState(startState, nominalState);
     _ranker = std::make_shared<NominalConfigurationRanker>(
         space, metaSkeleton, std::vector<double>(), nominalState);
   }

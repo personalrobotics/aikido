@@ -134,7 +134,6 @@ trajectory::TrajectoryPtr planToConfigurations(
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
 /// \param[in] maxNumTrials Number of retries before failure.
-/// \param[in] nominalPosition Nominal position to start planning from.
 /// \param[in] ranker Ranker to rank the resulting configurations.
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::TrajectoryPtr planToTSR(
@@ -146,7 +145,6 @@ trajectory::TrajectoryPtr planToTSR(
     common::RNG* rng,
     double timelimit,
     std::size_t maxNumTrials,
-    const Eigen::VectorXd& nominalPosition = Eigen::VectorXd(0),
     const distance::ConfigurationRankerPtr& ranker = nullptr);
 
 /// Returns a Trajectory that moves the configuration of the metakeleton such

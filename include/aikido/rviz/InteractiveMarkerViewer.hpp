@@ -90,6 +90,8 @@ protected:
   std::set<SkeletonMarkerPtr> mSkeletonMarkers;
   std::set<FrameMarkerPtr> mFrameMarkers;
   std::set<TrajectoryMarkerPtr> mTrajectoryMarkers;
+  std::set<TSRMarkerPtr> mTSRMarkers;
+
 
   /// NameManager for name uniqueness of trajectories in the same
   /// InteractiveMarkerServer.

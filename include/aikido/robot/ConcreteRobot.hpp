@@ -200,7 +200,6 @@ public:
   /// \param[in] collisionFree Testable constraint to check for collision.
   /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
   /// \param[in] maxNumTrials Max numer of trials to plan.
-  /// \param[in] nominalPosition Nominal position to start planning from.
   /// \param[in] ranker Ranker to rank the resulting configurations.
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSR(
@@ -211,7 +210,6 @@ public:
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit,
       std::size_t maxNumTrials,
-      const Eigen::VectorXd& nominalPosition = Eigen::VectorXd(0),
       const distance::ConfigurationRankerPtr& ranker = nullptr);
 
   /// TODO: Replace this with Problem interface.
