@@ -35,6 +35,9 @@
 # - Added support for Clang.
 # - Some additional usage instructions.
 #
+# 2019-01-24, Brian Hou
+# - Added support for Codecov uploads.
+#
 # USAGE:
 
 # 0. (Mac only) If you use Xcode 5.1 make sure to patch geninfo as described here:
