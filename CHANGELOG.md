@@ -12,6 +12,8 @@
 * Distance
 
   * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
+  * Added weights as optinal paramter to rankers: [#484] (https://github.com/personalrobotics/aikido/pull/484)
+
 
 * State Space
 

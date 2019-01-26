@@ -74,21 +74,23 @@ TEST_F(NominalConfigurationRankerTest, Constructor)
 
   std::vector<double> negativeWeights{-1, 0};
   EXPECT_THROW(
-      NominalConfigurationRanker(mStateSpace, mManipulator, negativeWeights),
+      NominalConfigurationRanker(
+          mStateSpace, mManipulator, negativeWeights, nullptr),
+      std::invalid_argument);
+
+  std::vector<double> wrongDimensionWeights{1};
+  EXPECT_THROW(
+      NominalConfigurationRanker(
+          mStateSpace, mManipulator, wrongDimensionWeights, nullptr),
       std::invalid_argument);
 
   NominalConfigurationRanker rankerOne(mStateSpace, mManipulator);
   DART_UNUSED(rankerOne);
 
   std::vector<double> goodWeights{1, 2};
-  NominalConfigurationRanker rankerTwo(mStateSpace, mManipulator, goodWeights);
+  NominalConfigurationRanker rankerTwo(
+      mStateSpace, mManipulator, goodWeights, nullptr);
   DART_UNUSED(rankerTwo);
-
-  std::vector<double> wrongDimensionWeights{1};
-  EXPECT_THROW(
-      NominalConfigurationRanker(
-          mStateSpace, mManipulator, wrongDimensionWeights),
-      std::invalid_argument);
 }
 
 TEST_F(NominalConfigurationRankerTest, OrderTest)
