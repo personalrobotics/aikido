@@ -2,10 +2,8 @@
 #include <dart/common/Console.hpp>
 #include <dart/common/StlHelpers.hpp>
 #include "aikido/control/TrajectoryRunningException.hpp"
-#include "aikido/statespace/Rn.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::R1;
 
 namespace aikido {
 namespace control {
@@ -54,8 +52,10 @@ void KinematicSimulationTrajectoryExecutor::validate(
       traj->getStateSpace());
 
   if (!space)
+  {
     throw std::invalid_argument(
-      "Trajectory is not in a MetaSkeletonStateSpace.");
+        "Trajectory is not in a MetaSkeletonStateSpace.");
+  }
 
   // TODO: Delete this line once the skeleton is locked by isCompatible
   std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
@@ -84,7 +84,6 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
     mTraj = std::move(traj);
     mStateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
         mTraj->getStateSpace());
-
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
     mMetaSkeleton = mStateSpace->getControlledMetaSkeleton(mSkeleton);

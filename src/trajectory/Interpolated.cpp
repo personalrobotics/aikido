@@ -1,4 +1,3 @@
-#include <iostream>
 #include <aikido/trajectory/Interpolated.hpp>
 
 using aikido::statespace::GeodesicInterpolator;
