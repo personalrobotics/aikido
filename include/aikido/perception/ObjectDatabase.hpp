@@ -23,7 +23,7 @@ namespace perception {
 /// Here is an example entry in a JSON file:
 /// \code
 /// "obj_key": {
-///    "resource": "package://pr_ordata/data/objects/obj_filename.urdf",
+///    "resource": "package://pr_assets/data/objects/obj_filename.urdf",
 ///    "name": "obj_name",
 ///    "offset": [
 ///      [1.0, 0.0, 0.0, 0.0],

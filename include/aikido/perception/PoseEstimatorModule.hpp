@@ -6,6 +6,7 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include "aikido/io/CatkinResourceRetriever.hpp"
+#include "aikido/io/yaml.hpp"
 #include "aikido/perception/ObjectDatabase.hpp"
 #include "aikido/perception/PerceptionModule.hpp"
 
@@ -54,6 +55,17 @@ public:
       ros::Duration timeout = ros::Duration(0.0),
       ros::Time timestamp = ros::Time(0.0)) override;
 
+  /// Getter for \c mObjInfo. \c mObjInfo is saving additional information
+  /// from the text field in the MarkerArray message in json format.
+  /// This getter returns a YAML::Node of an object by id.
+  ///
+  /// \param[in] obj_id The key of an object to retrieve its additional
+  /// information
+  YAML::Node getObjInfo(const std::string& obj_id);
+
+  /// If this is set, all objects are projected to this height.
+  void setObjectProjectionHeight(double projectionHeight);
+
 private:
   /// For the ROS node that will work with the April Tags module
   ros::NodeHandle mNodeHandle;
@@ -75,6 +87,15 @@ private:
 
   /// Listens to the transform attached to the node
   tf::TransformListener mTfListener;
+
+  /// For additional information for each object
+  std::unordered_map<std::string, YAML::Node> mObjInfo;
+
+  int skeletonFrameIdx = 0;
+  std::array<std::vector<std::string>, 5> perceivedSkeletonNames;
+
+  bool mProjectObjectToFixedHeight;
+  double mProjectionHeight;
 };
 
 } // namespace perception
