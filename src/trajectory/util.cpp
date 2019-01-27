@@ -11,11 +11,20 @@
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SO2.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+
 #include "aikido/trajectory/Interpolated.hpp"
 
 using aikido::statespace::R;
+using aikido::statespace::R1;
 using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
+using aikido::statespace::ConstStateSpacePtr;
+using aikido::statespace::GeodesicInterpolator;
+using aikido::statespace::StateSpacePtr;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+using dart::common::make_unique;
 
 using Eigen::Vector2d;
 using LinearSplineProblem
@@ -83,7 +92,51 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
   }
 }
 
-} // (anonymous) namespace
+void checkValidityOfSpaceAndTrajectory(
+    ConstStateSpacePtr& space, const Trajectory* trajectory)
+{
+  auto metaskeletonStateSpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
+  if (!metaskeletonStateSpace)
+    throw std::invalid_argument(
+        "StateSpace is not a valid metaskeletonStateSpace.");
+
+  if (!trajectory)
+    throw std::invalid_argument("Trajectory is null.");
+
+  const auto trajectorySpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+          trajectory->getStateSpace());
+  if (!trajectorySpace)
+  {
+    throw std::invalid_argument(
+        "[Conversions:checkValidityOfSpaceAndTrajectory] Trajectory is not in "
+        "a MetaSkeletonStateSpace.");
+  }
+
+  // Check that all joints are R1Joint or SO2Joint state spaces.
+  for (std::size_t i = 0; i < metaskeletonStateSpace->getDimension(); ++i)
+  {
+    auto subspace = metaskeletonStateSpace->getSubspace(i);
+    auto jointSpace = metaskeletonStateSpace->getJointSpace(i);
+    auto properties = jointSpace->getProperties();
+
+    auto r1subspace = std::dynamic_pointer_cast<const R1>(subspace);
+    auto so2subspace = std::dynamic_pointer_cast<const SO2>(subspace);
+
+    if (properties.getNumDofs() != 1 || (!r1subspace && !so2subspace))
+    {
+      std::stringstream message;
+      message << "Only R1Joint and SO2Joint are supported. Joint "
+              << properties.getName() << "(index: " << i << ") is a "
+              << properties.getType() << " with " << properties.getNumDofs()
+              << " DOFs.";
+      throw std::invalid_argument{message.str()};
+    }
+  }
+}
+
+} // ns
 
 //==============================================================================
 UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
@@ -313,6 +366,73 @@ UniqueSplinePtr createPartialTrajectory(
   }
 
   return outputTrajectory;
+}
+
+//==============================================================================
+aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
+    ConstStateSpacePtr& space, const Interpolated& trajectory)
+{
+  checkValidityOfSpaceAndTrajectory(space, &trajectory);
+
+  auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
+      trajectory.getInterpolator());
+  if (!interpolator)
+    throw std::invalid_argument(
+        "The interpolator of trajectory should be a GeodesicInterpolator");
+
+  // Create new trajectory space.
+  std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
+  for (std::size_t i = 0; i < space->getDimension(); ++i)
+    subspaces.emplace_back(std::make_shared<const R1>());
+
+  auto rSpace = std::make_shared<CartesianProduct>(subspaces);
+  auto rInterpolator = std::make_shared<GeodesicInterpolator>(rSpace);
+  auto rTrajectory = std::make_shared<Interpolated>(rSpace, rInterpolator);
+
+  Eigen::VectorXd sourceVector(space->getDimension());
+  auto sourceState = rSpace->createState();
+
+  // Add the first waypoint
+  space->logMap(trajectory.getWaypoint(0), sourceVector);
+  rSpace->expMap(sourceVector, sourceState);
+  rTrajectory->addWaypoint(0, sourceState);
+
+  auto tangentState = rSpace->createState();
+  auto targetState = rSpace->createState();
+
+  // Add the remaining waypoints
+  for (std::size_t i = 0; i < trajectory.getNumWaypoints() - 1; ++i)
+  {
+    const auto tangentVector = interpolator->getTangentVector(
+        trajectory.getWaypoint(i), trajectory.getWaypoint(i + 1));
+
+    rSpace->expMap(sourceVector, sourceState);
+    rSpace->expMap(tangentVector, tangentState);
+    rSpace->compose(sourceState, tangentState, targetState);
+
+    rTrajectory->addWaypoint(i + 1, targetState);
+    rSpace->logMap(targetState, sourceVector);
+  }
+
+  return rTrajectory;
+}
+
+//==============================================================================
+aikido::trajectory::ConstSplinePtr toR1JointTrajectory(
+    ConstStateSpacePtr& space, const Spline& trajectory)
+{
+  checkValidityOfSpaceAndTrajectory(space, &trajectory);
+
+  aikido::statespace::ConstInterpolatorPtr interpolator
+      = std::make_shared<statespace::GeodesicInterpolator>(space);
+
+  ConstInterpolatedPtr interpolatedTrajectory
+      = std::move(convertToInterpolated(trajectory, interpolator));
+  auto r1JointTrajectory
+      = toR1JointTrajectory(space, *interpolatedTrajectory.get());
+  auto splineTrajectory = convertToSpline(*r1JointTrajectory.get());
+
+  return std::move(splineTrajectory);
 }
 
 } // namespace trajectory
