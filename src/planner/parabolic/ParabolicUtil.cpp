@@ -174,7 +174,6 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     milestones.emplace_back(toVector(currVec));
 
     trajectory->getWaypointDerivative(iwaypoint, 1, tangentVector);
-
     velocities.emplace_back(toVector(tangentVector));
   }
 
@@ -190,7 +189,6 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   }
   if (!outputPath->IsValid())
     throw std::runtime_error("Converted DynamicPath is not valid");
-
   return outputPath;
 }
 
@@ -235,7 +233,6 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   outputPath->SetMilestones(milestones);
   if (!outputPath->IsValid())
     throw std::runtime_error("Converted DynamicPath is not valid");
-
   return outputPath;
 }
 
