@@ -6,6 +6,7 @@
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+#include <yaml-cpp/exceptions.h>
 #include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/perception/shape_conversions.hpp"
 
@@ -27,8 +28,15 @@ PoseEstimatorModule::PoseEstimatorModule(
   , mReferenceFrameId(std::move(referenceFrameId))
   , mReferenceLink(std::move(referenceLink))
   , mTfListener(mNodeHandle)
+  , mProjectObjectToFixedHeight(false)
+  , mProjectionHeight(0.0)
 {
   // Do nothing
+
+  for (int i = 0; i < 5; i++)
+  {
+    perceivedSkeletonNames[i] = std::vector<std::string>();
+  }
 }
 
 //=============================================================================
@@ -64,13 +72,33 @@ bool PoseEstimatorModule::detectObjects(
   for (const auto& marker_transform : marker_message->markers)
   {
     const auto& marker_stamp = marker_transform.header.stamp;
-    const auto& obj_key = marker_transform.text;
-    const auto& obj_id = marker_transform.ns;
+    const auto& obj_key = marker_transform.ns;
     const auto& detection_frame = marker_transform.header.frame_id;
     if (!timestamp.isValid() || marker_stamp < timestamp)
     {
       continue;
     }
+    if (marker_transform.action == 3)
+    {
+      for (std::string skeletonName : perceivedSkeletonNames[skeletonFrameIdx])
+      {
+        dart::dynamics::SkeletonPtr env_skeleton
+            = env->getSkeleton(skeletonName);
+        if (env_skeleton != nullptr)
+        {
+          env->removeSkeleton(env_skeleton);
+        }
+      }
+      perceivedSkeletonNames[skeletonFrameIdx].clear();
+      skeletonFrameIdx = (skeletonFrameIdx + 1) % 5;
+      continue;
+    }
+
+    YAML::Node info_json = YAML::Load(marker_transform.text);
+    const std::string obj_id = info_json["id"].as<std::string>() + "_"
+                               + std::to_string(skeletonFrameIdx);
+
+    mObjInfo.insert(std::make_pair(obj_id, info_json));
 
     // If obj_key is "None",
     // remove a skeleton with obj_id from env
@@ -121,6 +149,11 @@ bool PoseEstimatorModule::detectObjects(
 
     Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
     obj_pose = link_offset * obj_pose;
+
+    if (mProjectObjectToFixedHeight)
+    {
+      obj_pose.translation()[2] = mProjectionHeight;
+    }
 
     bool is_new_obj;
     dart::dynamics::SkeletonPtr obj_skeleton;
@@ -179,6 +212,7 @@ bool PoseEstimatorModule::detectObjects(
     if (is_new_obj)
     {
       env->addSkeleton(obj_skeleton);
+      perceivedSkeletonNames[skeletonFrameIdx].push_back(obj_id);
     }
 
     any_detected = true;
@@ -193,6 +227,24 @@ bool PoseEstimatorModule::detectObjects(
   }
 
   return true;
+}
+
+YAML::Node PoseEstimatorModule::getObjInfo(const std::string& obj_id)
+{
+  YAML::Node targetNode = mObjInfo[obj_id];
+  if (!targetNode)
+  {
+    throw std::runtime_error(
+        "[PoseEstimatorModule::getObjInfo] Error: invalid obj_id");
+  }
+
+  return targetNode;
+}
+
+void PoseEstimatorModule::setObjectProjectionHeight(double projectionHeight)
+{
+  mProjectObjectToFixedHeight = true;
+  mProjectionHeight = projectionHeight;
 }
 
 } // namespace perception
