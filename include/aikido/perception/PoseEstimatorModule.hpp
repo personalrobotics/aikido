@@ -91,9 +91,6 @@ private:
   /// For additional information for each object
   std::unordered_map<std::string, YAML::Node> mObjInfo;
 
-  int skeletonFrameIdx = 0;
-  std::array<std::vector<std::string>, 5> perceivedSkeletonNames;
-
   bool mProjectObjectToFixedHeight;
   double mProjectionHeight;
 };
