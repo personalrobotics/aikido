@@ -217,8 +217,7 @@ trajectory::TrajectoryPtr planToTSR(
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   SnapConfigurationToConfigurationPlanner::Result pResult;
-  auto problem = ConfigurationToConfiguration(
-      space, startState, goalState, collisionTestable);
+
   auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
   while (snapSamples < maxSnapSamples && generator->canSample())
@@ -235,6 +234,11 @@ trajectory::TrajectoryPtr planToTSR(
     }
     ++snapSamples;
 
+    // Create ConfigurationToConfiguration Problem.
+    // NOTE: This is done here because the ConfigurationToConfiguration
+    // problem stores a *cloned* scoped state of the passed state.
+    auto problem = ConfigurationToConfiguration(
+        space, startState, goalState, collisionTestable);
     auto traj = planner->plan(problem, &pResult);
 
     if (traj)
