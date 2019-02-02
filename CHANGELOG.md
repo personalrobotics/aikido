@@ -7,10 +7,13 @@
   * Fixed bug in StepSequence::getMaxSteps(): [#305](https://github.com/personalrobotics/aikido/pull/305)
   * Fixed bug in StepSequence iterator: [#320](https://github.com/personalrobotics/aikido/pull/320)
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
-
+  * Fixed bug in compiling with Boost 1.58 on Kinetic + Xenial: [#490](https://github.com/personalrobotics/aikido/pull/490)
+  * Fixed bug in Interpolated::addWaypoint(): [#483](https://github.com/personalrobotics/aikido/pull/483)
 * Distance
 
   * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
+  * Added weights as optinal paramter to rankers: [#484] (https://github.com/personalrobotics/aikido/pull/484)
+
 
 * State Space
 
@@ -22,6 +25,7 @@
   * Fixed hidden compose function (in-place version): [#421](https://github.com/personalrobotics/aikido/pull/421)
   * Added clone functionality to StateSpace: [#422](https://github.com/personalrobotics/aikido/pull/422)
   * Used const StateSpaces everywhere: [#429](https://github.com/personalrobotics/aikido/pull/429)
+  * Changed the SE(2) space representation to [x,y,theta]: [#458](https://github.com/personalrobotics/aikido/pull/458)
 
 * Constraint
 
@@ -43,6 +47,7 @@
 * Trajectory
 
   * Added B-spline trajectory: [#453](https://github.com/personalrobotics/aikido/pull/453)
+  * Added trajectory utility functions: [#462](https://github.com/personalrobotics/aikido/pull/462)
 
 * Planner
 
@@ -55,10 +60,15 @@
   * Planning calls with InverseKinematicsSampleable constraints explicitly set MetaSkeleton to solve IK with: [#379](https://github.com/personalrobotics/aikido/pull/379)
   * Added a kinodynamic timer that generates a time-optimal smooth trajectory without completely stopping at each waypoint: [#443](https://github.com/personalrobotics/aikido/pull/443)
   * Fixed segmentation fault on 32-bit machines in vector-field planner: [#459](https://github.com/personalrobotics/aikido/pull/459)
+  * Updated interface to OMPL planners to follow the style of the new refactored planning API: [#466](https://github.com/personalrobotics/aikido/pull/466)
 
 * Robot
 
   * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325](https://github.com/personalrobotics/aikido/pull/325), [#392](https://github.com/personalrobotics/aikido/pull/392)
+
+* RViz
+
+  * Fixed bug of not joining Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
 
 * IO
 
@@ -69,6 +79,10 @@
   * Fixed Eigen memory alignment issues on 32bit Ubuntu: [#368](https://github.com/personalrobotics/aikido/pull/368)
   * Defined optional dependencies: [#376](https://github.com/personalrobotics/aikido/pull/376)
   * Fixed compilation bug with Eigen 3.3.5: [#452](https://github.com/personalrobotics/aikido/pull/452)
+  * Updated gtest version to 1.8.1: [#478](https://github.com/personalrobotics/aikido/pull/478)
+  * Added DART 6.7 support: [#480](https://github.com/personalrobotics/aikido/pull/480)
+  * Fixed use of dart::common::make_unique for C++14 enabled compilers: [#481](https://github.com/personalrobotics/aikido/pull/481)
+  * Changed to use own build script for GoogleTest: [#485](https://github.com/personalrobotics/aikido/pull/485)
 
 ### 0.2.0 (2018-01-09)
 

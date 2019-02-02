@@ -38,7 +38,11 @@ std::unique_ptr<World> World::clone(const std::string& newName) const
   worldClone->mSkeletons.reserve(mSkeletons.size());
   for (std::size_t i = 0; i < mSkeletons.size(); ++i)
   {
+#if DART_VERSION_AT_LEAST(6, 7, 0)
+    const auto clonedSkeleton = mSkeletons[i]->cloneSkeleton();
+#else
     const auto clonedSkeleton = mSkeletons[i]->clone();
+#endif
     clonedSkeleton->setConfiguration(mSkeletons[i]->getConfiguration());
     worldClone->addSkeleton(std::move(clonedSkeleton));
   }

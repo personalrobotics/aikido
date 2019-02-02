@@ -19,7 +19,8 @@ public:
         dmetric,
         sampler,
         boundsConstraint,
-        boundsProjection);
+        boundsProjection,
+        maxDistanceBetweenValidityChecks);
   }
   std::shared_ptr<GeometricStateSpace> gSpace;
 };
@@ -39,7 +40,7 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorCantSample)
 {
   StateSampler ssampler(
       gSpace.get(),
-      dart::common::make_unique<EmptySampleGenerator>(stateSpace));
+      ::dart::common::make_unique<EmptySampleGenerator>(stateSpace));
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
   // Ensure we get two different states if we sample twice
@@ -53,7 +54,7 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorFailsSample)
 {
   StateSampler ssampler(
       gSpace.get(),
-      dart::common::make_unique<EmptySampleGenerator>(stateSpace));
+      ::dart::common::make_unique<EmptySampleGenerator>(stateSpace));
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
   // Ensure we get two different states if we sample twice

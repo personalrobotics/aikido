@@ -13,7 +13,9 @@ if [ $BUILD_NAME = DOCS ]; then
 fi
 
 # Check code style
-./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
+if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
+  ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
+fi
 
 # Manually build Aikido's tests; they are not built automatically because it is not a Catkin package.
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
@@ -27,9 +29,4 @@ if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
   ./scripts/internal-run.sh make -C build/aikido aikido_coverage
 else
   ./scripts/internal-run.sh env CTEST_OUTPUT_ON_FAILURE=true make -C build/aikido test
-fi
-
-# Uploading report to CodeCov
-if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
 fi

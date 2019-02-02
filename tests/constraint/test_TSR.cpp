@@ -13,7 +13,6 @@ using aikido::constraint::ConstraintType;
 using aikido::statespace::SE3;
 using aikido::common::RNGWrapper;
 using aikido::common::RNG;
-using dart::common::make_unique;
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 

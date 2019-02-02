@@ -33,15 +33,15 @@ double SE2::distance(
 
   Eigen::Vector3d diff;
 
+  // Difference between R^2 positions
+  diff.head<2>() = tangent1.head<2>() - tangent2.head<2>();
+
   // Difference between angles
-  double angleDiff = tangent1(0) - tangent2(0);
+  double angleDiff = tangent1(2) - tangent2(2);
   angleDiff = std::fmod(std::abs(angleDiff), 2.0 * M_PI);
   if (angleDiff > M_PI)
     angleDiff -= 2.0 * M_PI;
-  diff[0] = angleDiff;
-
-  // Difference between R^2 positions
-  diff.tail<2>() = tangent1.tail<2>() - tangent2.tail<2>();
+  diff[2] = angleDiff;
 
   return diff.norm();
 }

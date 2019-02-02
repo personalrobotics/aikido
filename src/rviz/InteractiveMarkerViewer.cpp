@@ -93,7 +93,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
     std::stringstream ss;
     ss << "TSRMarker[" << name << "].frame[" << i << "]";
 
-    auto tsrFrame = dart::common::make_unique<SimpleFrame>(
+    auto tsrFrame = ::dart::common::make_unique<SimpleFrame>(
         Frame::World(), ss.str(), state.getIsometry());
     addFrame(tsrFrame.get());
     tsrFrames.emplace_back(std::move(tsrFrame));
@@ -142,9 +142,11 @@ void InteractiveMarkerViewer::setAutoUpdate(bool flag)
 {
   mUpdating.store(flag, std::memory_order_release);
 
-  const bool isRunning = mRunning.exchange(flag);
-  if (flag && !isRunning)
+  const bool wasRunning = mRunning.exchange(flag);
+  if (flag && !wasRunning)
     mThread = std::thread(&InteractiveMarkerViewer::autoUpdate, this);
+  else if (!flag && wasRunning)
+    mThread.join();
 }
 
 //==============================================================================

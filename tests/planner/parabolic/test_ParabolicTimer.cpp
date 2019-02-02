@@ -5,6 +5,7 @@
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/SO3.hpp>
+#include <aikido/trajectory/util.hpp>
 
 using Eigen::Vector2d;
 using Eigen::Vector3d;
@@ -16,8 +17,8 @@ using aikido::statespace::SO2;
 using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::ConstStateSpacePtr;
+using aikido::trajectory::convertToSpline;
 using aikido::planner::parabolic::computeParabolicTiming;
-using aikido::planner::parabolic::convertToSpline;
 
 class ParabolicTimerTests : public ::testing::Test
 {

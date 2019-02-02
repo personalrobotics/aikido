@@ -77,9 +77,11 @@ target_link_libraries("${PROJECT_NAME}_perception"
 target_compile_options("${PROJECT_NAME}_perception"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
 )
-target_compile_definitions("${PROJECT_NAME}_perception"
-  PRIVATE DART_HAVE_VOXELGRIDSHAPE
-)
+if(DART_HAS_VOXELGRIDSHAPE)
+  target_compile_definitions("${PROJECT_NAME}_perception"
+    PUBLIC DART_HAS_VOXELGRIDSHAPE
+  )
+endif()
 
 add_component(${PROJECT_NAME} perception)
 add_component_targets(${PROJECT_NAME} perception "${PROJECT_NAME}_perception")

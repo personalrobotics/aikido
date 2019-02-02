@@ -43,7 +43,6 @@
   <exec_depend>catkin</exec_depend>
 
   <buildtool_depend>cmake</buildtool_depend>
-  <buildtool_depend>clang-format-3.8</buildtool_depend>
   <buildtool_depend>lcov</buildtool_depend>
 
   <export>
