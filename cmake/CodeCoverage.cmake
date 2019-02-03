@@ -157,7 +157,7 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE _targetname _testrunner _outputname)
 		# Upload to Codecov (added by @brianhou)
 		COMMAND curl -s "https://codecov.io/bash" > ${codecov_script}
 		COMMAND chmod +x ${codecov_script}
-		COMMAND ${codecov_script} -X gcov -f ${coverage_cleaned}
+		COMMAND ${codecov_script} -R ${CMAKE_SOURCE_DIR} -X gcov -f ${coverage_cleaned}
 
 		# Clean up reports
 		COMMAND ${CMAKE_COMMAND} -E remove ${coverage_info} ${coverage_cleaned}
