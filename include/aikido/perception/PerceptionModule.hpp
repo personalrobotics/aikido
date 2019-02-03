@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 #define AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 
+#include "aikido/perception/DetectedObject.hpp"
 #include "aikido/planner/World.hpp"
 
 namespace aikido {
@@ -31,6 +32,7 @@ public:
   /// otherwise.
   virtual bool detectObjects(
       const aikido::planner::WorldPtr& env,
+      std::vector<DetectedObject>& detectedObjects,
       ros::Duration timeout,
       ros::Time timestamp)
       = 0;

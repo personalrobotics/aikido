@@ -2,12 +2,10 @@
 
 #include <Eigen/Geometry>
 #include <dart/utils/urdf/DartLoader.hpp>
-#include <ros/ros.h>
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <yaml-cpp/exceptions.h>
-#include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/perception/shape_conversions.hpp"
 
 namespace aikido {
@@ -37,6 +35,7 @@ PoseEstimatorModule::PoseEstimatorModule(
 //=============================================================================
 bool PoseEstimatorModule::detectObjects(
     const aikido::planner::WorldPtr& env,
+    std::vector<DetectedObject>& detectedObjects,
     ros::Duration timeout,
     ros::Time timestamp)
 {
@@ -67,23 +66,24 @@ bool PoseEstimatorModule::detectObjects(
   for (const auto& marker_transform : marker_message->markers)
   {
     const auto& marker_stamp = marker_transform.header.stamp;
-    const auto& obj_key = marker_transform.ns;
+    const auto& obj_db_key = marker_transform.ns;
     const auto& detection_frame = marker_transform.header.frame_id;
     if (!timestamp.isValid() || marker_stamp < timestamp)
     {
       continue;
     }
 
-    YAML::Node info_json = YAML::Load(marker_transform.text);
-    const std::string obj_id = info_json["id"].as<std::string>();
+    DetectedObject this_object
+        = DetectedObject(obj_db_key, detection_frame, marker_transform.text);
+    detectedObjects.push_back(this_object);
 
-    mObjInfo.insert(std::make_pair(obj_id, info_json));
+    const std::string obj_uid = this_object.getObjUID();
 
-    // If obj_key is "None",
-    // remove a skeleton with obj_id from env
+    // If obj_db_key is "None",
+    // remove a skeleton with obj_uid from env
     // and move to next marker
-    dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(obj_id);
-    if (!obj_key.compare("None"))
+    dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(obj_uid);
+    if (!obj_db_key.compare("None"))
     {
       if (env_skeleton != nullptr)
       {
@@ -98,7 +98,7 @@ bool PoseEstimatorModule::detectObjects(
     ros::Time t0 = ros::Time(0);
 
     // get the object name, resource, and offset from database by objectKey
-    mConfigData->getObjectByKey(obj_key, obj_name, obj_resource, obj_offset);
+    mConfigData->getObjectByKey(obj_db_key, obj_name, obj_resource, obj_offset);
 
     tf::StampedTransform transform;
     try
@@ -140,7 +140,7 @@ bool PoseEstimatorModule::detectObjects(
     // Check if skel in World
     // If there is, update its pose
     // If not, add skeleton to env
-    // A pose estimator module should provide the unique obj_id per object
+    // A pose estimator module should provide the unique obj_uid per object
     if (env_skeleton == nullptr)
     {
       is_new_obj = true;
@@ -154,7 +154,7 @@ bool PoseEstimatorModule::detectObjects(
             << "for URI " << obj_resource.toString() << std::endl;
         continue;
       }
-      obj_skeleton->setName(obj_id);
+      obj_skeleton->setName(obj_uid);
     }
     else
     {
@@ -205,18 +205,6 @@ bool PoseEstimatorModule::detectObjects(
   }
 
   return true;
-}
-
-YAML::Node PoseEstimatorModule::getObjInfo(const std::string& obj_id)
-{
-  YAML::Node targetNode = mObjInfo[obj_id];
-  if (!targetNode)
-  {
-    throw std::runtime_error(
-        "[PoseEstimatorModule::getObjInfo] Error: invalid obj_id");
-  }
-
-  return targetNode;
 }
 
 void PoseEstimatorModule::setObjectProjectionHeight(double projectionHeight)
