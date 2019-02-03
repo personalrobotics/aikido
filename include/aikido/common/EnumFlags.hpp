@@ -4,14 +4,14 @@
 #include <type_traits>
 
 /// Enable bitwise operators for strongly-typed enums.
-///
-/// Adapted from
-/// http://blog.bitwigglers.org/using-enum-classes-as-type-safe-bitmasks/
+
+// Adapted from
+// http://blog.bitwigglers.org/using-enum-classes-as-type-safe-bitmasks/
 
 // clang-format off
 
 #define AIKIDO_ENABLE_BITWISE_OPERATORS(X)                                     \
-template<>                                                                     \
+template <>                                                                     \
 struct EnableBitwiseOperators< X >                                             \
 {                                                                              \
   static const bool enable = true;                                             \
