@@ -13,10 +13,10 @@ namespace perception {
 //=============================================================================
 PoseEstimatorModule::PoseEstimatorModule(
     ros::NodeHandle nodeHandle,
-    std::string markerTopic,
+    const std::string& markerTopic,
     std::shared_ptr<ObjectDatabase> configData,
     std::shared_ptr<aikido::io::CatkinResourceRetriever> resourceRetriever,
-    std::string referenceFrameId,
+    const std::string& referenceFrameId,
     dart::dynamics::Frame* referenceLink)
   : mNodeHandle(std::move(nodeHandle))
   , mMarkerTopic(std::move(markerTopic))
@@ -25,8 +25,6 @@ PoseEstimatorModule::PoseEstimatorModule(
   , mReferenceFrameId(std::move(referenceFrameId))
   , mReferenceLink(std::move(referenceLink))
   , mTfListener(mNodeHandle)
-  , mProjectObjectToFixedHeight(false)
-  , mProjectionHeight(0.0)
 {
   // Do nothing
 }
@@ -130,11 +128,6 @@ bool PoseEstimatorModule::detectObjects(
     Eigen::Isometry3d link_offset = mReferenceLink->getWorldTransform();
     obj_pose = link_offset * obj_pose;
 
-    if (mProjectObjectToFixedHeight)
-    {
-      obj_pose.translation()[2] = mProjectionHeight;
-    }
-
     bool is_new_obj;
     dart::dynamics::SkeletonPtr obj_skeleton;
 
@@ -206,12 +199,6 @@ bool PoseEstimatorModule::detectObjects(
   }
 
   return true;
-}
-
-void PoseEstimatorModule::setObjectProjectionHeight(double projectionHeight)
-{
-  mProjectObjectToFixedHeight = true;
-  mProjectionHeight = projectionHeight;
 }
 
 } // namespace perception

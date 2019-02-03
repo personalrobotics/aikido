@@ -42,10 +42,10 @@ public:
   /// pose is transformed
   PoseEstimatorModule(
       ros::NodeHandle nodeHandle,
-      std::string markerTopic,
+      const std::string& markerTopic,
       std::shared_ptr<ObjectDatabase> configData,
       std::shared_ptr<aikido::io::CatkinResourceRetriever> resourceRetriever,
-      std::string referenceFrameId,
+      const std::string& referenceFrameId,
       dart::dynamics::Frame* referenceLink);
 
   virtual ~PoseEstimatorModule() = default;
@@ -56,9 +56,6 @@ public:
       std::vector<DetectedObject>& detectedObjects,
       ros::Duration timeout = ros::Duration(0.0),
       ros::Time timestamp = ros::Time(0.0)) override;
-
-  /// If this is set, all objects are projected to this height.
-  void setObjectProjectionHeight(double projectionHeight);
 
 private:
   /// For the ROS node that will work with the April Tags module
@@ -81,10 +78,6 @@ private:
 
   /// Listens to the transform attached to the node
   tf::TransformListener mTfListener;
-
-  bool mProjectObjectToFixedHeight;
-
-  double mProjectionHeight;
 };
 
 } // namespace perception
