@@ -95,8 +95,8 @@ macro(aikido_check_package variable component dependency)
     message(STATUS "Looking for ${dependency} - version ${${variable}_VERSION}"
                    " found")
   else()
-    message(STATUS "Looking for ${dependency} - NOT found, to use"
-                   " ${component}, please install ${dependency}")
+    message(WARNING "Looking for ${dependency} - NOT found, to use"
+                    " ${component}, please install ${dependency}")
     return()
   endif()
 endmacro()
