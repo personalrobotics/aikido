@@ -16,6 +16,7 @@ cache:
     - /usr/local/Cellar
 
 matrix:
+  fast_finish: true
   include:
     - os: linux
       compiler: gcc
