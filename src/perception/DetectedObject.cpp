@@ -25,21 +25,25 @@ std::string DetectedObject::getObjUID()
   return mObjUID;
 }
 
+//==============================================================================
 std::string DetectedObject::getObjDBKey()
 {
   return mObjDBKey;
 }
 
+//==============================================================================
 std::string DetectedObject::getDetectionFrameID()
 {
   return mDetectionFrameID;
 }
 
+//==============================================================================
 YAML::Node DetectedObject::getYamlNode()
 {
   return mYamlNode;
 }
 
+//==============================================================================
 template <typename T>
 T DetectedObject::getInfoByKey(const std::string& key)
 {

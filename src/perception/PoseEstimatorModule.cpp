@@ -5,7 +5,6 @@
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include <yaml-cpp/exceptions.h>
 #include "aikido/perception/shape_conversions.hpp"
 
 namespace aikido {
@@ -73,6 +72,8 @@ bool PoseEstimatorModule::detectObjects(
       continue;
     }
 
+    // Initialize a DetectedObject class for this object
+    // and puts it into the output vector
     DetectedObject this_object
         = DetectedObject(obj_db_key, detection_frame, marker_transform.text);
     detectedObjects.push_back(this_object);

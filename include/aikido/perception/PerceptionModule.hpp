@@ -22,6 +22,7 @@ public:
   /// that represents the world.
   ///
   /// \param[in] env World to add perceived objects to.
+  /// \param[out] detectedObjects An output vector for detected objects.
   /// \param[in] timeout The duration up to which to wait for the transform.
   /// Returns false if none of the markers get correctly transformed
   /// \param[in] timestamp Only detections more recent than this timestamp will
