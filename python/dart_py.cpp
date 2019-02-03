@@ -15,6 +15,13 @@ void MetaSkeleton(pybind11::module& m)
            [](dart::dynamics::MetaSkeleton* self) -> std::string { return self->getName(); });
 }
 
+void Skeleton(pybind11::module& m)
+{
+  py::class_<dart::dynamics::Skeleton, std::shared_ptr<dart::dynamics::Skeleton>>(m, "Skeleton")
+      .def("getName",
+           [](dart::dynamics::Skeleton* self) -> std::string { return self->getName(); });
+}
+
 
 } // namespace python
 } // namespace aikido

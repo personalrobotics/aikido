@@ -56,7 +56,11 @@ find_package(aikido 0.3.0 REQUIRED
   COMPONENTS
     common
     constraint
+    io
+    planner
+    robot
     statespace
+    rviz
 )
 
 #================================================================================
