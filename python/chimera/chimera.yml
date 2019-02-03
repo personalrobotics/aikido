@@ -1,0 +1,361 @@
+#==============================================================================
+#
+# Arguments that will be appended in-order before command line arguments.
+#
+#==============================================================================
+arguments:
+  - "-extra-arg"
+  - "-I/usr/lib/clang/3.6/include"
+
+#==============================================================================
+#
+# Binding
+#
+#==============================================================================
+binding: "pybind11"
+
+#==============================================================================
+#
+# Template
+#
+#==============================================================================
+template:
+  module: !file
+    'templates/module.mstch.cpp'
+  class: !file
+    'templates/class.mstch.cpp'
+  enum: !file
+    'templates/enum.mstch.cpp'
+  function: !file
+    'templates/function.mstch.cpp'
+  variable: !file
+    'templates/variable.mstch.cpp'
+  file:
+    header: |
+      // #include <dartpy/pointers.h>
+      // #include <dartpy/template_registry.h>
+      #include <dart/dart.hpp>
+      #include <dart/collision/bullet/bullet.hpp>
+      // #include <dart/collision/ode/ode.hpp>
+      #include <dart/optimizer/optimizer.hpp>
+      #include <dart/optimizer/nlopt/nlopt.hpp>
+      #include <dart/planning/planning.hpp>
+      #include <dart/utils/utils.hpp>
+      #include <dart/utils/urdf/urdf.hpp>
+      #include <dart/gui/gui.hpp>
+
+      #include <pybind11/pybind11.h>
+      #include <pybind11/eigen.h>
+    precontent:
+      '/* precontent */'
+    postinclude:
+      '/* postinclude */'
+    footer:
+      '/* footer */'
+    # TODO: Put this at the bottom of the module:
+    # dart::python::JointTemplateRegistry::register_default_types();
+    # dart::python::JointAndNodeTemplateRegistry::register_default_types();
+  main:
+    header: |
+      #include <vector>
+      // #include <dartpy/pointers.h>
+      // #include <dartpy/collections.h>
+      // #include <dartpy/util.h>
+      #include <dart/dart.hpp>
+      #include <dart/collision/bullet/bullet.hpp>
+      // #include <dart/collision/ode/ode.hpp>
+      #include <dart/optimizer/optimizer.hpp>
+      #include <dart/optimizer/nlopt/nlopt.hpp>
+      #include <dart/planning/planning.hpp>
+      #include <dart/utils/utils.hpp>
+      #include <dart/utils/urdf/urdf.hpp>
+      #include <dart/gui/gui.hpp>
+
+      #include <pybind11/pybind11.h>
+      #include <pybind11/eigen.h>
+
+      #include <dartpy/eigen_pybind.h>
+      #include <dartpy/eigen_geometry_pybind.h>
+    postinclude:
+      '/* main postinclude */'
+    prebody:
+      '/* main prebody */'
+    precontent:
+      '/* main precontent */'
+    postcontent: |
+      void eigen(pybind11::module& m);
+      eigen(m);
+
+#==============================================================================
+#
+# Namespaces: The C++ namespaces that will be extracted by Chimera
+#
+#==============================================================================
+namespaces:
+  'aikido':
+    name: null
+  'dart':
+    name: null  # Collapse the 'dart' namespace into its parent.
+  'dart::common::detail': null
+  'dart::math::detail': null
+  'dart::dynamics::detail': null
+
+#==============================================================================
+#
+# Types: Selected types that need special handling.
+#
+#==============================================================================
+types:
+
+  #----------------------------------------------------------------------------
+  # std::
+  #----------------------------------------------------------------------------
+  'const std::string &':
+    return_value_policy: reference_internal
+
+  #----------------------------------------------------------------------------
+  # Assimp::
+  #----------------------------------------------------------------------------
+
+  # Disable const pointers
+  'const aiScene *': null
+  'const aiMesh *': null
+  'Assimp::IOStream *':
+    return_value_policy: reference_internal
+
+  #----------------------------------------------------------------------------
+  # Eigen::
+  #----------------------------------------------------------------------------
+
+  'const Eigen::Vector3d&':
+    return_value_policy: reference_internal
+
+  #----------------------------------------------------------------------------
+  # dart::common::
+  #----------------------------------------------------------------------------
+
+  # Disable const pointers
+  'const dart::common::Aspect::State *': null
+  'const dart::common::Aspect::Properties *': null
+
+  # Return value policy
+  'const dart::common::Uri &':
+    return_value_policy: reference_internal
+  'dart::common::UriComponent::reference_type':
+    return_value_policy: reference_internal
+
+  #----------------------------------------------------------------------------
+  # dart::math::
+  #----------------------------------------------------------------------------
+
+  # Return value policy
+  'const dart::math::BoundingBox &':
+    return_value_policy: reference_internal
+
+  #----------------------------------------------------------------------------
+  # dart::dynamics::
+  #----------------------------------------------------------------------------
+
+  # Return value policy
+  'const dart::dynamics::ArrowShape::Properties &':
+    return_value_policy: reference_internal
+
+#==============================================================================
+#
+# Classes: Selected function and class declarations that need custom parameters.
+#
+#==============================================================================
+classes:
+
+  #----------------------------------------------------------------------------
+  # dart::common::
+  #----------------------------------------------------------------------------
+
+  # Hide details
+  'dart::common::CloneableMap<std::map<std::type_index, std::unique_ptr<dart::common::Aspect::State, std::default_delete<dart::common::Aspect::State> >, std::less<std::type_index>, std::allocator<std::pair<const std::type_index, std::unique_ptr<dart::common::Aspect::State, std::default_delete<dart::common::Aspect::State> > > > > >': null
+  'dart::common::CloneableMap<std::map<std::type_index, std::unique_ptr<dart::common::Aspect::Properties, std::default_delete<dart::common::Aspect::Properties> >, std::less<std::type_index>, std::allocator<std::pair<const std::type_index, std::unique_ptr<dart::common::Aspect::Properties, std::default_delete<dart::common::Aspect::Properties> > > > > >': null
+
+  # Held type
+  'dart::common::ResourceRetriever':
+    held_type: std::shared_ptr<dart::common::ResourceRetriever>
+  'dart::common::LocalResourceRetriever':
+    held_type: std::shared_ptr<dart::common::LocalResourceRetriever>
+
+  # Name
+  'dart::common::Cloneable<dart::common::Aspect::Properties>':
+    name: CloneableAspectProperties
+  'dart::common::Cloneable<dart::common::Aspect::State>':
+    name: CloneableAspectState
+  'dart::common::detail::CompositeData<std::map<std::type_index, std::unique_ptr<dart::common::Aspect::State, std::default_delete<dart::common::Aspect::State> >, std::less<std::type_index>, std::allocator<std::pair<const std::type_index, std::unique_ptr<dart::common::Aspect::State, std::default_delete<dart::common::Aspect::State> > > > >, dart::common::detail::GetState>':
+    name: CompositeData_Map_TypeIndex_AspectState
+  'dart::common::detail::CompositeData<std::map<std::type_index, std::unique_ptr<dart::common::Aspect::Properties, std::default_delete<dart::common::Aspect::Properties> >, std::less<std::type_index>, std::allocator<std::pair<const std::type_index, std::unique_ptr<dart::common::Aspect::Properties, std::default_delete<dart::common::Aspect::Properties> > > > >, dart::common::detail::GetProperties>':
+    name: CompositeData_Map_TypeIndex_AspectProperties
+
+  # TODO(JS): Disabled until nested enumeration issue is resolved.
+  # See: https://github.com/personalrobotics/chimera/issues/202
+  'dart::common::SharedLibrary': null
+
+  #----------------------------------------------------------------------------
+  # dart::math::
+  #----------------------------------------------------------------------------
+
+  # Hide details
+  'dart::math::detail::toEuclideanPointImpl<dart::math::RealVectorSpace<1> >': null
+  'dart::math::detail::toEuclideanPointImpl<dart::math::RealVectorSpace<3> >': null
+  'dart::math::detail::toEuclideanPointImpl<dart::math::RealVectorSpace<2> >': null
+  'dart::math::detail::toEuclideanPointImpl<dart::math::SO3Space>': null
+  'dart::math::detail::toEuclideanPointImpl<dart::math::SE3Space>': null
+  'dart::math::detail::toManifoldPointImpl<dart::math::RealVectorSpace<1> >': null
+  'dart::math::detail::toManifoldPointImpl<dart::math::RealVectorSpace<3> >': null
+  'dart::math::detail::toManifoldPointImpl<dart::math::RealVectorSpace<2> >': null
+  'dart::math::detail::toManifoldPointImpl<dart::math::SO3Space>': null
+  'dart::math::detail::toManifoldPointImpl<dart::math::SE3Space>': null
+  'dart::math::detail::integratePositionImpl<dart::math::RealVectorSpace<1> >': null
+  'dart::math::detail::integratePositionImpl<dart::math::RealVectorSpace<3> >': null
+  'dart::math::detail::integratePositionImpl<dart::math::RealVectorSpace<2> >': null
+  'dart::math::detail::integratePositionImpl<dart::math::SO3Space>': null
+  'dart::math::detail::integratePositionImpl<dart::math::SE3Space>': null
+  'dart::math::MapsToManifoldPoint': null
+
+  # Name
+  'dart::math::constants<double>':
+    name: constantsd
+  'dart::math::constants<long double>':
+    name: constantsld
+
+  #----------------------------------------------------------------------------
+  # dart::dynamics::
+  #----------------------------------------------------------------------------
+
+  # Hide details
+  'dart::common::CloneableMap<std::map<std::type_index, std::unique_ptr<dart::common::CloneableVector<std::unique_ptr<dart::dynamics::Node::Properties, std::default_delete<dart::dynamics::Node::Properties> > >, std::default_delete<dart::common::CloneableVector<std::unique_ptr<dart::dynamics::Node::Properties, std::default_delete<dart::dynamics::Node::Properties> > > > >, std::less<std::type_index>, std::allocator<std::pair<const std::type_index, std::unique_ptr<dart::common::CloneableVector<std::unique_ptr<dart::dynamics::Node::Properties, std::default_delete<dart::dynamics::Node::Properties> > >, std::default_delete<dart::common::CloneableVector<std::unique_ptr<dart::dynamics::Node::Properties, std::default_delete<dart::dynamics::Node::Properties> > > > > > > > >': null
+  'dart::common::CompositeJoiner<dart::dynamics::EntityNode<dart::dynamics::TemplatedJacobianNode<dart::dynamics::FixedJacobianNode> >, dart::common::Virtual<dart::dynamics::FixedFrame> >': null
+  'dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::dynamics::ShapeFrame>': null
+  'dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::common::SpecializedForAspect<dart::dynamics::Support> >': null
+  'dart::common::EmbedProperties<dart::dynamics::EndEffector, dart::dynamics::detail::EndEffectorProperties>': null
+  'dart::common::EmbedProperties<dart::dynamics::EntityNode<dart::dynamics::TemplatedJacobianNode<dart::dynamics::FixedJacobianNode> >, dart::dynamics::detail::EntityNodeProperties>': null
+  'dart::common::EmbedProperties<dart::dynamics::Marker, dart::dynamics::detail::MarkerProperties>': null
+  'dart::common::RequiresAspect<dart::common::EmbeddedPropertiesAspect<dart::dynamics::EndEffector, dart::dynamics::detail::EndEffectorProperties> >': null
+  'dart::common::RequiresAspect<dart::common::EmbeddedPropertiesAspect<dart::dynamics::EntityNode<dart::dynamics::TemplatedJacobianNode<dart::dynamics::FixedJacobianNode> >, dart::dynamics::detail::EntityNodeProperties> >': null
+  'dart::common::RequiresAspect<dart::common::EmbeddedPropertiesAspect<dart::dynamics::Marker, dart::dynamics::detail::MarkerProperties> >': null
+  'dart::common::SpecializedForAspect<dart::common::EmbeddedPropertiesAspect<dart::dynamics::EntityNode<dart::dynamics::TemplatedJacobianNode<dart::dynamics::FixedJacobianNode> >, dart::dynamics::detail::EntityNodeProperties> >': null
+  'dart::common::SpecializedForAspect<dart::common::EmbeddedPropertiesAspect<dart::dynamics::EndEffector, dart::dynamics::detail::EndEffectorProperties> >': null
+  'dart::common::SpecializedForAspect<dart::common::EmbeddedPropertiesAspect<dart::dynamics::Marker, dart::dynamics::detail::MarkerProperties> >': null
+  'dart::dynamics::AccessoryNode<dart::dynamics::FixedJacobianNode>': null
+  'dart::dynamics::CompositeNode<dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::dynamics::ShapeFrame> >': null
+  'dart::dynamics::CompositeNode<dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::common::SpecializedForAspect<dart::dynamics::Support> > >': null
+  'dart::dynamics::CompositeNode<dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::dynamics::ShapeFrame> >': null
+  'dart::dynamics::CompositePropertiesNode<dart::dynamics::CompositeStateNode<dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::dynamics::ShapeFrame> > >': null
+  'dart::dynamics::CompositePropertiesNode<dart::dynamics::CompositeStateNode<dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::common::SpecializedForAspect<dart::dynamics::Support> > > >': null
+  'dart::dynamics::CompositeStateNode<dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::dynamics::ShapeFrame> >': null
+  'dart::dynamics::CompositeStateNode<dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::common::SpecializedForAspect<dart::dynamics::Support> > >': null
+  'dart::dynamics::CompositePropertiesNode<dart::dynamics::CompositeStateNode<dart::common::CompositeJoiner<dart::dynamics::FixedJacobianNode, dart::common::SpecializedForAspect<dart::dynamics::Support> > > >': null
+  'dart::dynamics::detail::EntityNodeBase<dart::dynamics::TemplatedJacobianNode<dart::dynamics::FixedJacobianNode>, false>': null
+  'dart::dynamics::EntityNode<dart::dynamics::TemplatedJacobianNode<dart::dynamics::FixedJacobianNode> >': null
+  'dart::dynamics::TemplatedJacobianNode<dart::dynamics::FixedJacobianNode>': null
+  'dart::dynamics::TemplateWeakBodyNodePtr<dart::dynamics::BodyNode>': null
+  'dart::dynamics::TemplateWeakNodePtr<dart::dynamics::ShapeNode, dart::dynamics::BodyNode>': null
+
+  # Held type
+  # 'dart::dynamics::Frame':
+  #   held_type: 'dart::dynamics::Frame *'
+  'dart::dynamics::SimpleFrame':
+    held_type: 'std::shared_ptr<dart::dynamics::SimpleFrame>'
+
+  #----------------------------------------------------------------------------
+  # dart::collision::
+  #----------------------------------------------------------------------------
+
+  'dart::collision::CollisionDetector':
+    held_type: 'std::shared_ptr<dart::collision::CollisionDetector>'
+  'dart::collision::DARTCollisionDetector':
+    held_type: 'std::shared_ptr<dart::collision::DARTCollisionDetector>'
+  'dart::collision::FCLCollisionDetector':
+    held_type: 'std::shared_ptr<dart::collision::FCLCollisionDetector>'
+  'dart::collision::BulletCollisionDetector':
+    held_type: 'std::shared_ptr<dart::collision::BulletCollisionDetector>'
+  # 'dart::collision::ODECollisionDetector':
+  #   held_type: 'std::shared_ptr<dart::collision::ODECollisionDetector>'
+
+  #----------------------------------------------------------------------------
+  # dart::constraint::
+  #----------------------------------------------------------------------------
+  'dart::constraint::ConstraintBase':
+    held_type: 'std::shared_ptr<dart::constraint::ConstraintBase>'
+  'dart::constraint::ClosedLoopConstraint':
+    held_type: 'std::shared_ptr<dart::constraint::ClosedLoopConstraint>'
+  'dart::constraint::ContactConstraint':
+    held_type: 'std::shared_ptr<dart::constraint::ContactConstraint>'
+  'dart::constraint::SoftContactConstraint':
+    held_type: 'std::shared_ptr<dart::constraint::SoftContactConstraint>'
+  'dart::constraint::JointLimitConstraint':
+    held_type: 'std::shared_ptr<dart::constraint::JointLimitConstraint>'
+  'dart::constraint::ServoMotorConstraint':
+    held_type: 'std::shared_ptr<dart::constraint::ServoMotorConstraint>'
+  'dart::constraint::MimicMotorConstraint':
+    held_type: 'std::shared_ptr<dart::constraint::MimicMotorConstraint>'
+  'dart::constraint::JointCoulombFrictionConstraint':
+    held_type: 'std::shared_ptr<dart::constraint::JointCoulombFrictionConstraint>'
+
+  # Eigen
+  'template <typename Derived> Eigen::Map': null
+
+  # Test
+  # 'dart::dynamics::AssimpInputResourceRetrieverAdaptor': null
+  # 'dart::dynamics::ArrowShape::Properties': null
+  # 'dart::dynamics::AssimpInputResourceRetrieverAdaptor': null
+  'Assimp::IOStream': null
+  # 'dart::dynamics::AssimpInputResourceAdaptor': null
+
+#==============================================================================
+#
+# Functions
+#
+#==============================================================================
+functions:
+
+  #----------------------------------------------------------------------------
+  # dart::common::
+  #----------------------------------------------------------------------------
+
+  # rvalue
+  'dart::common::Connection::Connection(dart::common::Connection&&)': null
+  'dart::common::ScopedConnection::ScopedConnection(dart::common::Connection&&)': null
+
+  # const reference return
+  'dart::common::UriComponent::reference_const_type dart::common::UriComponent::get() const': null
+  'dart::common::UriComponent::reference_const_type dart::common::UriComponent::get_value_or(dart::common::UriComponent::reference_const_type) const': null
+
+  # TODO(JS): Incompete argument types.
+  'std::size_t dart::common::Resource::read(void *, std::size_t, std::size_t)': null
+  'std::size_t dart::common::LocalResource::read(void *, std::size_t, std::size_t)': null
+
+  # TODO(JS): Disabled until nested enumeration issue is resolved.
+  # See: https://github.com/personalrobotics/chimera/issues/202
+  'bool dart::common::Resource::seek(ptrdiff_t, dart::common::Resource::SeekType)': null
+
+  # TODO(JS): implicit declaration
+  # Warning: Skipped function 'dart::common::Uri::Uri' because the parameter at index 0 is an rvalue reference of type 'dart::common::Uri &&'.
+  # 'dart::common::Uri::Uri(dart::common::Uri &&)': null
+
+  # TODO(JS): implicit declaration
+  # Warning: Skipped function 'dart::common::UriComponent::UriComponent' because the parameter at index 0 is an rvalue reference of type 'dart::common::UriComponent &&'.
+  # 'dart::common::UriComponent::UriComponent(dart::common::UriComponent&&)': null
+
+  #----------------------------------------------------------------------------
+  # dart::math::
+  #----------------------------------------------------------------------------
+
+  # rvalue
+
+  # TODO(JS): implicit declaration
+  # Warning: Skipped function 'dart::math::BoundingBox::BoundingBox' because the parameter at index 0 is an rvalue reference of type 'dart::math::BoundingBox &&'.
+  # 'dart::math::BoundingBox::BoundingBox(dart::math::BoundingBox::BoundingBox&&)': null
+
+  #----------------------------------------------------------------------------
+  # dart::dynamics::
+  #----------------------------------------------------------------------------
+
+  # Disable std::unique_ptr<T>& parameter
+  'void dart::dynamics::Node::copyNodeStateTo(std::unique_ptr<dart::dynamics::Node::State> &) const': null
+  'void dart::dynamics::Node::copyNodePropertiesTo(std::unique_ptr<dart::dynamics::Node::Properties> &) const': null

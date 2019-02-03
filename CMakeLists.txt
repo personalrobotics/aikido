@@ -111,7 +111,7 @@ include(FindPkgConfig)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-find_package(DART 6.6.2 REQUIRED
+find_package(DART 7.0.0 REQUIRED
   COMPONENTS optimizer-nlopt utils
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
@@ -171,6 +171,14 @@ add_subdirectory("tests" EXCLUDE_FROM_ALL)
 get_property(all_tests GLOBAL PROPERTY AIKIDO_TESTS)
 add_custom_target(tests DEPENDS ${all_tests})
 add_custom_target(run_tests COMMAND "${CMAKE_CTEST_COMMAND}")
+
+#================================================================================
+# Python binding
+#
+option(BUILD_PYTHON "Enable building aikidopy" OFF)
+if(BUILD_PYTHON)
+  add_subdirectory(python)
+endif()
 
 #==============================================================================
 # Doxygen.

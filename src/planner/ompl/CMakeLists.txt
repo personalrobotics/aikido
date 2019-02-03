@@ -5,7 +5,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
           "Boost (< 1.65.1). For details, please see: "
           " https://github.com/personalrobotics/aikido/issues/363"
       )
-      return()
+    #return()
     endif()
   endif()
 endif()
@@ -13,7 +13,7 @@ endif()
 #==============================================================================
 # Libraries
 #
-set(sources 
+set(sources
   CRRT.cpp
   CRRTConnect.cpp
   dart.cpp
