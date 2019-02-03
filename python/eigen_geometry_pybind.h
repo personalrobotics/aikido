@@ -133,7 +133,7 @@ struct wrapper_eigen_translation {
 
 }  // namespace detail
 }  // namespace python
-}  // namespace libherb
+}  // namespace aikido
 
 namespace pybind11 {
 namespace detail {

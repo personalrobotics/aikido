@@ -375,4 +375,4 @@ void eigen_geometry(pybind11::module& m)
 }
 
 } // namespace python
-} // namespace libherb
+} // namespace aikido
