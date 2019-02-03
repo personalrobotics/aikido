@@ -114,8 +114,8 @@ public:
       StateSpace::State* _destination) const override;
 
   /// Exponential mapping of Lie algebra element to a Lie group element. The
-  /// tangent space is parameterized a planar twist of the form (rotation,
-  /// translation, translation).
+  /// tangent space is parameterized a planar twist of the form (translation,
+  /// translation, rotation).
   ///
   /// \param _tangent element of the tangent space
   /// \param[out] _out corresponding element of the Lie group
@@ -123,8 +123,8 @@ public:
       const Eigen::VectorXd& _tangent, StateSpace::State* _out) const override;
 
   /// Log mapping of Lie group element to a Lie algebra element. The tangent
-  /// space is parameterized as a planar twist of the form (rotation,
-  /// translation, translation).
+  /// space is parameterized as a planar twist of the form (translation,
+  /// translation, rotation).
   ///
   /// \param _state element of this Lie group
   /// \param[out] _tangent corresponding element of the tangent space

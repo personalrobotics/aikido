@@ -13,7 +13,6 @@ namespace statespace {
 namespace dart {
 namespace detail {
 
-using ::dart::common::make_unique;
 using Ptr = std::unique_ptr<JointStateSpace>;
 
 //==============================================================================
@@ -29,9 +28,9 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::RevoluteJoint>
   static Ptr create(const ::dart::dynamics::RevoluteJoint* _joint)
   {
     if (_joint->isCyclic(0))
-      return make_unique<SO2Joint>(_joint);
+      return ::dart::common::make_unique<SO2Joint>(_joint);
     else
-      return make_unique<R1Joint>(_joint);
+      return ::dart::common::make_unique<R1Joint>(_joint);
   }
 };
 
@@ -41,7 +40,7 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::PrismaticJoint>
 {
   static Ptr create(const ::dart::dynamics::PrismaticJoint* _joint)
   {
-    return make_unique<R1Joint>(_joint);
+    return ::dart::common::make_unique<R1Joint>(_joint);
   }
 };
 
@@ -51,7 +50,7 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::TranslationalJoint>
 {
   static Ptr create(const ::dart::dynamics::TranslationalJoint* _joint)
   {
-    return make_unique<R3Joint>(_joint);
+    return ::dart::common::make_unique<R3Joint>(_joint);
   }
 };
 
@@ -61,7 +60,7 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::BallJoint>
 {
   static Ptr create(const ::dart::dynamics::BallJoint* _joint)
   {
-    return make_unique<SO3Joint>(_joint);
+    return ::dart::common::make_unique<SO3Joint>(_joint);
   }
 };
 
@@ -71,7 +70,7 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::PlanarJoint>
 {
   static Ptr create(const ::dart::dynamics::PlanarJoint* _joint)
   {
-    return make_unique<SE2Joint>(_joint);
+    return ::dart::common::make_unique<SE2Joint>(_joint);
   }
 };
 
@@ -81,7 +80,7 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::FreeJoint>
 {
   static Ptr create(const ::dart::dynamics::FreeJoint* _joint)
   {
-    return make_unique<SE3Joint>(_joint);
+    return ::dart::common::make_unique<SE3Joint>(_joint);
   }
 };
 
@@ -91,7 +90,7 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::WeldJoint>
 {
   static Ptr create(const ::dart::dynamics::WeldJoint* _joint)
   {
-    return make_unique<WeldJoint>(_joint);
+    return ::dart::common::make_unique<WeldJoint>(_joint);
   }
 };
 

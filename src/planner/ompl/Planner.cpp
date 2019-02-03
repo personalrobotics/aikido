@@ -112,7 +112,8 @@ namespace ompl {
       std::move(_dmetric),
       std::move(_sampler),
       _boundsConstraint,
-      std::move(_boundsProjector));
+      std::move(_boundsProjector),
+      _maxDistanceBtwValidityChecks);
 
   // Space Information
   auto si = ompl_make_shared<::ompl::base::SpaceInformation>(std::move(sspace));
@@ -476,8 +477,9 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
     statespace::InterpolatorPtr _interpolator)
 {
-  auto returnInterpolated = dart::common::make_unique<trajectory::Interpolated>(
-      _interpolator->getStateSpace(), std::move(_interpolator));
+  auto returnInterpolated
+      = ::dart::common::make_unique<trajectory::Interpolated>(
+          _interpolator->getStateSpace(), std::move(_interpolator));
 
   for (std::size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {

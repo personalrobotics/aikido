@@ -32,11 +32,6 @@ Eigen::VectorXd toEigen(const ParabolicRamp::Vector& _x);
 void evaluateAtTime(ParabolicRamp::DynamicPath& _path, double _t,
     Eigen::VectorXd& _position, Eigen::VectorXd& _velocity);
 
-/// Check wether the state space is supported
-/// \param _stateSpace the state space to be checked
-/// \return whether the state space is supported
-bool checkStateSpace(const statespace::StateSpace* _stateSpace);
-
 /// Convert an interpolated trajectory to a spline trajectory
 /// \param _inputTrajectory interpolated trajectory
 /// \return a spline trajectory

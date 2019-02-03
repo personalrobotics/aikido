@@ -21,13 +21,6 @@ matrix:
     - os: linux
       compiler: gcc
       env:
-        - BUILD_NAME=TRUSTY_DEBUG
-        - REQUIRED_ONLY=--required-only
-        - BUILD_TYPE=Debug
-        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON"
-    - os: linux
-      compiler: gcc
-      env:
         - BUILD_NAME=TRUSTY_RELEASE
         - REQUIRED_ONLY=--required-only
         - BUILD_TYPE=Release
@@ -57,20 +50,13 @@ matrix:
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
       services: docker
-    # Disabled until https://travis-ci.org/personalrobotics/aikido/jobs/375661536#L1561 is resolved
-    #- os: linux
-    #  env:
-    #    - BUILD_NAME=BIONIC_FULL_RELEASE
-    #    - DOCKER_FILE="ubuntu-bionic"
-    #    - BUILD_TYPE=Release
-    #    - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
-    #  services: docker
-    - os: osx
-      osx_image: xcode9.3
-      compiler: clang
+    - os: linux
       env:
-        - BUILD_NAME=XCODE93_DEBUG
-        - BUILD_TYPE=Debug
+        - BUILD_NAME=BIONIC_FULL_RELEASE
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+      services: docker
     - os: osx
       osx_image: xcode9.3
       compiler: clang

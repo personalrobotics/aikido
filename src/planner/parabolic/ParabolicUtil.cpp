@@ -6,21 +6,14 @@
 #include <dart/common/StlHelpers.hpp>
 #include <dart/dart.hpp>
 #include <aikido/common/Spline.hpp>
-#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
-#include <aikido/statespace/Rn.hpp>
-#include <aikido/statespace/SO2.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
 
 #include "DynamicPath.h"
 
 using Eigen::Vector2d;
-using aikido::statespace::CartesianProduct;
-using aikido::statespace::R;
-using aikido::statespace::SO2;
 using aikido::statespace::StateSpace;
-using dart::common::make_unique;
 
 using CubicSplineProblem
     = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;
@@ -65,61 +58,6 @@ void evaluateAtTime(
   _velocity = toEigen(velocityVector);
 }
 
-bool checkStateSpace(const statespace::StateSpace* _stateSpace)
-{
-  // TODO(JS): Generalize Rn<N> for arbitrary N.
-  if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<1>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<3>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<4>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<5>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<6>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<Eigen::Dynamic>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const SO2*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (auto space = dynamic_cast<const CartesianProduct*>(_stateSpace))
-  {
-    for (std::size_t isubspace = 0; isubspace < space->getNumSubspaces();
-         ++isubspace)
-    {
-      if (!checkStateSpace(space->getSubspace<>(isubspace).get()))
-        return false;
-    }
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const ParabolicRamp::DynamicPath& _inputPath,
     double _startTime,
@@ -153,8 +91,9 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(_inputPath, timePrev, positionPrev, velocityPrev);
 
-  auto _outputTrajectory = make_unique<aikido::trajectory::Spline>(
-      _stateSpace, timePrev + _startTime);
+  auto _outputTrajectory
+      = ::dart::common::make_unique<aikido::trajectory::Spline>(
+          _stateSpace, timePrev + _startTime);
   auto segmentStartState = _stateSpace->createState();
 
   for (const auto timeCurr : transitionTimes)
@@ -213,7 +152,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     velocities.emplace_back(toVector(tangentVector));
   }
 
-  auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
+  auto outputPath = ::dart::common::make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
   if (_preserveWaypointVelocity)
   {
@@ -250,7 +189,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     milestones.emplace_back(toVector(currVec));
   }
 
-  auto outputPath = make_unique<ParabolicRamp::DynamicPath>();
+  auto outputPath = ::dart::common::make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
   outputPath->SetMilestones(milestones);
   if (!outputPath->IsValid())

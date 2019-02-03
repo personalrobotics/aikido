@@ -65,12 +65,12 @@ private:
 
   std::unique_ptr<common::RNG> mRng;
 
-  /// Lower limits on the state. The first element encodes the rotational limit
-  /// and the last two elements encode the translational limits.
+  /// Lower limits on the state. The first two elements encode the translational
+  /// limits and the last element encodes the rotational limit.
   Eigen::Vector3d mLowerLimits;
 
-  /// Upper limits on the state. The first element encodes the rotational limit
-  /// and the last two elements encode the translational limits.
+  /// Upper limits on the state. The first two elements encode the translational
+  /// limits and the last element encodes the rotational limit.
   Eigen::Vector3d mUpperLimits;
 
   // DOFs of joint that have limits, in this case translational DOFs.

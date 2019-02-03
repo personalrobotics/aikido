@@ -14,13 +14,6 @@ public:
   virtual void SetUp()
   {
     PlannerTest::SetUp();
-    gSpace = std::make_shared<GeometricStateSpace>(
-        stateSpace,
-        interpolator,
-        dmetric,
-        sampler,
-        boundsConstraint,
-        boundsProjection);
     si = aikido::planner::ompl::getSpaceInformation(
         stateSpace,
         interpolator,
@@ -31,14 +24,14 @@ public:
         boundsProjection,
         0.1);
   }
-  std::shared_ptr<GeometricStateSpace> gSpace;
   ::ompl::base::SpaceInformationPtr si;
 };
 
 TEST_F(GoalRegionTest, ThrowsOnNullSpaceInformation)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   EXPECT_THROW(
       GoalRegion(nullptr, std::move(testable), std::move(generator)),
       std::invalid_argument);
@@ -46,7 +39,8 @@ TEST_F(GoalRegionTest, ThrowsOnNullSpaceInformation)
 
 TEST_F(GoalRegionTest, ThrowsOnNullTestable)
 {
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   EXPECT_THROW(
       GoalRegion(si, nullptr, std::move(generator)), std::invalid_argument);
 }
@@ -62,7 +56,8 @@ TEST_F(GoalRegionTest, ThrowsOnTestableGeneratorMismatch)
 {
   auto so3 = std::make_shared<aikido::statespace::SO3>();
   auto testable = std::make_shared<PassingConstraint>(so3);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   EXPECT_THROW(
       GoalRegion(si, std::move(testable), std::move(generator)),
       std::invalid_argument);
@@ -102,7 +97,8 @@ TEST_F(GoalRegionTest, ValidSample)
 TEST_F(GoalRegionTest, CantSample)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
   auto state = si->allocState()->as<GeometricStateSpace::StateType>();
@@ -114,7 +110,8 @@ TEST_F(GoalRegionTest, CantSample)
 TEST_F(GoalRegionTest, FailedSample)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<FailedSampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<FailedSampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
   auto state = si->allocState()->as<GeometricStateSpace::StateType>();
@@ -126,7 +123,8 @@ TEST_F(GoalRegionTest, FailedSample)
 TEST_F(GoalRegionTest, NumSamples)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<FailedSampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<FailedSampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
   EXPECT_EQ(1000, gr.maxSampleCount());
 }
@@ -134,7 +132,8 @@ TEST_F(GoalRegionTest, NumSamples)
 TEST_F(GoalRegionTest, CouldSampleTrue)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<FailedSampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<FailedSampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
   EXPECT_TRUE(gr.couldSample());
 }
@@ -142,7 +141,8 @@ TEST_F(GoalRegionTest, CouldSampleTrue)
 TEST_F(GoalRegionTest, CouldSampleFalse)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
   EXPECT_FALSE(gr.couldSample());
 }
@@ -150,7 +150,8 @@ TEST_F(GoalRegionTest, CouldSampleFalse)
 TEST_F(GoalRegionTest, ZeroDistance)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
   auto state = si->allocState();
@@ -161,7 +162,8 @@ TEST_F(GoalRegionTest, ZeroDistance)
 TEST_F(GoalRegionTest, InfiniteDistance)
 {
   auto testable = std::make_shared<FailingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
   auto state = si->allocState();
@@ -173,7 +175,8 @@ TEST_F(GoalRegionTest, InfiniteDistance)
 TEST_F(GoalRegionTest, GoalSatisfied)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
   auto state = si->allocState();
@@ -184,7 +187,8 @@ TEST_F(GoalRegionTest, GoalSatisfied)
 TEST_F(GoalRegionTest, GoalSatisfiedFailsOnNullState)
 {
   auto testable = std::make_shared<PassingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
   EXPECT_FALSE(gr.isSatisfied(nullptr));
 
@@ -198,7 +202,8 @@ TEST_F(GoalRegionTest, GoalSatisfiedFailsOnNullState)
 TEST_F(GoalRegionTest, GoalNotSatisfied)
 {
   auto testable = std::make_shared<FailingConstraint>(stateSpace);
-  auto generator = dart::common::make_unique<EmptySampleGenerator>(stateSpace);
+  auto generator
+      = ::dart::common::make_unique<EmptySampleGenerator>(stateSpace);
   GoalRegion gr(si, std::move(testable), std::move(generator));
 
   auto state = si->allocState();

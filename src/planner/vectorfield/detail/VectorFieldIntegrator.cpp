@@ -16,11 +16,10 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const std::vector<Knot>& knots,
     aikido::statespace::ConstStateSpacePtr stateSpace)
 {
-  using dart::common::make_unique;
-
   std::size_t dimension = stateSpace->getDimension();
 
-  auto outputTrajectory = make_unique<aikido::trajectory::Spline>(stateSpace);
+  auto outputTrajectory
+      = ::dart::common::make_unique<aikido::trajectory::Spline>(stateSpace);
 
   using CubicSplineProblem = aikido::common::
       SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
@@ -54,13 +53,14 @@ VectorFieldIntegrator::VectorFieldIntegrator(
     double checkConstraintResolution)
   : mVectorField(vectorField)
   , mConstraint(collisionFreeConstraint)
+  , mCacheIndex(-1)
+  , mDimension(mVectorField->getStateSpace()->getDimension())
   , mTimelimit(timelimit)
   , mConstraintCheckResolution(checkConstraintResolution)
+  , mState(mVectorField->getStateSpace()->createState())
+  , mLastEvaluationTime(0.0)
 {
-  mCacheIndex = -1;
-  mLastEvaluationTime = 0.0;
-  mDimension = mVectorField->getStateSpace()->getDimension();
-  mState = mVectorField->getStateSpace()->createState();
+  // Do nothing
 }
 
 //==============================================================================

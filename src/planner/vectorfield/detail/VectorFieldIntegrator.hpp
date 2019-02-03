@@ -115,7 +115,7 @@ protected:
   double mConstraintCheckResolution;
 
   /// Current state in integration
-  aikido::statespace::StateSpace::State* mState;
+  aikido::statespace::StateSpace::ScopedState mState;
 
   /// Last evaluation time in checking trajectory
   double mLastEvaluationTime;

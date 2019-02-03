@@ -77,7 +77,7 @@ void InstantaneousTrajectoryExecutor::step(
 }
 
 //==============================================================================
-void InstantaneousTrajectoryExecutor::abort()
+void InstantaneousTrajectoryExecutor::cancel()
 {
   // Do nothing
 }
