@@ -38,6 +38,26 @@ matrix:
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
     - os: linux
+      env:
+        - BUILD_NAME=XENIAL_FULL_RELEASE
+        - DOCKER_FILE="ubuntu-xenial"
+        - BUILD_TYPE=Release
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+      services: docker
+    - os: linux
+      env:
+        - BUILD_NAME=BIONIC_FULL_RELEASE
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+      services: docker
+    - os: osx
+      osx_image: xcode9.3
+      compiler: clang
+      env:
+        - BUILD_NAME=XCODE93_RELEASE
+        - BUILD_TYPE=Release
+    - os: linux
       compiler: gcc
       env:
         - BUILD_NAME=DOCS
