@@ -16,7 +16,7 @@ DetectedObject::DetectedObject(
   // Load YAML nodes from string
   mYamlNode = YAML::Load(yamlStr);
 
-  mObjUID = mYamlNode["id"].as<std::string>();
+  mObjUID = mYamlNode["uid"].as<std::string>();
 }
 
 //==============================================================================
