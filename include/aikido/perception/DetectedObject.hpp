@@ -70,7 +70,7 @@ private:
   /// The detection frame id that refers the origin of this object's pose
   std::string mDetectionFrameID;
 
-  /// The information map with additional informations of this object
+  /// The information map with additional information of this object
   YAML::Node mYamlNode;
 };
 
