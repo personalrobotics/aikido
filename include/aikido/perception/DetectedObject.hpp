@@ -17,7 +17,7 @@ namespace perception {
 /// Marker.text -> yamlStr
 
 /// yamlStr contains the unique id of the object and any types of additional
-/// informations of the object in JSON format.
+/// information of the object in JSON format.
 /// Here is an example:
 /// \code
 /// {
