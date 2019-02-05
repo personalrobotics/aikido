@@ -11,7 +11,7 @@ namespace perception {
 /// perception algorithm.
 
 /// A perception algorithm should send information for an object via ROS
-/// visualization_msgs/Marker message like following:
+/// visualization_msgs/Marker message like the following:
 /// Marker.header.frame_id -> detectionFrameID
 /// Marker.ns -> objDBKey
 /// Marker.text -> yamlStr
