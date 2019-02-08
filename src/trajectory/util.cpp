@@ -42,7 +42,8 @@ enum AllowJointType
   NonSingularDOF
 };
 
-bool checkStateSpace(const statespace::StateSpace* _stateSpace, AllowJointType type)
+bool checkStateSpace(
+    const statespace::StateSpace* _stateSpace, AllowJointType type)
 {
   // Only supports single-DOF joint spaces, namely R1 and SO2.
   if (dynamic_cast<const R1*>(_stateSpace) != nullptr)
@@ -70,7 +71,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace, AllowJointType t
       if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
       {
         return true;
-      }    
+      }
       else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
       {
         return true;
@@ -335,7 +336,8 @@ UniqueSplinePtr createPartialTrajectory(
 aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
     const Interpolated& trajectory)
 {
-  if (!checkStateSpace(trajectory.getStateSpace().get(), AllowJointType::SinglularDOF))
+  if (!checkStateSpace(
+          trajectory.getStateSpace().get(), AllowJointType::SinglularDOF))
     throw std::invalid_argument(
         "toR1JointTrajectory only supports R1 and SO2 joint spaces");
 
@@ -386,7 +388,8 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
 //==============================================================================
 aikido::trajectory::ConstSplinePtr toR1JointTrajectory(const Spline& trajectory)
 {
-  if (!checkStateSpace(trajectory.getStateSpace().get(), AllowJointType::SinglularDOF))
+  if (!checkStateSpace(
+          trajectory.getStateSpace().get(), AllowJointType::SinglularDOF))
     throw std::invalid_argument(
         "toR1JointTrajectory only supports R1 and SO2 joint spaces");
 
