@@ -313,7 +313,7 @@ void extractTrajectoryPoint(
   }
 }
 
-} // ns
+} // namespace
 
 //==============================================================================
 std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
