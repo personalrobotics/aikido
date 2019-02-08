@@ -12,10 +12,8 @@
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SO2.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-
 #include "aikido/trajectory/Interpolated.hpp"
 
-using aikido::statespace::R;
 using aikido::statespace::R1;
 using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
@@ -39,36 +37,8 @@ namespace {
 
 bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 {
-  // TODO(JS): Generalize Rn<N> for arbitrary N.
-  if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<1>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<3>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<4>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<5>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<6>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<Eigen::Dynamic>*>(_stateSpace) != nullptr)
+  // Only supports single-DOF joint spaces, namely R1 and SO2.
+  if (dynamic_cast<const R1*>(_stateSpace) != nullptr)
   {
     return true;
   }
@@ -92,51 +62,13 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
   }
 }
 
-void checkValidityOfSpaceAndTrajectory(
-    ConstStateSpacePtr& space, const Trajectory* trajectory)
-{
-  auto metaskeletonStateSpace
-      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(space);
-  if (!metaskeletonStateSpace)
-    throw std::invalid_argument(
-        "StateSpace is not a valid metaskeletonStateSpace.");
+      // message << "Only R1Joint and SO2Joint are supported. Joint "
+      //         << properties.getName() << "(index: " << i << ") is a "
+      //         << properties.getType() << " with " << properties.getNumDofs()
+      //         << " DOFs.";
 
-  if (!trajectory)
-    throw std::invalid_argument("Trajectory is null.");
 
-  const auto trajectorySpace
-      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-          trajectory->getStateSpace());
-  if (!trajectorySpace)
-  {
-    throw std::invalid_argument(
-        "[Conversions:checkValidityOfSpaceAndTrajectory] Trajectory is not in "
-        "a MetaSkeletonStateSpace.");
-  }
-
-  // Check that all joints are R1Joint or SO2Joint state spaces.
-  for (std::size_t i = 0; i < metaskeletonStateSpace->getDimension(); ++i)
-  {
-    auto subspace = metaskeletonStateSpace->getSubspace(i);
-    auto jointSpace = metaskeletonStateSpace->getJointSpace(i);
-    auto properties = jointSpace->getProperties();
-
-    auto r1subspace = std::dynamic_pointer_cast<const R1>(subspace);
-    auto so2subspace = std::dynamic_pointer_cast<const SO2>(subspace);
-
-    if (properties.getNumDofs() != 1 || (!r1subspace && !so2subspace))
-    {
-      std::stringstream message;
-      message << "Only R1Joint and SO2Joint are supported. Joint "
-              << properties.getName() << "(index: " << i << ") is a "
-              << properties.getType() << " with " << properties.getNumDofs()
-              << " DOFs.";
-      throw std::invalid_argument{message.str()};
-    }
-  }
-}
-
-} // ns
+} // namespace
 
 //==============================================================================
 UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
@@ -156,8 +88,7 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
 
   if (!checkStateSpace(stateSpace.get()))
     throw std::invalid_argument(
-        "convertToSpline only supports Rn, "
-        "SO2, and CartesianProducts consisting of those types.");
+        "convertToSpline only supports R1 and SO2 joint spaces");
 
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
@@ -371,8 +302,9 @@ UniqueSplinePtr createPartialTrajectory(
 //==============================================================================
 aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 {
-  auto space = trajectory.getStateSpace();
-  checkValidityOfSpaceAndTrajectory(space, &trajectory);
+  if (!checkStateSpace(trajectory.getStateSpace().get()))
+    throw std::invalid_argument(
+        "toR1JointTrajectory only supports R1 and SO2 joint spaces");
 
   auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
       trajectory.getInterpolator());
@@ -381,6 +313,7 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(const Interpolated&
         "The interpolator of trajectory should be a GeodesicInterpolator");
 
   // Create new trajectory space.
+  auto space = trajectory.getStateSpace();
   std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
   for (std::size_t i = 0; i < space->getDimension(); ++i)
     subspaces.emplace_back(std::make_shared<const R1>());
@@ -420,9 +353,11 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(const Interpolated&
 //==============================================================================
 aikido::trajectory::ConstSplinePtr toR1JointTrajectory(const Spline& trajectory)
 {
-  auto space = trajectory.getStateSpace();
-  checkValidityOfSpaceAndTrajectory(space, &trajectory);
+  if (!checkStateSpace(trajectory.getStateSpace().get()))
+    throw std::invalid_argument(
+        "toR1JointTrajectory only supports R1 and SO2 joint spaces");
 
+  auto space = trajectory.getStateSpace();
   aikido::statespace::ConstInterpolatorPtr interpolator
       = std::make_shared<statespace::GeodesicInterpolator>(space);
 

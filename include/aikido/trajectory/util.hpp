@@ -90,23 +90,18 @@ UniqueSplinePtr createPartialTrajectory(
     const Spline& traj, double partialStartTime);
 
 /// Converts an interpolated trajectory in the cartesian product space of SO(2)
-/// and R1 joints
-/// to a trajectory in cartesian product space of strictly only R1 joints.
-/// \param[in] space Statespace the input trajectory is in.
+/// and R1 joints to a trajectory in cartesian product space of strictly 
+/// only R1 joints.
 /// \param[in] trajectory Trajectory to be converted.
 /// \return Converted trajectory.
 aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
-    // aikido::statespace::ConstStateSpacePtr& space,
     const aikido::trajectory::Interpolated& trajectory);
 
 /// Converts a spline trajectory in the cartesian product space of SO(2) and R1
-/// joints
-/// to a trajectory in cartesian product space of strictly only R1 joints.
-/// \param[in] space Statespace the input trajectory is in.
+/// joints to a trajectory in cartesian product space of strictly only R1 joints.
 /// \param[in] trajectory Trajectory to be converted.
 /// \return Converted trajectory.
 aikido::trajectory::ConstSplinePtr toR1JointTrajectory(
-    // aikido::statespace::ConstStateSpacePtr& space,
     const aikido::trajectory::Spline& trajectory);
 
 } // namespace trajectory
