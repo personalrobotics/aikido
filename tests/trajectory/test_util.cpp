@@ -75,14 +75,12 @@ TEST_F(TrajectoryConversionTest, SuccessfulConversionToR1)
   trajectory->addWaypoint(2, s3);
 
   // Convert the trajectory.
-  ConstStateSpacePtr outputStateSpace;
-  outputStateSpace = std::move(stateSpace);
   auto convertedTrajectory
-      = toR1JointTrajectory(outputStateSpace, *(trajectory.get()));
+      = toR1JointTrajectory(*(trajectory.get()));
 
   // // Test the states in the interpolated trajectory.
   std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
-  for (std::size_t i = 0; i < outputStateSpace->getDimension(); ++i)
+  for (std::size_t i = 0; i < stateSpace->getDimension(); ++i)
     subspaces.emplace_back(std::make_shared<const R1>());
 
   auto rSpace = std::make_shared<CartesianProduct>(subspaces);
@@ -96,12 +94,12 @@ TEST_F(TrajectoryConversionTest, SuccessfulConversionToR1)
   for (std::size_t i = 0; i < convertedTrajectory->getNumWaypoints(); ++i)
   {
     auto sstate = convertedTrajectory->getWaypoint(i);
-    outputStateSpace->logMap(sstate, stateVector);
+    stateSpace->logMap(sstate, stateVector);
     EXPECT_EQ(stateVector(0), testVector(i));
   }
-  auto sstate = outputStateSpace->createState();
+  auto sstate = stateSpace->createState();
   convertedTrajectory->evaluate(
       convertedTrajectory->getDuration() * 0.75, sstate);
-  outputStateSpace->logMap(sstate, stateVector);
+  stateSpace->logMap(sstate, stateVector);
   EXPECT_EQ(stateVector(0), (testVector(2) + testVector(1)) / 2.0);
 }

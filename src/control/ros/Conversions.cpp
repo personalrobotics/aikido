@@ -11,6 +11,7 @@
 #include "aikido/statespace/dart/SO2Joint.hpp"
 
 using aikido::statespace::CartesianProduct;
+using aikido::statespace::InterpolatorPtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
 using aikido::statespace::dart::R1Joint;
@@ -103,6 +104,7 @@ void extractJointTrajectoryPoint(
 /// Extract a state on the trajectory given a timepoint.
 /// \param[in] space MetaSkeletonStateSpace of the trajectory.
 /// \param[in] trajectory Trajectory to extract point from.
+/// \param[in] interpolator Interpolator used to maintain continuity in extraction.
 /// \param[in] timeFromStart Timepoint to extract trajectory point at.
 /// \param[in] waypoint The extracted trajectory point.
 /// \param[in] previousPoint Previously extracted trajectory point to
@@ -111,6 +113,7 @@ void extractJointTrajectoryPoint(
 void extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
+    const aikido::statespace::InterpolatorPtr& interpolator,
     double timeFromStart,
     trajectory_msgs::JointTrajectoryPoint& waypoint,
     Eigen::VectorXd& previousPoint);
@@ -266,6 +269,7 @@ void extractJointTrajectoryPoint(
 void extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
+    const aikido::statespace::InterpolatorPtr& interpolator,
     double timeFromStart,
     trajectory_msgs::JointTrajectoryPoint& waypoint,
     Eigen::VectorXd& previousPoint)
@@ -277,8 +281,6 @@ void extractTrajectoryPoint(
 
   Eigen::VectorXd tangentVector;
   auto state = space->createState();
-  auto interpolator
-      = std::make_shared<aikido::statespace::GeodesicInterpolator>(space);
 
   auto prevState = space->createState();
   space->convertPositionsToState(previousPoint, prevState);
@@ -286,7 +288,13 @@ void extractTrajectoryPoint(
   trajectory->evaluate(timeAbsolute, state);
   space->convertStateToPositions(state, tangentVector);
 
-  auto diff = interpolator->getTangentVector(prevState, state);
+  auto geodesicInterpolator = std::dynamic_pointer_cast<aikido::statespace::GeodesicInterpolator>(interpolator);
+  if (!geodesicInterpolator)
+  {
+    throw std::invalid_argument("The interpolator of trajectory should be a GeodesicInterpolator");
+  }
+
+  auto diff = geodesicInterpolator->getTangentVector(prevState, state);
   tangentVector = previousPoint + diff;
 
   for (int i = 0; i < tangentVector.size(); ++i)
@@ -613,11 +621,15 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   Eigen::VectorXd previousPoint(Eigen::VectorXd::Zero(space->getDimension()));
   jointTrajectory.points.reserve(numWaypoints);
 
+  // Create the geodesic interpolator used to extract trajectory points.
+  auto interpolator
+      = std::make_shared<aikido::statespace::GeodesicInterpolator>(space);
+
   for (std::size_t i = 0; i < numWaypoints; ++i)
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
     extractTrajectoryPoint(
-        space, trajectory, timeSequence[i], waypoint, previousPoint);
+        space, trajectory, interpolator, timeSequence[i], waypoint, previousPoint);
     jointTrajectory.points.emplace_back(waypoint);
   }
 

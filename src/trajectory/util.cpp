@@ -369,9 +369,9 @@ UniqueSplinePtr createPartialTrajectory(
 }
 
 //==============================================================================
-aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
-    ConstStateSpacePtr& space, const Interpolated& trajectory)
+aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 {
+  auto space = trajectory.getStateSpace();
   checkValidityOfSpaceAndTrajectory(space, &trajectory);
 
   auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
@@ -418,9 +418,9 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
 }
 
 //==============================================================================
-aikido::trajectory::ConstSplinePtr toR1JointTrajectory(
-    ConstStateSpacePtr& space, const Spline& trajectory)
+aikido::trajectory::ConstSplinePtr toR1JointTrajectory(const Spline& trajectory)
 {
+  auto space = trajectory.getStateSpace();
   checkValidityOfSpaceAndTrajectory(space, &trajectory);
 
   aikido::statespace::ConstInterpolatorPtr interpolator
@@ -429,8 +429,8 @@ aikido::trajectory::ConstSplinePtr toR1JointTrajectory(
   ConstInterpolatedPtr interpolatedTrajectory
       = std::move(convertToInterpolated(trajectory, interpolator));
   auto r1JointTrajectory
-      = toR1JointTrajectory(space, *interpolatedTrajectory.get());
-  auto splineTrajectory = convertToSpline(*r1JointTrajectory.get());
+      = toR1JointTrajectory(*interpolatedTrajectory);
+  auto splineTrajectory = convertToSpline(*r1JointTrajectory);
 
   return std::move(splineTrajectory);
 }
