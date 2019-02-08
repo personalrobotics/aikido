@@ -105,7 +105,7 @@ void extractJointTrajectoryPoint(
 /// \param[in] trajectory Trajectory to extract point from.
 /// \param[in] timeFromStart Timepoint to extract trajectory point at.
 /// \param[in] waypoint The extracted trajectory point.
-/// \param[in] previousPoint previously extracted trajectory point to
+/// \param[in] previousPoint Previously extracted trajectory point to
 /// ensure continuity in representation when extracting multiple points.
 /// Set to zero vector if not required.
 void extractTrajectoryPoint(
