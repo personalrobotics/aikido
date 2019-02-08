@@ -14,6 +14,7 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
+using aikido::statespace::R;
 using aikido::statespace::R1;
 using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
@@ -35,7 +36,13 @@ namespace trajectory {
 
 namespace {
 
-bool checkStateSpace(const statespace::StateSpace* _stateSpace)
+enum AllowJointType
+{
+  SinglularDOF,
+  NonSingularDOF
+};
+
+bool checkStateSpace(const statespace::StateSpace* _stateSpace, AllowJointType type)
 {
   // Only supports single-DOF joint spaces, namely R1 and SO2.
   if (dynamic_cast<const R1*>(_stateSpace) != nullptr)
@@ -51,13 +58,44 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
     for (std::size_t isubspace = 0; isubspace < space->getNumSubspaces();
          ++isubspace)
     {
-      if (!checkStateSpace(space->getSubspace<>(isubspace).get()))
+      if (!checkStateSpace(space->getSubspace<>(isubspace).get(), type))
         return false;
     }
     return true;
   }
   else
   {
+    if (type == AllowJointType::NonSingularDOF)
+    {
+      if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
+      {
+        return true;
+      }    
+      else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
+      {
+        return true;
+      }
+      else if (dynamic_cast<const R<3>*>(_stateSpace) != nullptr)
+      {
+        return true;
+      }
+      else if (dynamic_cast<const R<4>*>(_stateSpace) != nullptr)
+      {
+        return true;
+      }
+      else if (dynamic_cast<const R<5>*>(_stateSpace) != nullptr)
+      {
+        return true;
+      }
+      else if (dynamic_cast<const R<6>*>(_stateSpace) != nullptr)
+      {
+        return true;
+      }
+      else if (dynamic_cast<const R<Eigen::Dynamic>*>(_stateSpace) != nullptr)
+      {
+        return true;
+      }
+    }
     return false;
   }
 }
@@ -80,9 +118,9 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
   const auto dimension = stateSpace->getDimension();
   const auto numWaypoints = inputTrajectory.getNumWaypoints();
 
-  if (!checkStateSpace(stateSpace.get()))
+  if (!checkStateSpace(stateSpace.get(), AllowJointType::NonSingularDOF))
     throw std::invalid_argument(
-        "convertToSpline only supports R1 and SO2 joint spaces");
+        "convertToSpline only supports Rn and SO2 joint spaces");
 
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
@@ -297,7 +335,7 @@ UniqueSplinePtr createPartialTrajectory(
 aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
     const Interpolated& trajectory)
 {
-  if (!checkStateSpace(trajectory.getStateSpace().get()))
+  if (!checkStateSpace(trajectory.getStateSpace().get(), AllowJointType::SinglularDOF))
     throw std::invalid_argument(
         "toR1JointTrajectory only supports R1 and SO2 joint spaces");
 
@@ -348,7 +386,7 @@ aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
 //==============================================================================
 aikido::trajectory::ConstSplinePtr toR1JointTrajectory(const Spline& trajectory)
 {
-  if (!checkStateSpace(trajectory.getStateSpace().get()))
+  if (!checkStateSpace(trajectory.getStateSpace().get(), AllowJointType::SinglularDOF))
     throw std::invalid_argument(
         "toR1JointTrajectory only supports R1 and SO2 joint spaces");
 
