@@ -126,7 +126,7 @@ void reorder(
 {
   assert(indexMap.size() == static_cast<std::size_t>(inVector.size()));
   outVector.resize(inVector.size());
-  for (auto index : indexMap)
+  for (const auto& index : indexMap)
     outVector[index.second] = inVector[index.first];
 }
 
