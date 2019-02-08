@@ -151,7 +151,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   ConstSplinePtr r1Trajectory;
   if (metaSkeletonStateSpace)
   {
-    r1Trajectory = toR1JointTrajectory(stateSpace, _inputTrajectory);
+    r1Trajectory = toR1JointTrajectory(_inputTrajectory);
     stateSpace = r1Trajectory->getStateSpace();
     trajectory = r1Trajectory.get();
   }
@@ -209,7 +209,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
   ConstInterpolatedPtr r1Trajectory;
   if (metaSkeletonStateSpace)
   {
-    r1Trajectory = toR1JointTrajectory(stateSpace, _inputTrajectory);
+    r1Trajectory = toR1JointTrajectory(_inputTrajectory);
     stateSpace = r1Trajectory->getStateSpace();
     trajectory = r1Trajectory.get();
   }

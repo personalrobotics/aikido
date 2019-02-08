@@ -35,7 +35,7 @@ std::unique_ptr<Path> convertToKunzPath(
   ConstInterpolatedPtr r1Trajectory;
   if (metaSkeletonStateSpace)
   {
-    r1Trajectory = toR1JointTrajectory(stateSpace, traj);
+    r1Trajectory = toR1JointTrajectory(traj);
     stateSpace = r1Trajectory->getStateSpace();
     trajectory = r1Trajectory.get();
   }
@@ -65,7 +65,7 @@ std::unique_ptr<Path> convertToKunzPath(
   ConstSplinePtr r1Trajectory;
   if (metaSkeletonStateSpace)
   {
-    r1Trajectory = toR1JointTrajectory(stateSpace, traj);
+    r1Trajectory = toR1JointTrajectory(traj);
     stateSpace = r1Trajectory->getStateSpace();
     trajectory = r1Trajectory.get();
   }
