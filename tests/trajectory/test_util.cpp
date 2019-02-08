@@ -75,8 +75,7 @@ TEST_F(TrajectoryConversionTest, SuccessfulConversionToR1)
   trajectory->addWaypoint(2, s3);
 
   // Convert the trajectory.
-  auto convertedTrajectory
-      = toR1JointTrajectory(*(trajectory.get()));
+  auto convertedTrajectory = toR1JointTrajectory(*(trajectory.get()));
 
   // // Test the states in the interpolated trajectory.
   std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;

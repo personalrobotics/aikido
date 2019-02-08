@@ -62,12 +62,6 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
   }
 }
 
-      // message << "Only R1Joint and SO2Joint are supported. Joint "
-      //         << properties.getName() << "(index: " << i << ") is a "
-      //         << properties.getType() << " with " << properties.getNumDofs()
-      //         << " DOFs.";
-
-
 } // namespace
 
 //==============================================================================
@@ -300,7 +294,8 @@ UniqueSplinePtr createPartialTrajectory(
 }
 
 //==============================================================================
-aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
+aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
+    const Interpolated& trajectory)
 {
   if (!checkStateSpace(trajectory.getStateSpace().get()))
     throw std::invalid_argument(
@@ -363,8 +358,7 @@ aikido::trajectory::ConstSplinePtr toR1JointTrajectory(const Spline& trajectory)
 
   ConstInterpolatedPtr interpolatedTrajectory
       = std::move(convertToInterpolated(trajectory, interpolator));
-  auto r1JointTrajectory
-      = toR1JointTrajectory(*interpolatedTrajectory);
+  auto r1JointTrajectory = toR1JointTrajectory(*interpolatedTrajectory);
   auto splineTrajectory = convertToSpline(*r1JointTrajectory);
 
   return std::move(splineTrajectory);

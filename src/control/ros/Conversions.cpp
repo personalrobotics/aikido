@@ -104,7 +104,8 @@ void extractJointTrajectoryPoint(
 /// Extract a state on the trajectory given a timepoint.
 /// \param[in] space MetaSkeletonStateSpace of the trajectory.
 /// \param[in] trajectory Trajectory to extract point from.
-/// \param[in] interpolator Interpolator used to maintain continuity in extraction.
+/// \param[in] interpolator Interpolator used to maintain continuity in
+/// extraction.
 /// \param[in] timeFromStart Timepoint to extract trajectory point at.
 /// \param[in] waypoint The extracted trajectory point.
 /// \param[in] previousPoint Previously extracted trajectory point to
@@ -288,10 +289,13 @@ void extractTrajectoryPoint(
   trajectory->evaluate(timeAbsolute, state);
   space->convertStateToPositions(state, tangentVector);
 
-  auto geodesicInterpolator = std::dynamic_pointer_cast<aikido::statespace::GeodesicInterpolator>(interpolator);
+  auto geodesicInterpolator
+      = std::dynamic_pointer_cast<aikido::statespace::GeodesicInterpolator>(
+          interpolator);
   if (!geodesicInterpolator)
   {
-    throw std::invalid_argument("The interpolator of trajectory should be a GeodesicInterpolator");
+    throw std::invalid_argument(
+        "The interpolator of trajectory should be a GeodesicInterpolator");
   }
 
   auto diff = geodesicInterpolator->getTangentVector(prevState, state);
@@ -629,7 +633,12 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
     extractTrajectoryPoint(
-        space, trajectory, interpolator, timeSequence[i], waypoint, previousPoint);
+        space,
+        trajectory,
+        interpolator,
+        timeSequence[i],
+        waypoint,
+        previousPoint);
     jointTrajectory.points.emplace_back(waypoint);
   }
 
