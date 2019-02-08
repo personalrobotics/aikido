@@ -9,6 +9,7 @@
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/io/yaml.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
@@ -133,6 +134,7 @@ trajectory::TrajectoryPtr planToConfigurations(
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
 /// \param[in] maxNumTrials Number of retries before failure.
+/// \param[in] ranker Ranker to rank the resulting configurations.
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::TrajectoryPtr planToTSR(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -142,7 +144,8 @@ trajectory::TrajectoryPtr planToTSR(
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
     double timelimit,
-    std::size_t maxNumTrials);
+    std::size_t maxNumTrials,
+    const distance::ConfigurationRankerPtr& ranker = nullptr);
 
 /// Returns a Trajectory that moves the configuration of the metakeleton such
 /// that the specified bodynode is set to a sample in a goal TSR and
