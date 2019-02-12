@@ -30,8 +30,3 @@ if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
 else
   ./scripts/internal-run.sh env CTEST_OUTPUT_ON_FAILURE=true make -C build/aikido test
 fi
-
-# Uploading report to CodeCov
-if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
-fi

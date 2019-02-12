@@ -16,11 +16,17 @@ public:
   ///
   /// \param[in] metaSkeletonStateSpace Statespace of the skeleton.
   /// \param[in] metaSkeleton Metaskeleton of the robot.
+  /// \param[in] weights Weights over joints to compute distance.
+  /// Defaults to unit vector.
   JointAvoidanceConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton);
+      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+      std::vector<double> weights = std::vector<double>());
 
 protected:
+  /// Set limits appropriately to account for infinite limits.
+  void setupJointLimits();
+
   /// Returns cost as negative of distance from position limits.
   double evaluateConfiguration(
       const statespace::dart::MetaSkeletonStateSpace::State* solution)

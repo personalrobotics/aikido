@@ -1,0 +1,55 @@
+# AIKIDO
+*                                 @brianhou @gilwoolee @aditya-vk
+
+
+# Build tools: GitHub, Continuous Integration, etc.
+.ci/*                             @brianhou
+.github/*                         @brianhou
+tools/*                           @brianhou
+.travis.yml                       @brianhou
+codecov.yml                       @brianhou
+CMakeLists.txt                    @brianhou
+cmake/*                           @brianhou
+
+
+# Perception
+include/aikido/perception.hpp     @yskim041 @egordon @gilwoolee
+include/aikido/perception/*       @yskim041 @egordon @gilwoolee
+src/perception/*                  @yskim041 @egordon @gilwoolee
+
+
+# Visualization
+include/aikido/rviz.hpp           @brianhou
+include/aikido/rviz/*             @brianhou
+src/rviz/*                        @brianhou
+
+
+# Planning
+include/aikido/statespace.hpp     @aditya-vk @brianhou
+include/aikido/statespace/*       @aditya-vk @brianhou
+src/statespace/*                  @aditya-vk @brianhou
+include/aikido/distance.hpp       @aditya-vk
+include/aikido/distance/*         @aditya-vk
+src/distance/*                    @aditya-vk
+include/aikido/trajectory.hpp     @aditya-vk
+include/aikido/trajectory/*       @aditya-vk
+src/trajectory/*                  @aditya-vk
+include/aikido/constraint.hpp     @aditya-vk @sniyaz
+include/aikido/constraint/*       @aditya-vk @sniyaz
+src/constraint/*                  @aditya-vk @sniyaz
+include/aikido/planner.hpp        @aditya-vk @sniyaz
+include/aikido/planner/*          @aditya-vk @sniyaz
+src/planner/*                     @aditya-vk @sniyaz
+include/aikido/robot.hpp          @gilwoolee @aditya-vk
+include/aikido/robot/*            @gilwoolee @aditya-vk
+src/robot/*                       @gilwoolee @aditya-vk
+
+
+# Control
+include/aikido/control.hpp        @brianhou @gilwoolee
+include/aikido/control/*          @brianhou @gilwoolee
+src/control/*                     @brianhou @gilwoolee
+
+
+# Python bindings
+src/python/*                      @gilwoolee @jslee02
