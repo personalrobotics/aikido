@@ -47,6 +47,7 @@ set(sources
   shape_conversions.cpp
   ObjectDatabase.cpp
   VoxelGridModule.cpp
+  DetectedObject.cpp
 )
 
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})

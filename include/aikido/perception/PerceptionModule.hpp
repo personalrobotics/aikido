@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 #define AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 
+#include "aikido/perception/DetectedObject.hpp"
 #include "aikido/planner/World.hpp"
 
 namespace aikido {
@@ -21,6 +22,7 @@ public:
   /// that represents the world.
   ///
   /// \param[in] env World to add perceived objects to.
+  /// \param[out] detectedObjects An output vector for detected objects.
   /// \param[in] timeout The duration up to which to wait for the transform.
   /// Returns false if none of the markers get correctly transformed
   /// \param[in] timestamp Only detections more recent than this timestamp will
@@ -31,6 +33,7 @@ public:
   /// otherwise.
   virtual bool detectObjects(
       const aikido::planner::WorldPtr& env,
+      std::vector<DetectedObject>& detectedObjects,
       ros::Duration timeout,
       ros::Time timestamp)
       = 0;

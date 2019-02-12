@@ -223,8 +223,6 @@ trajectory::TrajectoryPtr planToTSR(
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   SnapConfigurationToConfigurationPlanner::Result pResult;
-  auto problem = ConfigurationToConfiguration(
-      space, startState, goalState, collisionTestable);
   auto snapPlanner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
 
