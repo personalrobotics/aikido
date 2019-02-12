@@ -192,7 +192,7 @@ public:
   /// \param[in] collisionFree Testable constraint to check for collision.
   /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
   /// \param[in] maxNumTrials Max numer of trials to plan.
-  /// \param[in] ranker Ranker to rank the resulting configurations.
+  /// \param[in] ranker Ranker to rank the sampled configurations.
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSR(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
