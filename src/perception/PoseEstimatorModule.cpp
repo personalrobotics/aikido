@@ -62,6 +62,11 @@ bool PoseEstimatorModule::detectObjects(
 
   for (const auto& marker_transform : marker_message->markers)
   {
+    // TODO: Add DELETE_ALL Functionality
+    if (marker_transform.action == visualization_msgs::Marker::DELETEALL) {
+      dtwarn << "[PoseEstimatorModule::detectObjects] We cannot currently handle DELETE_ALL markers." << std::endl;
+      continue;
+    }
     const auto& marker_stamp = marker_transform.header.stamp;
     const auto& obj_id = marker_transform.id;
     const auto& obj_ns = marker_transform.ns;
@@ -71,17 +76,38 @@ bool PoseEstimatorModule::detectObjects(
       continue;
     }
 
-    const std::string obj_uid = obj_ns + std::to_string(obj_id);
+    const std::string obj_uid = obj_ns + "_" + std::to_string(obj_id);
 
     // Initialize a DetectedObject class for this object
-    // and puts it into the output vector
     DetectedObject this_object
         = DetectedObject(obj_uid, detection_frame, marker_transform.text);
+
+    const std::string obj_db_key = this_object.getObjDBKey();
+
+    // check if valid object
+    if (obj_db_key == "") {
+      dtwarn << "[PoseEstimatorModule::detectObjects] Invalid YAML String in Marker: " << obj_uid << std::endl;
+      continue;
+    }
+
+    std::string obj_name;
+    dart::common::Uri obj_resource;
+    Eigen::Isometry3d obj_offset;
+    ros::Time t0 = ros::Time(0);
+
+    // get the object name, resource, and offset from database by objectKey
+    try {
+      mConfigData->getObjectByKey(obj_db_key, obj_name, obj_resource, obj_offset);
+    } catch(std::runtime_error &e) {
+      dtwarn << e.what() << std::endl;
+      continue;
+    }
+
+    // Add object to output vector, if available
     if(detectedObjects != nullptr) {
       detectedObjects->push_back(this_object);
     }
-
-    const std::string obj_db_key = this_object.getObjDBKey();
+    
 
     // If marker_transform.action is "DELETE",
     // remove a skeleton with obj_uid from env
@@ -95,14 +121,6 @@ bool PoseEstimatorModule::detectObjects(
       }
       continue;
     }
-
-    std::string obj_name;
-    dart::common::Uri obj_resource;
-    Eigen::Isometry3d obj_offset;
-    ros::Time t0 = ros::Time(0);
-
-    // get the object name, resource, and offset from database by objectKey
-    mConfigData->getObjectByKey(obj_db_key, obj_name, obj_resource, obj_offset);
 
     tf::StampedTransform transform;
     try
