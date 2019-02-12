@@ -7,16 +7,16 @@ namespace perception {
 
 //==============================================================================
 DetectedObject::DetectedObject(
-    const std::string& objDBKey,
+    const std::string& objUID,
     const std::string& detectionFrameID,
     const std::string& yamlStr)
-  : mObjDBKey(std::move(objDBKey))
+  : mObjDBKey(std::move(objUID))
   , mDetectionFrameID(std::move(detectionFrameID))
 {
   // Load YAML nodes from string
   mYamlNode = YAML::Load(yamlStr);
 
-  mObjUID = mYamlNode["uid"].as<std::string>();
+  mObjDBKey = mYamlNode["db_key"].as<std::string>();
 }
 
 //==============================================================================

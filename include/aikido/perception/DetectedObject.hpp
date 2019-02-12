@@ -36,7 +36,7 @@ public:
   /// \param[in] detectionFrameID
   /// \param[in] yamlStr
   DetectedObject(
-      const std::string& objDBKey,
+      const std::string& objUID,
       const std::string& detectionFrameID,
       const std::string& yamlStr);
 

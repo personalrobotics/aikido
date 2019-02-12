@@ -63,26 +63,29 @@ bool PoseEstimatorModule::detectObjects(
   for (const auto& marker_transform : marker_message->markers)
   {
     const auto& marker_stamp = marker_transform.header.stamp;
-    const auto& obj_db_key = marker_transform.ns;
+    const auto& obj_id = marker_transform.id;
+    const auto& obj_ns = marker_transform.ns;
     const auto& detection_frame = marker_transform.header.frame_id;
     if (!timestamp.isValid() || marker_stamp < timestamp)
     {
       continue;
     }
 
+    const std::string obj_uid = obj_ns + std::to_string(obj_id);
+
     // Initialize a DetectedObject class for this object
     // and puts it into the output vector
     DetectedObject this_object
-        = DetectedObject(obj_db_key, detection_frame, marker_transform.text);
+        = DetectedObject(obj_uid, detection_frame, marker_transform.text);
     detectedObjects.push_back(this_object);
 
-    const std::string obj_uid = this_object.getObjUID();
+    const std::string obj_db_key = this_object.getObjDBKey();
 
-    // If obj_db_key is "None",
+    // If marker_transform.action is "DELETE",
     // remove a skeleton with obj_uid from env
     // and move to next marker
     dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(obj_uid);
-    if (!obj_db_key.compare("None"))
+    if (marker_transform.action == visualization_msgs::Marker::DELETE)
     {
       if (env_skeleton != nullptr)
       {
