@@ -53,7 +53,7 @@ public:
   // Documentation inherited
   bool detectObjects(
       const aikido::planner::WorldPtr& env,
-      std::vector<DetectedObject>& detectedObjects,
+      std::vector<DetectedObject>* detectedObjects,
       ros::Duration timeout = ros::Duration(0.0),
       ros::Time timestamp = ros::Time(0.0)) override;
 

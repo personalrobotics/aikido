@@ -32,7 +32,7 @@ PoseEstimatorModule::PoseEstimatorModule(
 //=============================================================================
 bool PoseEstimatorModule::detectObjects(
     const aikido::planner::WorldPtr& env,
-    std::vector<DetectedObject>& detectedObjects,
+    std::vector<DetectedObject>* detectedObjects,
     ros::Duration timeout,
     ros::Time timestamp)
 {
@@ -77,7 +77,9 @@ bool PoseEstimatorModule::detectObjects(
     // and puts it into the output vector
     DetectedObject this_object
         = DetectedObject(obj_uid, detection_frame, marker_transform.text);
-    detectedObjects.push_back(this_object);
+    if(detectedObjects != nullptr) {
+      detectedObjects->push_back(this_object);
+    }
 
     const std::string obj_db_key = this_object.getObjDBKey();
 
