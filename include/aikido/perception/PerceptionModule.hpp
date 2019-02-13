@@ -22,29 +22,21 @@ public:
   /// that represents the world.
   ///
   /// \param[in] env World to add perceived objects to.
-  /// \param[out] detectedObjects An output vector for detected objects.
   /// \param[in] timeout The duration up to which to wait for the transform.
   /// Returns false if none of the markers get correctly transformed
   /// \param[in] timestamp Only detections more recent than this timestamp will
   /// be accepted. A timestamp of 0 greedily takes the first available message,
   /// and is the default behaviour.
+  /// \param[out] detectedObjects An output vector for detected objects.
   /// \return Returns \c false if no detection observed, or if none of the
   /// detections has a more recent timestamp than the parameter. Returns \c true
   /// otherwise.
   virtual bool detectObjects(
       const aikido::planner::WorldPtr& env,
-      std::vector<DetectedObject>* detectedObjects,
       ros::Duration timeout,
-      ros::Time timestamp)
+      ros::Time timestamp,
+      std::vector<DetectedObject>* detectedObjects)
       = 0;
-
-  bool detectObjects(
-      const aikido::planner::WorldPtr& env,
-      std::vector<DetectedObject>& detectedObjects,
-      ros::Duration timeout,
-      ros::Time timestamp) {
-    return this->detectObjects(env, &detectedObjects, timeout, timestamp);
-  }
 };
 
 } // namespace perception

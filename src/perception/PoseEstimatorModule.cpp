@@ -32,9 +32,9 @@ PoseEstimatorModule::PoseEstimatorModule(
 //=============================================================================
 bool PoseEstimatorModule::detectObjects(
     const aikido::planner::WorldPtr& env,
-    std::vector<DetectedObject>* detectedObjects,
     ros::Duration timeout,
-    ros::Time timestamp)
+    ros::Time timestamp,
+    std::vector<DetectedObject>* detectedObjects)
 {
   // Checks detected objects, looks up the database,
   // and adds new skeletons to the world env
@@ -111,7 +111,6 @@ bool PoseEstimatorModule::detectObjects(
 
     // If marker_transform.action is "DELETE",
     // remove a skeleton with obj_uid from env
-    // and move to next marker
     dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(obj_uid);
     if (marker_transform.action == visualization_msgs::Marker::DELETE)
     {
@@ -157,7 +156,6 @@ bool PoseEstimatorModule::detectObjects(
     // Check if skel in World
     // If there is, update its pose
     // If not, add skeleton to env
-    // A pose estimator module should provide the unique obj_uid per object
     if (env_skeleton == nullptr)
     {
       is_new_obj = true;

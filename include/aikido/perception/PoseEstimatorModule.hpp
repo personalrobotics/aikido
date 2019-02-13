@@ -51,11 +51,16 @@ public:
   virtual ~PoseEstimatorModule() = default;
 
   // Documentation inherited
+  /// Looks for the following information sent via ROS (see \c DetectedObject):
+  /// visualization_msgs/Marker message like the following:
+  /// Marker.header.frame_id -> detectionFrameID
+  /// Marker.ns + "_" + Marker.id -> objUid (identity in DART world)
+  /// Marker.ns -> objAssetDBKey (determines visual asset, see ObjectDatabase)
   bool detectObjects(
       const aikido::planner::WorldPtr& env,
-      std::vector<DetectedObject>* detectedObjects = nullptr,
       ros::Duration timeout = ros::Duration(),
-      ros::Time timestamp = ros::Time(0.0)) override;
+      ros::Time timestamp = ros::Time(0.0),
+      std::vector<DetectedObject>* detectedObjects = nullptr) override;
 
 private:
   /// For the ROS node that will work with the April Tags module
