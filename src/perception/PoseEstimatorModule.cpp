@@ -63,7 +63,9 @@ bool PoseEstimatorModule::detectObjects(
   for (const auto& marker_transform : marker_message->markers)
   {
     // TODO: Add DELETE_ALL Functionality
-    if (marker_transform.action == visualization_msgs::Marker::DELETEALL) {
+    // TODO: Update when we move over to ROS Kinetic. Indigo is dumb and doesn't have the enum value.
+    //if (marker_transform.action == visualization_msgs::Marker::DELETEALL) {
+    if (marker_transform.action == 3) {
       dtwarn << "[PoseEstimatorModule::detectObjects] We cannot currently handle DELETE_ALL markers." << std::endl;
       continue;
     }
