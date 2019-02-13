@@ -16,11 +16,15 @@ DetectedObject::DetectedObject(
   , mDetectionFrameID(std::move(detectionFrameID))
 {
   // Load YAML nodes from string
-  try {
+  try
+  {
     mYamlNode = YAML::Load(yamlStr);
     mAssetKey = mYamlNode["db_key"].as<std::string>(mAssetKey);
-  } catch(const YAML::Exception &e) {
-    dtwarn << "[DetectedObject::DetectedObject] YAML String Exception: " << e.what() << std::endl;
+  }
+  catch (const YAML::Exception& e)
+  {
+    dtwarn << "[DetectedObject::DetectedObject] YAML String Exception: "
+           << e.what() << std::endl;
     mYamlNode = YAML::Load(""); // Create Null Node
   }
 }

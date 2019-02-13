@@ -34,10 +34,13 @@ class DetectedObject
 {
 public:
   /// Construct a \c DetectedObject
-  /// \param[in] dartUid Unique ID for object in DART world. Same UID -> Same Object
-  /// \param[in] assetKey Key for AssetDatabase passed into constructor of PoseEstimatorModule. Defines visuals / assets.
+  /// \param[in] dartUid Unique ID for object in DART world. Same UID -> Same
+  /// Object
+  /// \param[in] assetKey Key for AssetDatabase passed into constructor of
+  /// PoseEstimatorModule. Defines visuals / assets.
   /// \param[in] detectionFrameID Frame ID from ROS Marker
-  /// \param[in] yamlStr String of additional parameters for object. Can override objAssetDBKey by specifying "db_key".
+  /// \param[in] yamlStr String of additional parameters for object. Can
+  /// override objAssetDBKey by specifying "db_key".
   DetectedObject(
       const std::string& dartUid,
       const std::string& assetKey,
@@ -61,8 +64,10 @@ public:
   /// Get a specific value from the information map by a key and the typename
   /// of the field
   /// \param[in] key The key (string) of a field in the information map
-  /// Sequence types (e.g. [1, 2]) can be read into standard containers (e.g. std::vector<double>)
-  /// Map types are not supported with this function. Please get the manually with getYamlNode().
+  /// Sequence types (e.g. [1, 2]) can be read into standard containers (e.g.
+  /// std::vector<double>)
+  /// Map types are not supported with this function. Please get the manually
+  /// with getYamlNode().
   template <typename T>
   T getInfoByKey(const std::string& key);
 

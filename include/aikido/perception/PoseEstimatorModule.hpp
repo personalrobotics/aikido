@@ -7,8 +7,8 @@
 #include <tf/transform_listener.h>
 #include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/io/yaml.hpp"
-#include "aikido/perception/DetectedObject.hpp"
 #include "aikido/perception/AssetDatabase.hpp"
+#include "aikido/perception/DetectedObject.hpp"
 #include "aikido/perception/PerceptionModule.hpp"
 
 namespace aikido {
@@ -33,7 +33,8 @@ public:
   ///	\param[in] nodeHandle The node handle to be passed to the detector
   ///	\param[in] markerTopic The name of the topic on which objects' pose
   /// information is being published
-  /// \param[in] assetData The pointer to the loader of visual asset data (\see AssetDatabase)
+  /// \param[in] assetData The pointer to the loader of visual asset data (\see
+  /// AssetDatabase)
   /// \param[in] resourceRetriever A CatkinResourceRetriever for resources
   /// related to config files and models
   ///	\param[in] referenceFrameId The desired reference frame for the

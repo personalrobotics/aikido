@@ -63,10 +63,14 @@ bool PoseEstimatorModule::detectObjects(
   for (const auto& marker_transform : marker_message->markers)
   {
     // TODO: Add DELETE_ALL Functionality
-    // TODO: Update when we move over to ROS Kinetic. Indigo is dumb and doesn't have the enum value.
-    //if (marker_transform.action == visualization_msgs::Marker::DELETEALL) {
-    if (marker_transform.action == 3) {
-      dtwarn << "[PoseEstimatorModule::detectObjects] We cannot currently handle DELETE_ALL markers." << std::endl;
+    // TODO: Update when we move over to ROS Kinetic. Indigo is dumb and doesn't
+    // have the enum value.
+    // if (marker_transform.action == visualization_msgs::Marker::DELETEALL) {
+    if (marker_transform.action == 3)
+    {
+      dtwarn << "[PoseEstimatorModule::detectObjects] We cannot currently "
+                "handle DELETE_ALL markers."
+             << std::endl;
       continue;
     }
     const auto& marker_stamp = marker_transform.header.stamp;
@@ -81,13 +85,16 @@ bool PoseEstimatorModule::detectObjects(
     const std::string obj_uid = obj_ns + "_" + std::to_string(obj_id);
 
     // Initialize a DetectedObject class for this object
-    DetectedObject this_object
-        = DetectedObject(obj_uid, obj_ns, detection_frame, marker_transform.text);
+    DetectedObject this_object = DetectedObject(
+        obj_uid, obj_ns, detection_frame, marker_transform.text);
 
     const std::string asset_key = this_object.getAssetKey();
 
-    if (asset_key.empty()) {
-      dtwarn << "[PoseEstimatorModule::detectObjects] Invalid YAML String in Marker: " << obj_uid << std::endl;
+    if (asset_key.empty())
+    {
+      dtwarn << "[PoseEstimatorModule::detectObjects] Invalid YAML String in "
+                "Marker: "
+             << obj_uid << std::endl;
       continue;
     }
 
@@ -97,18 +104,21 @@ bool PoseEstimatorModule::detectObjects(
     ros::Time t0 = ros::Time(0);
 
     // get the object name, resource, and offset from database by assetKey
-    try {
+    try
+    {
       mAssetData->getAssetByKey(asset_key, obj_name, obj_resource, obj_offset);
-    } catch(std::runtime_error &e) {
+    }
+    catch (std::runtime_error& e)
+    {
       dtwarn << e.what() << std::endl;
       continue;
     }
 
     // Add object to output vector, if available
-    if (detectedObjects) {
+    if (detectedObjects)
+    {
       detectedObjects->push_back(this_object);
     }
-    
 
     // If marker_transform.action is "DELETE",
     // remove a skeleton with obj_uid from env
