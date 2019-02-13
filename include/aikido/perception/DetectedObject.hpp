@@ -7,7 +7,7 @@
 namespace aikido {
 namespace perception {
 
-/// DetectedObject delegates a detected object from a third party
+/// DetectedObject delegates a detected object from a third-party
 /// perception algorithm.
 
 /// A perception algorithm should send information for an object via ROS
@@ -40,7 +40,7 @@ public:
   /// \param[in] objUid Unique ID for object in DART world. Same UID -> Same Object
   /// \param[in] objAssetDBKey Key for ObjectDatabase passed into constructor of PoseEstimatorModule. Defines visuals / assets.
   /// \param[in] detectionFrameID Frame ID from ROS Marker
-  /// \param[in] yamlStr String of additional parameters for object. Can override objAssetDBKey with "db_key".
+  /// \param[in] yamlStr String of additional parameters for object. Can override objAssetDBKey by specifying "db_key".
   DetectedObject(
       const std::string& objUID,
       const std::string& objAssetDBKey,
@@ -49,7 +49,7 @@ public:
 
   virtual ~DetectedObject() = default;
 
-  /// Get the unique id of the object
+  /// Get the unique DART id of the object
   std::string getObjUID();
 
   /// Get the object key for \c ObjectDatabase

@@ -86,8 +86,7 @@ bool PoseEstimatorModule::detectObjects(
 
     const std::string obj_db_key = this_object.getObjDBKey();
 
-    // check if valid object
-    if (obj_db_key == "") {
+    if (obj_db_key.empty()) {
       dtwarn << "[PoseEstimatorModule::detectObjects] Invalid YAML String in Marker: " << obj_uid << std::endl;
       continue;
     }
@@ -106,7 +105,7 @@ bool PoseEstimatorModule::detectObjects(
     }
 
     // Add object to output vector, if available
-    if(detectedObjects != nullptr) {
+    if (detectedObjects) {
       detectedObjects->push_back(this_object);
     }
     
