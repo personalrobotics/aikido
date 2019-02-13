@@ -14,13 +14,13 @@ namespace perception {
 PoseEstimatorModule::PoseEstimatorModule(
     ros::NodeHandle nodeHandle,
     const std::string& markerTopic,
-    std::shared_ptr<ObjectDatabase> configData,
+    std::shared_ptr<AssetDatabase> assetData,
     std::shared_ptr<aikido::io::CatkinResourceRetriever> resourceRetriever,
     const std::string& referenceFrameId,
     dart::dynamics::Frame* referenceLink)
   : mNodeHandle(std::move(nodeHandle))
   , mMarkerTopic(std::move(markerTopic))
-  , mConfigData(std::move(configData))
+  , mAssetData(std::move(assetData))
   , mResourceRetriever(std::move(resourceRetriever))
   , mReferenceFrameId(std::move(referenceFrameId))
   , mReferenceLink(std::move(referenceLink))
@@ -84,9 +84,9 @@ bool PoseEstimatorModule::detectObjects(
     DetectedObject this_object
         = DetectedObject(obj_uid, obj_ns, detection_frame, marker_transform.text);
 
-    const std::string obj_db_key = this_object.getObjDBKey();
+    const std::string asset_key = this_object.getAssetKey();
 
-    if (obj_db_key.empty()) {
+    if (asset_key.empty()) {
       dtwarn << "[PoseEstimatorModule::detectObjects] Invalid YAML String in Marker: " << obj_uid << std::endl;
       continue;
     }
@@ -96,9 +96,9 @@ bool PoseEstimatorModule::detectObjects(
     Eigen::Isometry3d obj_offset;
     ros::Time t0 = ros::Time(0);
 
-    // get the object name, resource, and offset from database by objectKey
+    // get the object name, resource, and offset from database by assetKey
     try {
-      mConfigData->getObjectByKey(obj_db_key, obj_name, obj_resource, obj_offset);
+      mAssetData->getAssetByKey(asset_key, obj_name, obj_resource, obj_offset);
     } catch(std::runtime_error &e) {
       dtwarn << e.what() << std::endl;
       continue;

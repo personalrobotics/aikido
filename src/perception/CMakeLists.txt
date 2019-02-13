@@ -45,7 +45,7 @@ endif()
 set(sources
   PoseEstimatorModule.cpp
   shape_conversions.cpp
-  ObjectDatabase.cpp
+  AssetDatabase.cpp
   VoxelGridModule.cpp
   DetectedObject.cpp
 )

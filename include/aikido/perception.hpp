@@ -1,5 +1,5 @@
 #include "perception/DetectedObject.hpp"
-#include "perception/ObjectDatabase.hpp"
+#include "perception/AssetDatabase.hpp"
 #include "perception/PerceptionModule.hpp"
 #include "perception/PoseEstimatorModule.hpp"
 #include "perception/VoxelGridModule.hpp"

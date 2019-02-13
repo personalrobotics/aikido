@@ -12,15 +12,14 @@ namespace perception {
 
 /// A perception algorithm should send information for an object via ROS
 /// visualization_msgs/Marker message like the following:
+/// Marker.ns + "_" + Marker.id -> dartUid (identity in DART world)
+/// Marker.ns -> assetKey (determines visual asset, \see AssetDatabase)
 /// Marker.header.frame_id -> detectionFrameID
-/// Marker.ns + "_" + Marker.id -> objUid (identity in DART world)
-/// Marker.ns -> objAssetDBKey (determines visual asset, see ObjectDatabase)
 /// Marker.text -> yamlStr
 
-/// yamlStr contains any types of additional
-/// information of the object in YAML format.
+/// yamlStr contains any additional information in YAML format.
 /// It also can overwrite the Asset Database Key
-/// using "db_key". (see ObjectDatabase for details)
+/// using "db_key". (\see AssetDatabase for details)
 /// Here is an example:
 /// \code
 /// {
@@ -31,29 +30,27 @@ namespace perception {
 /// }
 /// \endcode
 
-/// Clarification: objUid = DART world ID; objDbKey = visual asset key in ObjectDatabase.
-
 class DetectedObject
 {
 public:
   /// Construct a \c DetectedObject
-  /// \param[in] objUid Unique ID for object in DART world. Same UID -> Same Object
-  /// \param[in] objAssetDBKey Key for ObjectDatabase passed into constructor of PoseEstimatorModule. Defines visuals / assets.
+  /// \param[in] dartUid Unique ID for object in DART world. Same UID -> Same Object
+  /// \param[in] assetKey Key for AssetDatabase passed into constructor of PoseEstimatorModule. Defines visuals / assets.
   /// \param[in] detectionFrameID Frame ID from ROS Marker
   /// \param[in] yamlStr String of additional parameters for object. Can override objAssetDBKey by specifying "db_key".
   DetectedObject(
-      const std::string& objUID,
-      const std::string& objAssetDBKey,
+      const std::string& dartUid,
+      const std::string& assetKey,
       const std::string& detectionFrameID,
       const std::string& yamlStr);
 
   virtual ~DetectedObject() = default;
 
   /// Get the unique DART id of the object
-  std::string getObjUID();
+  std::string getDartUid();
 
-  /// Get the object key for \c ObjectDatabase
-  std::string getObjDBKey();
+  /// Get the object key for \c AssetDatabase
+  std::string getAssetKey();
 
   /// Get the detection frame id that refers the origin of this object's pose
   std::string getDetectionFrameID();
@@ -71,10 +68,10 @@ public:
 
 private:
   /// The unique id of the object
-  std::string mObjUID;
+  std::string mDartUid;
 
-  /// The object key for \c ObjectDatabase
-  std::string mObjDBKey;
+  /// The object key for \c AssetDatabase
+  std::string mAssetKey;
 
   /// The detection frame id that refers the origin of this object's pose
   std::string mDetectionFrameID;
