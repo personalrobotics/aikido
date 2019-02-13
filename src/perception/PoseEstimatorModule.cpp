@@ -80,7 +80,7 @@ bool PoseEstimatorModule::detectObjects(
 
     // Initialize a DetectedObject class for this object
     DetectedObject this_object
-        = DetectedObject(obj_uid, detection_frame, marker_transform.text);
+        = DetectedObject(obj_uid, obj_ns, detection_frame, marker_transform.text);
 
     const std::string obj_db_key = this_object.getObjDBKey();
 

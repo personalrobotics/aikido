@@ -10,8 +10,8 @@
 namespace aikido {
 namespace perception {
 
-/// Instantiation of ObjectDatabase that reads of JSON file containing the
-/// information that maps object keys to the object names and resources.
+/// Instantiation of ObjectDatabase (a.k.a. Asset Database) that reads of JSON file containing the
+/// information that maps object keys to the object visual assets and resources.
 
 /// The JSON file should have a map with object keys.
 /// Each such key points to a nested map, where the keys are

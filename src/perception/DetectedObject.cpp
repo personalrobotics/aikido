@@ -8,9 +8,11 @@ namespace perception {
 //==============================================================================
 DetectedObject::DetectedObject(
     const std::string& objUID,
+    const std::string& objAssetDBKey,
     const std::string& detectionFrameID,
     const std::string& yamlStr)
-  : mObjDBKey(std::move(objUID))
+  : mObjUID(std::move(objUID))
+  , mObjDBKey(std::move(objAssetDBKey))
   , mDetectionFrameID(std::move(detectionFrameID))
 {
   // Load YAML nodes from string
@@ -18,8 +20,8 @@ DetectedObject::DetectedObject(
     mYamlNode = YAML::Load(yamlStr);
     mObjDBKey = mYamlNode["db_key"].as<std::string>(mObjDBKey);
   } catch(const YAML::Exception &e) {
-    mObjDBKey = "";
     dtwarn << "[DetectedObject::DetectedObject] YAML String Exception: " << e.what() << std::endl;
+    mYamlNode = YAML::Load(""); // Create Null Node
   }
 }
 
