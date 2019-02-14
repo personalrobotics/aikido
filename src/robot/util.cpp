@@ -274,10 +274,7 @@ trajectory::TrajectoryPtr planToTSR(
     auto traj = snapPlanner->plan(problem, &pResult);
 
     if (traj)
-    {
-      space->setState(metaSkeleton.get(), startState);
       return traj;
-    }
   }
 
   // Start the timer
