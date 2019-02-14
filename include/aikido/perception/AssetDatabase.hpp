@@ -52,7 +52,7 @@ public:
   /// \param[out] assetName The retrieved object name from AssetDatabase
   /// \param[out] assetResource The retrieved uri of the object
   /// \param[out] assetOffset The retrieved offset matrix of the object
-  ///     i.e. the offset between a tag and the actual origin of an object
+  ///     e.g. the offset between a tag and the actual origin of an object
   void getAssetByKey(
       const std::string& assetKey,
       std::string& assetName,

@@ -27,15 +27,16 @@ public:
   /// \param[in] timestamp Only detections more recent than this timestamp will
   /// be accepted. A timestamp of 0 greedily takes the first available message,
   /// and is the default behaviour.
-  /// \param[out] detectedObjects An output vector for detected objects.
-  /// \return Returns \c false if no detection observed, or if none of the
-  /// detections has a more recent timestamp than the parameter. Returns \c true
+  /// \param[out] detectedObjects An output vector for detected objects before
+  /// timeout.
+  /// \return Returns \c false if no detection observed before timeout. Returns
+  /// \c true
   /// otherwise.
   virtual bool detectObjects(
       const aikido::planner::WorldPtr& env,
-      ros::Duration timeout,
-      ros::Time timestamp,
-      std::vector<DetectedObject>* detectedObjects)
+      ros::Duration timeout = ros::Duration(),
+      ros::Time timestamp = ros::Time(0.0),
+      std::vector<DetectedObject>* detectedObjects = nullptr)
       = 0;
 };
 

@@ -63,7 +63,7 @@ bool PoseEstimatorModule::detectObjects(
   for (const auto& marker_transform : marker_message->markers)
   {
     // TODO: Add DELETE_ALL Functionality
-    // TODO: Update when we move over to ROS Kinetic. Indigo is dumb and doesn't
+    // TODO: Update when we move over to ROS Kinetic. Indigo doesn't
     // have the enum value.
     // if (marker_transform.action == visualization_msgs::Marker::DELETEALL) {
     if (marker_transform.action == 3)
@@ -85,7 +85,7 @@ bool PoseEstimatorModule::detectObjects(
     const std::string obj_uid = obj_ns + "_" + std::to_string(obj_id);
 
     // Initialize a DetectedObject class for this object
-    DetectedObject this_object = DetectedObject(
+    DetectedObject this_object(
         obj_uid, obj_ns, detection_frame, marker_transform.text);
 
     const std::string asset_key = this_object.getAssetKey();
@@ -103,7 +103,7 @@ bool PoseEstimatorModule::detectObjects(
     Eigen::Isometry3d obj_offset;
     ros::Time t0 = ros::Time(0);
 
-    // get the object name, resource, and offset from database by assetKey
+    // Get the object name, resource, and offset from database by assetKey
     try
     {
       mAssetData->getAssetByKey(asset_key, obj_name, obj_resource, obj_offset);

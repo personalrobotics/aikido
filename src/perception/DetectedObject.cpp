@@ -7,11 +7,11 @@ namespace perception {
 
 //==============================================================================
 DetectedObject::DetectedObject(
-    const std::string& dartUid,
+    const std::string& uid,
     const std::string& assetKey,
     const std::string& detectionFrameID,
     const std::string& yamlStr)
-  : mDartUid(std::move(dartUid))
+  : mUid(std::move(uid))
   , mAssetKey(std::move(assetKey))
   , mDetectionFrameID(std::move(detectionFrameID))
 {
@@ -30,9 +30,9 @@ DetectedObject::DetectedObject(
 }
 
 //==============================================================================
-std::string DetectedObject::getDartUid()
+std::string DetectedObject::getUid()
 {
-  return mDartUid;
+  return mUid;
 }
 
 //==============================================================================

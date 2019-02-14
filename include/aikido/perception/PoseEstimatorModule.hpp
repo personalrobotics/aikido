@@ -51,7 +51,7 @@ public:
 
   virtual ~PoseEstimatorModule() = default;
 
-  // Documentation inherited
+  /// \copydoc PerceptionModule::detectObjects()
   /// Looks for the following information sent via ROS (see \c DetectedObject):
   /// visualization_msgs/Marker message like the following:
   /// Marker.header.frame_id -> detectionFrameID

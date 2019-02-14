@@ -26,7 +26,17 @@ AssetDatabase::AssetDatabase(
   }
 
   // Load from string
-  mAssetData = YAML::Load(content);
+  try
+  {
+    mAssetData = YAML::Load(content);
+  }
+  catch (YAML::Exception& e)
+  {
+    dtwarn << "[AssetDatabase::AssetDatabase] JSON File Exception: " << e.what()
+           << std::endl
+           << "Loading empty asset database." << std::endl;
+    mAssetData = YAML::Load(""); // Create Null Node
+  }
 }
 
 //==============================================================================

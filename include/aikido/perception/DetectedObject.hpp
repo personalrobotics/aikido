@@ -34,7 +34,7 @@ class DetectedObject
 {
 public:
   /// Construct a \c DetectedObject
-  /// \param[in] dartUid Unique ID for object in DART world. Same UID -> Same
+  /// \param[in] uid Unique ID for object in Aikido world. Same UID -> Same
   /// Object
   /// \param[in] assetKey Key for AssetDatabase passed into constructor of
   /// PoseEstimatorModule. Defines visuals / assets.
@@ -42,15 +42,15 @@ public:
   /// \param[in] yamlStr String of additional parameters for object. Can
   /// override objAssetDBKey by specifying "db_key".
   DetectedObject(
-      const std::string& dartUid,
+      const std::string& uid,
       const std::string& assetKey,
       const std::string& detectionFrameID,
       const std::string& yamlStr);
 
   virtual ~DetectedObject() = default;
 
-  /// Get the unique DART id of the object
-  std::string getDartUid();
+  /// Get the unique  id of the object
+  std::string getUid();
 
   /// Get the object key for \c AssetDatabase
   std::string getAssetKey();
@@ -73,7 +73,7 @@ public:
 
 private:
   /// The unique id of the object
-  std::string mDartUid;
+  std::string mUid;
 
   /// The object key for \c AssetDatabase
   std::string mAssetKey;
