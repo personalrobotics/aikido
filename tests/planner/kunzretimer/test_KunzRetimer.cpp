@@ -61,9 +61,8 @@ protected:
 
 TEST_F(KunzRetimerTests, SupportedCartesianProduct_DoesNotThrow)
 {
-  EXPECT_NO_THROW({
-    computeKunzTiming(*mStraightLine, mMaxVelocity, mMaxAcceleration);
-  });
+  EXPECT_NO_THROW(
+      { computeKunzTiming(*mStraightLine, mMaxVelocity, mMaxAcceleration); });
 }
 
 TEST_F(KunzRetimerTests, MaxVelocityIsZero_Throws)
