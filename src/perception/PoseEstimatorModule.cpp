@@ -161,7 +161,7 @@ bool PoseEstimatorModule::detectObjects(
     // Check if skel in World
     // If there is, update its pose
     // If not, add skeleton to env
-    if (env_skeleton == nullptr)
+    if (!env_skeleton)
     {
       is_new_obj = true;
       obj_skeleton

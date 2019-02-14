@@ -12,7 +12,7 @@ namespace perception {
 
 /// A perception algorithm should send information for an object via ROS
 /// visualization_msgs/Marker message like the following:
-/// Marker.ns + "_" + Marker.id -> dartUid (identity in DART world)
+/// Marker.ns + "_" + Marker.id -> uid (identity in planner::World)
 /// Marker.ns -> assetKey (determines visual asset, \see AssetDatabase)
 /// Marker.header.frame_id -> detectionFrameID
 /// Marker.text -> yamlStr

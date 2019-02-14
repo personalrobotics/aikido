@@ -55,8 +55,8 @@ public:
   /// Looks for the following information sent via ROS (see \c DetectedObject):
   /// visualization_msgs/Marker message like the following:
   /// Marker.header.frame_id -> detectionFrameID
-  /// Marker.ns + "_" + Marker.id -> objUid (identity in DART world)
-  /// Marker.ns -> objAssetDBKey (determines visual asset, see AssetDatabase)
+  /// Marker.ns + "_" + Marker.id -> objUid (identity in planner::World)
+  /// Marker.ns -> objAssetKey (determines visual asset, see AssetDatabase)
   bool detectObjects(
       const aikido::planner::WorldPtr& env,
       ros::Duration timeout = ros::Duration(),
