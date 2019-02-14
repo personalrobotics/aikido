@@ -134,7 +134,8 @@ trajectory::TrajectoryPtr planToConfigurations(
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
 /// \param[in] maxNumTrials Number of retries before failure.
-/// \param[in] ranker Ranker to rank the sampled configurations.
+/// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
+/// NominalConfigurationRanker is used with the current metaSkeleton pose.
 /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
 trajectory::TrajectoryPtr planToTSR(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
@@ -145,7 +146,7 @@ trajectory::TrajectoryPtr planToTSR(
     common::RNG* rng,
     double timelimit,
     std::size_t maxNumTrials,
-    const distance::ConfigurationRankerPtr& ranker = nullptr);
+    const distance::ConstConfigurationRankerPtr& ranker = nullptr);
 
 /// Returns a Trajectory that moves the configuration of the metakeleton such
 /// that the specified bodynode is set to a sample in a goal TSR and

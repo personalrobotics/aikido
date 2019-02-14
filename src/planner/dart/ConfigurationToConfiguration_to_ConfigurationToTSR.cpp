@@ -27,7 +27,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
         std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-        distance::ConfigurationRankerPtr configurationRanker)
+        distance::ConstConfigurationRankerPtr configurationRanker)
   : PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
                    ConfigurationToTSRPlanner>(
         std::move(planner), std::move(metaSkeleton))

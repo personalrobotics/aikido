@@ -402,7 +402,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const CollisionFreePtr& collisionFree,
     double timelimit,
     std::size_t maxNumTrials,
-    const distance::ConfigurationRankerPtr& ranker)
+    const distance::ConstConfigurationRankerPtr& ranker)
 {
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);

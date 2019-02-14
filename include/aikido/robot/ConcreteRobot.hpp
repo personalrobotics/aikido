@@ -192,7 +192,8 @@ public:
   /// \param[in] collisionFree Testable constraint to check for collision.
   /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
   /// \param[in] maxNumTrials Max numer of trials to plan.
-  /// \param[in] ranker Ranker to rank the sampled configurations.
+  /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
+  /// NominalConfigurationRanker is used with the current metaSkeleton pose.
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSR(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
@@ -202,7 +203,7 @@ public:
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit,
       std::size_t maxNumTrials,
-      const distance::ConfigurationRankerPtr& ranker = nullptr);
+      const distance::ConstConfigurationRankerPtr& ranker = nullptr);
 
   /// TODO: Replace this with Problem interface.
   /// Returns a Trajectory that moves the configuration of the metakeleton such
