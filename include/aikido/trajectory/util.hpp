@@ -89,17 +89,17 @@ double findTimeOfClosestStateOnTrajectory(
 UniqueSplinePtr createPartialTrajectory(
     const Spline& traj, double partialStartTime);
 
-/// Converts an interpolated trajectory in the cartesian product space of SO(2)
-/// and R1 joints to a trajectory in cartesian product space of strictly
-/// only R1 joints.
+/// Converts an interpolated trajectory from a Cartesian product space of SO(2)
+/// and R1 joints to a Cartesian product space of strictly R1 joints.
+///
 /// \param[in] trajectory Trajectory to be converted.
 /// \return Converted trajectory.
 aikido::trajectory::ConstInterpolatedPtr toR1JointTrajectory(
     const aikido::trajectory::Interpolated& trajectory);
 
-/// Converts a spline trajectory in the cartesian product space of SO(2) and R1
-/// joints to a trajectory in cartesian product space of strictly only R1
-/// joints.
+/// Converts a spline trajectory from a Cartesian product space of SO(2) and R1
+/// joints to a Cartesian product space of strictly R1 joints.
+///
 /// \param[in] trajectory Trajectory to be converted.
 /// \return Converted trajectory.
 aikido::trajectory::ConstSplinePtr toR1JointTrajectory(

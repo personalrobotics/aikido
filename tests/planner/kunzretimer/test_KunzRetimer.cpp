@@ -411,6 +411,6 @@ TEST_F(KunzRetimerTests, timingArbitraryMultipleWaypoints)
   });
 }
 
-// // TODO: Test what happens when two waypoints are coincident.
-// // TODO: Add a test for different velocity limits.
-// // TODO: Add a test where DOFs have different ramp transition points.
+// TODO: Test what happens when two waypoints are coincident.
+// TODO: Add a test for different velocity limits.
+// TODO: Add a test where DOFs have different ramp transition points.

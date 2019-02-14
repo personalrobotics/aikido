@@ -6,12 +6,10 @@
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
 #include "aikido/control/ros/Conversions.hpp"
-#include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/dart/RnJoint.hpp"
 #include "aikido/statespace/dart/SO2Joint.hpp"
 
 using aikido::statespace::CartesianProduct;
-using aikido::statespace::InterpolatorPtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
 using aikido::statespace::dart::R1Joint;
@@ -22,10 +20,10 @@ namespace control {
 namespace ros {
 namespace {
 
-/// The rows of inVector is reordered in outVector.
-/// \param[in] indexMap Map denoting the reordering between in and out vectors.
+/// Reorder the elements of a vector according to an index map.
+/// \param[in] indexMap Map denoting the reordering between in and out indices.
 /// \param[in] inVector Vector to reorder.
-/// \param[in] outVector Reordered vector.
+/// \param[out] outVector Reordered vector.
 void reorder(
     const std::vector<std::pair<std::size_t, std::size_t>>& indexMap,
     const Eigen::VectorXd& inVector,
@@ -33,10 +31,10 @@ void reorder(
 
 /// Checks if a vector is valid.
 /// \param[in] name Name. Provides context to what the vector is representing.
-/// \param[in] values The vector to check.
+/// \param[in] values The std::vector to check.
 /// \param[in] expectedLength Expected size of the vector.
 /// \param[in] isRequired True if the vector is expected to contain entries.
-/// \param[in] output Eigen map from values to the size of vector.
+/// \param[out] output Converted Eigen vector.
 void checkVector(
     const std::string& name,
     const std::vector<double>& values,
@@ -68,19 +66,16 @@ Eigen::MatrixXd fitPolynomial(
 /// Extract a state on the joint trajectory given an index.
 /// \param[in] trajectory Joint trajectory to extract points from.
 /// \param[in] index Index of the point on the trajectory to extract.
-/// \param[in] positions Extracted positions on the trajectory indexed
-/// appropriately.
-/// \param[in] positionsRequired True if positions are required to be extracted.
-/// \param[in] velocities Extracted velocities corresponding to \c positions.
-/// \param[in] velocitiesRequired True if velocities are required to be
-/// extracted.
-/// \param[in] accelerations Extracted accelerations corresponding to \c
+/// \param[out] positions Extracted positions.
+/// \param[in] positionsRequired True if positions should be extracted.
+/// \param[out] velocities Extracted velocities corresponding to \c positions.
+/// \param[in] velocitiesRequired True if velocities should be extracted.
+/// \param[out] accelerations Extracted accelerations corresponding to \c
 /// positions.
-/// \param[in] accelerationsRequired True if accelerations are required to be
-/// extracted.
-/// \param[in] indexMap Map denoting the correct ordering of trajectory data
-/// required. This is required in case the trajectory's joint indexing is
-/// different to metaskeleton joint indexing.
+/// \param[in] accelerationsRequired True if accelerations should be extracted.
+/// \param[in] indexMap Map denoting the correct ordering of trajectory data.
+/// This is required in case the trajectory's joint indexing is different than
+/// metaskeleton joint indexing.
 /// \param[in] unspecifiedJoints Joints whose data is not required. Assumed to
 /// be static at the current position.
 /// \param[in] startPositions Start positions of the joints.
@@ -101,20 +96,13 @@ void extractJointTrajectoryPoint(
 /// Extract a state on the trajectory given a timepoint.
 /// \param[in] space MetaSkeletonStateSpace of the trajectory.
 /// \param[in] trajectory Trajectory to extract point from.
-/// \param[in] interpolator Interpolator used to maintain continuity in
-/// extraction.
 /// \param[in] timeFromStart Timepoint to extract trajectory point at.
-/// \param[in] waypoint The extracted trajectory point.
-/// \param[in] previousPoint Previously extracted trajectory point to
-/// ensure continuity in representation when extracting multiple points.
-/// Set to zero vector if not required.
+/// \param[out] waypoint The extracted trajectory point.
 void extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
-    const aikido::statespace::InterpolatorPtr& interpolator,
     double timeFromStart,
-    trajectory_msgs::JointTrajectoryPoint& waypoint,
-    Eigen::VectorXd& previousPoint);
+    trajectory_msgs::JointTrajectoryPoint& waypoint);
 
 //==============================================================================
 void reorder(
@@ -267,10 +255,8 @@ void extractJointTrajectoryPoint(
 void extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
-    const aikido::statespace::InterpolatorPtr& interpolator,
     double timeFromStart,
-    trajectory_msgs::JointTrajectoryPoint& waypoint,
-    Eigen::VectorXd& previousPoint)
+    trajectory_msgs::JointTrajectoryPoint& waypoint)
 {
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
@@ -279,29 +265,8 @@ void extractTrajectoryPoint(
 
   Eigen::VectorXd tangentVector;
   auto state = space->createState();
-
-  auto prevState = space->createState();
-  space->convertPositionsToState(previousPoint, prevState);
-
   trajectory->evaluate(timeAbsolute, state);
-  space->convertStateToPositions(state, tangentVector);
-
-  auto geodesicInterpolator
-      = std::dynamic_pointer_cast<aikido::statespace::GeodesicInterpolator>(
-          interpolator);
-  if (!geodesicInterpolator)
-  {
-    throw std::invalid_argument(
-        "The interpolator of trajectory should be a GeodesicInterpolator");
-  }
-
-  auto diff = geodesicInterpolator->getTangentVector(prevState, state);
-  tangentVector = previousPoint + diff;
-
-  for (int i = 0; i < tangentVector.size(); ++i)
-  {
-    previousPoint(i) = tangentVector(i);
-  }
+  space->logMap(state, tangentVector);
 
   assert(tangentVector.size() == numDof);
 
@@ -619,23 +584,13 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   }
 
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
-  Eigen::VectorXd previousPoint(Eigen::VectorXd::Zero(space->getDimension()));
   jointTrajectory.points.reserve(numWaypoints);
-
-  // Create the geodesic interpolator used to extract trajectory points.
-  auto interpolator
-      = std::make_shared<aikido::statespace::GeodesicInterpolator>(space);
-
-  for (std::size_t i = 0; i < numWaypoints; ++i)
+  for (const auto& timeFromStart : timeSequence)
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
-    extractTrajectoryPoint(
-        space,
-        trajectory,
-        interpolator,
-        timeSequence[i],
-        waypoint,
-        previousPoint);
+
+    extractTrajectoryPoint(space, trajectory, timeFromStart, waypoint);
+
     jointTrajectory.points.emplace_back(waypoint);
   }
 
