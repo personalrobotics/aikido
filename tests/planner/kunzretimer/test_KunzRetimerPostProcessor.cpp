@@ -2,6 +2,7 @@
 #include <aikido/common/RNG.hpp>
 #include <aikido/planner/kunzretimer/KunzRetimer.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/trajectory/util.hpp>
@@ -9,8 +10,10 @@
 
 using Eigen::Vector2d;
 using aikido::trajectory::Interpolated;
+using aikido::statespace::CartesianProduct;
+using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::R2;
+using aikido::statespace::R1;
 using aikido::trajectory::convertToSpline;
 using aikido::planner::kunzretimer::KunzRetimer;
 
@@ -20,7 +23,10 @@ protected:
   void SetUp() override
   {
     mRng = aikido::common::RNGWrapper<std::mt19937>(0);
-    mStateSpace = std::make_shared<R2>();
+    std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
+    for (std::size_t i = 0; i < 2; ++i)
+      subspaces.emplace_back(std::make_shared<R1>());
+    mStateSpace = std::make_shared<CartesianProduct>(subspaces);
     mInterpolator = std::make_shared<GeodesicInterpolator>(mStateSpace);
 
     // set default parameters
@@ -29,7 +35,7 @@ protected:
   }
 
   aikido::common::RNGWrapper<std::mt19937> mRng;
-  std::shared_ptr<R2> mStateSpace;
+  std::shared_ptr<CartesianProduct> mStateSpace;
   std::shared_ptr<GeodesicInterpolator> mInterpolator;
 
   double mMaxDeviation;
@@ -44,15 +50,18 @@ TEST_F(KunzRetimerPostProcessorTests, testTime)
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
+  Eigen::VectorXd positions(2);
   Eigen::VectorXd tangentVector;
 
   // The optimal timing of this trajectory should be a triangle centered at t =
   // 1that accelerates at 1 rad/s^2 for 1 s, then deaccelerates at -1 rad/s^2
   // for 1 s. This corresponds to moving each axis through 2 rad.
-  state.setValue(Vector2d(1., 2.));
+  positions << 1, 2;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(0., state);
 
-  state.setValue(Vector2d(2., 3.));
+  positions << 2, 3;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory
@@ -64,13 +73,16 @@ TEST_F(KunzRetimerPostProcessorTests, testTime)
 
   // Position.
   timedTrajectory->evaluate(0., state);
-  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(1.0, 2.0).isApprox(positions));
 
   timedTrajectory->evaluate(1., state);
-  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(1.5, 2.5).isApprox(positions));
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(2.0, 3.0).isApprox(positions));
 
   // Velocity
   timedTrajectory->evaluateDerivative(0.5, 1, tangentVector);
@@ -100,14 +112,19 @@ TEST_F(KunzRetimerPostProcessorTests, testSplineTiming)
   Interpolated interpolated(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
+  Eigen::VectorXd positions(2);
+
   auto state2 = mStateSpace->createState();
+  Eigen::VectorXd positions2(2);
 
   // This is the same test as StraightLine_TriangularProfile, except that the
   // trajectory starts at a non-zero time.
-  state.setValue(Vector2d(1., 2.));
+  positions << 1, 2;
+  mStateSpace->expMap(positions, state);
   interpolated.addWaypoint(1., state);
 
-  state.setValue(Vector2d(2., 3.));
+  positions << 2, 3;
+  mStateSpace->expMap(positions, state);
   interpolated.addWaypoint(3., state);
 
   auto spline = convertToSpline(interpolated);
@@ -118,13 +135,19 @@ TEST_F(KunzRetimerPostProcessorTests, testSplineTiming)
 
   timedInterpolated->evaluate(1., state);
   timedSpline->evaluate(1., state2);
-  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  mStateSpace->logMap(state2, positions2);
+  EXPECT_TRUE(positions2.isApprox(positions));
 
   timedInterpolated->evaluate(2., state);
   timedSpline->evaluate(2., state2);
-  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  mStateSpace->logMap(state2, positions2);
+  EXPECT_TRUE(positions2.isApprox(positions));
 
   timedInterpolated->evaluate(3., state);
   timedSpline->evaluate(3., state2);
-  EXPECT_TRUE(state2.getValue().isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  mStateSpace->logMap(state2, positions2);
+  EXPECT_TRUE(positions2.isApprox(positions));
 }
