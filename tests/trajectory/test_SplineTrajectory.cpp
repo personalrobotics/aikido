@@ -21,7 +21,8 @@ protected:
       subspaces.emplace_back(std::make_shared<R1>());
     mStateSpace = std::make_shared<CartesianProduct>(subspaces);
 
-    mStartState = static_cast<CartesianProduct::State*>(mStateSpace->allocateState());
+    mStartState
+        = static_cast<CartesianProduct::State*>(mStateSpace->allocateState());
     mStateSpace->expMap(START_VALUE, mStartState);
   }
 
