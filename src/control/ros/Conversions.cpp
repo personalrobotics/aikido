@@ -79,13 +79,10 @@ Eigen::MatrixXd fitPolynomial(
 /// \param[in] accelerationsRequired True if accelerations are required to be
 /// extracted.
 /// \param[in] indexMap Map denoting the correct ordering of trajectory data
-/// required.
-/// This is required in case the trajectory's joint indexing is different to
-/// metaskeleton
-/// joint indexing.
+/// required. This is required in case the trajectory's joint indexing is 
+/// different to metaskeleton joint indexing.
 /// \param[in] unspecifiedJoints Joints whose data is not required. Assumed to
-/// be static
-/// at the current position.
+/// be static at the current position.
 /// \param[in] startPositions Start positions of the joints.
 void extractJointTrajectoryPoint(
     const trajectory_msgs::JointTrajectory& _trajectory,
