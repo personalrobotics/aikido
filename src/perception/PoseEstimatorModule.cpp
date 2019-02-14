@@ -2,11 +2,9 @@
 
 #include <Eigen/Geometry>
 #include <dart/utils/urdf/DartLoader.hpp>
-#include <ros/ros.h>
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-#include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/perception/shape_conversions.hpp"
 
 namespace aikido {
@@ -15,14 +13,14 @@ namespace perception {
 //=============================================================================
 PoseEstimatorModule::PoseEstimatorModule(
     ros::NodeHandle nodeHandle,
-    std::string markerTopic,
-    std::shared_ptr<ObjectDatabase> configData,
+    const std::string& markerTopic,
+    std::shared_ptr<AssetDatabase> assetData,
     std::shared_ptr<aikido::io::CatkinResourceRetriever> resourceRetriever,
-    std::string referenceFrameId,
+    const std::string& referenceFrameId,
     dart::dynamics::Frame* referenceLink)
   : mNodeHandle(std::move(nodeHandle))
   , mMarkerTopic(std::move(markerTopic))
-  , mConfigData(std::move(configData))
+  , mAssetData(std::move(assetData))
   , mResourceRetriever(std::move(resourceRetriever))
   , mReferenceFrameId(std::move(referenceFrameId))
   , mReferenceLink(std::move(referenceLink))
@@ -35,7 +33,8 @@ PoseEstimatorModule::PoseEstimatorModule(
 bool PoseEstimatorModule::detectObjects(
     const aikido::planner::WorldPtr& env,
     ros::Duration timeout,
-    ros::Time timestamp)
+    ros::Time timestamp,
+    std::vector<DetectedObject>* detectedObjects)
 {
   // Checks detected objects, looks up the database,
   // and adds new skeletons to the world env
@@ -63,25 +62,39 @@ bool PoseEstimatorModule::detectObjects(
 
   for (const auto& marker_transform : marker_message->markers)
   {
+    // TODO: Add DELETE_ALL Functionality
+    // TODO: Update when we move over to ROS Kinetic. Indigo doesn't
+    // have the enum value.
+    // if (marker_transform.action == visualization_msgs::Marker::DELETEALL) {
+    if (marker_transform.action == 3)
+    {
+      dtwarn << "[PoseEstimatorModule::detectObjects] We cannot currently "
+                "handle DELETE_ALL markers."
+             << std::endl;
+      continue;
+    }
     const auto& marker_stamp = marker_transform.header.stamp;
-    const auto& obj_key = marker_transform.text;
-    const auto& obj_id = marker_transform.ns;
+    const auto& obj_id = marker_transform.id;
+    const auto& obj_ns = marker_transform.ns;
     const auto& detection_frame = marker_transform.header.frame_id;
     if (!timestamp.isValid() || marker_stamp < timestamp)
     {
       continue;
     }
 
-    // If obj_key is "None",
-    // remove a skeleton with obj_id from env
-    // and move to next marker
-    dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(obj_id);
-    if (!obj_key.compare("None"))
+    const std::string obj_uid = obj_ns + "_" + std::to_string(obj_id);
+
+    // Initialize a DetectedObject class for this object
+    DetectedObject this_object(
+        obj_uid, obj_ns, detection_frame, marker_transform.text);
+
+    const std::string asset_key = this_object.getAssetKey();
+
+    if (asset_key.empty())
     {
-      if (env_skeleton != nullptr)
-      {
-        env->removeSkeleton(env_skeleton);
-      }
+      dtwarn << "[PoseEstimatorModule::detectObjects] Invalid YAML String in "
+                "Marker: "
+             << obj_uid << std::endl;
       continue;
     }
 
@@ -90,8 +103,28 @@ bool PoseEstimatorModule::detectObjects(
     Eigen::Isometry3d obj_offset;
     ros::Time t0 = ros::Time(0);
 
-    // get the object name, resource, and offset from database by objectKey
-    mConfigData->getObjectByKey(obj_key, obj_name, obj_resource, obj_offset);
+    // Get the object name, resource, and offset from database by assetKey
+    try
+    {
+      mAssetData->getAssetByKey(asset_key, obj_name, obj_resource, obj_offset);
+    }
+    catch (std::runtime_error& e)
+    {
+      dtwarn << e.what() << std::endl;
+      continue;
+    }
+
+    // If marker_transform.action is "DELETE",
+    // remove a skeleton with obj_uid from env
+    dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(obj_uid);
+    if (marker_transform.action == visualization_msgs::Marker::DELETE)
+    {
+      if (env_skeleton != nullptr)
+      {
+        env->removeSkeleton(env_skeleton);
+      }
+      continue;
+    }
 
     tf::StampedTransform transform;
     try
@@ -128,8 +161,7 @@ bool PoseEstimatorModule::detectObjects(
     // Check if skel in World
     // If there is, update its pose
     // If not, add skeleton to env
-    // A pose estimator module should provide the unique obj_id per object
-    if (env_skeleton == nullptr)
+    if (!env_skeleton)
     {
       is_new_obj = true;
       obj_skeleton
@@ -142,7 +174,7 @@ bool PoseEstimatorModule::detectObjects(
             << "for URI " << obj_resource.toString() << std::endl;
         continue;
       }
-      obj_skeleton->setName(obj_id);
+      obj_skeleton->setName(obj_uid);
     }
     else
     {
@@ -181,6 +213,11 @@ bool PoseEstimatorModule::detectObjects(
       env->addSkeleton(obj_skeleton);
     }
 
+    // Add object to output vector, if available
+    if (detectedObjects)
+    {
+      detectedObjects->push_back(this_object);
+    }
     any_detected = true;
   }
 
