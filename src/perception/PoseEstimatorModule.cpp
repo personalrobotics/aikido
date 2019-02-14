@@ -114,12 +114,6 @@ bool PoseEstimatorModule::detectObjects(
       continue;
     }
 
-    // Add object to output vector, if available
-    if (detectedObjects)
-    {
-      detectedObjects->push_back(this_object);
-    }
-
     // If marker_transform.action is "DELETE",
     // remove a skeleton with obj_uid from env
     dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(obj_uid);
@@ -219,6 +213,11 @@ bool PoseEstimatorModule::detectObjects(
       env->addSkeleton(obj_skeleton);
     }
 
+    // Add object to output vector, if available
+    if (detectedObjects)
+    {
+      detectedObjects->push_back(this_object);
+    }
     any_detected = true;
   }
 
