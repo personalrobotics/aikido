@@ -260,7 +260,7 @@ trajectory::TrajectoryPtr planToTSR(
     space->setState(metaSkeleton.get(), startState);
   }
 
-  if (configurations.size() == 0)
+  if (configurations.empty())
     return nullptr;
 
   configurationRanker->rankConfigurations(configurations);
