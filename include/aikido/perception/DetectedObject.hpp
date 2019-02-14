@@ -7,21 +7,23 @@
 namespace aikido {
 namespace perception {
 
-/// DetectedObject delegates a detected object from a third party
+/// DetectedObject delegates a detected object from a third-party
 /// perception algorithm.
 
 /// A perception algorithm should send information for an object via ROS
 /// visualization_msgs/Marker message like the following:
+/// Marker.ns + "_" + Marker.id -> dartUid (identity in DART world)
+/// Marker.ns -> assetKey (determines visual asset, \see AssetDatabase)
 /// Marker.header.frame_id -> detectionFrameID
-/// Marker.ns -> objDBKey
 /// Marker.text -> yamlStr
 
-/// yamlStr contains the unique id of the object and any types of additional
-/// information of the object in JSON format.
+/// yamlStr contains any additional information in YAML format.
+/// It also can overwrite the Asset Database Key
+/// using "db_key". (\see AssetDatabase for details)
 /// Here is an example:
 /// \code
 /// {
-///   "uid": "cantaloupe_001",
+///   "db_key": "food_item",
 ///   "score": 0.9,
 ///   "success_rates": [0.4, 0.9, 0.1, 0.2],
 ///   "strategies": ["vertical_0", "vertical_90", "tilted_0", "tilted_90"],
@@ -32,21 +34,26 @@ class DetectedObject
 {
 public:
   /// Construct a \c DetectedObject
-  /// \param[in] objDBKey
-  /// \param[in] detectionFrameID
-  /// \param[in] yamlStr
+  /// \param[in] uid Unique ID for object in Aikido world. Same UID -> Same
+  /// Object
+  /// \param[in] assetKey Key for AssetDatabase passed into constructor of
+  /// PoseEstimatorModule. Defines visuals / assets.
+  /// \param[in] detectionFrameID Frame ID from ROS Marker
+  /// \param[in] yamlStr String of additional parameters for object. Can
+  /// override objAssetDBKey by specifying "db_key".
   DetectedObject(
-      const std::string& objUID,
+      const std::string& uid,
+      const std::string& assetKey,
       const std::string& detectionFrameID,
       const std::string& yamlStr);
 
   virtual ~DetectedObject() = default;
 
-  /// Get the unique id of the object
-  std::string getObjUID();
+  /// Get the unique  id of the object
+  std::string getUid();
 
-  /// Get the object key for \c ObjectDatabase
-  std::string getObjDBKey();
+  /// Get the object key for \c AssetDatabase
+  std::string getAssetKey();
 
   /// Get the detection frame id that refers the origin of this object's pose
   std::string getDetectionFrameID();
@@ -57,15 +64,19 @@ public:
   /// Get a specific value from the information map by a key and the typename
   /// of the field
   /// \param[in] key The key (string) of a field in the information map
+  /// Sequence types (e.g. [1, 2]) can be read into standard containers (e.g.
+  /// std::vector<double>)
+  /// Map types are not supported with this function. Please get the manually
+  /// with getYamlNode().
   template <typename T>
   T getInfoByKey(const std::string& key);
 
 private:
   /// The unique id of the object
-  std::string mObjUID;
+  std::string mUid;
 
-  /// The object key for \c ObjectDatabase
-  std::string mObjDBKey;
+  /// The object key for \c AssetDatabase
+  std::string mAssetKey;
 
   /// The detection frame id that refers the origin of this object's pose
   std::string mDetectionFrameID;

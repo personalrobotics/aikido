@@ -7,28 +7,38 @@ namespace perception {
 
 //==============================================================================
 DetectedObject::DetectedObject(
-    const std::string& objUID,
+    const std::string& uid,
+    const std::string& assetKey,
     const std::string& detectionFrameID,
     const std::string& yamlStr)
-  : mObjDBKey(std::move(objUID))
+  : mUid(std::move(uid))
+  , mAssetKey(std::move(assetKey))
   , mDetectionFrameID(std::move(detectionFrameID))
 {
   // Load YAML nodes from string
-  mYamlNode = YAML::Load(yamlStr);
-
-  mObjDBKey = mYamlNode["db_key"].as<std::string>();
+  try
+  {
+    mYamlNode = YAML::Load(yamlStr);
+    mAssetKey = mYamlNode["db_key"].as<std::string>(mAssetKey);
+  }
+  catch (const YAML::Exception& e)
+  {
+    dtwarn << "[DetectedObject::DetectedObject] YAML String Exception: "
+           << e.what() << std::endl;
+    mYamlNode = YAML::Load(""); // Create Null Node
+  }
 }
 
 //==============================================================================
-std::string DetectedObject::getObjUID()
+std::string DetectedObject::getUid()
 {
-  return mObjUID;
+  return mUid;
 }
 
 //==============================================================================
-std::string DetectedObject::getObjDBKey()
+std::string DetectedObject::getAssetKey()
 {
-  return mObjDBKey;
+  return mAssetKey;
 }
 
 //==============================================================================

@@ -1,5 +1,5 @@
-#ifndef AIKIDO_PERCEPTION_OBJECT_DATABASE_HPP_
-#define AIKIDO_PERCEPTION_OBJECT_DATABASE_HPP_
+#ifndef AIKIDO_PERCEPTION_ASSET_DATABASE_HPP_
+#define AIKIDO_PERCEPTION_ASSET_DATABASE_HPP_
 
 #include <stdexcept>
 #include <dart/common/LocalResourceRetriever.hpp>
@@ -10,8 +10,8 @@
 namespace aikido {
 namespace perception {
 
-/// Instantiation of ObjectDatabase that reads of JSON file containing the
-/// information that maps object keys to the object names and resources.
+/// Instantiation of AssetDatabase that reads of JSON file containing the
+/// information that maps object keys to visual assets and resources.
 
 /// The JSON file should have a map with object keys.
 /// Each such key points to a nested map, where the keys are
@@ -22,9 +22,9 @@ namespace perception {
 ///
 /// Here is an example entry in a JSON file:
 /// \code
-/// "obj_key": {
+/// "asset_key": {
 ///    "resource": "package://pr_assets/data/objects/obj_filename.urdf",
-///    "name": "obj_name",
+///    "name": "asset_name",
 ///    "offset": [
 ///      [1.0, 0.0, 0.0, 0.0],
 ///      [0.0, 1.0, 0.0, 0.0],
@@ -34,34 +34,34 @@ namespace perception {
 ///  }
 /// \endcode
 
-class ObjectDatabase
+class AssetDatabase
 {
 public:
-  /// Construct a \c ObjectDatabase that uses \c ResourceRetriever to
+  /// Construct a \c AssetDatabase that uses \c ResourceRetriever to
   /// load configuration data from a JSON file at URI \c configDataURI.
   /// \param[in] resourceRetriever The pointer to obtain the configuration file
   /// \param[in] configDataURI The URI for the configuration information file
-  ObjectDatabase(
+  AssetDatabase(
       const dart::common::ResourceRetrieverPtr& resourceRetriever,
       const dart::common::Uri& configDataURI);
 
-  virtual ~ObjectDatabase() = default;
+  virtual ~AssetDatabase() = default;
 
   /// Get the object name, resource, and offset from database by objectKey
-  /// \param[in]  objectKey The key (string) of an object in ObjectDatabase
-  /// \param[out] objectName The retrieved object name from ObjectDatabase
-  /// \param[out] objectResource The retrieved uri of the object
-  /// \param[out] objectOffset The retrieved offset matrix of the object
-  ///     i.e. the offset between a tag and the actual origin of an object
-  void getObjectByKey(
-      const std::string& objectKey,
-      std::string& objectName,
-      dart::common::Uri& objectResource,
-      Eigen::Isometry3d& objectOffset) const;
+  /// \param[in]  assetKey The key (string) of an object in AssetDatabase
+  /// \param[out] assetName The retrieved object name from AssetDatabase
+  /// \param[out] assetResource The retrieved uri of the object
+  /// \param[out] assetOffset The retrieved offset matrix of the object
+  ///     e.g. the offset between a tag and the actual origin of an object
+  void getAssetByKey(
+      const std::string& assetKey,
+      std::string& assetName,
+      dart::common::Uri& assetResource,
+      Eigen::Isometry3d& assetOffset) const;
 
 private:
-  /// The map of object keys to object names and resources for models
-  YAML::Node mObjData;
+  /// The map of asset keys to object names and resources for models
+  YAML::Node mAssetData;
 };
 
 } // namespace perception
