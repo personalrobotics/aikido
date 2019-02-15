@@ -55,13 +55,6 @@ protected:
   std::shared_ptr<Interpolated> mStraightLine;
 };
 
-TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
-{
-  EXPECT_NO_THROW({
-    computeParabolicTiming(*mStraightLine, mMaxVelocity, mMaxAcceleration);
-  });
-}
-
 TEST_F(ParabolicTimerTests, InputTrajectoryIsEmpty_Throws)
 {
   Interpolated emptyTrajectory(mStateSpace, mInterpolator);
@@ -373,6 +366,13 @@ TEST_F(ParabolicTimerTests, UnsupportedStateSpace_Throws)
   inputTrajectory.addWaypoint(1., state);
 
   EXPECT_THROW({ convertToSpline(inputTrajectory); }, std::invalid_argument);
+}
+
+TEST_F(ParabolicTimerTests, SupportedCartesianProduct_DoesNotThrow)
+{
+  EXPECT_NO_THROW({
+    computeParabolicTiming(*mStraightLine, mMaxVelocity, mMaxAcceleration);
+  });
 }
 
 TEST_F(ParabolicTimerTests, UnsupportedCartesianProduct_Throws)

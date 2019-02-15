@@ -26,19 +26,8 @@ namespace detail {
 std::unique_ptr<Path> convertToKunzPath(
     const aikido::trajectory::Interpolated& traj, double maxDeviation)
 {
-  auto stateSpace = traj.getStateSpace();
-  auto metaSkeletonStateSpace
-      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
-
-  const aikido::trajectory::Interpolated* trajectory = &traj;
-
-  ConstInterpolatedPtr r1Trajectory;
-  if (metaSkeletonStateSpace)
-  {
-    r1Trajectory = toR1JointTrajectory(traj);
-    stateSpace = r1Trajectory->getStateSpace();
-    trajectory = r1Trajectory.get();
-  }
+  auto trajectory = toR1JointTrajectory(traj);
+  auto stateSpace = trajectory->getStateSpace();
 
   std::list<Eigen::VectorXd> waypoints;
   Eigen::VectorXd tmpVec(stateSpace->getDimension());
@@ -56,19 +45,8 @@ std::unique_ptr<Path> convertToKunzPath(
 std::unique_ptr<Path> convertToKunzPath(
     const aikido::trajectory::Spline& traj, double maxDeviation)
 {
-  auto stateSpace = traj.getStateSpace();
-  auto metaSkeletonStateSpace
-      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
-
-  const aikido::trajectory::Spline* trajectory = &traj;
-
-  ConstSplinePtr r1Trajectory;
-  if (metaSkeletonStateSpace)
-  {
-    r1Trajectory = toR1JointTrajectory(traj);
-    stateSpace = r1Trajectory->getStateSpace();
-    trajectory = r1Trajectory.get();
-  }
+  auto trajectory = toR1JointTrajectory(traj);
+  auto stateSpace = trajectory->getStateSpace();
 
   std::list<Eigen::VectorXd> waypoints;
 

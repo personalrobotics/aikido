@@ -147,10 +147,40 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
   auto timedTrajectory = computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
 
+  Eigen::VectorXd v1, v2;
+  double timedLength = 0;
+  auto timed1 = timedTrajectory->getStateSpace()->createState();
+  auto timed2 = timedTrajectory->getStateSpace()->createState();
+  for (std::size_t i = 1; i < timedTrajectory->getNumWaypoints(); ++i)
+  {
+    timedTrajectory->getWaypoint(i - 1, timed1);
+    timedTrajectory->getWaypoint(i, timed2);
+    timedTrajectory->getStateSpace()->logMap(timed1, v1);
+    timedTrajectory->getStateSpace()->logMap(timed2, v2);
+    timedLength += (v2 - v1).norm();
+  }
+
+  std::cout << "Timed: " << timedLength << std::endl;
+
   auto shortcutOrBlendTrajectory
       = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
   if (shortcutOrBlendTrajectory)
+  {
+    double shortcutOrBlendLength = 0;
+    auto shortcutOrBlend1 = shortcutOrBlendTrajectory->getStateSpace()->createState();
+    auto shortcutOrBlend2 = shortcutOrBlendTrajectory->getStateSpace()->createState();
+    for (std::size_t i = 1; i < shortcutOrBlendTrajectory->getNumWaypoints(); ++i)
+    {
+        shortcutOrBlendTrajectory->getWaypoint(i - 1, shortcutOrBlend1);
+        shortcutOrBlendTrajectory->getWaypoint(i, shortcutOrBlend2);
+        shortcutOrBlendTrajectory->getStateSpace()->logMap(shortcutOrBlend1, v1);
+        shortcutOrBlendTrajectory->getStateSpace()->logMap(shortcutOrBlend2, v2);
+        shortcutOrBlendLength += (v2 - v1).norm();
+    }
+    std::cout << "Smoothed: " << shortcutOrBlendLength << std::endl;
+
     return shortcutOrBlendTrajectory;
+  }
 
   return timedTrajectory;
 }
