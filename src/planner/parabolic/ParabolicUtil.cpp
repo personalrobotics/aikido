@@ -157,6 +157,11 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
 
   const auto numWaypoints = _inputTrajectory.getNumWaypoints();
 
+  // TODO(brian): debug
+  // auto trajectory = toR1JointTrajectory(_inputTrajectory);
+  // auto stateSpace = trajectory->getStateSpace();
+  // const auto numWaypoints = trajectory->getNumWaypoints();
+
   std::vector<ParabolicRamp::Vector> milestones;
   std::vector<ParabolicRamp::Vector> velocities;
   milestones.reserve(numWaypoints);
@@ -212,6 +217,11 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     stateSpace = r1Trajectory->getStateSpace();
     trajectory = r1Trajectory.get();
   }
+
+  // TODO(brian): debug
+  // auto trajectory = toR1JointTrajectory(_inputTrajectory);
+  // auto stateSpace = trajectory->getStateSpace();
+  // const auto numWaypoints = trajectory->getNumWaypoints();
 
   std::vector<ParabolicRamp::Vector> milestones;
   std::vector<ParabolicRamp::Vector> velocities;

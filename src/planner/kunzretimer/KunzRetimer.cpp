@@ -40,6 +40,10 @@ std::unique_ptr<Path> convertToKunzPath(
     trajectory = r1Trajectory.get();
   }
 
+  // TODO(brian): debug
+  // auto trajectory = toR1JointTrajectory(traj);
+  // auto stateSpace = trajectory->getStateSpace();
+
   std::list<Eigen::VectorXd> waypoints;
   Eigen::VectorXd tmpVec(stateSpace->getDimension());
   for (std::size_t i = 0; i < trajectory->getNumWaypoints(); i++)
@@ -69,6 +73,10 @@ std::unique_ptr<Path> convertToKunzPath(
     stateSpace = r1Trajectory->getStateSpace();
     trajectory = r1Trajectory.get();
   }
+
+  // TODO(brian): debug
+  // auto trajectory = toR1JointTrajectory(traj);
+  // auto stateSpace = trajectory->getStateSpace();
 
   std::list<Eigen::VectorXd> waypoints;
 
