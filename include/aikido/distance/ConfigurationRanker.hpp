@@ -36,7 +36,7 @@ public:
   /// \param[in, out] configurations Vector of configurations to rank.
   void rankConfigurations(
       std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState>&
-          configurations);
+          configurations) const;
 
 protected:
   /// Returns the cost of the configuration.

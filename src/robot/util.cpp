@@ -254,12 +254,6 @@ trajectory::TrajectoryPtr planToTSR(
     configurations.emplace_back(goalState.clone());
   }
 
-  {
-    // Set to start state
-    std::lock_guard<std::mutex> lock(robot->getMutex());
-    space->setState(metaSkeleton.get(), startState);
-  }
-
   if (configurations.empty())
     return nullptr;
 
