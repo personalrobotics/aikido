@@ -12,8 +12,7 @@
 * Distance
 
   * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
-  * Added weights as optinal paramter to rankers: [#484] (https://github.com/personalrobotics/aikido/pull/484)
-
+  * Added weights as optional parameter to rankers: [#484](https://github.com/personalrobotics/aikido/pull/484)
 
 * State Space
 
@@ -63,6 +62,7 @@
   * Fixed segmentation fault on 32-bit machines in vector-field planner: [#459](https://github.com/personalrobotics/aikido/pull/459)
   * Updated interface to OMPL planners to follow the style of the new refactored planning API: [#466](https://github.com/personalrobotics/aikido/pull/466)
   * Added convenience function for converting SO(2) trajectories to R1 trajectories, support for postprocessing SO(2) trajectories: [#496](https://github.com/personalrobotics/aikido/pull/496)
+  * Used ConfigurationRanker in TSR planners: [#503](https://github.com/personalrobotics/aikido/pull/503)
 
 * Robot
 

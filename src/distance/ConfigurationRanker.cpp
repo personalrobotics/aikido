@@ -69,7 +69,7 @@ ConfigurationRanker::ConfigurationRanker(
 
 //==============================================================================
 void ConfigurationRanker::rankConfigurations(
-    std::vector<MetaSkeletonStateSpace::ScopedState>& configurations)
+    std::vector<MetaSkeletonStateSpace::ScopedState>& configurations) const
 {
   std::unordered_map<const MetaSkeletonStateSpace::State*, double> costs;
   costs.reserve(configurations.size());

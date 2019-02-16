@@ -6,6 +6,8 @@
 namespace aikido {
 namespace distance {
 
+AIKIDO_DECLARE_POINTERS(NominalConfigurationRanker)
+
 /// Ranks configurations by their distance from a nominal configuration.
 /// Configurations closer to the nominal configuration are ranked higher.
 class NominalConfigurationRanker : public ConfigurationRanker
