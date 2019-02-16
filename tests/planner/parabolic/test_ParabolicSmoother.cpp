@@ -6,20 +6,15 @@
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
-#include <aikido/statespace/SO2.hpp>
-#include <aikido/statespace/SO3.hpp>
 #include <aikido/trajectory/util.hpp>
 #include "eigen_tests.hpp"
 
 using Eigen::Vector2d;
-using Eigen::Vector3d;
 using aikido::trajectory::Interpolated;
+using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::R2;
+using aikido::statespace::R1;
 using aikido::statespace::CartesianProduct;
-using aikido::statespace::SO2;
-using aikido::statespace::SO3;
-using aikido::statespace::StateSpacePtr;
 using aikido::constraint::Satisfied;
 using aikido::trajectory::convertToSpline;
 using aikido::planner::parabolic::computeParabolicTiming;
@@ -35,7 +30,10 @@ protected:
   void SetUp() override
   {
     mRng = aikido::common::RNGWrapper<std::mt19937>(0);
-    mStateSpace = std::make_shared<R2>();
+    std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
+    for (std::size_t i = 0; i < 2; ++i)
+      subspaces.emplace_back(std::make_shared<R1>());
+    mStateSpace = std::make_shared<CartesianProduct>(subspaces);
     mMaxVelocity = Eigen::Vector2d(20., 20.);
     mMaxAcceleration = Eigen::Vector2d(10., 10.);
 
@@ -52,10 +50,10 @@ protected:
     mStraightLine = std::make_shared<Interpolated>(mStateSpace, mInterpolator);
 
     auto state = mStateSpace->createState();
-    Vector2d p1(1., 2.), p2(3., 4.);
-    state.setValue(p1);
+    Vector2d p1(1, 2), p2(3, 4);
+    mStateSpace->expMap(p1, state);
     mStraightLine->addWaypoint(0., state);
-    state.setValue(p2);
+    mStateSpace->expMap(p2, state);
     mStraightLine->addWaypoint(1., state);
 
     return (p2 - p1).norm();
@@ -67,19 +65,20 @@ protected:
         = std::make_shared<Interpolated>(mStateSpace, mInterpolator);
 
     auto state = mStateSpace->createState();
+
     Vector2d p1(1., 1.), p2(2., 1.2), p3(2.2, 2.), p4(3., 2.2), p5(3.2, 3.),
         p6(4., 3.2);
-    state.setValue(p1);
+    mStateSpace->expMap(p1, state);
     mNonStraightLine->addWaypoint(0., state);
-    state.setValue(p2);
+    mStateSpace->expMap(p2, state);
     mNonStraightLine->addWaypoint(1., state);
-    state.setValue(p3);
+    mStateSpace->expMap(p3, state);
     mNonStraightLine->addWaypoint(2., state);
-    state.setValue(p4);
+    mStateSpace->expMap(p4, state);
     mNonStraightLine->addWaypoint(3., state);
-    state.setValue(p5);
+    mStateSpace->expMap(p5, state);
     mNonStraightLine->addWaypoint(4., state);
-    state.setValue(p6);
+    mStateSpace->expMap(p6, state);
     mNonStraightLine->addWaypoint(5, state);
 
     double length = (p2 - p1).norm() + (p3 - p2).norm() + (p4 - p3).norm()
@@ -94,15 +93,15 @@ protected:
 
     auto state = mStateSpace->createState();
     Vector2d p1(1., 1.), p2(2., 1.2), p3(2.2, 2.), p4(3., 2.2), p5(3.2, 3.);
-    state.setValue(p1);
+    mStateSpace->expMap(p1, state);
     mNonStraightLineWithNonZeroStartTime->addWaypoint(1.2, state);
-    state.setValue(p2);
+    mStateSpace->expMap(p2, state);
     mNonStraightLineWithNonZeroStartTime->addWaypoint(2.3, state);
-    state.setValue(p3);
+    mStateSpace->expMap(p3, state);
     mNonStraightLineWithNonZeroStartTime->addWaypoint(3.4, state);
-    state.setValue(p4);
+    mStateSpace->expMap(p4, state);
     mNonStraightLineWithNonZeroStartTime->addWaypoint(4.5, state);
-    state.setValue(p5);
+    mStateSpace->expMap(p5, state);
     mNonStraightLineWithNonZeroStartTime->addWaypoint(5.5, state);
 
     double length = (p2 - p1).norm() + (p3 - p2).norm() + (p4 - p3).norm()
@@ -127,8 +126,20 @@ protected:
     return length;
   }
 
+  void evaluate(
+      aikido::trajectory::Trajectory* traj,
+      double t,
+      Eigen::VectorXd& positions)
+  {
+    // This utility function is just for convenience;
+    // states should be reused when possible.
+    auto state = traj->getStateSpace()->createState();
+    traj->evaluate(t, state);
+    traj->getStateSpace()->logMap(state, positions);
+  }
+
   aikido::common::RNGWrapper<std::mt19937> mRng;
-  std::shared_ptr<R2> mStateSpace;
+  std::shared_ptr<CartesianProduct> mStateSpace;
   Eigen::Vector2d mMaxVelocity;
   Eigen::Vector2d mMaxAcceleration;
 
@@ -151,20 +162,15 @@ TEST_F(ParabolicSmootherTests, convertStraightInterpolatedToSpline)
 {
   auto spline = convertToSpline(*mStraightLine);
 
-  auto splineState = mStateSpace->createState();
-  auto interpolatedState = mStateSpace->createState();
   Eigen::VectorXd splineVec, interpolatedVec;
-  Eigen::VectorXd splineTangent, interpolatedTangent;
 
   const double stepSize = 1e-3;
   aikido::common::StepSequence seq(
       stepSize, true, true, spline->getStartTime(), spline->getEndTime());
   for (double t : seq)
   {
-    spline->evaluate(t, splineState);
-    mStraightLine->evaluate(t, interpolatedState);
-    mStateSpace->logMap(splineState, splineVec);
-    mStateSpace->logMap(interpolatedState, interpolatedVec);
+    evaluate(spline.get(), t, splineVec);
+    evaluate(mStraightLine.get(), t, interpolatedVec);
     EXPECT_EIGEN_EQUAL(splineVec, interpolatedVec, mTolerance);
   }
 }
@@ -173,44 +179,34 @@ TEST_F(ParabolicSmootherTests, convertNonStraightInterpolatedToSpline)
 {
   auto spline = convertToSpline(*mNonStraightLine);
 
-  auto splineState = mStateSpace->createState();
-  auto interpolatedState = mStateSpace->createState();
   Eigen::VectorXd splineVec, interpolatedVec;
-  Eigen::VectorXd splineTangent, interpolatedTangent;
 
   const double stepSize = 1e-3;
   aikido::common::StepSequence seq(
       stepSize, true, true, spline->getStartTime(), spline->getEndTime());
   for (double t : seq)
   {
-    spline->evaluate(t, splineState);
-    mNonStraightLine->evaluate(t, interpolatedState);
-    mStateSpace->logMap(splineState, splineVec);
-    mStateSpace->logMap(interpolatedState, interpolatedVec);
+    evaluate(spline.get(), t, splineVec);
+    evaluate(mNonStraightLine.get(), t, interpolatedVec);
     EXPECT_EIGEN_EQUAL(splineVec, interpolatedVec, mTolerance);
   }
 }
 
 TEST_F(
     ParabolicSmootherTests,
-    convertNonStraightInterolatedWithNonZeroStartTimeToSpline)
+    convertNonStraightInterpolatedWithNonZeroStartTimeToSpline)
 {
   auto spline = convertToSpline(*mNonStraightLineWithNonZeroStartTime);
 
-  auto splineState = mStateSpace->createState();
-  auto interpolatedState = mStateSpace->createState();
   Eigen::VectorXd splineVec, interpolatedVec;
-  Eigen::VectorXd splineTangent, interpolatedTangent;
 
   const double stepSize = 1e-3;
   aikido::common::StepSequence seq(
       stepSize, true, true, spline->getStartTime(), spline->getEndTime());
   for (double t : seq)
   {
-    spline->evaluate(t, splineState);
-    mNonStraightLineWithNonZeroStartTime->evaluate(t, interpolatedState);
-    mStateSpace->logMap(splineState, splineVec);
-    mStateSpace->logMap(interpolatedState, interpolatedVec);
+    evaluate(spline.get(), t, splineVec);
+    evaluate(mNonStraightLineWithNonZeroStartTime.get(), t, interpolatedVec);
     EXPECT_EIGEN_EQUAL(splineVec, interpolatedVec, mTolerance);
   }
 }
@@ -232,16 +228,23 @@ TEST_F(ParabolicSmootherTests, doShortcut)
       mCheckResolution);
 
   // Position.
-  auto state = mStateSpace->createState();
-  smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
-  auto startState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getStartTime(), startState);
-  EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
+  Eigen::VectorXd statePositions, startPositions, goalPositions;
 
-  smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
-  auto goalState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
-  EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
+  evaluate(
+      mNonStraightLine.get(), mNonStraightLine->getStartTime(), startPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getStartTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(startPositions, statePositions, mTolerance);
+
+  evaluate(
+      mNonStraightLine.get(), mNonStraightLine->getEndTime(), goalPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getEndTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(goalPositions, statePositions, mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
   EXPECT_TRUE(shortenLength < mNonStraightLineLength);
@@ -268,16 +271,22 @@ TEST_F(ParabolicSmootherTests, doBlend)
       mCheckResolution);
 
   // Position.
-  auto state = mStateSpace->createState();
-  smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
-  auto startState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getStartTime(), startState);
-  EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
+  Eigen::VectorXd statePositions, startPositions, goalPositions;
+  evaluate(
+      mNonStraightLine.get(), mNonStraightLine->getStartTime(), startPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getStartTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(startPositions, statePositions, mTolerance);
 
-  smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
-  auto goalState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
-  EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
+  evaluate(
+      mNonStraightLine.get(), mNonStraightLine->getEndTime(), goalPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getEndTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(goalPositions, statePositions, mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
   EXPECT_TRUE(shortenLength < mNonStraightLineLength);
@@ -306,16 +315,22 @@ TEST_F(ParabolicSmootherTests, doShortcutAndBlend)
       mCheckResolution);
 
   // Position.
-  auto state = mStateSpace->createState();
-  smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
-  auto startState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getStartTime(), startState);
-  EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
+  Eigen::VectorXd statePositions, startPositions, goalPositions;
+  evaluate(
+      mNonStraightLine.get(), mNonStraightLine->getStartTime(), startPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getStartTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(startPositions, statePositions, mTolerance);
 
-  smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
-  auto goalState = mStateSpace->createState();
-  mNonStraightLine->evaluate(mNonStraightLine->getEndTime(), goalState);
-  EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
+  evaluate(
+      mNonStraightLine.get(), mNonStraightLine->getEndTime(), goalPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getEndTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(goalPositions, statePositions, mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
   EXPECT_TRUE(shortenLength < mNonStraightLineLength);
