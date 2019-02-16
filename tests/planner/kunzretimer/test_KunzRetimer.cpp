@@ -12,7 +12,7 @@ using Eigen::Vector2d;
 using Eigen::Vector3d;
 using aikido::trajectory::Interpolated;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::R2;
+using aikido::statespace::R1;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::StateSpacePtr;
@@ -28,7 +28,11 @@ public:
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<R2>();
+    std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
+    for (std::size_t i = 0; i < 2; ++i)
+      subspaces.emplace_back(std::make_shared<R1>());
+    mStateSpace = std::make_shared<CartesianProduct>(subspaces);
+
     mMaxVelocity = Eigen::Vector2d(1., 1.);
     mMaxAcceleration = Eigen::Vector2d(2., 2.);
 
@@ -36,21 +40,30 @@ protected:
     mStraightLine = std::make_shared<Interpolated>(mStateSpace, mInterpolator);
 
     auto state = mStateSpace->createState();
+    Eigen::VectorXd positions(2);
 
-    state.setValue(Vector2d(1., 2.));
+    positions << 1.0, 2.0;
+    mStateSpace->expMap(positions, state);
     mStraightLine->addWaypoint(0., state);
 
-    state.setValue(Vector2d(3., 4.));
+    positions << 3.0, 4.0;
+    mStateSpace->expMap(positions, state);
     mStraightLine->addWaypoint(1., state);
   }
 
-  std::shared_ptr<R2> mStateSpace;
+  std::shared_ptr<CartesianProduct> mStateSpace;
   Eigen::Vector2d mMaxVelocity;
   Eigen::Vector2d mMaxAcceleration;
 
   std::shared_ptr<GeodesicInterpolator> mInterpolator;
   std::shared_ptr<Interpolated> mStraightLine;
 };
+
+TEST_F(KunzRetimerTests, SupportedCartesianProduct_DoesNotThrow)
+{
+  EXPECT_NO_THROW(
+      { computeKunzTiming(*mStraightLine, mMaxVelocity, mMaxAcceleration); });
+}
 
 TEST_F(KunzRetimerTests, MaxVelocityIsZero_Throws)
 {
@@ -95,28 +108,32 @@ TEST_F(KunzRetimerTests, StartsAtNonZeroTime)
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
-
   // This is the same test as StraightLine_TriangularProfile, except that the
   // trajectory starts at a non-zero time.
-  state.setValue(Vector2d(1., 2.));
+  Eigen::VectorXd positions(2);
+  positions << 1, 2;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(1., state);
 
-  state.setValue(Vector2d(2., 3.));
+  positions << 2, 3;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(3., state);
 
   auto timedTrajectory = computeKunzTiming(
       inputTrajectory, Vector2d::Constant(2.), Vector2d::Constant(1.));
-
   EXPECT_FALSE(timedTrajectory == nullptr) << "Trajectory timing failed";
 
   timedTrajectory->evaluate(1., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), positions, 1e-6);
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), positions, 1e-6);
 
   timedTrajectory->evaluate(3., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), positions, 1e-6);
 }
 
 TEST_F(KunzRetimerTests, InterploatedSplineEquivalence)
@@ -128,10 +145,15 @@ TEST_F(KunzRetimerTests, InterploatedSplineEquivalence)
 
   // This is the same test as StraightLine_TriangularProfile, except that the
   // trajectory starts at a non-zero time.
-  state.setValue(Vector2d(1., 2.));
+  Eigen::VectorXd positions(2);
+  Eigen::VectorXd positions2(2);
+
+  positions << 1, 2;
+  mStateSpace->expMap(positions, state);
   interpolated.addWaypoint(1., state);
 
-  state.setValue(Vector2d(2., 3.));
+  positions << 2, 3;
+  mStateSpace->expMap(positions, state);
   interpolated.addWaypoint(3., state);
 
   auto spline = convertToSpline(interpolated);
@@ -143,15 +165,21 @@ TEST_F(KunzRetimerTests, InterploatedSplineEquivalence)
 
   timedInterpolated->evaluate(1., state);
   timedSpline->evaluate(1., state2);
-  EXPECT_EIGEN_EQUAL(state2.getValue(), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  mStateSpace->logMap(state2, positions2);
+  EXPECT_EIGEN_EQUAL(positions2, positions, 1e-6);
 
   timedInterpolated->evaluate(2., state);
   timedSpline->evaluate(2., state2);
-  EXPECT_EIGEN_EQUAL(state2.getValue(), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  mStateSpace->logMap(state2, positions2);
+  EXPECT_EIGEN_EQUAL(positions2, positions, 1e-6);
 
   timedInterpolated->evaluate(3., state);
   timedSpline->evaluate(3., state2);
-  EXPECT_EIGEN_EQUAL(state2.getValue(), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  mStateSpace->logMap(state2, positions2);
+  EXPECT_EIGEN_EQUAL(positions2, positions, 1e-6);
 }
 
 TEST_F(KunzRetimerTests, StraightLine_TriangularProfile)
@@ -159,6 +187,7 @@ TEST_F(KunzRetimerTests, StraightLine_TriangularProfile)
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
+  Eigen::VectorXd positions(2);
   Eigen::VectorXd tangentVector;
 
   double maxDeviation = 1e-2;
@@ -166,10 +195,12 @@ TEST_F(KunzRetimerTests, StraightLine_TriangularProfile)
   // The optimal timing of this trajectory should be a triangle centered at t =
   // 1that accelerates at 1 rad/s^2 for 1 s, then deaccelerates at -1 rad/s^2
   // for 1 s. This corresponds to moving each axis through 2 rad.
-  state.setValue(Vector2d(1., 2.));
+  positions << 1, 2;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(0., state);
 
-  state.setValue(Vector2d(2., 3.));
+  positions << 2, 3;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory = computeKunzTiming(
@@ -186,13 +217,16 @@ TEST_F(KunzRetimerTests, StraightLine_TriangularProfile)
 
   // Position.
   timedTrajectory->evaluate(0., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), positions, 1e-6);
 
   timedTrajectory->evaluate(1., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), positions, 1e-6);
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), positions, 1e-6);
 
   // Velocity
   timedTrajectory->evaluateDerivative(0.5, 1, tangentVector);
@@ -217,16 +251,19 @@ TEST_F(KunzRetimerTests, StraightLine_TrapezoidalProfile)
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
+  Eigen::VectorXd positions(2);
   Eigen::VectorXd tangentVector;
 
   // The optimal timing of this trajectory should be a trapezoid that:
   // - accelerates at 1 rad/s^2 for 1 s
   // - coasts at 1 m/s for 1 s
   // - deaccelerates at -1 rad/s^2 for 1 s
-  state.setValue(Vector2d(1., 2.));
+  positions << 1, 2;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(0., state);
 
-  state.setValue(Vector2d(3., 4.));
+  positions << 3, 4;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(2., state);
 
   double maxDeviation = 1e-2;
@@ -245,16 +282,20 @@ TEST_F(KunzRetimerTests, StraightLine_TrapezoidalProfile)
 
   // Position.
   timedTrajectory->evaluate(0., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(1.0, 2.0), positions, 1e-6);
 
   timedTrajectory->evaluate(1., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(1.5, 2.5), positions, 1e-6);
 
   timedTrajectory->evaluate(2., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(2.5, 3.5), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(2.5, 3.5), positions, 1e-6);
 
   timedTrajectory->evaluate(3., state);
-  EXPECT_EIGEN_EQUAL(Vector2d(3.0, 4.0), state.getValue(), 1e-6);
+  mStateSpace->logMap(state, positions);
+  EXPECT_EIGEN_EQUAL(Vector2d(3.0, 4.0), positions, 1e-6);
 
   // Velocity
   timedTrajectory->evaluateDerivative(0.5, 1, tangentVector);
@@ -293,6 +334,7 @@ TEST_F(KunzRetimerTests, StraightLine_DifferentAccelerationLimits)
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
 
   auto state = mStateSpace->createState();
+  Eigen::VectorXd positions(2);
   Eigen::VectorXd tangentVector;
 
   // The optimal timing of this trajectory should be a trapezoid that:
@@ -303,10 +345,12 @@ TEST_F(KunzRetimerTests, StraightLine_DifferentAccelerationLimits)
   // Note that the second dimension of the state space could result in a faster
   // timing by executing a triangular velocity profile. This is not possible
   // because the first dimension has a lower acceleration limit.
-  state.setValue(Vector2d(1., 2.));
+  positions << 1, 2;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(0., state);
 
-  state.setValue(Vector2d(3., 4.));
+  positions << 3, 4;
+  mStateSpace->expMap(positions, state);
   inputTrajectory.addWaypoint(2., state);
 
   auto timedTrajectory
@@ -317,35 +361,13 @@ TEST_F(KunzRetimerTests, StraightLine_DifferentAccelerationLimits)
   EXPECT_NEAR(3., timedTrajectory->getDuration(), durationTolerance);
 }
 
-TEST_F(KunzRetimerTests, SupportedCartesianProduct_DoesNotThrow)
-{
-  auto stateSpace = std::make_shared<CartesianProduct>(
-      std::vector<ConstStateSpacePtr>{
-          std::make_shared<R2>(), std::make_shared<SO2>(),
-      });
-  auto state = stateSpace->createState();
-
-  std::shared_ptr<GeodesicInterpolator> interpolator
-      = std::make_shared<GeodesicInterpolator>(stateSpace);
-
-  Interpolated inputTrajectory(stateSpace, interpolator);
-
-  state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
-  state.getSubStateHandle<SO2>(1).fromAngle(0.);
-  inputTrajectory.addWaypoint(0., state);
-
-  state.getSubStateHandle<R2>(0).setValue(Vector2d::Zero());
-  state.getSubStateHandle<SO2>(1).fromAngle(M_PI_2);
-  inputTrajectory.addWaypoint(1., state);
-
-  EXPECT_NO_THROW({
-    computeKunzTiming(inputTrajectory, Vector3d::Ones(), Vector3d::Ones());
-  });
-}
-
 TEST_F(KunzRetimerTests, timingArbitraryMultipleWaypoints)
 {
-  auto stateSpace = std::make_shared<aikido::statespace::R<4>>();
+  std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
+  for (std::size_t i = 0; i < 4; ++i)
+    subspaces.emplace_back(std::make_shared<R1>());
+  auto stateSpace = std::make_shared<CartesianProduct>(subspaces);
+
   auto interpolator = std::make_shared<GeodesicInterpolator>(stateSpace);
   Interpolated inputTrajectory(stateSpace, interpolator);
 
@@ -353,19 +375,23 @@ TEST_F(KunzRetimerTests, timingArbitraryMultipleWaypoints)
   auto state = stateSpace->createState();
 
   waypoint << 1427.0, 368.0, 690.0, 90.0;
-  state.setValue(waypoint);
+  stateSpace->expMap(waypoint, state);
   inputTrajectory.addWaypoint(0., state);
+
   waypoint << 1427.0, 368.0, 790.0, 90.0;
-  state.setValue(waypoint);
+  stateSpace->expMap(waypoint, state);
   inputTrajectory.addWaypoint(1., state);
+
   waypoint << 952.0, 433.0, 1051.0, 90.0;
-  state.setValue(waypoint);
+  stateSpace->expMap(waypoint, state);
   inputTrajectory.addWaypoint(2., state);
+
   waypoint << 452.5, 533.0, 1051.0, 90.0;
-  state.setValue(waypoint);
+  stateSpace->expMap(waypoint, state);
   inputTrajectory.addWaypoint(3., state);
+
   waypoint << 452.5, 533.0, 951.0, 90.0;
-  state.setValue(waypoint);
+  stateSpace->expMap(waypoint, state);
   inputTrajectory.addWaypoint(4., state);
 
   Eigen::VectorXd maxVelocities(4);

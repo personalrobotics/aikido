@@ -1,10 +1,21 @@
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include <dart/dart.hpp>
-#include <aikido/common/Spline.hpp>
-#include <aikido/common/StepSequence.hpp>
+#include "aikido/common/Spline.hpp"
+#include "aikido/common/StepSequence.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
+#include "aikido/trajectory/util.hpp"
 
 #include "Path.h"
 #include "Trajectory.h"
+
+using dart::common::make_unique;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::ConstStateSpacePtr;
+using aikido::trajectory::toR1JointTrajectory;
+using aikido::trajectory::ConstSplinePtr;
+using aikido::trajectory::ConstInterpolatedPtr;
 
 namespace aikido {
 namespace planner {
@@ -15,17 +26,33 @@ namespace detail {
 std::unique_ptr<Path> convertToKunzPath(
     const aikido::trajectory::Interpolated& traj, double maxDeviation)
 {
-  std::list<Eigen::VectorXd> waypoints;
   auto stateSpace = traj.getStateSpace();
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
+  auto metaSkeletonStateSpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
+
+  const aikido::trajectory::Interpolated* trajectory = &traj;
+
+  ConstInterpolatedPtr r1Trajectory;
+  if (metaSkeletonStateSpace)
   {
-    auto tmpState = traj.getWaypoint(i);
+    r1Trajectory = toR1JointTrajectory(traj);
+    stateSpace = r1Trajectory->getStateSpace();
+    trajectory = r1Trajectory.get();
+  }
+
+  // TODO(brian): debug
+  // auto trajectory = toR1JointTrajectory(traj);
+  // auto stateSpace = trajectory->getStateSpace();
+
+  std::list<Eigen::VectorXd> waypoints;
+  Eigen::VectorXd tmpVec(stateSpace->getDimension());
+  for (std::size_t i = 0; i < trajectory->getNumWaypoints(); i++)
+  {
+    auto tmpState = trajectory->getWaypoint(i);
     stateSpace->logMap(tmpState, tmpVec);
     waypoints.push_back(tmpVec);
   }
-
-  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
+  auto path = make_unique<Path>(waypoints, maxDeviation);
   return path;
 }
 
@@ -33,18 +60,37 @@ std::unique_ptr<Path> convertToKunzPath(
 std::unique_ptr<Path> convertToKunzPath(
     const aikido::trajectory::Spline& traj, double maxDeviation)
 {
-  std::list<Eigen::VectorXd> waypoints;
   auto stateSpace = traj.getStateSpace();
+  auto metaSkeletonStateSpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
+
+  const aikido::trajectory::Spline* trajectory = &traj;
+
+  ConstSplinePtr r1Trajectory;
+  if (metaSkeletonStateSpace)
+  {
+    r1Trajectory = toR1JointTrajectory(traj);
+    stateSpace = r1Trajectory->getStateSpace();
+    trajectory = r1Trajectory.get();
+  }
+
+  // TODO(brian): debug
+  // auto trajectory = toR1JointTrajectory(traj);
+  // auto stateSpace = trajectory->getStateSpace();
+
+  std::list<Eigen::VectorXd> waypoints;
+
+  stateSpace = trajectory->getStateSpace();
   Eigen::VectorXd tmpVec(stateSpace->getDimension());
   auto tmpState = stateSpace->createState();
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
+  for (std::size_t i = 0; i < trajectory->getNumWaypoints(); i++)
   {
-    traj.getWaypoint(i, tmpState);
+    trajectory->getWaypoint(i, tmpState);
     stateSpace->logMap(tmpState, tmpVec);
     waypoints.push_back(tmpVec);
   }
 
-  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
+  auto path = make_unique<Path>(waypoints, maxDeviation);
   return path;
 }
 
@@ -133,7 +179,6 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
   }
 
   double startTime = inputTrajectory.getStartTime();
-
   auto path = detail::convertToKunzPath(inputTrajectory, maxDeviation);
   Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
   return detail::convertToSpline(trajectory, stateSpace, timeStep, startTime);
