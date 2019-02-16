@@ -1,4 +1,4 @@
-#include "aikido/perception/ObjectDatabase.hpp"
+#include "aikido/perception/AssetDatabase.hpp"
 
 #include <dart/common/Console.hpp>
 #include <dart/common/LocalResourceRetriever.hpp>
@@ -8,7 +8,7 @@ namespace aikido {
 namespace perception {
 
 //==============================================================================
-ObjectDatabase::ObjectDatabase(
+AssetDatabase::AssetDatabase(
     const dart::common::ResourceRetrieverPtr& resourceRetriever,
     const dart::common::Uri& configDataURI)
 {
@@ -26,54 +26,65 @@ ObjectDatabase::ObjectDatabase(
   }
 
   // Load from string
-  mObjData = YAML::Load(content);
+  try
+  {
+    mAssetData = YAML::Load(content);
+  }
+  catch (YAML::Exception& e)
+  {
+    dtwarn << "[AssetDatabase::AssetDatabase] JSON File Exception: " << e.what()
+           << std::endl
+           << "Loading empty asset database." << std::endl;
+    mAssetData = YAML::Load(""); // Create Null Node
+  }
 }
 
 //==============================================================================
-void ObjectDatabase::getObjectByKey(
-    const std::string& objectKey,
-    std::string& objectName,
-    dart::common::Uri& objectResource,
-    Eigen::Isometry3d& objectOffset) const
+void AssetDatabase::getAssetByKey(
+    const std::string& assetKey,
+    std::string& assetName,
+    dart::common::Uri& assetResource,
+    Eigen::Isometry3d& assetOffset) const
 {
-  // Get name of object and pose for a given tag ID
-  YAML::Node objectNode = mObjData[objectKey];
-  if (!objectNode)
+  // Get name of asset and pose for a given tag ID
+  YAML::Node assetNode = mAssetData[assetKey];
+  if (!assetNode)
   {
-    throw std::runtime_error("[ObjectDatabase] Error: invalid object key");
+    throw std::runtime_error(
+        "[AssetDatabase] Error: invalid asset key: " + assetKey);
   }
 
   // Convert resource field
   try
   {
-    objectResource.fromString(objectNode["resource"].as<std::string>());
+    assetResource.fromString(assetNode["resource"].as<std::string>());
   }
   catch (const YAML::ParserException& ex)
   {
     throw std::runtime_error(
-        "[ObjectDatabase] Error in converting [resource] field");
+        "[AssetDatabase] Error in converting [resource] field");
   }
 
   // Convert name field
   try
   {
-    objectName = objectNode["name"].as<std::string>();
+    assetName = assetNode["name"].as<std::string>();
   }
   catch (const YAML::ParserException& ex)
   {
     throw std::runtime_error(
-        "[ObjectDatabase] Error in converting [name] field");
+        "[AssetDatabase] Error in converting [name] field");
   }
 
   // Convert offset field
   try
   {
-    objectOffset = objectNode["offset"].as<Eigen::Isometry3d>();
+    assetOffset = assetNode["offset"].as<Eigen::Isometry3d>();
   }
   catch (const YAML::ParserException& ex)
   {
     throw std::runtime_error(
-        "[ObjectDatabase] Error in converting [offset] field");
+        "[AssetDatabase] Error in converting [offset] field");
   }
 }
 
