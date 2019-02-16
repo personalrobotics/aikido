@@ -98,8 +98,10 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     auto nominalState = mMetaSkeletonStateSpace->createState();
     mMetaSkeletonStateSpace->copyState(startState, nominalState);
     configurationRanker = std::make_shared<const NominalConfigurationRanker>(
-        mMetaSkeletonStateSpace, mMetaSkeleton,
-        std::vector<double>(), nominalState);
+        mMetaSkeletonStateSpace,
+        mMetaSkeleton,
+        std::vector<double>(),
+        nominalState);
   }
 
   // Goal state
