@@ -43,8 +43,7 @@ ConcreteManipulator::retimePathWithKunz(
     double maxDeviation,
     double timestep)
 {
-  return mRobot->retimePathWithKunz(
-      metaSkeleton, path, maxDeviation, timestep);
+  return mRobot->retimePathWithKunz(metaSkeleton, path, maxDeviation, timestep);
 }
 
 //==============================================================================
