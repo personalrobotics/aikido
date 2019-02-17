@@ -36,6 +36,17 @@ std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::retimePath(
 }
 
 //==============================================================================
+std::unique_ptr<aikido::trajectory::Spline>
+ConcreteManipulator::retimePathWithKunz(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const aikido::trajectory::Trajectory* path,
+    double maxDeviation,
+    double timestep)
+{
+  return mRobot->retimePathWithKunz(metaSkeleton, path, maxDeviation, timestep);
+}
+
+//==============================================================================
 std::future<void> ConcreteManipulator::executeTrajectory(
     const trajectory::TrajectoryPtr& trajectory) const
 {

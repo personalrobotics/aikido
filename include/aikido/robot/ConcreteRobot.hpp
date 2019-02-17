@@ -63,6 +63,13 @@ public:
       const aikido::trajectory::Trajectory* path) override;
 
   // Documentation inherited.
+  virtual std::unique_ptr<aikido::trajectory::Spline> retimePathWithKunz(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
+      double maxDeviation,
+      double timestep) override;
+
+  // Documentation inherited.
   virtual std::future<void> executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) const override;
 
