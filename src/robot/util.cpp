@@ -46,7 +46,7 @@ using constraint::dart::createProjectableBounds;
 using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
 using distance::createDistanceMetric;
-using distance::ConfigurationRankerPtr;
+using distance::ConstConfigurationRankerPtr;
 using distance::NominalConfigurationRanker;
 using planner::ConfigurationToConfiguration;
 using planner::SnapConfigurationToConfigurationPlanner;
@@ -176,7 +176,7 @@ trajectory::TrajectoryPtr planToTSR(
     RNG* rng,
     double timelimit,
     std::size_t maxNumTrials,
-    const distance::ConfigurationRankerPtr& ranker)
+    const distance::ConstConfigurationRankerPtr& ranker)
 {
   // Create an IK solver with metaSkeleton dofs.
   auto ik = InverseKinematics::create(bn);
@@ -229,12 +229,12 @@ trajectory::TrajectoryPtr planToTSR(
   std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
 
   // Use a ranker
-  ConfigurationRankerPtr configurationRanker(ranker);
+  ConstConfigurationRankerPtr configurationRanker(ranker);
   if (!ranker)
   {
     auto nominalState = space->createState();
     space->copyState(startState, nominalState);
-    configurationRanker = std::make_shared<NominalConfigurationRanker>(
+    configurationRanker = std::make_shared<const NominalConfigurationRanker>(
         space, metaSkeleton, std::vector<double>(), nominalState);
   }
 
