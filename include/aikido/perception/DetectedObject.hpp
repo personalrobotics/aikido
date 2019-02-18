@@ -2,6 +2,7 @@
 #define AIKIDO_PERCEPTION_DETECTEDOBJECT_HPP_
 
 #include <string>
+#include <dart/dart.hpp>
 #include "aikido/io/yaml.hpp"
 
 namespace aikido {
@@ -33,33 +34,45 @@ namespace perception {
 class DetectedObject
 {
 public:
+
+  /// Default constructor.
+  DetectedObject() = default;
+
   /// Construct a \c DetectedObject
   /// \param[in] uid Unique ID for object in Aikido world. Same UID -> Same
   /// Object
-  /// \param[in] assetKey Key for AssetDatabase passed into constructor of
-  /// PoseEstimatorModule. Defines visuals / assets.
   /// \param[in] detectionFrameID Frame ID from ROS Marker
   /// \param[in] yamlStr String of additional parameters for object. Can
   /// override objAssetDBKey by specifying "db_key".
   DetectedObject(
-      const std::string& uid,
-      const std::string& assetKey,
+      const std::string& objectName,
+      const int& objectId,
       const std::string& detectionFrameID,
       const std::string& yamlStr);
 
   virtual ~DetectedObject() = default;
 
   /// Get the unique  id of the object
-  std::string getUid();
+  std::string getUid() const;
 
   /// Get the object key for \c AssetDatabase
-  std::string getAssetKey();
+  std::string getAssetKey() const;
 
   /// Get the detection frame id that refers the origin of this object's pose
-  std::string getDetectionFrameID();
+  std::string getDetectionFrameID() const;
+
+  /// Get the name of this object.
+  std::string getName() const;
 
   /// Get the map of keys to additional informations
   YAML::Node getYamlNode();
+
+  /// Get the metaSkeleton associated with this object.
+  dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
+
+  /// Set Metaskeleton.
+  void setMetaSkeleton(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton);
 
   /// Get a specific value from the information map by a key and the typename
   /// of the field
@@ -72,6 +85,10 @@ public:
   T getInfoByKey(const std::string& key);
 
 private:
+
+  /// The name of the object.
+  std::string mObjectName;
+
   /// The unique id of the object
   std::string mUid;
 
@@ -83,6 +100,9 @@ private:
 
   /// The information map with additional information of this object
   YAML::Node mYamlNode;
+
+  /// MetaSkeleton associated with this object.
+  dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 };
 
 } // namespace perception

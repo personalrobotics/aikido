@@ -7,12 +7,12 @@ namespace perception {
 
 //==============================================================================
 DetectedObject::DetectedObject(
-    const std::string& uid,
-    const std::string& assetKey,
+    const std::string& objectName,
+    const int& objectId,
     const std::string& detectionFrameID,
     const std::string& yamlStr)
-  : mUid(std::move(uid))
-  , mAssetKey(std::move(assetKey))
+  : mObjectName(objectName)
+  , mUid(objectName + "_" + std::to_string(objectId))
   , mDetectionFrameID(std::move(detectionFrameID))
 {
   // Load YAML nodes from string
@@ -30,27 +30,46 @@ DetectedObject::DetectedObject(
 }
 
 //==============================================================================
-std::string DetectedObject::getUid()
+std::string DetectedObject::getUid() const
 {
   return mUid;
 }
 
 //==============================================================================
-std::string DetectedObject::getAssetKey()
+std::string DetectedObject::getAssetKey() const
 {
   return mAssetKey;
 }
 
 //==============================================================================
-std::string DetectedObject::getDetectionFrameID()
+std::string DetectedObject::getDetectionFrameID() const
 {
   return mDetectionFrameID;
+}
+
+//==============================================================================
+std::string DetectedObject::getName() const
+{
+  return mObjectName;
 }
 
 //==============================================================================
 YAML::Node DetectedObject::getYamlNode()
 {
   return mYamlNode;
+}
+
+//==============================================================================
+dart::dynamics::MetaSkeletonPtr DetectedObject::getMetaSkeleton() const
+{
+  return mMetaSkeleton;
+}
+
+//==============================================================================
+void DetectedObject::setMetaSkeleton(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
+{
+  mMetaSkeleton = metaSkeleton;
 }
 
 //==============================================================================
