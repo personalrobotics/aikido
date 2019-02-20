@@ -92,10 +92,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// \param[out] result information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const ::dart::dynamics::BodyNodePtr& bn,
-    const aikido::constraint::TestablePtr& constraint,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double conversionRatioInGeodesicDistance,

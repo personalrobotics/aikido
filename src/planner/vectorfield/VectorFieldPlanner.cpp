@@ -44,13 +44,16 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
       &vectorField, &constraint, timelimit.count(), checkConstraintResolution);
 
   integrator->start();
+  std::cout << "FUck0" << std::endl;
 
   try
   {
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
     Eigen::VectorXd initialQ(dimension);
+std::cout << __FILE__ << " " << __LINE__ << std::endl;
     vectorField.getStateSpace()->logMap(&startState, initialQ);
     // The current implementation works only in real vector spaces.
-
+std::cout << __FILE__ << " " << __LINE__ << std::endl;
     // Integrate the vector field to get a configuration space path.
     boost::numeric::odeint::integrate_adaptive(
         errorStepper(),
@@ -69,43 +72,56 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
             integrator,
             std::placeholders::_1,
             std::placeholders::_2));
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
   }
   // VectorFieldTerminated is an exception that is raised internally to
   // terminate
   // integration, which does not indicate that an error has occurred.
   catch (const detail::VectorFieldTerminated& e)
   {
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+    std::cout << e.what() << std::endl;
     if (result)
     {
+      std::cout << e.what() << std::endl;
       result->setMessage(e.what());
     }
   }
   catch (const detail::VectorFieldError& e)
   {
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
     dtwarn << e.what() << std::endl;
+    std::cout << e.what() << std::endl;
     if (result)
     {
+      std::cout << e.what() << std::endl;
       result->setMessage(e.what());
     }
+    std::cout << "FUck0.5" << std::endl;
     return nullptr;
   }
 
   if (integrator->getCacheIndex() <= 1)
   {
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+    std::cout << "FUck1" << std::endl;
     // no enough waypoints cached to make a trajectory output.
     if (result)
     {
+      std::cout << "FUck1" << std::endl;
       result->setMessage("No segment cached.");
     }
     return nullptr;
   }
 
+std::cout << __FILE__ << " " << __LINE__ << std::endl;
   std::vector<detail::Knot> newKnots(
       integrator->getKnots().begin(),
       integrator->getKnots().begin() + integrator->getCacheIndex());
   auto outputTrajectory
       = detail::convertToSpline(newKnots, vectorField.getStateSpace());
 
+std::cout << __FILE__ << " " << __LINE__ << std::endl;
   // evaluate constraint satisfaction on last piece of trajectory
   double lastEvaluationTime = integrator->getLastEvaluationTime();
   if (outputTrajectory->getEndTime() > lastEvaluationTime)
@@ -118,9 +134,11 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
             true))
     {
       result->setMessage("Constraint violated.");
+      std::cout << "FUck1" << std::endl;
       return nullptr;
     }
   }
+  std::cout << "FUckn" << std::endl;
   return outputTrajectory;
 }
 
@@ -193,10 +211,10 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const dart::dynamics::BodyNodePtr& bn,
-    const aikido::constraint::TestablePtr& constraint,
+    const dart::dynamics::ConstBodyNodePtr& bn,
+    const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double conversionRatioInGeodesicDistance,

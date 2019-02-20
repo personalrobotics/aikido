@@ -12,9 +12,9 @@ namespace vectorfield {
 
 //==============================================================================
 MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
-    aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
+    aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
-    dart::dynamics::BodyNodePtr bn,
+    dart::dynamics::ConstBodyNodePtr bn,
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double r,
@@ -45,13 +45,19 @@ VectorFieldPlannerStatus
 MoveEndEffectorPoseVectorField::evaluateCartesianStatus(
     const Eigen::Isometry3d& pose) const
 {
+  std::cout << __LINE__ <<  " " << __FILE__ << std::endl;
   double poseError = computeGeodesicDistance(
       pose, mGoalPose, mConversionRatioFromRadiusToMeter);
 
+  std::cout << poseError << " " << mPoseErrorTolerance << std::endl;
+
+  std::cout << __LINE__ <<  " " << __FILE__ << std::endl;
   if (poseError < mPoseErrorTolerance)
   {
+    std::cout << __LINE__ <<  " " << __FILE__ << std::endl;
     return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
   }
+  std::cout << __LINE__ << " " << __FILE__ << std::endl;
   return VectorFieldPlannerStatus::CONTINUE;
 }
 
