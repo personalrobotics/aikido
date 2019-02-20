@@ -31,7 +31,7 @@ public:
   ConfigurationToTSRPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      distance::ConfigurationRankerPtr configurationRanker = nullptr);
+      distance::ConstConfigurationRankerPtr configurationRanker = nullptr);
 
   /// Solves \c problem returning the result to \c result.
   ///
@@ -43,7 +43,7 @@ public:
   // Note: SolvableProblem is defined in SingleProblemPlanner.
 
 protected:
-  distance::ConfigurationRankerPtr mConfigurationRanker;
+  distance::ConstConfigurationRankerPtr mConfigurationRanker;
 };
 
 } // namespace dart

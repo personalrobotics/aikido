@@ -45,8 +45,9 @@ endif()
 set(sources
   PoseEstimatorModule.cpp
   shape_conversions.cpp
-  ObjectDatabase.cpp
+  AssetDatabase.cpp
   VoxelGridModule.cpp
+  DetectedObject.cpp
 )
 
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})

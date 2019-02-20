@@ -1,12 +1,14 @@
+#include "aikido/planner/vectorfield/VectorFieldPlanner.hpp"
+
 #include <boost/numeric/odeint.hpp>
-#include <aikido/constraint/TestableIntersection.hpp>
-#include <aikido/constraint/dart/JointStateSpaceHelpers.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
-#include <aikido/trajectory/Spline.hpp>
+
+#include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
+#include "aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp"
+#include "aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp"
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
+#include "aikido/trajectory/Spline.hpp"
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
@@ -198,7 +200,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
-
   return followVectorField(
       *vectorfield,
       startState,

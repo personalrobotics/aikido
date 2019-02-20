@@ -12,8 +12,7 @@
 * Distance
 
   * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
-  * Added weights as optinal paramter to rankers: [#484] (https://github.com/personalrobotics/aikido/pull/484)
-
+  * Added weights as optional parameter to rankers: [#484](https://github.com/personalrobotics/aikido/pull/484)
 
 * State Space
 
@@ -43,6 +42,7 @@
 
   * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
   * Added voxel grid perception module: [#448](https://github.com/personalrobotics/aikido/pull/448)
+  * Added YAML communication between PoseEstimatorModule and third-party perception algorithms: [#497](https://github.com/personalrobotics/aikido/pull/497)
 
 * Trajectory
 
@@ -61,10 +61,13 @@
   * Added a kinodynamic timer that generates a time-optimal smooth trajectory without completely stopping at each waypoint: [#443](https://github.com/personalrobotics/aikido/pull/443)
   * Fixed segmentation fault on 32-bit machines in vector-field planner: [#459](https://github.com/personalrobotics/aikido/pull/459)
   * Updated interface to OMPL planners to follow the style of the new refactored planning API: [#466](https://github.com/personalrobotics/aikido/pull/466)
+  * Added convenience function for converting SO(2) trajectories to R1 trajectories, support for postprocessing SO(2) trajectories: [#496](https://github.com/personalrobotics/aikido/pull/496)
+  * Used ConfigurationRanker in TSR planners: [#503](https://github.com/personalrobotics/aikido/pull/503)
 
 * Robot
 
   * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325](https://github.com/personalrobotics/aikido/pull/325), [#392](https://github.com/personalrobotics/aikido/pull/392)
+  * Added Kunz timer to Robot class: [#505](https://github.com/personalrobotics/aikido/pull/505)
 
 * RViz
 
