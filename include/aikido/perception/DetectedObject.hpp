@@ -45,7 +45,7 @@ public:
   /// Constructs a \c DetectedObject.
   /// Object's Uid is creqted as objectName_objectID
   /// \param[in] objectName Name of the object.
-  /// \param[in] objectID Unique ID for object in Aikido world.
+  /// \param[in] objectId Unique ID for object in Aikido world.
   /// \param[in] detectionFrameID Frame ID from ROS Marker
   /// \param[in] yamlStr YAML string which specifies \c AssetDatabase
   /// with {"db_key": key} and additional parameters.
