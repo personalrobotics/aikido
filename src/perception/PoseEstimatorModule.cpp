@@ -83,8 +83,8 @@ bool PoseEstimatorModule::detectObjects(
     }
 
     // Initialize a DetectedObject class for this object
-    DetectedObject thisObject(objectName, objectId,
-      detectionFrame, markerTransform.text);
+    DetectedObject thisObject(
+        objectName, objectId, detectionFrame, markerTransform.text);
 
     const std::string objUid = thisObject.getUid();
 
@@ -162,8 +162,7 @@ bool PoseEstimatorModule::detectObjects(
     if (!env_skeleton)
     {
       isNewObj = true;
-      objSkeleton
-          = urdfLoader.parseSkeleton(objResource, mResourceRetriever);
+      objSkeleton = urdfLoader.parseSkeleton(objResource, mResourceRetriever);
 
       if (!objSkeleton)
       {

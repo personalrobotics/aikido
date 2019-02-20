@@ -14,13 +14,13 @@ namespace perception {
 /// A perception algorithm should send information for an object via ROS
 /// visualization_msgs/Marker message like the following:
 /// Marker.ns + "_" + Marker.id -> uid (identity in planner::World)
-/// Marker.ns -> assetKey (determines visual asset, \see AssetDatabase)
+/// Marker.ns -> object name (e.g. "cantaloupe")
 /// Marker.header.frame_id -> detectionFrameID
 /// Marker.text -> yamlStr
 
 /// yamlStr contains any additional information in YAML format.
-/// It also can overwrite the Asset Database Key
-/// using "db_key". (\see AssetDatabase for details)
+/// It must contain the Asset Database Key using "db_key". (\see AssetDatabase
+/// for details)
 /// Here is an example:
 /// \code
 /// {
@@ -31,19 +31,24 @@ namespace perception {
 /// }
 /// \endcode
 
+/// ObjectName may be different from \c AssetDatabase key, which may be
+/// a higher-level description of the object.
+/// For example, objectName can be "cantaloupe" while \c AssetDatabase key
+/// is "food_item".
+
 class DetectedObject
 {
 public:
-
   /// Default constructor.
   DetectedObject() = default;
 
-  /// Construct a \c DetectedObject
-  /// \param[in] uid Unique ID for object in Aikido world. Same UID -> Same
-  /// Object
+  /// Constructs a \c DetectedObject.
+  /// Object's Uid is creqted as objectName_objectID
+  /// \param[in] objectName Name of the object.
+  /// \param[in] objectID Unique ID for object in Aikido world.
   /// \param[in] detectionFrameID Frame ID from ROS Marker
-  /// \param[in] yamlStr String of additional parameters for object. Can
-  /// override objAssetDBKey by specifying "db_key".
+  /// \param[in] yamlStr YAML string which specifies \c AssetDatabase
+  /// with {"db_key": key} and additional parameters.
   DetectedObject(
       const std::string& objectName,
       const int& objectId,
@@ -71,8 +76,7 @@ public:
   dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
 
   /// Set Metaskeleton.
-  void setMetaSkeleton(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton);
+  void setMetaSkeleton(const dart::dynamics::MetaSkeletonPtr& metaSkeleton);
 
   /// Get a specific value from the information map by a key and the typename
   /// of the field
@@ -85,7 +89,6 @@ public:
   T getInfoByKey(const std::string& key);
 
 private:
-
   /// The name of the object.
   std::string mObjectName;
 

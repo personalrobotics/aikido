@@ -19,13 +19,14 @@ DetectedObject::DetectedObject(
   try
   {
     mYamlNode = YAML::Load(yamlStr);
-    mAssetKey = mYamlNode["db_key"].as<std::string>(mAssetKey);
+    mAssetKey = mYamlNode["db_key"].as<std::string>();
   }
   catch (const YAML::Exception& e)
   {
-    dtwarn << "[DetectedObject::DetectedObject] YAML String Exception: "
-           << e.what() << std::endl;
-    mYamlNode = YAML::Load(""); // Create Null Node
+    std::stringstream ss;
+    ss << "[DetectedObject::DetectedObject] YAML String Exception: " << e.what()
+       << std::endl;
+    throw std::invalid_argument(ss.str());
   }
 }
 
