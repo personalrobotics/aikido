@@ -82,9 +82,19 @@ bool PoseEstimatorModule::detectObjects(
       continue;
     }
 
-    // Initialize a DetectedObject class for this object
-    DetectedObject thisObject(
-        objectName, objectId, detectionFrame, markerTransform.text);
+    DetectedObject thisObject;
+    try
+    {
+
+      // Initialize a DetectedObject class for this object
+      thisObject = DetectedObject(
+          objectName, objectId, detectionFrame, markerTransform.text);
+    }
+    catch (std::invalid_argument& e)
+    {
+      dtwarn << e.what();
+      continue;
+    }
 
     const std::string objUid = thisObject.getUid();
 
