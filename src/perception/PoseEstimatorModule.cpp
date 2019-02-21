@@ -100,12 +100,12 @@ bool PoseEstimatorModule::detectObjects(
 
     // If markerTransform.action is "DELETE",
     // remove a skeleton with objUid from env
-    dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(objUid);
+    dart::dynamics::SkeletonPtr envSkeleton = env->getSkeleton(objUid);
     if (markerTransform.action == visualization_msgs::Marker::DELETE)
     {
-      if (env_skeleton)
+      if (envSkeleton)
       {
-        env->removeSkeleton(env_skeleton);
+        env->removeSkeleton(envSkeleton);
       }
       continue;
     }
