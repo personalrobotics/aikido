@@ -75,7 +75,7 @@ void DetectedObject::setMetaSkeleton(
 
 //==============================================================================
 template <typename T>
-T DetectedObject::getInfoByKey(const std::string& key)
+T DetectedObject::getInfoByKey(const std::string& key) const
 {
   T value;
   try

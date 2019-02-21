@@ -86,7 +86,7 @@ public:
   /// Map types are not supported with this function. Please get the manually
   /// with getYamlNode().
   template <typename T>
-  T getInfoByKey(const std::string& key);
+  T getInfoByKey(const std::string& key) const;
 
 private:
   /// The name of the object.
