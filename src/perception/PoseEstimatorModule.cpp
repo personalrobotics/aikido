@@ -103,7 +103,7 @@ bool PoseEstimatorModule::detectObjects(
     dart::dynamics::SkeletonPtr env_skeleton = env->getSkeleton(objUid);
     if (markerTransform.action == visualization_msgs::Marker::DELETE)
     {
-      if (env_skeleton != nullptr)
+      if (env_skeleton)
       {
         env->removeSkeleton(env_skeleton);
       }
