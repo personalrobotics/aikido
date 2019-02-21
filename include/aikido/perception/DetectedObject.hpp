@@ -43,7 +43,7 @@ public:
   DetectedObject() = default;
 
   /// Constructs a \c DetectedObject.
-  /// Object's Uid is creqted as objectName_objectID
+  /// Object's Uid is created as objectName_objectID
   /// \param[in] objectName Name of the object.
   /// \param[in] objectId Unique ID for object in Aikido world.
   /// \param[in] detectionFrameID Frame ID from ROS Marker
