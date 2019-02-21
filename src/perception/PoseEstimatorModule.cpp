@@ -44,7 +44,7 @@ bool PoseEstimatorModule::detectObjects(
           mMarkerTopic, mNodeHandle, timeout);
 
   // Making sure the Message from a pose estimator is non empty
-  if (markerMessage == nullptr)
+  if (!markerMessage)
   {
     dtwarn << "[PoseEstimatorModule::detectObjects] nullptr Marker Message "
            << mMarkerTopic << std::endl;
