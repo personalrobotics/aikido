@@ -1,25 +1,26 @@
 function(clang_format_setup)
-  find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format)
+  cmake_parse_arguments(
+        CF_ARG # prefix 
+        "" # no boolean args
+        "VERSION" # clang-format version
+        "" # no multi-value args
+        ${ARGN} 
+    )
+  if(NOT CF_ARG_VERSION)
+    set(CF_NAME clang-format)
+  else()
+    set(CF_NAME clang-format-${CF_ARG_VERSION})
+  endif()
+  find_program(CLANG_FORMAT_EXECUTABLE NAMES ${CF_NAME})
+  
   if(NOT CLANG_FORMAT_EXECUTABLE)
     message(STATUS "Looking for clang-format - NOT found, please install "
-      "clang-format to enable automatic code formatting."
+      "${CF_NAME} to enable automatic code formatting."
     )
     return()
   endif()
 
-  message(STATUS "Found clang-format.")
-endfunction()
-
-function(clang_format_setup_version clang_version)
-  find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format-${clang_version})
-  if(NOT CLANG_FORMAT_EXECUTABLE)
-    message(STATUS "Looking for clang-format-${clang_version} - NOT found,"
-      "please install to enable automatic code formatting."
-    )
-    return()
-  endif()
-
-  message(STATUS "Found clang-format-${clang_version}.")
+  message(STATUS "Found ${CF_NAME}.")
 endfunction()
 
 #===============================================================================
@@ -60,20 +61,30 @@ endfunction()
 function(clang_format_add_targets)
   get_property(formatting_files GLOBAL PROPERTY CLANG_FORMAT_FORMAT_FILES)
   list(LENGTH formatting_files formatting_files_length)
-  message(STATUS "Formatting on ${formatting_files_length} source files.")
 
-  add_custom_target(format
-    COMMAND ${CMAKE_COMMAND} -E echo "Formatting ${formatting_files_length} files..."
-    COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
-    COMMAND ${CMAKE_COMMAND} -E echo "Done."
-    DEPENDS ${CLANG_FORMAT_EXECUTABLE}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
-  add_custom_target(check-format
-    COMMAND ${CMAKE_COMMAND} -E echo "Checking ${formatting_files_length} files..."
-    COMMAND ${CMAKE_SOURCE_DIR}/tools/check_format.sh ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
-    COMMAND ${CMAKE_COMMAND} -E echo "Done."
-    DEPENDS ${CLANG_FORMAT_EXECUTABLE}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  if(formatting_files)
+    message(STATUS "Formatting on ${formatting_files_length} source files.")
+
+    add_custom_target(format
+      COMMAND ${CMAKE_COMMAND} -E echo "Formatting ${formatting_files_length} files..."
+      COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
+      COMMAND ${CMAKE_COMMAND} -E echo "Done."
+      DEPENDS ${CLANG_FORMAT_EXECUTABLE}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+    add_custom_target(check-format
+      COMMAND ${CMAKE_COMMAND} -E echo "Checking ${formatting_files_length} files..."
+      COMMAND ${CMAKE_SOURCE_DIR}/tools/check_format.sh ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
+      COMMAND ${CMAKE_COMMAND} -E echo "Done."
+      DEPENDS ${CLANG_FORMAT_EXECUTABLE}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+  else()
+    add_custom_target(format
+        COMMAND ${CMAKE_COMMAND} -E echo "No file to format code style."
+    )
+    add_custom_target(check-format
+        COMMAND ${CMAKE_COMMAND} -E echo "No file to check code style."
+    )
+  endif()
 endfunction()
