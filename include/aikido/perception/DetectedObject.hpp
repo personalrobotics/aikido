@@ -111,4 +111,6 @@ private:
 } // namespace perception
 } // namespace aikido
 
+#include "aikido/perception/detail/DetectedObject-impl.hpp"
+
 #endif // AIKIDO_PERCEPTION_DETECTEDOBJECT_HPP_
