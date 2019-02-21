@@ -169,7 +169,7 @@ bool PoseEstimatorModule::detectObjects(
     // Check if skel in World
     // If there is, update its pose
     // If not, add skeleton to env
-    if (!env_skeleton)
+    if (!envSkeleton)
     {
       isNewObj = true;
       objSkeleton = urdfLoader.parseSkeleton(objResource, mResourceRetriever);
@@ -186,7 +186,7 @@ bool PoseEstimatorModule::detectObjects(
     else
     {
       isNewObj = false;
-      objSkeleton = env_skeleton;
+      objSkeleton = envSkeleton;
     }
 
     thisObject.setMetaSkeleton(objSkeleton);
