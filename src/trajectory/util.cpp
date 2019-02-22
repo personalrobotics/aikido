@@ -322,7 +322,7 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
   // Add the first waypoint
   space->logMap(trajectory.getWaypoint(0), sourceVector);
   rSpace->expMap(sourceVector, sourceState);
-  rTrajectory->addWaypoint(0, sourceState);
+  rTrajectory->addWaypoint(trajectory.getWaypointTime(0), sourceState);
 
   auto tangentState = rSpace->createState();
   auto targetState = rSpace->createState();
@@ -337,7 +337,7 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
     rSpace->expMap(tangentVector, tangentState);
     rSpace->compose(sourceState, tangentState, targetState);
 
-    rTrajectory->addWaypoint(i + 1, targetState);
+    rTrajectory->addWaypoint(trajectory.getWaypointTime(i + 1), targetState);
     rSpace->logMap(targetState, sourceVector);
   }
 
