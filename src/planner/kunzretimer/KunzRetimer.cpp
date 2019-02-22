@@ -57,44 +57,6 @@ std::unique_ptr<Path> convertToKunzPath(
 }
 
 //==============================================================================
-std::unique_ptr<Path> convertToKunzPath(
-    const aikido::trajectory::Spline& traj, double maxDeviation)
-{
-  auto stateSpace = traj.getStateSpace();
-  auto metaSkeletonStateSpace
-      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
-
-  const aikido::trajectory::Spline* trajectory = &traj;
-
-  ConstSplinePtr r1Trajectory;
-  if (metaSkeletonStateSpace)
-  {
-    r1Trajectory = toR1JointTrajectory(traj);
-    stateSpace = r1Trajectory->getStateSpace();
-    trajectory = r1Trajectory.get();
-  }
-
-  // TODO(brian): debug
-  // auto trajectory = toR1JointTrajectory(traj);
-  // auto stateSpace = trajectory->getStateSpace();
-
-  std::list<Eigen::VectorXd> waypoints;
-
-  stateSpace = trajectory->getStateSpace();
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  auto tmpState = stateSpace->createState();
-  for (std::size_t i = 0; i < trajectory->getNumWaypoints(); i++)
-  {
-    trajectory->getWaypoint(i, tmpState);
-    stateSpace->logMap(tmpState, tmpVec);
-    waypoints.push_back(tmpVec);
-  }
-
-  auto path = make_unique<Path>(waypoints, maxDeviation);
-  return path;
-}
-
-//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const Trajectory& traj,
     aikido::statespace::ConstStateSpacePtr stateSpace,
@@ -185,42 +147,6 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
-    const aikido::trajectory::Spline& inputTrajectory,
-    const Eigen::VectorXd& maxVelocity,
-    const Eigen::VectorXd& maxAcceleration,
-    double maxDeviation,
-    double timeStep)
-{
-  const auto stateSpace = inputTrajectory.getStateSpace();
-  const auto dimension = stateSpace->getDimension();
-
-  if (static_cast<std::size_t>(maxVelocity.size()) != dimension)
-    throw std::invalid_argument("Velocity limits have wrong dimension.");
-
-  if (static_cast<std::size_t>(maxAcceleration.size()) != dimension)
-    throw std::invalid_argument("Acceleration limits have wrong dimension.");
-
-  for (std::size_t i = 0; i < dimension; ++i)
-  {
-    if (maxVelocity[i] <= 0.)
-      throw std::invalid_argument("Velocity limits must be positive.");
-    if (!std::isfinite(maxVelocity[i]))
-      throw std::invalid_argument("Velocity limits must be finite.");
-
-    if (maxAcceleration[i] <= 0.)
-      throw std::invalid_argument("Acceleration limits must be positive.");
-    if (!std::isfinite(maxAcceleration[i]))
-      throw std::invalid_argument("Acceleration limits must be finite.");
-  }
-
-  double startTime = inputTrajectory.getStartTime();
-  auto path = detail::convertToKunzPath(inputTrajectory, maxDeviation);
-  Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
-  return detail::convertToSpline(trajectory, stateSpace, timeStep, startTime);
-}
-
-//==============================================================================
 KunzRetimer::KunzRetimer(
     const Eigen::VectorXd& velocityLimits,
     const Eigen::VectorXd& accelerationLimits,
@@ -250,16 +176,12 @@ std::unique_ptr<aikido::trajectory::Spline> KunzRetimer::postprocess(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> KunzRetimer::postprocess(
-    const aikido::trajectory::Spline& inputTraj,
+    const aikido::trajectory::Spline& /*inputTraj*/,
     const aikido::common::RNG& /*rng*/,
     const aikido::constraint::TestablePtr& /*constraint*/)
 {
-  return computeKunzTiming(
-      inputTraj,
-      mVelocityLimits,
-      mAccelerationLimits,
-      mMaxDeviation,
-      mTimeStep);
+  throw std::runtime_error(
+      "[KunzRetimer] does not support postprocessing spline trajectory.");
 }
 
 //==============================================================================
