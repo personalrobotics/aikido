@@ -136,51 +136,6 @@ TEST_F(KunzRetimerTests, StartsAtNonZeroTime)
   EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), positions, 1e-6);
 }
 
-TEST_F(KunzRetimerTests, InterploatedSplineEquivalence)
-{
-  Interpolated interpolated(mStateSpace, mInterpolator);
-
-  auto state = mStateSpace->createState();
-  auto state2 = mStateSpace->createState();
-
-  // This is the same test as StraightLine_TriangularProfile, except that the
-  // trajectory starts at a non-zero time.
-  Eigen::VectorXd positions(2);
-  Eigen::VectorXd positions2(2);
-
-  positions << 1, 2;
-  mStateSpace->expMap(positions, state);
-  interpolated.addWaypoint(1., state);
-
-  positions << 2, 3;
-  mStateSpace->expMap(positions, state);
-  interpolated.addWaypoint(3., state);
-
-  auto spline = convertToSpline(interpolated);
-
-  auto timedInterpolated = computeKunzTiming(
-      interpolated, Vector2d::Constant(2.), Vector2d::Constant(1.));
-  auto timedSpline = computeKunzTiming(
-      *spline, Vector2d::Constant(2.), Vector2d::Constant(1.));
-
-  timedInterpolated->evaluate(1., state);
-  timedSpline->evaluate(1., state2);
-  mStateSpace->logMap(state, positions);
-  mStateSpace->logMap(state2, positions2);
-  EXPECT_EIGEN_EQUAL(positions2, positions, 1e-6);
-
-  timedInterpolated->evaluate(2., state);
-  timedSpline->evaluate(2., state2);
-  mStateSpace->logMap(state, positions);
-  mStateSpace->logMap(state2, positions2);
-  EXPECT_EIGEN_EQUAL(positions2, positions, 1e-6);
-
-  timedInterpolated->evaluate(3., state);
-  timedSpline->evaluate(3., state2);
-  mStateSpace->logMap(state, positions);
-  mStateSpace->logMap(state2, positions2);
-  EXPECT_EIGEN_EQUAL(positions2, positions, 1e-6);
-}
 
 TEST_F(KunzRetimerTests, StraightLine_TriangularProfile)
 {
