@@ -5,13 +5,17 @@
 #include <aikido/planner/Planner.hpp>
 #include <aikido/planner/vectorfield/VectorField.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/trajectory/Spline.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 
 namespace aikido {
 namespace planner {
 namespace vectorfield {
 
 /// Generate a trajectory following the vector field along given time.
+///
+/// \note The resulting interpolated trajectory is formed by taking the knots of
+/// the planned spline trajectory, which is not geometrically
+/// equivalent. See https://github.com/personalrobotics/aikido/issues/512
 ///
 /// \param[in] vectorField Vector field to follow.
 /// \param[in] startState Start state of the planning.
@@ -23,7 +27,7 @@ namespace vectorfield {
 /// constraint satisfaction in generated trajectory.
 /// \param[out] result information about success or failure.
 /// \return A trajectory following the vector field.
-std::unique_ptr<aikido::trajectory::Spline> followVectorField(
+aikido::trajectory::UniqueInterpolatedPtr followVectorField(
     const aikido::planner::vectorfield::VectorField& vectorField,
     const aikido::statespace::StateSpace::State& startState,
     const aikido::constraint::Testable& constraint,
@@ -54,7 +58,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 /// \param[in] timelimit timeout in seconds.
 /// \param[out] result information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
-std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
+aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
     const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
@@ -91,7 +95,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 /// \param[in] timelimit Timeout in seconds.
 /// \param[out] result information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
-std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
+aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const ::dart::dynamics::BodyNodePtr& bn,
