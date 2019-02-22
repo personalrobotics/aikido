@@ -136,7 +136,6 @@ TEST_F(KunzRetimerTests, StartsAtNonZeroTime)
   EXPECT_EIGEN_EQUAL(Vector2d(2.0, 3.0), positions, 1e-6);
 }
 
-
 TEST_F(KunzRetimerTests, StraightLine_TriangularProfile)
 {
   Interpolated inputTrajectory(mStateSpace, mInterpolator);
