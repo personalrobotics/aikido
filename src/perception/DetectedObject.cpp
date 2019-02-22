@@ -7,44 +7,51 @@ namespace perception {
 
 //==============================================================================
 DetectedObject::DetectedObject(
-    const std::string& uid,
-    const std::string& assetKey,
+    const std::string& objectName,
+    const int& objectId,
     const std::string& detectionFrameID,
     const std::string& yamlStr)
-  : mUid(std::move(uid))
-  , mAssetKey(std::move(assetKey))
+  : mObjectName(objectName)
+  , mUid(objectName + "_" + std::to_string(objectId))
   , mDetectionFrameID(std::move(detectionFrameID))
 {
   // Load YAML nodes from string
   try
   {
     mYamlNode = YAML::Load(yamlStr);
-    mAssetKey = mYamlNode["db_key"].as<std::string>(mAssetKey);
+    mAssetKey = mYamlNode["db_key"].as<std::string>();
   }
   catch (const YAML::Exception& e)
   {
-    dtwarn << "[DetectedObject::DetectedObject] YAML String Exception: "
-           << e.what() << std::endl;
-    mYamlNode = YAML::Load(""); // Create Null Node
+    std::stringstream ss;
+    ss << "[DetectedObject::DetectedObject] YAML String Exception: " << e.what()
+       << std::endl;
+    throw std::invalid_argument(ss.str());
   }
 }
 
 //==============================================================================
-std::string DetectedObject::getUid()
+std::string DetectedObject::getUid() const
 {
   return mUid;
 }
 
 //==============================================================================
-std::string DetectedObject::getAssetKey()
+std::string DetectedObject::getAssetKey() const
 {
   return mAssetKey;
 }
 
 //==============================================================================
-std::string DetectedObject::getDetectionFrameID()
+std::string DetectedObject::getDetectionFrameID() const
 {
   return mDetectionFrameID;
+}
+
+//==============================================================================
+std::string DetectedObject::getName() const
+{
+  return mObjectName;
 }
 
 //==============================================================================
@@ -54,20 +61,16 @@ YAML::Node DetectedObject::getYamlNode()
 }
 
 //==============================================================================
-template <typename T>
-T DetectedObject::getInfoByKey(const std::string& key)
+dart::dynamics::MetaSkeletonPtr DetectedObject::getMetaSkeleton() const
 {
-  T value;
-  try
-  {
-    value = mYamlNode[key].as<T>();
-  }
-  catch (const YAML::ParserException& ex)
-  {
-    throw std::runtime_error(
-        "[DetectedObject] Error in converting [" + key + "] field");
-  }
-  return value;
+  return mMetaSkeleton;
+}
+
+//==============================================================================
+void DetectedObject::setMetaSkeleton(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
+{
+  mMetaSkeleton = metaSkeleton;
 }
 
 } // namespace perception

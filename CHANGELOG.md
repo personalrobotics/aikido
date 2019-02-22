@@ -43,6 +43,7 @@
   * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
   * Added voxel grid perception module: [#448](https://github.com/personalrobotics/aikido/pull/448)
   * Added YAML communication between PoseEstimatorModule and third-party perception algorithms: [#497](https://github.com/personalrobotics/aikido/pull/497)
+  * Made AssetDatabase key required for Marker text: [#508](https://github.com/personalrobotics/aikido/pull/508)
 
 * Trajectory
 

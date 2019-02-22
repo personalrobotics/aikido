@@ -1,6 +1,7 @@
 #ifndef AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 #define AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 
+#include <ros/ros.h>
 #include "aikido/perception/DetectedObject.hpp"
 #include "aikido/planner/World.hpp"
 
