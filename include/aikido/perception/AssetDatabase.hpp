@@ -49,13 +49,11 @@ public:
 
   /// Get the object name, resource, and offset from database by objectKey
   /// \param[in]  assetKey The key (string) of an object in AssetDatabase
-  /// \param[out] assetName The retrieved object name from AssetDatabase
   /// \param[out] assetResource The retrieved uri of the object
   /// \param[out] assetOffset The retrieved offset matrix of the object
   ///     e.g. the offset between a tag and the actual origin of an object
   void getAssetByKey(
       const std::string& assetKey,
-      std::string& assetName,
       dart::common::Uri& assetResource,
       Eigen::Isometry3d& assetOffset) const;
 
