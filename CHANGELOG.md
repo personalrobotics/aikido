@@ -48,7 +48,7 @@
 
   * Added B-spline trajectory: [#453](https://github.com/personalrobotics/aikido/pull/453)
   * Added trajectory utility functions: [#462](https://github.com/personalrobotics/aikido/pull/462)
-  * Fixed toR1JointTrajectory to copy Waypoints with their time information: [#508](https://github.com/personalrobotics/aikido/pull/510)
+  * Fixed toR1JointTrajectory to copy Waypoints with their time information: [#510](https://github.com/personalrobotics/aikido/pull/510)
   * Removed incorrect Spline to Interpolated conversions: [#511](https://github.com/personalrobotics/aikido/pull/511)
 
 * Planner
