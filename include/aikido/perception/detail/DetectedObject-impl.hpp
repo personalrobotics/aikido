@@ -1,6 +1,3 @@
-#ifndef AIKIDO_PERCEPTION_DETAIL_DETECTEDOBJECT_IMPL_HPP_
-#define AIKIDO_PERCEPTION_DETAIL_DETECTEDOBJECT_IMPL_HPP_
-
 #include "aikido/perception/DetectedObject.hpp"
 
 namespace aikido {
@@ -25,5 +22,3 @@ T DetectedObject::getInfoByKey(const std::string& key) const
 
 } // namespace perception
 } // namespace aikido
-
-#endif
