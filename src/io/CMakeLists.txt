@@ -69,4 +69,4 @@ add_component(${PROJECT_NAME} io)
 add_component_targets(${PROJECT_NAME} io "${PROJECT_NAME}_io")
 add_component_dependencies(${PROJECT_NAME} io common)
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})
