@@ -42,4 +42,4 @@ add_component_dependencies(${PROJECT_NAME} planner_vectorfield
   planner
 )
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})

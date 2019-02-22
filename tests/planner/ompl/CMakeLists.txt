@@ -29,4 +29,4 @@ target_link_libraries(test_StateSampler "${PROJECT_NAME}_planner_ompl")
 aikido_add_test(test_ValidityChecker test_ValidityChecker.cpp)
 target_link_libraries(test_ValidityChecker "${PROJECT_NAME}_planner_ompl")
 
-format_add_sources(OMPLTestHelpers.hpp)
+clang_format_add_sources(OMPLTestHelpers.hpp)
