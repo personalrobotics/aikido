@@ -17,16 +17,6 @@ namespace trajectory {
 /// \return A spline trajectory
 UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory);
 
-/// Converts a piecewise linear spline trajectory to an interpolated trajectory
-/// using a given interpolator.
-///
-/// \param[in] traj Spline trajectory
-/// \param[in] interpolator Interpolator used in connecting two ends of a
-/// segment
-/// \return An interpolated trajectory
-UniqueInterpolatedPtr convertToInterpolated(
-    const Spline& traj, statespace::ConstInterpolatorPtr interpolator);
-
 /// Concatenates two interpolated trajectories.
 ///
 /// This function concatenates two interpolated trajectories into one
@@ -44,17 +34,6 @@ UniqueInterpolatedPtr convertToInterpolated(
 /// \return The concatenated interpolated trajectory
 UniqueInterpolatedPtr concatenate(
     const Interpolated& traj1, const Interpolated& traj2);
-
-/// Concatenates two spline trajectories.
-///
-/// This function converts two spline trajectories into geodesically
-/// interpolated for concatenation, then converts the concatenated interpolated
-/// to spline. The state spaces of two trajectories should be the same.
-///
-/// \param[in] traj1 The first half spline trajectory
-/// \param[in] traj2 The second half spline trajectory
-/// \return The concatenated spline trajectory
-UniqueSplinePtr concatenate(const Spline& traj1, const Spline& traj2);
 
 /// Finds the time of the closest state on a trajectory to a given state.
 ///
@@ -95,13 +74,6 @@ UniqueSplinePtr createPartialTrajectory(
 /// \param[in] trajectory Trajectory to be converted.
 /// \return Converted trajectory.
 UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory);
-
-/// Converts a spline trajectory from a Cartesian product space of SO(2) and R1
-/// joints to a Cartesian product space of strictly R1 joints.
-///
-/// \param[in] trajectory Trajectory to be converted.
-/// \return Converted trajectory.
-UniqueSplinePtr toR1JointTrajectory(const Spline& trajectory);
 
 } // namespace trajectory
 } // namespace aikido

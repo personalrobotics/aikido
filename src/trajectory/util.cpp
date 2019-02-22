@@ -119,25 +119,6 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
 }
 
 //==============================================================================
-UniqueInterpolatedPtr convertToInterpolated(
-    const Spline& traj, statespace::ConstInterpolatorPtr interpolator)
-{
-  auto stateSpace = traj.getStateSpace();
-  auto outputTrajectory
-      = make_unique<Interpolated>(stateSpace, std::move(interpolator));
-
-  auto state = stateSpace->createState();
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); ++i)
-  {
-    traj.getWaypoint(i, state);
-    const double t = traj.getWaypointTime(i);
-    outputTrajectory->addWaypoint(t, state);
-  }
-
-  return outputTrajectory;
-}
-
-//==============================================================================
 UniqueInterpolatedPtr concatenate(
     const Interpolated& traj1, const Interpolated& traj2)
 {
@@ -166,22 +147,6 @@ UniqueInterpolatedPtr concatenate(
   }
 
   return outputTrajectory;
-}
-
-//==============================================================================
-UniqueSplinePtr concatenate(const Spline& traj1, const Spline& traj2)
-{
-  if (traj1.getStateSpace() != traj2.getStateSpace())
-    throw std::runtime_error("State space mismatch");
-
-  const auto& stateSpace = traj1.getStateSpace();
-  statespace::ConstInterpolatorPtr interpolator
-      = std::make_shared<statespace::GeodesicInterpolator>(stateSpace);
-  auto interpolated1 = convertToInterpolated(traj1, interpolator);
-  auto interpolated2 = convertToInterpolated(traj2, interpolator);
-  auto concatenatedInterpolated = concatenate(*interpolated1, *interpolated2);
-
-  return convertToSpline(*concatenatedInterpolated);
 }
 
 //==============================================================================
@@ -342,25 +307,6 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
   }
 
   return rTrajectory;
-}
-
-//==============================================================================
-UniqueSplinePtr toR1JointTrajectory(const Spline& trajectory)
-{
-  if (!checkStateSpace(trajectory.getStateSpace().get()))
-    throw std::invalid_argument(
-        "toR1JointTrajectory only supports R1 and SO2 joint spaces");
-
-  auto space = trajectory.getStateSpace();
-  aikido::statespace::ConstInterpolatorPtr interpolator
-      = std::make_shared<statespace::GeodesicInterpolator>(space);
-
-  ConstInterpolatedPtr interpolatedTrajectory
-      = std::move(convertToInterpolated(trajectory, interpolator));
-  auto r1JointTrajectory = toR1JointTrajectory(*interpolatedTrajectory);
-  auto splineTrajectory = convertToSpline(*r1JointTrajectory);
-
-  return splineTrajectory;
 }
 
 } // namespace trajectory
