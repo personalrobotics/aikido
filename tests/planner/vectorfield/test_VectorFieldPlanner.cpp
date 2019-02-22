@@ -358,8 +358,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
       timelimit);
 
   // Invoke planning method.
-  auto resultTraj = vfOffsetPlanner.plan(offsetProblem);
-  auto traj = std::dynamic_pointer_cast<aikido::trajectory::Spline>(resultTraj);
+  auto traj = vfOffsetPlanner.plan(offsetProblem);
 
   EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
 
@@ -367,10 +366,6 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   {
     return;
   }
-
-  // Trajectory should have >= 1 waypoints
-  EXPECT_GE(traj->getNumWaypoints(), 1)
-      << "Trajectory should have >= 1 waypoints";
 
   // Extract and evaluate first waypoint
   auto firstWayPoint = mStateSpace->createState();
