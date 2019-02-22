@@ -23,6 +23,6 @@ add_component(${PROJECT_NAME} control)
 add_component_targets(${PROJECT_NAME} control "${PROJECT_NAME}_control")
 add_component_dependencies(${PROJECT_NAME} control statespace trajectory)
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})
 
 add_subdirectory("ros") # Dependencies: control, statespace, trajectory

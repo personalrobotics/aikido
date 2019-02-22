@@ -43,4 +43,4 @@ endif()
 add_component(${PROJECT_NAME} common)
 add_component_targets(${PROJECT_NAME} common "${PROJECT_NAME}_common")
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})

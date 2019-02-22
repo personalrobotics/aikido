@@ -31,4 +31,4 @@ add_component_dependencies(${PROJECT_NAME} planner_parabolic
   trajectory
 )
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})
