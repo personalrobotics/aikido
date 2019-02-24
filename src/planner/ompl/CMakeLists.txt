@@ -34,7 +34,7 @@ else()
   find_package(ompl REQUIRED)
 endif()
 if(OMPL_VERSION VERSION_LESS 1.2.1)
-  message(FATAL_ERROR "OMPL ${OMPL_VERSION} found, but OMPL planners require OMPL <= 1.2.1.")
+  message(FATAL_ERROR "OMPL ${OMPL_VERSION} found, but OMPL planners require OMPL >= 1.2.1.")
   return()
 endif()
 
