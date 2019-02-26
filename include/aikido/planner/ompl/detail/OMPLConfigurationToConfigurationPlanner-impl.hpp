@@ -111,7 +111,9 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
 
   // Set validity checker.
   std::vector<constraint::ConstTestablePtr> constraints{
-      problem.getConstraint(), sspace->getBoundsConstraint()};
+      problem.getConstraint()
+      // sspace->getBoundsConstraint()
+    };
   auto conjunctionConstraint
       = std::make_shared<constraint::TestableIntersection>(
           mStateSpace, std::move(constraints));
