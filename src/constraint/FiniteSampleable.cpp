@@ -1,5 +1,5 @@
 #include <aikido/constraint/FiniteSampleable.hpp>
-
+#include <iostream>
 #include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
@@ -12,7 +12,7 @@ public:
   // For internal use only.
   FiniteSampleGenerator(
       statespace::ConstStateSpacePtr _stateSpace,
-      const std::vector<statespace::StateSpace::State*>& _states);
+      const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states);
 
   FiniteSampleGenerator(const FiniteSampleGenerator&) = delete;
   FiniteSampleGenerator(FiniteSampleGenerator&& other) = delete;
@@ -36,7 +36,7 @@ public:
 
 private:
   statespace::ConstStateSpacePtr mStateSpace;
-  std::vector<statespace::StateSpace::State*> mStates;
+  std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState> mStates;
   int mIndex;
 
   friend class FiniteSampleable;
@@ -45,8 +45,9 @@ private:
 //==============================================================================
 FiniteSampleGenerator::FiniteSampleGenerator(
     statespace::ConstStateSpacePtr _stateSpace,
-    const std::vector<statespace::StateSpace::State*>& _states)
-  : mStateSpace(std::move(_stateSpace)), mIndex(0)
+    const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states)
+  : mStateSpace(std::move(_stateSpace))
+  , mIndex(0)
 {
   if (!mStateSpace)
     throw std::invalid_argument("StateSpacePtr is nullptr.");
@@ -56,29 +57,17 @@ FiniteSampleGenerator::FiniteSampleGenerator(
 
   mStates.reserve(_states.size());
 
-  for (auto state : _states)
+  for (const auto& state : _states)
   {
-    if (!state)
-    {
-      // Free all states already saved in mStates.
-      for (auto saved : mStates)
-        mStateSpace->freeState(saved);
-
-      throw std::invalid_argument("One of the states in _states is nullptr.");
-    }
-
-    statespace::StateSpace::State* newState = mStateSpace->allocateState();
-    mStateSpace->copyState(state, newState);
-
-    mStates.emplace_back(newState);
+    mStates.emplace_back(state.clone());
   }
 }
 
 //==============================================================================
 FiniteSampleGenerator::~FiniteSampleGenerator()
 {
-  for (auto state : mStates)
-    mStateSpace->freeState(state);
+  // for (auto state : mStates)
+  //   mStateSpace->freeState(state);
 }
 
 //==============================================================================
@@ -114,7 +103,7 @@ bool FiniteSampleGenerator::canSample() const
 //==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
-    const statespace::StateSpace::State* _state)
+    const aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState& _state)
   : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
@@ -122,17 +111,13 @@ FiniteSampleable::FiniteSampleable(
 
   if (!_state)
     throw std::invalid_argument("State is nullptr.");
-
-  statespace::StateSpace::State* state = mStateSpace->allocateState();
-  mStateSpace->copyState(_state, state);
-
-  mStates.push_back(state);
+  mStates.emplace_back(_state.clone());
 }
 
 //==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
-    const std::vector<const statespace::StateSpace::State*>& _states)
+    const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states)
   : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
@@ -143,31 +128,22 @@ FiniteSampleable::FiniteSampleable(
 
   mStates.reserve(_states.size());
 
-  for (auto state : _states)
+  for (const auto& state : _states)
   {
-    if (!state)
-    {
-      // Free all states already saved in mStates.
-      for (auto saved : mStates)
-        mStateSpace->freeState(saved);
-
-      throw std::invalid_argument("One of the states in _states is nullptr.");
-    }
-
-    statespace::StateSpace::State* newState = mStateSpace->allocateState();
-    mStateSpace->copyState(state, newState);
-
-    mStates.emplace_back(newState);
+    mStates.emplace_back(state.clone());
+    Eigen::VectorXd positions;
+    mStateSpace->logMap(state, positions);
+    std::cout << "FiniteSampleGenerator " << positions.transpose() << std::endl;
   }
 }
 
 //==============================================================================
 FiniteSampleable::~FiniteSampleable()
 {
-  for (auto state : mStates)
-  {
-    mStateSpace->freeState(state);
-  }
+  // for (const auto state : mStates)
+  // {
+  //   mStateSpace->freeState(state);
+  // }
 }
 
 //==============================================================================

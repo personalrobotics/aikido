@@ -200,9 +200,9 @@ trajectory::TrajectoryPtr planToTSR(
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
   // Hardcoded seed for ada
-  std::vector<const statespace::StateSpace::State*> seedStates;
+  std::vector<MetaSkeletonStateSpace::ScopedState> seedStates;
   Eigen::VectorXd seedConfiguration(space->getDimension());
-  seedStates.emplace_back(startState.clone());
+  seedStates.push_back(startState.clone());
 
   space->convertStateToPositions(startState, seedConfiguration);
   std::cout << seedConfiguration.transpose() << std::endl;
@@ -210,73 +210,108 @@ trajectory::TrajectoryPtr planToTSR(
   auto seedState = space->createState();
   seedConfiguration << 0.71149, 1.96881, 2.12461, -1.60078, -2.06181, -2.33079;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  space->convertStateToPositions(seedState, seedConfiguration);
+  std::cout << "converted " << seedConfiguration.transpose() << std::endl;
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.3927, 4.3067, 3.94881, -4.62768, -2.25937, -2.07654;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.39079, 4.30507, 3.96979, 1.65921, -2.25655, -2.08021;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.18807, 3.26458, 1.77104, -2.4695, -2.02196, -2.07969;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.14454, 3.23998, 1.60007, -2.57557, -1.81261, 2.99757;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.1928, 3.40455, 1.84249, -2.52313, -1.92402, 3.76996;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.1928, 3.40455, 1.84249, -2.52313, -1.92402, -2.51322;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -1.4778, 2.92522, 1.00283, -2.08638,  1.44895,  1.32235;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.06047, 3.33506, 1.90762, -2.4133, -2.11661, -0.682215;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration <<-2.35264, 4.24509, 3.96006, 1.58616, -2.21484, -2.15233;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -1.47776, 2.92554, 1.00349, -2.08592, 1.44893, 1.3223;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -3.14042, 3.15514, 1.16615, 0.573695, 1.59742, -1.28865;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.40444, 3.31599, 1.88258, -0.724555, 2.11118, -1.53751;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << 0.753014, 1.9752, 1.89462, 0.238096, 1.83547, -0.636708;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -2.32925, 4.22822, 3.84025, 1.66769, -2.3464, -1.99578;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
 
+  seedState = space->createState();
   seedConfiguration << -1.99374, 3.30963, 1.8211, -2.46515, -2.03034, -2.25597;
   space->convertPositionsToState(seedConfiguration, seedState);
-  seedStates.emplace_back(seedState.clone());
+  seedStates.push_back(seedState.clone());
+
+  seedState = space->createState();
+  seedConfiguration << -2.15136, 3.41949, 1.69291, -2.6289, -1.69653, -2.03035;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.push_back(seedState.clone());
+
+  seedState = space->createState();
+  seedConfiguration << -2.36154, 4.24923, 3.86001, 1.69034, -2.33204, -1.9959;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.push_back(seedState.clone());
+
+  for (auto & state : seedStates)
+  {
+      Eigen::VectorXd positions;
+      space->logMap(state, positions);
+      std::cout << "util " << positions.transpose() << std::endl;
+  }
 
   auto finiteSeedSampleable
       = std::make_shared<constraint::FiniteSampleable>(space, seedStates);
 
   std::vector<constraint::ConstSampleablePtr> sampleableVector;
   sampleableVector.push_back(finiteSeedSampleable);
+  std::cout << "seedStates got " << seedStates.size() << std::endl;
   sampleableVector.push_back(createSampleableBounds(space, rng->clone()));
   auto seedSampleable = std::make_shared<constraint::SequentialSampleable>(
       space, sampleableVector);
@@ -304,7 +339,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{300};
+  static const std::size_t maxSnapSamples{100};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
