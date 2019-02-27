@@ -8,12 +8,14 @@
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/statespace/dart/RnJoint.hpp"
 #include "aikido/statespace/dart/SO2Joint.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using SplineTrajectory = aikido::trajectory::Spline;
 using aikido::statespace::dart::R1Joint;
 using aikido::statespace::dart::SO2Joint;
+using aikido::statespace::InterpolatorPtr;
 
 namespace aikido {
 namespace control {
@@ -96,13 +98,20 @@ void extractJointTrajectoryPoint(
 /// Extract a state on the trajectory given a timepoint.
 /// \param[in] space MetaSkeletonStateSpace of the trajectory.
 /// \param[in] trajectory Trajectory to extract point from.
+/// \param[in] interpolator Interpolator used to maintain continuity in
+/// extraction.
 /// \param[in] timeFromStart Timepoint to extract trajectory point at.
-/// \param[out] waypoint The extracted trajectory point.
+/// \param[in] waypoint The extracted trajectory point.
+/// \param[in] previousPoint Previously extracted trajectory point to
+/// ensure continuity in representation when extracting multiple points.
+/// Set to zero vector if not required.
 void extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
+    const aikido::statespace::InterpolatorPtr& interpolator,
     double timeFromStart,
-    trajectory_msgs::JointTrajectoryPoint& waypoint);
+    trajectory_msgs::JointTrajectoryPoint& waypoint,
+    Eigen::VectorXd& previousPoint);
 
 //==============================================================================
 void reorder(
@@ -255,8 +264,10 @@ void extractJointTrajectoryPoint(
 void extractTrajectoryPoint(
     const std::shared_ptr<const MetaSkeletonStateSpace>& space,
     const aikido::trajectory::ConstTrajectoryPtr& trajectory,
+    const aikido::statespace::InterpolatorPtr& interpolator,
     double timeFromStart,
-    trajectory_msgs::JointTrajectoryPoint& waypoint)
+    trajectory_msgs::JointTrajectoryPoint& waypoint,
+    Eigen::VectorXd& previousPoint)
 {
   const auto numDerivatives = std::min<int>(trajectory->getNumDerivatives(), 1);
   const auto timeAbsolute = trajectory->getStartTime() + timeFromStart;
@@ -265,8 +276,29 @@ void extractTrajectoryPoint(
 
   Eigen::VectorXd tangentVector;
   auto state = space->createState();
+
+  auto prevState = space->createState();
+  space->convertPositionsToState(previousPoint, prevState);
+
   trajectory->evaluate(timeAbsolute, state);
-  space->logMap(state, tangentVector);
+  space->convertStateToPositions(state, tangentVector);
+
+  auto geodesicInterpolator
+      = std::dynamic_pointer_cast<aikido::statespace::GeodesicInterpolator>(
+          interpolator);
+  if (!geodesicInterpolator)
+  {
+    throw std::invalid_argument(
+        "The interpolator of trajectory should be a GeodesicInterpolator");
+  }
+
+  auto diff = geodesicInterpolator->getTangentVector(prevState, state);
+  tangentVector = previousPoint + diff;
+
+  for (int i = 0; i < tangentVector.size(); ++i)
+  {
+    previousPoint(i) = tangentVector(i);
+  }
 
   assert(tangentVector.size() == numDof);
 
@@ -583,14 +615,25 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
     jointTrajectory.joint_names.emplace_back(jointDofName);
   }
 
+  Eigen::VectorXd previousPoint(Eigen::VectorXd::Zero(space->getDimension()));
+
   // Evaluate trajectory at each timestep and insert it into jointTrajectory
   jointTrajectory.points.reserve(numWaypoints);
-  for (const auto& timeFromStart : timeSequence)
+
+  // Create the geodesic interpolator used to extract trajectory points.
+  auto interpolator
+      = std::make_shared<aikido::statespace::GeodesicInterpolator>(space);
+
+  for (std::size_t i = 0; i < numWaypoints; ++i)
   {
     trajectory_msgs::JointTrajectoryPoint waypoint;
-
-    extractTrajectoryPoint(space, trajectory, timeFromStart, waypoint);
-
+    extractTrajectoryPoint(
+        space,
+        trajectory,
+        interpolator,
+        timeSequence[i],
+        waypoint,
+        previousPoint);
     jointTrajectory.points.emplace_back(waypoint);
   }
 

@@ -3,6 +3,8 @@
 
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include <dart/dart.hpp>
 
 namespace aikido {
 namespace trajectory {
@@ -46,10 +48,13 @@ UniqueInterpolatedPtr concatenate(
 /// \param[in] traj Input trajectory
 /// \param[in] referenceState Reference state
 /// \param[in] timeStep Time step in finding the closest state
+/// \param[out] distance Distance to the closest state
 /// \return The time of the closest state on the input trajectory
 double findTimeOfClosestStateOnTrajectory(
     const Trajectory& traj,
-    const Eigen::VectorXd& referenceState,
+    const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const statespace::StateSpace::State* referenceState,
+    double& distance,
     double timeStep = 0.01);
 
 /// Retrieves part of a given spline trajectory

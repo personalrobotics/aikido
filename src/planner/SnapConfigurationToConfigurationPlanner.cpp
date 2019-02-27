@@ -2,6 +2,7 @@
 
 #include "aikido/common/VanDerCorput.hpp"
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/constraint/dart/CollisionFreeOutcome.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -37,6 +38,7 @@ trajectory::TrajectoryPtr SnapConfigurationToConfigurationPlanner::plan(
   auto constraint = problem.getConstraint();
 
   aikido::common::VanDerCorput vdc{1, true, true, 0.02}; // TODO junk resolution
+
   for (const auto alpha : vdc)
   {
     mInterpolator->interpolate(startState, goalState, alpha, testState);

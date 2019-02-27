@@ -8,6 +8,8 @@
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
+#include "aikido/constraint/SequentialSampleable.hpp"
+
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
@@ -42,6 +44,7 @@ using constraint::dart::InverseKinematicsSampleable;
 using constraint::dart::TSR;
 using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
+using constraint::SequentialSampleable;
 using constraint::dart::createProjectableBounds;
 using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
@@ -194,12 +197,97 @@ trajectory::TrajectoryPtr planToTSR(
 
   ik->setDofs(metaSkeleton->getDofs());
 
+  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+
+  // Hardcoded seed for ada
+  std::vector<const statespace::StateSpace::State*> seedStates;
+  Eigen::VectorXd seedConfiguration(space->getDimension());
+  seedStates.emplace_back(startState.clone());
+
+  space->convertStateToPositions(startState, seedConfiguration);
+  std::cout << seedConfiguration.transpose() << std::endl;
+
+  auto seedState = space->createState();
+  seedConfiguration << 0.71149, 1.96881, 2.12461, -1.60078, -2.06181, -2.33079;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.3927, 4.3067, 3.94881, -4.62768, -2.25937, -2.07654;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.39079, 4.30507, 3.96979, 1.65921, -2.25655, -2.08021;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.18807, 3.26458, 1.77104, -2.4695, -2.02196, -2.07969;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.14454, 3.23998, 1.60007, -2.57557, -1.81261, 2.99757;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.1928, 3.40455, 1.84249, -2.52313, -1.92402, 3.76996;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.1928, 3.40455, 1.84249, -2.52313, -1.92402, -2.51322;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -1.4778, 2.92522, 1.00283, -2.08638,  1.44895,  1.32235;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.06047, 3.33506, 1.90762, -2.4133, -2.11661, -0.682215;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration <<-2.35264, 4.24509, 3.96006, 1.58616, -2.21484, -2.15233;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -1.47776, 2.92554, 1.00349, -2.08592, 1.44893, 1.3223;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -3.14042, 3.15514, 1.16615, 0.573695, 1.59742, -1.28865;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.40444, 3.31599, 1.88258, -0.724555, 2.11118, -1.53751;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << 0.753014, 1.9752, 1.89462, 0.238096, 1.83547, -0.636708;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -2.32925, 4.22822, 3.84025, 1.66769, -2.3464, -1.99578;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  seedConfiguration << -1.99374, 3.30963, 1.8211, -2.46515, -2.03034, -2.25597;
+  space->convertPositionsToState(seedConfiguration, seedState);
+  seedStates.emplace_back(seedState.clone());
+
+  auto finiteSeedSampleable
+      = std::make_shared<constraint::FiniteSampleable>(space, seedStates);
+
+  std::vector<constraint::ConstSampleablePtr> sampleableVector;
+  sampleableVector.push_back(finiteSeedSampleable);
+  sampleableVector.push_back(createSampleableBounds(space, rng->clone()));
+  auto seedSampleable = std::make_shared<constraint::SequentialSampleable>(
+      space, sampleableVector);
+
+
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
       space,
       metaSkeleton,
       tsr,
-      createSampleableBounds(space, rng->clone()),
+      seedSampleable,
       ik,
       maxNumTrials);
 
@@ -207,8 +295,6 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Goal state
   auto goalState = space->createState();
-
-  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
   // TODO: Change this to timelimit once we use a fail-fast planner
   double timelimitPerSample = timelimit / maxNumTrials;
@@ -218,7 +304,7 @@ trajectory::TrajectoryPtr planToTSR(
   DART_UNUSED(saver);
 
   // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{100};
+  static const std::size_t maxSnapSamples{300};
   std::size_t snapSamples = 0;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -255,9 +341,16 @@ trajectory::TrajectoryPtr planToTSR(
   }
 
   if (configurations.empty())
+  {
+    std::cout <<"Failed to get any valid IK sample" << std::endl;
     return nullptr;
+  }
 
   configurationRanker->rankConfigurations(configurations);
+
+  Eigen::VectorXd _positions;
+  space->convertStateToPositions(startState, _positions);
+  std::cout << "Snap initial " << _positions.transpose() << std::endl;
 
   // Try snap planner first
   for (std::size_t i = 0; i < configurations.size(); ++i)
@@ -271,6 +364,12 @@ trajectory::TrajectoryPtr planToTSR(
       return traj;
   }
 
+  Eigen::VectorXd positions;
+  space->convertStateToPositions(startState, positions);
+  std::cout << "Snap Failed " << positions.transpose() << std::endl;
+  return nullptr;
+
+  /*
   // Start the timer
   dart::common::Timer timer;
   timer.start();
@@ -291,6 +390,7 @@ trajectory::TrajectoryPtr planToTSR(
       return traj;
   }
   return nullptr;
+  */
 }
 
 //==============================================================================
@@ -438,9 +538,9 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
       vfParameters.constraintCheckResolution,
       std::chrono::duration<double>(timelimit));
 
-  if (traj)
-    return std::move(traj);
+  return std::move(traj);
 
+  /*
   return planToEndEffectorOffsetByCRRT(
       space,
       metaSkeleton,
@@ -452,6 +552,7 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
       positionTolerance,
       angularTolerance,
       crrtParameters);
+      */
 }
 
 //==============================================================================

@@ -37,13 +37,19 @@ bool CollisionFree::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
     TestableOutcome* outcome) const
 {
-  auto collisionFreeOutcome
-      = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);
+  // CollisionFreeOutcome* collisionFreeOutcome
+  //     = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);
 
-  if (collisionFreeOutcome)
-  {
-    collisionFreeOutcome->clear();
-  }
+  // if (collisionFreeOutcome)
+  // {
+  //   collisionFreeOutcome->clear();
+  // }
+  // else
+  // {
+  //   collisionFreeOutcome = new CollisionFreeOutcome();
+  // }
+  auto _outcome = this->createOutcome();
+  auto collisionFreeOutcome = dynamic_cast<CollisionFreeOutcome*>(_outcome.get());
 
   auto skelStatePtr = static_cast<const aikido::statespace::dart::
                                       MetaSkeletonStateSpace::State*>(_state);
@@ -65,6 +71,7 @@ bool CollisionFree::isSatisfied(
       {
         collisionFreeOutcome->mPairwiseContacts = collisionResult.getContacts();
       }
+      std::cout << collisionFreeOutcome->toString() << std::endl;
       return false;
     }
   }
@@ -79,6 +86,7 @@ bool CollisionFree::isSatisfied(
       {
         collisionFreeOutcome->mSelfContacts = collisionResult.getContacts();
       }
+      std::cout << collisionFreeOutcome->toString() << std::endl;
       return false;
     }
   }

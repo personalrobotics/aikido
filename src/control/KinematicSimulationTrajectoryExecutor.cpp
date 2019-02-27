@@ -139,6 +139,7 @@ void KinematicSimulationTrajectoryExecutor::step(
   // Check if trajectory has completed.
   if (executionTime >= mTraj->getEndTime())
   {
+    std::cout << "Trajectory completed" << std::endl;
     mTraj.reset();
     mStateSpace.reset();
     mMetaSkeleton.reset();
