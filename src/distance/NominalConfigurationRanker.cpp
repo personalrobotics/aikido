@@ -11,15 +11,17 @@ NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     std::vector<double> weights,
-    const statespace::CartesianProduct::State* nominalConfiguration)
+    statespace::CartesianProduct::ScopedState nominalConfiguration)
   : ConfigurationRanker(
         std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
-  , mNominalConfiguration(nominalConfiguration)
+  , mNominalConfiguration(std::move(nominalConfiguration))
 {
-  if (!mNominalConfiguration)
-    mNominalConfiguration
-        = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
-            mMetaSkeleton.get());
+  // do nothing
+  //
+  //if (!mNominalConfiguration)
+  //  mNominalConfiguration
+  //      = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
+  //          mMetaSkeleton.get());
 }
 
 //==============================================================================

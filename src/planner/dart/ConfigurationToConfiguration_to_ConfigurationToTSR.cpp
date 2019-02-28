@@ -101,7 +101,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
         mMetaSkeletonStateSpace,
         mMetaSkeleton,
         std::vector<double>(),
-        nominalState);
+        std::move(nominalState));
   }
 
   // Goal state
