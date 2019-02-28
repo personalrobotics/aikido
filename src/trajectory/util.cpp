@@ -166,9 +166,6 @@ double findTimeOfClosestStateOnTrajectory(
   if (!stateSpace)
     throw std::runtime_error("Failed to convert statespace");
 
-  // Nominal configuration ranker
-  NominalConfigurationRanker ranker(stateSpace, metaSkeleton);
-
   double findTime = traj.getStartTime();
   double minDist = std::numeric_limits<double>::max();
 

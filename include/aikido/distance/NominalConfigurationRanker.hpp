@@ -21,12 +21,19 @@ public:
   /// Defaults to unit vector.
   /// \param[in] nominalConfiguration Nominal configuration. The current
   /// configuration of \c metaSkeleton is considered if set to \c nullptr.
+  // NominalConfigurationRanker(
+  //     statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+  //     ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+  //     std::vector<double> weights = std::vector<double>(),
+  //     const statespace::CartesianProduct::State* nominalConfiguration
+  //     = nullptr);
+
   NominalConfigurationRanker(
       statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      std::vector<double> weights = std::vector<double>(),
-      const statespace::CartesianProduct::State* nominalConfiguration
-      = nullptr);
+      std::vector<double> weights,
+      statespace::CartesianProduct::ScopedState nominalConfiguration);
+
 
 protected:
   /// Returns cost as distance from the Nominal Configuration.
@@ -35,7 +42,7 @@ protected:
       const override;
 
   /// Nominal configuration used when evaluating a given configuration.
-  const statespace::dart::MetaSkeletonStateSpace::State* mNominalConfiguration;
+  statespace::dart::MetaSkeletonStateSpace::ScopedState mNominalConfiguration;
 };
 
 } // namespace distance
