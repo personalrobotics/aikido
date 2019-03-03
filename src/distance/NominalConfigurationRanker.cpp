@@ -33,20 +33,12 @@ NominalConfigurationRanker::NominalConfigurationRanker(
   , mNominalConfiguration(std::move(nominalConfiguration))
 {
   // do nothing
-  Eigen::VectorXd positions;
-
-  mMetaSkeletonStateSpace->convertStateToPositions(mNominalConfiguration, positions);
-  std::cout << "NominalConfigurationRanker constructor positions " << positions.transpose() << std::endl;
-
 }
 
 //==============================================================================
 double NominalConfigurationRanker::evaluateConfiguration(
     const statespace::dart::MetaSkeletonStateSpace::State* solution) const
 {
-  Eigen::VectorXd positions;
-  mMetaSkeletonStateSpace->convertStateToPositions(mNominalConfiguration, positions);
-  std::cout << "NominalConfigurationRanker positions " << positions.transpose() << std::endl;
   return mDistanceMetric->distance(solution, mNominalConfiguration);
 }
 

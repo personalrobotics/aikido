@@ -131,9 +131,6 @@ FiniteSampleable::FiniteSampleable(
   for (const auto& state : _states)
   {
     mStates.emplace_back(state.clone());
-    Eigen::VectorXd positions;
-    mStateSpace->logMap(state, positions);
-    std::cout << "FiniteSampleGenerator " << positions.transpose() << std::endl;
   }
 }
 

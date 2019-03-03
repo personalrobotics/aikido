@@ -2,6 +2,7 @@
 
 #include <dart/common/Console.hpp>
 #include <dart/common/Memory.hpp>
+#include <iostream>
 
 namespace aikido {
 namespace constraint {
@@ -89,7 +90,12 @@ bool SequentialSampleGenerator::sample(statespace::StateSpace::State* state)
   while (mIndex < mGenerators.size())
   {
     if (mGenerators[mIndex]->sample(state))
+    {
+      // Eigen::VectorXd positions;
+      // mStateSpace->logMap(state, positions);
+      // std::cout << "SequentialSampleGenerator " << mIndex << "/ " << mGenerators.size() << " "  << positions.transpose() << std::endl;
       return true;
+    }
 
     mIndex++;
   }
