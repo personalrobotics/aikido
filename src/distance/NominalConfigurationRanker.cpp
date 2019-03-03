@@ -17,11 +17,6 @@ NominalConfigurationRanker::NominalConfigurationRanker(
   , mNominalConfiguration(std::move(nominalConfiguration))
 {
   // do nothing
-  //
-  //if (!mNominalConfiguration)
-  //  mNominalConfiguration
-  //      = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
-  //          mMetaSkeleton.get());
 }
 
 //==============================================================================
