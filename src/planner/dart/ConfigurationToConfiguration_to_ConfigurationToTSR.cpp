@@ -100,7 +100,6 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     configurationRanker = std::make_shared<const NominalConfigurationRanker>(
         mMetaSkeletonStateSpace,
         mMetaSkeleton,
-        std::vector<double>(),
         nominalState);
   }
 
