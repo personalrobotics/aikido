@@ -74,22 +74,20 @@ TEST_F(NominalConfigurationRankerTest, Constructor)
 
   std::vector<double> negativeWeights{-1, 0};
   EXPECT_THROW(
-      NominalConfigurationRanker(
-          mStateSpace, mManipulator, negativeWeights, nullptr),
+      NominalConfigurationRanker(mStateSpace, mManipulator, negativeWeights),
       std::invalid_argument);
 
   std::vector<double> wrongDimensionWeights{1};
   EXPECT_THROW(
       NominalConfigurationRanker(
-          mStateSpace, mManipulator, wrongDimensionWeights, nullptr),
+          mStateSpace, mManipulator, wrongDimensionWeights),
       std::invalid_argument);
 
   NominalConfigurationRanker rankerOne(mStateSpace, mManipulator);
   DART_UNUSED(rankerOne);
 
   std::vector<double> goodWeights{1, 2};
-  NominalConfigurationRanker rankerTwo(
-      mStateSpace, mManipulator, goodWeights, nullptr);
+  NominalConfigurationRanker rankerTwo(mStateSpace, mManipulator, goodWeights);
   DART_UNUSED(rankerTwo);
 }
 
@@ -138,11 +136,8 @@ TEST_F(NominalConfigurationRankerTest, WeightedOrderTest)
 
   mManipulator->setPositions(Eigen::Vector2d(0.0, 0.0));
   std::vector<double> weights{10, 1};
-  NominalConfigurationRanker ranker(
-      mStateSpace,
-      mManipulator,
-      weights,
-      mStateSpace->getScopedStateFromMetaSkeleton(mManipulator.get()));
+  NominalConfigurationRanker ranker(mStateSpace, mManipulator, weights);
+
   ranker.rankConfigurations(states);
 
   Eigen::VectorXd rankedState(2);
