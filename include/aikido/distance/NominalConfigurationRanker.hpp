@@ -45,7 +45,8 @@ protected:
       const override;
 
   /// Nominal configuration used when evaluating a given configuration.
-  const statespace::dart::MetaSkeletonStateSpace::ScopedState mNominalConfiguration;
+  const statespace::dart::MetaSkeletonStateSpace::ScopedState
+      mNominalConfiguration;
 };
 
 } // namespace distance

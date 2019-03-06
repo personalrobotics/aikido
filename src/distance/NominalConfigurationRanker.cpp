@@ -15,7 +15,7 @@ NominalConfigurationRanker::NominalConfigurationRanker(
   : ConfigurationRanker(
         std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
   , mNominalConfiguration(
-    mMetaSkeletonStateSpace->cloneState(nominalConfiguration))
+        mMetaSkeletonStateSpace->cloneState(nominalConfiguration))
 {
   // Do nothing
 }
@@ -25,12 +25,13 @@ NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
     ConstMetaSkeletonPtr metaSkeleton,
     std::vector<double> weights)
-: ConfigurationRanker(
-      std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
-, mNominalConfiguration(mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
-          mMetaSkeleton.get()))
+  : ConfigurationRanker(
+        std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
+  , mNominalConfiguration(
+        mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
+            mMetaSkeleton.get()))
 {
- // Do nothing
+  // Do nothing
 }
 
 //==============================================================================
