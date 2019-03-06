@@ -83,8 +83,10 @@ TEST_F(NominalConfigurationRankerTest, Constructor)
           mStateSpace, mManipulator, wrongDimensionWeights),
       std::invalid_argument);
 
-  auto nominalState = mStateSpace->getScopedStateFromMetaSkeleton(mManipulator.get());
-  NominalConfigurationRanker rankerZero(mStateSpace, mManipulator, nominalState);
+  auto nominalState
+      = mStateSpace->getScopedStateFromMetaSkeleton(mManipulator.get());
+  NominalConfigurationRanker rankerZero(
+      mStateSpace, mManipulator, nominalState);
   DART_UNUSED(rankerZero);
 
   NominalConfigurationRanker rankerOne(mStateSpace, mManipulator);
