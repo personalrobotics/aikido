@@ -179,7 +179,8 @@ trajectory::TrajectoryPtr planToTSR(
     RNG* rng,
     double timelimit,
     std::size_t maxNumTrials,
-    const distance::ConstConfigurationRankerPtr& ranker)
+    const distance::ConstConfigurationRankerPtr& ranker,
+    const std::shared_ptr<aikido::planner::Planner>& planner)
 {
   dart::common::Timer timer;
   timer.start();
@@ -540,7 +541,11 @@ trajectory::TrajectoryPtr planToTSR(
       auto problem = ConfigurationToConfiguration(
           space, startState, configurations[i], collisionTestable);
 
-      auto traj = snapPlanner->plan(problem, &pResult);
+      TrajectoryPtr traj;
+      if (planner)
+        traj = planner->plan(problem, &pResult);
+      else
+        traj = snapPlanner->plan(problem, &pResult);
 
       if (traj)
       {

@@ -11,6 +11,7 @@
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/io/yaml.hpp"
+#include "aikido/planner/Planner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
@@ -146,7 +147,8 @@ trajectory::TrajectoryPtr planToTSR(
     common::RNG* rng,
     double timelimit,
     std::size_t maxNumTrials,
-    const distance::ConstConfigurationRankerPtr& ranker = nullptr);
+    const distance::ConstConfigurationRankerPtr& ranker = nullptr,
+    const std::shared_ptr<aikido::planner::Planner>& planner = nullptr);
 
 /// Returns a Trajectory that moves the configuration of the metakeleton such
 /// that the specified bodynode is set to a sample in a goal TSR and
