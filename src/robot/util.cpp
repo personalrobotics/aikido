@@ -549,7 +549,7 @@ trajectory::TrajectoryPtr planToTSR(
 
       if (traj)
       {
-        std::cout << "Snap succeeded with " << i << "th sample " << std::endl;
+        std::cout << "Succeeded with " << i << "th sample " << std::endl;
         std:: cout << "Took " << timer.getElapsedTime() << " seconds." << std::endl;
         return traj;
       }
@@ -562,29 +562,6 @@ trajectory::TrajectoryPtr planToTSR(
   std::cout << "Snap Failed " << positions.transpose() << std::endl;
   std:: cout << "Took " << timer.getElapsedTime() << " seconds." << std::endl;
   return nullptr;
-
-  /*
-  // Start the timer
-  dart::common::Timer timer;
-  timer.start();
-  for (std::size_t i = 0; i < configurations.size(); ++i)
-  {
-    auto problem = ConfigurationToConfiguration(
-        space, startState, configurations[i], collisionTestable);
-
-    auto traj = planToConfiguration(
-        space,
-        metaSkeleton,
-        goalState,
-        collisionTestable,
-        rng,
-        std::min(timelimitPerSample, timelimit - timer.getElapsedTime()));
-
-    if (traj)
-      return traj;
-  }
-  return nullptr;
-  */
 }
 
 //==============================================================================

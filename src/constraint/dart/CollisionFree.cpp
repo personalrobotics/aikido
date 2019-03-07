@@ -71,7 +71,7 @@ bool CollisionFree::isSatisfied(
       {
         collisionFreeOutcome->mPairwiseContacts = collisionResult.getContacts();
       }
-      std::cout << collisionFreeOutcome->toString() << std::endl;
+      //std::cout << collisionFreeOutcome->toString() << std::endl;
       return false;
     }
   }
@@ -86,7 +86,7 @@ bool CollisionFree::isSatisfied(
       {
         collisionFreeOutcome->mSelfContacts = collisionResult.getContacts();
       }
-      std::cout << collisionFreeOutcome->toString() << std::endl;
+      //std::cout << collisionFreeOutcome->toString() << std::endl;
       return false;
     }
   }
