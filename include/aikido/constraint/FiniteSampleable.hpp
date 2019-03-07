@@ -1,8 +1,8 @@
 #ifndef AIKIDO_CONSTRAINT_FINITESAMPLEABLE_HPP_
 #define AIKIDO_CONSTRAINT_FINITESAMPLEABLE_HPP_
 
-#include "Sampleable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "Sampleable.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -18,7 +18,8 @@ public:
   /// \param _state The only sample in this constraint.
   FiniteSampleable(
       statespace::StateSpacePtr _stateSpace,
-      const aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState& _state);
+      const aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState&
+          _state);
 
   /// Constructor for multiple samples.
   /// \param _stateSpace StateSpace in which _states belong.
@@ -26,7 +27,8 @@ public:
   ///        SampleGenerator will generate samples in this order.
   FiniteSampleable(
       statespace::StateSpacePtr _stateSpace,
-      const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states);
+      const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::
+                            ScopedState>& _states);
 
   FiniteSampleable(const FiniteSampleable& other) = delete;
   FiniteSampleable(FiniteSampleable&& other) = delete;
@@ -44,7 +46,8 @@ public:
 
 private:
   statespace::ConstStateSpacePtr mStateSpace;
-  std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState> mStates;
+  std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>
+      mStates;
 };
 
 } // namespace constraint

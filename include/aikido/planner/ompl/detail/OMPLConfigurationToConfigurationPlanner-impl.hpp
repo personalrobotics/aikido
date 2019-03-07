@@ -161,47 +161,47 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
           "Trajectory.");
     }
 
-  // =============================================================================
-  // Postprocessing to shortcut the path.
-  ::ompl::geometric::PathSimplifier simplifier{si};
+    // =============================================================================
+    // Postprocessing to shortcut the path.
+    ::ompl::geometric::PathSimplifier simplifier{si};
 
-  // Set the parameters for termination of simplification process
-  std::chrono::system_clock::time_point const time_before
-      = std::chrono::system_clock::now();
-  std::chrono::system_clock::time_point time_current;
-  std::chrono::duration<double> const time_limit
-      = std::chrono::duration<double>(2.0);
-  std::size_t empty_steps = 0;
-  std::size_t maxEmptySteps = 10;
-  bool shortcutting = false;
+    // Set the parameters for termination of simplification process
+    std::chrono::system_clock::time_point const time_before
+        = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point time_current;
+    std::chrono::duration<double> const time_limit
+        = std::chrono::duration<double>(2.0);
+    std::size_t empty_steps = 0;
+    std::size_t maxEmptySteps = 10;
+    bool shortcutting = false;
 
-  do
-  {
-    bool const shortened
-        = simplifier.shortcutPath(*path, 1, maxEmptySteps, 1.0, 0.0);
-    if (shortened)
-      empty_steps = 0;
-    else
-      empty_steps += 1;
+    do
+    {
+      bool const shortened
+          = simplifier.shortcutPath(*path, 1, maxEmptySteps, 1.0, 0.0);
+      if (shortened)
+        empty_steps = 0;
+      else
+        empty_steps += 1;
 
-    time_current = std::chrono::system_clock::now();
-    shortcutting = shortcutting || shortened;
+      time_current = std::chrono::system_clock::now();
+      shortcutting = shortcutting || shortened;
 
-  } while (time_current - time_before <= time_limit
-           && empty_steps <= maxEmptySteps);
+    } while (time_current - time_before <= time_limit
+             && empty_steps <= maxEmptySteps);
 
-  // =============================================================================
+    // =============================================================================
 
-  for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
-  {
-    assert(
-        dynamic_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
-            path->getState(idx)));
-    const auto* st
-        = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
-            path->getState(idx));
-    returnTrajectory->addWaypoint(idx, st->mState);
-  }
+    for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
+    {
+      assert(
+          dynamic_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
+              path->getState(idx)));
+      const auto* st
+          = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
+              path->getState(idx));
+      returnTrajectory->addWaypoint(idx, st->mState);
+    }
 
     // Clear the planner internal data.
     mPlanner->clear();

@@ -162,7 +162,7 @@ double findTimeOfClosestStateOnTrajectory(
     double timeStep)
 {
   auto stateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-    traj.getStateSpace());
+      traj.getStateSpace());
   if (!stateSpace)
     throw std::runtime_error("Failed to convert statespace");
 
@@ -196,7 +196,8 @@ double findTimeOfClosestStateOnTrajectory(
 UniqueSplinePtr createPartialTrajectory(
     const Spline& traj, double partialStartTime)
 {
-  std::cout << "traj starts at " << traj.getStartTime() << " ends at " << traj.getEndTime() << std::endl;
+  std::cout << "traj starts at " << traj.getStartTime() << " ends at "
+            << traj.getEndTime() << std::endl;
   if (partialStartTime < traj.getStartTime()
       || partialStartTime > traj.getEndTime())
   {
@@ -264,7 +265,8 @@ UniqueSplinePtr createPartialTrajectory(
         traj.getSegmentStartState(i));
   }
 
-  std::cout << "outputTrajectory starts at " << outputTrajectory->getStartTime() << " ends at " << outputTrajectory->getEndTime() << std::endl;
+  std::cout << "outputTrajectory starts at " << outputTrajectory->getStartTime()
+            << " ends at " << outputTrajectory->getEndTime() << std::endl;
   return outputTrajectory;
 }
 

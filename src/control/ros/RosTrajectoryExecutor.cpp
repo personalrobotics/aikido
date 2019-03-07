@@ -150,7 +150,7 @@ std::future<void> RosTrajectoryExecutor::execute(
         goal,
         boost::bind(&RosTrajectoryExecutor::transitionCallback, this, _1));
 
-    std::cout <<  "Returning future" << std::endl;
+    std::cout << "Returning future" << std::endl;
     return mPromise->get_future();
   }
 }

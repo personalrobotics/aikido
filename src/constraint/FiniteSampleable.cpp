@@ -1,6 +1,6 @@
-#include <aikido/constraint/FiniteSampleable.hpp>
 #include <iostream>
 #include <dart/common/StlHelpers.hpp>
+#include <aikido/constraint/FiniteSampleable.hpp>
 
 namespace aikido {
 namespace constraint {
@@ -12,7 +12,8 @@ public:
   // For internal use only.
   FiniteSampleGenerator(
       statespace::ConstStateSpacePtr _stateSpace,
-      const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states);
+      const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::
+                            ScopedState>& _states);
 
   FiniteSampleGenerator(const FiniteSampleGenerator&) = delete;
   FiniteSampleGenerator(FiniteSampleGenerator&& other) = delete;
@@ -36,7 +37,8 @@ public:
 
 private:
   statespace::ConstStateSpacePtr mStateSpace;
-  std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState> mStates;
+  std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>
+      mStates;
   int mIndex;
 
   friend class FiniteSampleable;
@@ -45,9 +47,9 @@ private:
 //==============================================================================
 FiniteSampleGenerator::FiniteSampleGenerator(
     statespace::ConstStateSpacePtr _stateSpace,
-    const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states)
-  : mStateSpace(std::move(_stateSpace))
-  , mIndex(0)
+    const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::
+                          ScopedState>& _states)
+  : mStateSpace(std::move(_stateSpace)), mIndex(0)
 {
   if (!mStateSpace)
     throw std::invalid_argument("StateSpacePtr is nullptr.");
@@ -117,7 +119,8 @@ FiniteSampleable::FiniteSampleable(
 //==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
-    const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states)
+    const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::
+                          ScopedState>& _states)
   : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)

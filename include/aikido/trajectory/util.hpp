@@ -1,10 +1,10 @@
 #ifndef AIKIDO_TRAJECTORY_UTIL_HPP_
 #define AIKIDO_TRAJECTORY_UTIL_HPP_
 
+#include <dart/dart.hpp>
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-#include <dart/dart.hpp>
 
 namespace aikido {
 namespace trajectory {

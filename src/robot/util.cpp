@@ -203,7 +203,8 @@ trajectory::TrajectoryPtr planToTSR(
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
-  std::cout << "Start positions " << metaSkeleton->getPositions().transpose() << std::endl;
+  std::cout << "Start positions " << metaSkeleton->getPositions().transpose()
+            << std::endl;
 
   // Hardcoded seed for ada
   std::vector<MetaSkeletonStateSpace::ScopedState> seedStates;
@@ -258,7 +259,7 @@ trajectory::TrajectoryPtr planToTSR(
   seedStates.emplace_back(seedState.clone());
 
   seedState = space->createState();
-  seedConfiguration << -1.4778, 2.92522, 1.00283, -2.08638,  1.44895,  1.32235;
+  seedConfiguration << -1.4778, 2.92522, 1.00283, -2.08638, 1.44895, 1.32235;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -268,7 +269,7 @@ trajectory::TrajectoryPtr planToTSR(
   seedStates.emplace_back(seedState.clone());
 
   seedState = space->createState();
-  seedConfiguration <<-2.35264, 4.24509, 3.96006, 1.58616, -2.21484, -2.15233;
+  seedConfiguration << -2.35264, 4.24509, 3.96006, 1.58616, -2.21484, -2.15233;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -316,11 +317,11 @@ trajectory::TrajectoryPtr planToTSR(
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration <<-2.44866, 4.33757, 3.93095, 1.74906, -2.2925, -1.99095;
+  seedConfiguration << -2.44866, 4.33757, 3.93095, 1.74906, -2.2925, -1.99095;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -0.90715, 4.10547, 4.81739, 1.75586, -2.27429, -2.01147 ;
+  seedConfiguration << -0.90715, 4.10547, 4.81739, 1.75586, -2.27429, -2.01147;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -328,7 +329,7 @@ trajectory::TrajectoryPtr planToTSR(
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -2.77921, 2.84293, 1.07646,  -0.0206763, 1.09828, 2.25931;
+  seedConfiguration << -2.77921, 2.84293, 1.07646, -0.0206763, 1.09828, 2.25931;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -336,7 +337,7 @@ trajectory::TrajectoryPtr planToTSR(
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -2.34241, 4.20543, 3.84994, 1.64344, -2.3003, -2.04766 ;
+  seedConfiguration << -2.34241, 4.20543, 3.84994, 1.64344, -2.3003, -2.04766;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -344,11 +345,11 @@ trajectory::TrajectoryPtr planToTSR(
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -1.63667, 2.94542, 0.962171, 2.92917, -1.22056,  1.81286;
+  seedConfiguration << -1.63667, 2.94542, 0.962171, 2.92917, -1.22056, 1.81286;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -1.81719,  2.82256,  1.56441,  2.92916, -1.22059, 1.81307;
+  seedConfiguration << -1.81719, 2.82256, 1.56441, 2.92916, -1.22059, 1.81307;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -356,7 +357,7 @@ trajectory::TrajectoryPtr planToTSR(
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -1.0798, 2.72718, 1.74161, -1.58974,  1.51289, 0.913531;
+  seedConfiguration << -1.0798, 2.72718, 1.74161, -1.58974, 1.51289, 0.913531;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -424,11 +425,11 @@ trajectory::TrajectoryPtr planToTSR(
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -5.5214, 2.92906, 4.00137, 1.90192,  2.81911, 0.205562;
+  seedConfiguration << -5.5214, 2.92906, 4.00137, 1.90192, 2.81911, 0.205562;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -2.32382,  3.3865,  2.30347, 4.8859, 2.9721, -7.43382;
+  seedConfiguration << -2.32382, 3.3865, 2.30347, 4.8859, 2.9721, -7.43382;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -440,15 +441,15 @@ trajectory::TrajectoryPtr planToTSR(
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -14.6813,  4.24396,  4.22699, 3.08014, 1.93032, 5.6674;
+  seedConfiguration << -14.6813, 4.24396, 4.22699, 3.08014, 1.93032, 5.6674;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -14.8694,  3.37569,  2.29006, -1.41612,  2.96088,  11.4257 ;
+  seedConfiguration << -14.8694, 3.37569, 2.29006, -1.41612, 2.96088, 11.4257;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
-  seedConfiguration << -2.13142, 3.31094, 2.04218, -2.27228, 3.94973,  3.93241;
+  seedConfiguration << -2.13142, 3.31094, 2.04218, -2.27228, 3.94973, 3.93241;
   space->convertPositionsToState(seedConfiguration, seedState);
   seedStates.emplace_back(seedState.clone());
 
@@ -463,12 +464,7 @@ trajectory::TrajectoryPtr planToTSR(
 
   // Convert TSR constraint into IK constraint
   InverseKinematicsSampleable ikSampleable(
-      space,
-      metaSkeleton,
-      tsr,
-      seedSampleable,
-      ik,
-      maxNumTrials);
+      space, metaSkeleton, tsr, seedSampleable, ik, maxNumTrials);
 
   auto generator = ikSampleable.createSampleGenerator();
 
@@ -492,8 +488,9 @@ trajectory::TrajectoryPtr planToTSR(
 
     auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
     SnapConfigurationToConfigurationPlanner::Result pResult;
-    auto snapPlanner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-        space, std::make_shared<GeodesicInterpolator>(space));
+    auto snapPlanner
+        = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+            space, std::make_shared<GeodesicInterpolator>(space));
 
     std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
 
@@ -525,7 +522,8 @@ trajectory::TrajectoryPtr planToTSR(
 
     if (configurations.empty())
     {
-      std::cout <<"Failed to get any valid IK sample on batch " << batchIdx << std::endl;
+      std::cout << "Failed to get any valid IK sample on batch " << batchIdx
+                << std::endl;
       continue;
     }
 
@@ -550,17 +548,17 @@ trajectory::TrajectoryPtr planToTSR(
       if (traj)
       {
         std::cout << "Succeeded with " << i << "th sample " << std::endl;
-        std:: cout << "Took " << timer.getElapsedTime() << " seconds." << std::endl;
+        std::cout << "Took " << timer.getElapsedTime() << " seconds."
+                  << std::endl;
         return traj;
       }
     }
-
   }
 
   Eigen::VectorXd positions;
   space->convertStateToPositions(startState, positions);
   std::cout << "Snap Failed " << positions.transpose() << std::endl;
-  std:: cout << "Took " << timer.getElapsedTime() << " seconds." << std::endl;
+  std::cout << "Took " << timer.getElapsedTime() << " seconds." << std::endl;
   return nullptr;
 }
 
