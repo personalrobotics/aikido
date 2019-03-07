@@ -13,6 +13,8 @@
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 
+#include <ompl/geometric/PathSimplifier.h>
+
 namespace aikido {
 namespace planner {
 namespace ompl {
@@ -146,7 +148,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
 
   if (solved)
   {
-    auto returnTraj = std::make_shared<trajectory::Interpolated>(
+    auto returnTrajectory = std::make_shared<trajectory::Interpolated>(
         mStateSpace, sspace->getInterpolator());
 
     // Get the path
@@ -159,23 +161,57 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
           "Trajectory.");
     }
 
-    for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
-    {
-      assert(
-          dynamic_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
-              path->getState(idx)));
-      const auto* st
-          = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
-              path->getState(idx));
-      returnTraj->addWaypoint(idx, st->mState);
-    }
+  // =============================================================================
+  // Postprocessing to shortcut the path.
+  ::ompl::geometric::PathSimplifier simplifier{si};
+
+  // Set the parameters for termination of simplification process
+  std::chrono::system_clock::time_point const time_before
+      = std::chrono::system_clock::now();
+  std::chrono::system_clock::time_point time_current;
+  std::chrono::duration<double> const time_limit
+      = std::chrono::duration<double>(2.0);
+  std::size_t empty_steps = 0;
+  std::size_t maxEmptySteps = 10;
+  bool shortcutting = false;
+
+  do
+  {
+    bool const shortened
+        = simplifier.shortcutPath(*path, 1, maxEmptySteps, 1.0, 0.0);
+    if (shortened)
+      empty_steps = 0;
+    else
+      empty_steps += 1;
+
+    time_current = std::chrono::system_clock::now();
+    shortcutting = shortcutting || shortened;
+
+  } while (time_current - time_before <= time_limit
+           && empty_steps <= maxEmptySteps);
+
+  // =============================================================================
+
+  for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
+  {
+    assert(
+        dynamic_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
+            path->getState(idx)));
+    const auto* st
+        = static_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
+            path->getState(idx));
+    returnTrajectory->addWaypoint(idx, st->mState);
+  }
+
     // Clear the planner internal data.
     mPlanner->clear();
-    return returnTraj;
+    return returnTrajectory;
   }
 
   if (result)
     result->setMessage("Problem could not be solved.");
+
+  // Clear the planner even in failure.
   mPlanner->clear();
   return nullptr;
 }
