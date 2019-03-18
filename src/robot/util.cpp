@@ -108,17 +108,17 @@ trajectory::TrajectoryPtr planToConfiguration(
   untimedTrajectory = planner->plan(problem, &pResult);
 
   // Return if the trajectory is non-empty
-  if (untimedTrajectory)
+  // if (untimedTrajectory)
     return untimedTrajectory;
 
-  auto plannerOMPL = std::
-      make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
-                                                              RRTConnect>>(
-          space, rng);
+  // auto plannerOMPL = std::
+  //     make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
+  //                                                             RRTConnect>>(
+  //         space, rng);
 
-  untimedTrajectory = plannerOMPL->plan(problem, &pResult);
+  // untimedTrajectory = plannerOMPL->plan(problem, &pResult);
 
-  return untimedTrajectory;
+  // return untimedTrajectory;
 }
 
 //==============================================================================

@@ -38,15 +38,15 @@ bool CollisionFree::isSatisfied(
     TestableOutcome* outcome) const
 {
   // CollisionFreeOutcome* collisionFreeOutcome
-  //     = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);
+      // = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);
 
   // if (collisionFreeOutcome)
   // {
-  //   collisionFreeOutcome->clear();
+    // collisionFreeOutcome->clear();
   // }
   // else
   // {
-  //   collisionFreeOutcome = new CollisionFreeOutcome();
+    // collisionFreeOutcome = new CollisionFreeOutcome();
   // }
   auto _outcome = this->createOutcome();
   auto collisionFreeOutcome
@@ -72,7 +72,7 @@ bool CollisionFree::isSatisfied(
       {
         collisionFreeOutcome->mPairwiseContacts = collisionResult.getContacts();
       }
-      // std::cout << collisionFreeOutcome->toString() << std::endl;
+      std::cout << collisionFreeOutcome->toString() << std::endl;
       return false;
     }
   }
@@ -87,7 +87,7 @@ bool CollisionFree::isSatisfied(
       {
         collisionFreeOutcome->mSelfContacts = collisionResult.getContacts();
       }
-      // std::cout << collisionFreeOutcome->toString() << std::endl;
+      std::cout << collisionFreeOutcome->toString() << std::endl;
       return false;
     }
   }
