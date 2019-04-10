@@ -146,13 +146,11 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
   // OMPL).
   auto solved = mPlanner->solve(::ompl::base::plannerNonTerminatingCondition());
 
-  if (solved == ::ompl::base::PlannerStatus::EXACT_SOLUTION)
+  if (solved)
   {
-    std::cout << __LINE__ << "  " << __FILE__ << std::endl;
     auto returnTraj = std::make_shared<trajectory::Interpolated>(
         mStateSpace, sspace->getInterpolator());
 
-    std::cout << __LINE__ << "  " << __FILE__ << std::endl;
     // Get the path
     auto path = ompl_dynamic_pointer_cast<::ompl::geometric::PathGeometric>(
         pdef->getSolutionPath());
@@ -165,7 +163,6 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
 
     for (std::size_t idx = 0; idx < path->getStateCount(); ++idx)
     {
-      std::cout << __LINE__ << "  " << __FILE__ << std::endl;
       assert(
           dynamic_cast<aikido::planner::ompl::GeometricStateSpace::StateType*>(
               path->getState(idx)));
@@ -175,8 +172,7 @@ OMPLConfigurationToConfigurationPlanner<PlannerType>::plan(
       returnTraj->addWaypoint(idx, st->mState);
     }
     // Clear the planner internal data.
-    // mPlanner->clear();
-    std::cout << __LINE__ << "  " << __FILE__ << std::endl;
+    mPlanner->clear();
     return returnTraj;
   }
 

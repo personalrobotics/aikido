@@ -98,8 +98,8 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const ::dart::dynamics::ConstBodyNodePtr& bn,
-    const aikido::constraint::ConstTestablePtr& constraint,
+    const ::dart::dynamics::BodyNodePtr& bn,
+    const aikido::constraint::TestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double conversionRatioInGeodesicDistance,
