@@ -3,7 +3,6 @@ set(sources
   VectorField.cpp
   VectorFieldUtil.cpp
   VectorFieldConfigurationToEndEffectorOffsetPlanner.cpp
-  VectorFieldConfigurationToEndEffectorPosePlanner.cpp
   detail/VectorFieldIntegrator.cpp
   detail/VectorFieldPlannerExceptions.cpp
   BodyNodePoseVectorField.cpp

@@ -116,46 +116,35 @@ double VectorFieldIntegrator::getLastEvaluationTime()
 void VectorFieldIntegrator::step(
     const Eigen::VectorXd& q, Eigen::VectorXd& qd, double /*_t*/)
 {
-  // std::cout << __LINE__ << " " << __FILE__ << std::endl;
   mVectorField->getStateSpace()->expMap(q, mState);
 
   // compute joint velocities
-  // std::cout << __LINE__ << " " << __FILE__ << std::endl;
   bool success = mVectorField->evaluateVelocity(mState, qd);
   if (!success)
   {
-    // std::cout << __LINE__ << " " << __FILE__ << std::endl;
     throw IntegrationFailedError();
   }
-  // std::cout << __LINE__ << " " << __FILE__ << std::endl;
 }
 
 //==============================================================================
 void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
 {
-  // std::cout << __LINE__ << " " << __FILE__ << std::endl;
   if (mTimer.getElapsedTime() > mTimelimit)
   {
-    std::cout << __LINE__ << " " << __FILE__ << std::endl;
     throw TimeLimitError();
   }
 
-// std::cout << __LINE__ << " " << __FILE__ << std::endl;
   mVectorField->getStateSpace()->expMap(q, mState);
 
-// std::cout << __LINE__ << " " << __FILE__ << std::endl;
   Knot knot;
   knot.mT = t;
   knot.mPositions = q;
   mKnots.push_back(knot);
 
-// std::cout << __LINE__ << " " << __FILE__ << std::endl;
   if (mKnots.size() > 1)
   {
-    // std::cout << __LINE__ << " " << __FILE__ << std::endl;
     auto trajSegment = convertToSpline(mKnots, mVectorField->getStateSpace());
 
-// std::cout << __LINE__ << " " << __FILE__ << std::endl;
     if (!mVectorField->evaluateTrajectory(
             *trajSegment,
             mConstraint,
@@ -163,26 +152,21 @@ void VectorFieldIntegrator::check(const Eigen::VectorXd& q, double t)
             mLastEvaluationTime,
             false))
     {
-      // std::cout << __LINE__ << " " << __FILE__ << std::endl;
       throw ConstraintViolatedError();
     }
   }
 
-// std::cout << __LINE__ << " " << __FILE__ << std::endl;
   VectorFieldPlannerStatus status = mVectorField->evaluateStatus(mState);
 
   if (status == VectorFieldPlannerStatus::CACHE_AND_CONTINUE
       || status == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
   {
-    // std::cout << __LINE__ << " " << __FILE__ << std::endl;
-    // std::cout << mKnots.size() << std::endl;
     mCacheIndex = mKnots.size();
   }
 
   if (status == VectorFieldPlannerStatus::TERMINATE
       || status == VectorFieldPlannerStatus::CACHE_AND_TERMINATE)
   {
-    // std::cout << __LINE__ << " " << __FILE__ << std::endl;
     throw VectorFieldTerminated(
         "Planning was terminated by the StatusCallback.");
   }
