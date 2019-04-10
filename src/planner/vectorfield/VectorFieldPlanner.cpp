@@ -52,6 +52,7 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
     Eigen::VectorXd initialQ(dimension);
     vectorField.getStateSpace()->logMap(&startState, initialQ);
     // The current implementation works only in real vector spaces.
+
     // Integrate the vector field to get a configuration space path.
     boost::numeric::odeint::integrate_adaptive(
         errorStepper(),
@@ -70,7 +71,6 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
             integrator,
             std::placeholders::_1,
             std::placeholders::_2));
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
   }
   // VectorFieldTerminated is an exception that is raised internally to
   // terminate
@@ -126,7 +126,6 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
       return nullptr;
     }
   }
-  std::cout << "FUckn" << std::endl;
   return outputTrajectory;
 }
 
