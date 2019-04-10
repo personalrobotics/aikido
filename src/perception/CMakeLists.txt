@@ -45,8 +45,9 @@ endif()
 set(sources
   PoseEstimatorModule.cpp
   shape_conversions.cpp
-  ObjectDatabase.cpp
+  AssetDatabase.cpp
   VoxelGridModule.cpp
+  DetectedObject.cpp
 )
 
 add_library("${PROJECT_NAME}_perception" SHARED ${sources})
@@ -87,4 +88,4 @@ add_component(${PROJECT_NAME} perception)
 add_component_targets(${PROJECT_NAME} perception "${PROJECT_NAME}_perception")
 add_component_dependencies(${PROJECT_NAME} perception io)
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})

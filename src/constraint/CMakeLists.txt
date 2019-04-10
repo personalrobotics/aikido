@@ -50,4 +50,4 @@ add_component(${PROJECT_NAME} constraint)
 add_component_targets(${PROJECT_NAME} constraint "${PROJECT_NAME}_constraint")
 add_component_dependencies(${PROJECT_NAME} constraint common statespace)
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})

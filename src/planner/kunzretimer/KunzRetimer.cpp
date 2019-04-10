@@ -1,10 +1,21 @@
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include <dart/dart.hpp>
-#include <aikido/common/Spline.hpp>
-#include <aikido/common/StepSequence.hpp>
+#include "aikido/common/Spline.hpp"
+#include "aikido/common/StepSequence.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
+#include "aikido/trajectory/util.hpp"
 
 #include "Path.h"
 #include "Trajectory.h"
+
+using dart::common::make_unique;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::ConstStateSpacePtr;
+using aikido::trajectory::toR1JointTrajectory;
+using aikido::trajectory::ConstSplinePtr;
+using aikido::trajectory::ConstInterpolatedPtr;
 
 namespace aikido {
 namespace planner {
@@ -15,36 +26,33 @@ namespace detail {
 std::unique_ptr<Path> convertToKunzPath(
     const aikido::trajectory::Interpolated& traj, double maxDeviation)
 {
-  std::list<Eigen::VectorXd> waypoints;
   auto stateSpace = traj.getStateSpace();
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
+  auto metaSkeletonStateSpace
+      = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(stateSpace);
+
+  const aikido::trajectory::Interpolated* trajectory = &traj;
+
+  ConstInterpolatedPtr r1Trajectory;
+  if (metaSkeletonStateSpace)
   {
-    auto tmpState = traj.getWaypoint(i);
+    r1Trajectory = toR1JointTrajectory(traj);
+    stateSpace = r1Trajectory->getStateSpace();
+    trajectory = r1Trajectory.get();
+  }
+
+  // TODO(brian): debug
+  // auto trajectory = toR1JointTrajectory(traj);
+  // auto stateSpace = trajectory->getStateSpace();
+
+  std::list<Eigen::VectorXd> waypoints;
+  Eigen::VectorXd tmpVec(stateSpace->getDimension());
+  for (std::size_t i = 0; i < trajectory->getNumWaypoints(); i++)
+  {
+    auto tmpState = trajectory->getWaypoint(i);
     stateSpace->logMap(tmpState, tmpVec);
     waypoints.push_back(tmpVec);
   }
-
-  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
-  return path;
-}
-
-//==============================================================================
-std::unique_ptr<Path> convertToKunzPath(
-    const aikido::trajectory::Spline& traj, double maxDeviation)
-{
-  std::list<Eigen::VectorXd> waypoints;
-  auto stateSpace = traj.getStateSpace();
-  Eigen::VectorXd tmpVec(stateSpace->getDimension());
-  auto tmpState = stateSpace->createState();
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); i++)
-  {
-    traj.getWaypoint(i, tmpState);
-    stateSpace->logMap(tmpState, tmpVec);
-    waypoints.push_back(tmpVec);
-  }
-
-  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
+  auto path = make_unique<Path>(waypoints, maxDeviation);
   return path;
 }
 
@@ -133,43 +141,6 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
   }
 
   double startTime = inputTrajectory.getStartTime();
-
-  auto path = detail::convertToKunzPath(inputTrajectory, maxDeviation);
-  Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
-  return detail::convertToSpline(trajectory, stateSpace, timeStep, startTime);
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
-    const aikido::trajectory::Spline& inputTrajectory,
-    const Eigen::VectorXd& maxVelocity,
-    const Eigen::VectorXd& maxAcceleration,
-    double maxDeviation,
-    double timeStep)
-{
-  const auto stateSpace = inputTrajectory.getStateSpace();
-  const auto dimension = stateSpace->getDimension();
-
-  if (static_cast<std::size_t>(maxVelocity.size()) != dimension)
-    throw std::invalid_argument("Velocity limits have wrong dimension.");
-
-  if (static_cast<std::size_t>(maxAcceleration.size()) != dimension)
-    throw std::invalid_argument("Acceleration limits have wrong dimension.");
-
-  for (std::size_t i = 0; i < dimension; ++i)
-  {
-    if (maxVelocity[i] <= 0.)
-      throw std::invalid_argument("Velocity limits must be positive.");
-    if (!std::isfinite(maxVelocity[i]))
-      throw std::invalid_argument("Velocity limits must be finite.");
-
-    if (maxAcceleration[i] <= 0.)
-      throw std::invalid_argument("Acceleration limits must be positive.");
-    if (!std::isfinite(maxAcceleration[i]))
-      throw std::invalid_argument("Acceleration limits must be finite.");
-  }
-
-  double startTime = inputTrajectory.getStartTime();
   auto path = detail::convertToKunzPath(inputTrajectory, maxDeviation);
   Trajectory trajectory(*path, maxVelocity, maxAcceleration, timeStep);
   return detail::convertToSpline(trajectory, stateSpace, timeStep, startTime);
@@ -205,16 +176,12 @@ std::unique_ptr<aikido::trajectory::Spline> KunzRetimer::postprocess(
 
 //==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> KunzRetimer::postprocess(
-    const aikido::trajectory::Spline& inputTraj,
+    const aikido::trajectory::Spline& /*inputTraj*/,
     const aikido::common::RNG& /*rng*/,
     const aikido::constraint::TestablePtr& /*constraint*/)
 {
-  return computeKunzTiming(
-      inputTraj,
-      mVelocityLimits,
-      mAccelerationLimits,
-      mMaxDeviation,
-      mTimeStep);
+  throw std::runtime_error(
+      "[KunzRetimer] does not support postprocessing spline trajectory.");
 }
 
 //==============================================================================

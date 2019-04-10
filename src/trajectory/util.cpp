@@ -11,11 +11,19 @@
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SO2.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 using aikido::statespace::R;
+using aikido::statespace::R1;
 using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
+using aikido::statespace::ConstStateSpacePtr;
+using aikido::statespace::GeodesicInterpolator;
+using aikido::statespace::StateSpacePtr;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+using dart::common::make_unique;
 
 using Eigen::Vector2d;
 using LinearSplineProblem
@@ -30,36 +38,8 @@ namespace {
 
 bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 {
-  // TODO(JS): Generalize Rn<N> for arbitrary N.
-  if (dynamic_cast<const R<0>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<1>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<2>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<3>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<4>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<5>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<6>*>(_stateSpace) != nullptr)
-  {
-    return true;
-  }
-  else if (dynamic_cast<const R<Eigen::Dynamic>*>(_stateSpace) != nullptr)
+  // Only supports single-DOF joint spaces, namely R1 and SO2.
+  if (dynamic_cast<const R1*>(_stateSpace) != nullptr)
   {
     return true;
   }
@@ -83,7 +63,7 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
   }
 }
 
-} // (anonymous) namespace
+} // namespace
 
 //==============================================================================
 UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
@@ -103,14 +83,13 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
 
   if (!checkStateSpace(stateSpace.get()))
     throw std::invalid_argument(
-        "convertToSpline only supports Rn, "
-        "SO2, and CartesianProducts consisting of those types.");
+        "convertToSpline only supports Rn and SO2 joint spaces");
 
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
 
-  auto outputTrajectory = ::dart::common::make_unique<Spline>(
-      stateSpace, inputTrajectory.getStartTime());
+  auto outputTrajectory
+      = make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
@@ -140,25 +119,6 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
 }
 
 //==============================================================================
-UniqueInterpolatedPtr convertToInterpolated(
-    const Spline& traj, statespace::ConstInterpolatorPtr interpolator)
-{
-  auto stateSpace = traj.getStateSpace();
-  auto outputTrajectory = ::dart::common::make_unique<Interpolated>(
-      stateSpace, std::move(interpolator));
-
-  auto state = stateSpace->createState();
-  for (std::size_t i = 0; i < traj.getNumWaypoints(); ++i)
-  {
-    traj.getWaypoint(i, state);
-    const double t = traj.getWaypointTime(i);
-    outputTrajectory->addWaypoint(t, state);
-  }
-
-  return outputTrajectory;
-}
-
-//==============================================================================
 UniqueInterpolatedPtr concatenate(
     const Interpolated& traj1, const Interpolated& traj2)
 {
@@ -168,7 +128,7 @@ UniqueInterpolatedPtr concatenate(
   if (traj1.getInterpolator() != traj2.getInterpolator())
     throw std::runtime_error("Interpolator mismatch");
 
-  auto outputTrajectory = ::dart::common::make_unique<Interpolated>(
+  auto outputTrajectory = make_unique<Interpolated>(
       traj1.getStateSpace(), traj1.getInterpolator());
   if (traj1.getNumWaypoints() > 1u)
   {
@@ -187,22 +147,6 @@ UniqueInterpolatedPtr concatenate(
   }
 
   return outputTrajectory;
-}
-
-//==============================================================================
-UniqueSplinePtr concatenate(const Spline& traj1, const Spline& traj2)
-{
-  if (traj1.getStateSpace() != traj2.getStateSpace())
-    throw std::runtime_error("State space mismatch");
-
-  const auto& stateSpace = traj1.getStateSpace();
-  statespace::ConstInterpolatorPtr interpolator
-      = std::make_shared<statespace::GeodesicInterpolator>(stateSpace);
-  auto interpolated1 = convertToInterpolated(traj1, interpolator);
-  auto interpolated2 = convertToInterpolated(traj2, interpolator);
-  auto concatenatedInterpolated = concatenate(*interpolated1, *interpolated2);
-
-  return convertToSpline(*concatenatedInterpolated);
 }
 
 //==============================================================================
@@ -253,8 +197,7 @@ UniqueSplinePtr createPartialTrajectory(
 
   const auto stateSpace = traj.getStateSpace();
   const int dimension = static_cast<int>(stateSpace->getDimension());
-  auto outputTrajectory
-      = ::dart::common::make_unique<Spline>(stateSpace, traj.getStartTime());
+  auto outputTrajectory = make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;
@@ -313,6 +256,57 @@ UniqueSplinePtr createPartialTrajectory(
   }
 
   return outputTrajectory;
+}
+
+//==============================================================================
+UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
+{
+  if (!checkStateSpace(trajectory.getStateSpace().get()))
+    throw std::invalid_argument(
+        "toR1JointTrajectory only supports R1 and SO2 joint spaces");
+
+  auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
+      trajectory.getInterpolator());
+  if (!interpolator)
+    throw std::invalid_argument(
+        "The interpolator of trajectory should be a GeodesicInterpolator");
+
+  // Create new trajectory space.
+  auto space = trajectory.getStateSpace();
+  std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
+  for (std::size_t i = 0; i < space->getDimension(); ++i)
+    subspaces.emplace_back(std::make_shared<const R1>());
+
+  auto rSpace = std::make_shared<CartesianProduct>(subspaces);
+  auto rInterpolator = std::make_shared<GeodesicInterpolator>(rSpace);
+  auto rTrajectory = make_unique<Interpolated>(rSpace, rInterpolator);
+
+  Eigen::VectorXd sourceVector(space->getDimension());
+  auto sourceState = rSpace->createState();
+
+  // Add the first waypoint
+  space->logMap(trajectory.getWaypoint(0), sourceVector);
+  rSpace->expMap(sourceVector, sourceState);
+  rTrajectory->addWaypoint(trajectory.getWaypointTime(0), sourceState);
+
+  auto tangentState = rSpace->createState();
+  auto targetState = rSpace->createState();
+
+  // Add the remaining waypoints
+  for (std::size_t i = 0; i < trajectory.getNumWaypoints() - 1; ++i)
+  {
+    const auto tangentVector = interpolator->getTangentVector(
+        trajectory.getWaypoint(i), trajectory.getWaypoint(i + 1));
+
+    rSpace->expMap(sourceVector, sourceState);
+    rSpace->expMap(tangentVector, tangentState);
+    rSpace->compose(sourceState, tangentState, targetState);
+
+    rTrajectory->addWaypoint(trajectory.getWaypointTime(i + 1), targetState);
+    rSpace->logMap(targetState, sourceVector);
+  }
+
+  return rTrajectory;
 }
 
 } // namespace trajectory
