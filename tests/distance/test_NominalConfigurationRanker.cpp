@@ -157,6 +157,18 @@ TEST_F(NominalConfigurationRankerTest, GivenNominalConfigurationOrderTest)
     mStateSpace->convertStateToPositions(states[i], rankedState);
     EXPECT_EIGEN_EQUAL(rankedState, jointPositions[i], EPS);
   }
+
+  // Change the nominalState
+  nominalConfiguration = Eigen::Vector2d(0.0, 0.0);
+  mStateSpace->convertPositionsToState(nominalConfiguration, nominalState);
+
+  // The ranking should state the same
+  ranker.rankConfigurations(states);
+  for (std::size_t i = 0; i < states.size(); ++i)
+  {
+    mStateSpace->convertStateToPositions(states[i], rankedState);
+    EXPECT_EIGEN_EQUAL(rankedState, jointPositions[i], EPS);
+  }
 }
 
 TEST_F(NominalConfigurationRankerTest, WeightedOrderTest)
