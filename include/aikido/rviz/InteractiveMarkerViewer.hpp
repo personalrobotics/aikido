@@ -13,6 +13,7 @@
 
 #include <aikido/constraint/dart/TSR.hpp>
 #include <aikido/rviz/TSRMarker.hpp>
+#include <aikido/rviz/ManipulatorMarker.hpp>
 #include <aikido/rviz/pointers.hpp>
 #include <aikido/trajectory/Trajectory.hpp>
 
@@ -55,6 +56,11 @@ public:
       int nSamples = 10,
       const std::string& basename = "");
 
+
+  ManipulatorMarkerPtr addManipulatorMarker(
+    dart::dynamics::MetaSkeletonPtr skeleton,
+    const dart::dynamics::Frame& frame);
+
   /// Adds trajectory marker to this viewer.
   ///
   /// \param[in] trajectory C-space (or joint-space) trajectory.
@@ -86,6 +92,7 @@ protected:
   interactive_markers::InteractiveMarkerServer mMarkerServer;
   std::set<SkeletonMarkerPtr> mSkeletonMarkers;
   std::set<FrameMarkerPtr> mFrameMarkers;
+  std::set<ManipulatorMarkerPtr> mManipulatorMarkers;
   std::set<TrajectoryMarkerPtr> mTrajectoryMarkers;
 
   /// NameManager for name uniqueness of trajectories in the same

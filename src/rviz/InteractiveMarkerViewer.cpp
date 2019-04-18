@@ -104,6 +104,25 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
 }
 
 //==============================================================================
+ManipulatorMarkerPtr InteractiveMarkerViewer::addManipulatorMarker(
+    dart::dynamics::MetaSkeletonPtr skeleton,
+    const dart::dynamics::Frame& frame)
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  DART_UNUSED(lock);
+  auto marker = std::make_shared<ManipulatorMarker>(
+      &mMarkerServer,
+      mFrameId,
+      "",
+      std::move(skeleton),
+      frame,
+      nullptr);
+  mManipulatorMarkers.insert(marker);
+
+  return marker;
+}
+
+//==============================================================================
 TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
     trajectory::ConstTrajectoryPtr trajectory,
     dart::dynamics::MetaSkeletonPtr skeleton,

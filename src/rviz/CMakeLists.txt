@@ -28,6 +28,7 @@ set(sources
   BodyNodeMarker.cpp
   FrameMarker.cpp
   InteractiveMarkerViewer.cpp
+  ManipulatorMarker.cpp
   ResourceServer.cpp
   ShapeFrameMarker.cpp
   SkeletonMarker.cpp
