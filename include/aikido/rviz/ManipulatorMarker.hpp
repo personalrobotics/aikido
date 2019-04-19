@@ -4,6 +4,7 @@
 #include <dart/dynamics/Frame.hpp>
 #include <dart/dynamics/InverseKinematics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
+#include <interactive_markers/menu_handler.h>
 #include <visualization_msgs/InteractiveMarker.h>
 #include "aikido/common/pointers.hpp"
 #include "aikido/constraint/Testable.hpp"
@@ -43,8 +44,8 @@ public:
   void update();
 
 private:
-  /// Queries the marker pose to decide if an update is required.
-  void getMarkerPose(visualization_msgs::InteractiveMarkerFeedbackConstPtr const& feedback);
+  /// Queries the interaction with the marker.
+  void markerCallback(visualization_msgs::InteractiveMarkerFeedbackConstPtr const& feedback);
 
   /// Returns marker.
   visualization_msgs::Marker& getMarker();

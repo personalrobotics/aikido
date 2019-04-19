@@ -23,7 +23,7 @@ ManipulatorMarker::ManipulatorMarker(
   , mFrameId(frameId)
   , mManipulatorSkeleton(std::move(manipulatorSkeleton))
   , mBodyNode(bodynode)
-  , mNeedUpdate(true)
+  , mNeedUpdate(false)
 {
   // Create an IK solver with metaSkeleton dofs.
   mInverseKinematics = dart::dynamics::InverseKinematics::create(mBodyNode);
@@ -74,10 +74,9 @@ ManipulatorMarker::ManipulatorMarker(
   mInteractiveMarker.controls.push_back(control);
 
   mMarkerServer->insert(mInteractiveMarker);
-  mMarkerServer->setCallback(mInteractiveMarker.name, boost::bind(&ManipulatorMarker::getMarkerPose, this, _1));
+  mMarkerServer->setCallback(mInteractiveMarker.name, boost::bind(&ManipulatorMarker::markerCallback, this, _1));
 
-  // TODO (avk): Optionally create a menu for setting DOF values.
-  // createMenu();
+  // TODO (avk): Optionally create a rviz panel to display and set joints.
 }
 
 //==============================================================================
@@ -103,7 +102,7 @@ void ManipulatorMarker::update()
 }
 
 //==============================================================================
-void ManipulatorMarker::getMarkerPose(InteractiveMarkerFeedbackConstPtr const& feedback)
+void ManipulatorMarker::markerCallback(InteractiveMarkerFeedbackConstPtr const& feedback)
 {
   // Compute the IK of the robot and set state accordingle.
   if (feedback->event_type == InteractiveMarkerFeedback::POSE_UPDATE) 
