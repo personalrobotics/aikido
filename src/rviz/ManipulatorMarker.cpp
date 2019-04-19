@@ -16,20 +16,23 @@ ManipulatorMarker::ManipulatorMarker(
     const std::string& frameId,
     const std::string& markerName,
     dart::dynamics::MetaSkeletonPtr manipulatorSkeleton,
-    const dart::dynamics::Frame& frame,
+    const dart::dynamics::BodyNodePtr bodynode,
     aikido::constraint::TestablePtr collisionConstraint)
   : mMarkerServer(markerServer)
   , mInteractiveMarker()
   , mFrameId(frameId)
   , mManipulatorSkeleton(std::move(manipulatorSkeleton))
-  , mFrame(frame)
+  , mBodyNode(bodynode)
   , mNeedUpdate(true)
 {
+  // Create an IK solver with metaSkeleton dofs.
+  mInverseKinematics = dart::dynamics::InverseKinematics::create(mBodyNode);
+
   // Setting invariant properties
   mInteractiveMarker.header.frame_id = mFrameId;
   mInteractiveMarker.name = markerName;
   mInteractiveMarker.pose
-      = convertEigenToROSPose(mFrame.getWorldTransform());
+      = convertEigenToROSPose(mBodyNode->getWorldTransform());
   mInteractiveMarker.scale = 0.3;
 
   InteractiveMarkerControl control;
@@ -86,10 +89,15 @@ ManipulatorMarker::~ManipulatorMarker()
 //==============================================================================
 void ManipulatorMarker::update()
 {
-  // Update the marker.
+  if (!mNeedUpdate)
+    return;
 
-  // Insert the marker into the server. TODO (avk): Is this step necessary?
-  mMarkerServer->insert(mInteractiveMarker);
+  // Update the target pose for the IK Solver.
+  mInverseKinematics->getTarget()->setTransform(mMarkerPose);
+
+  // Solve IK. If successful, update the skeleton.
+  bool success = mInverseKinematics->solve(true);
+  DART_UNUSED(success);
 
   mNeedUpdate = false;
 }
@@ -100,7 +108,17 @@ void ManipulatorMarker::getMarkerPose(InteractiveMarkerFeedbackConstPtr const& f
   // Compute the IK of the robot and set state accordingle.
   if (feedback->event_type == InteractiveMarkerFeedback::POSE_UPDATE) 
   {
-    mMarkerPose = feedback->pose;
+    auto markerPose = feedback->pose;
+
+    // Extract the marker pose.
+    mMarkerPose = Eigen::Translation3d(markerPose.position.x,
+                                       markerPose.position.y,
+                                       markerPose.position.z) *
+                  Eigen::Quaterniond(markerPose.orientation.w,
+                                     markerPose.orientation.x,
+                                     markerPose.orientation.y,
+                                     markerPose.orientation.z);
+
     mNeedUpdate = true;
   }
 }
@@ -108,6 +126,7 @@ void ManipulatorMarker::getMarkerPose(InteractiveMarkerFeedbackConstPtr const& f
 //==============================================================================
 Marker& ManipulatorMarker::getMarker()
 {
+  // TODO (avk): Is this the marker to return?
   Marker& marker = mInteractiveMarker.controls.front().markers.front();
   return marker;
 }

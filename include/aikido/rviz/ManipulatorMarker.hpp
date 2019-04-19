@@ -26,24 +26,20 @@ public:
   /// InteractiveMarkerServer. AIKIDO InteractiveMarkerViewer uses a name
   /// manager for the name uniqueness.
   /// \param[in] skeleton DART MetaSkeleton of the manipulator.
-  /// \param[in] frame DART frame for visualizing the manipulator.
+  /// \param[in] bodynode End-Effector of the manipulator to control.
   /// \param[in] collisionConstraint Collision constraints in the environment.
   ManipulatorMarker(
       interactive_markers::InteractiveMarkerServer* markerServer,
       const std::string& frameId,
       const std::string& markerName,
       dart::dynamics::MetaSkeletonPtr skeleton,
-      const dart::dynamics::Frame& frame,
+      const dart::dynamics::BodyNodePtr bodynode,
       aikido::constraint::TestablePtr collisionConstraint);
 
   /// Destructor
   ~ManipulatorMarker();
 
-  /// Updates this marker.
-  ///
-  /// This function should be called after the properties are changed (e.g.,
-  /// trajectory, color, thickness, number of line-segments) so that RViz
-  /// reflects the changes accordingly.
+  /// Updates the pose of the manipulator if the marker pose changed.
   void update();
 
 private:
@@ -71,10 +67,13 @@ private:
   /// DART Metaskeleton.
   dart::dynamics::MetaSkeletonPtr mManipulatorSkeleton;
 
-  /// Target DART frame where the trajectory of its origin will be visualized.
-  const dart::dynamics::Frame& mFrame;
+  /// End-Effector of the manipulator that is controlled with the marker.
+  const dart::dynamics::BodyNodePtr mBodyNode;
 
-  /// Whether the associated RViz marker needs to be updated.
+  /// Inverse Kinematics Solver.
+  dart::dynamics::InverseKinematicsPtr mInverseKinematics;
+
+  /// Flag for whether the associated manipulator skeleton needs to be updated.
   bool mNeedUpdate;
 };
 

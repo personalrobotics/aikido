@@ -98,6 +98,9 @@ void WorldInteractiveMarkerViewer::update()
   for (const auto& marker : mTrajectoryMarkers)
     marker->update();
 
+  for (const auto& marker : mManipulatorMarkers)
+    marker->update();
+
   mMarkerServer.applyChanges();
 }
 

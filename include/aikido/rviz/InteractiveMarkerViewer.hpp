@@ -56,10 +56,13 @@ public:
       int nSamples = 10,
       const std::string& basename = "");
 
-
+  /// Adds an interactive marker to control a manipulator skeleton.
+  /// \param skeleton MetaSkeleton of the manipulator.
+  /// \param bodynode End-Effector of the manipulator to control.
+  /// \return Manipulator marker added to the viewer.
   ManipulatorMarkerPtr addManipulatorMarker(
     dart::dynamics::MetaSkeletonPtr skeleton,
-    const dart::dynamics::Frame& frame);
+    const dart::dynamics::BodyNodePtr bodynode);
 
   /// Adds trajectory marker to this viewer.
   ///
