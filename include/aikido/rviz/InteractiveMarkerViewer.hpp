@@ -30,7 +30,9 @@ public:
   /// \param[in] frameId Base frame name
   /// \param[in] env World to update viewer with
   InteractiveMarkerViewer(
-      const std::string& topicNamespace, const std::string& frameId, aikido::planner::WorldPtr env = nullptr);
+      const std::string& topicNamespace,
+      const std::string& frameId,
+      aikido::planner::WorldPtr env = nullptr);
   virtual ~InteractiveMarkerViewer();
 
   InteractiveMarkerViewer(const InteractiveMarkerViewer&) = delete;
@@ -42,7 +44,8 @@ public:
   /// Visualizes a Skeleton.
   /// \param skeleton Skeleton to add to the viewer
   /// \return Skeleton marker added to the viewer.
-  SkeletonMarkerPtr addSkeletonMarker(const dart::dynamics::SkeletonPtr& skeleton);
+  SkeletonMarkerPtr addSkeletonMarker(
+      const dart::dynamics::SkeletonPtr& skeleton);
 
   /// Visualizes a Frame as a cylinder.
   /// \param[in] frame Target DART frame.

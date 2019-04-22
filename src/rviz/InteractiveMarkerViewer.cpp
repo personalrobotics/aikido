@@ -15,7 +15,9 @@ namespace rviz {
 
 //==============================================================================
 InteractiveMarkerViewer::InteractiveMarkerViewer(
-    const std::string& topicNamespace, const std::string& frameId, aikido::planner::WorldPtr env)
+    const std::string& topicNamespace,
+    const std::string& frameId,
+    aikido::planner::WorldPtr env)
   : mMarkerServer(topicNamespace, "", true)
   , mTrajectoryNameManager("Trajectory Name Manager", "Trajectory")
   , mRunning(false)
@@ -173,8 +175,9 @@ void InteractiveMarkerViewer::update()
       {
         // Either a new SkeletonMarker or a previously-inserted SkeletonMarker
         auto result = mSkeletonMarkers.emplace(
-            skeleton, std::make_shared<SkeletonMarker>(
-      nullptr, &mMarkerServer, skeleton, mFrameId));
+            skeleton,
+            std::make_shared<SkeletonMarker>(
+                nullptr, &mMarkerServer, skeleton, mFrameId));
 
         std::unique_lock<std::mutex> skeleton_lock(
             skeleton->getMutex(), std::try_to_lock);
