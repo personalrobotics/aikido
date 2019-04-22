@@ -162,36 +162,41 @@ void InteractiveMarkerViewer::update()
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
-  // Update SkeletonMarkers from the world.
-  for (std::size_t i = 0; i < mWorld->getNumSkeletons(); ++i)
+  if (mWorld)
   {
-    const dart::dynamics::SkeletonPtr skeleton = mWorld->getSkeleton(i);
-
-    if (skeleton)
+    // Update SkeletonMarkers from the world.
+    for (std::size_t i = 0; i < mWorld->getNumSkeletons(); ++i)
     {
-      // Either a new SkeletonMarker or a previously-inserted SkeletonMarker
-      auto marker = addSkeletonMarker(skeleton);
+      const dart::dynamics::SkeletonPtr skeleton = mWorld->getSkeleton(i);
 
-      std::unique_lock<std::mutex> skeleton_lock(
-          skeleton->getMutex(), std::try_to_lock);
-      if (skeleton_lock.owns_lock())
-        marker->update();
+      if (skeleton)
+      {
+        // Either a new SkeletonMarker or a previously-inserted SkeletonMarker
+        auto result = mSkeletonMarkers.emplace(
+            skeleton, std::make_shared<SkeletonMarker>(
+      nullptr, &mMarkerServer, skeleton, mFrameId));
+
+        std::unique_lock<std::mutex> skeleton_lock(
+            skeleton->getMutex(), std::try_to_lock);
+        if (skeleton_lock.owns_lock())
+          result.first->second->update();
+      }
     }
-  }
 
-  // Clear removed skeletons
-  auto it = std::begin(mSkeletonMarkers);
-  while (it != std::end(mSkeletonMarkers))
-  {
-    // Skeleton still exists in the World, do nothing.
-    if (mWorld->hasSkeleton(it->first))
+    // Clear removed skeletons
+    auto it = std::begin(mSkeletonMarkers);
+    while (it != std::end(mSkeletonMarkers))
     {
-      ++it;
-    }
-    // Skeleton does not exist. Delete our existing ShapeFrameMarker.
-    else
-    {
-      it = mSkeletonMarkers.erase(it);
+      // Skeleton still exists in the World, do nothing.
+      if (mWorld->hasSkeleton(it->first))
+      {
+        ++it;
+      }
+      // Skeleton does not exist. Delete our existing ShapeFrameMarker.
+      else
+      {
+        it = mSkeletonMarkers.erase(it);
+      }
     }
   }
 

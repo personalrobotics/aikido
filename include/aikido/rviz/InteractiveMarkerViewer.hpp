@@ -56,9 +56,6 @@ public:
       double thickness = 0.02,
       double alpha = 1.0);
 
-  SkeletonMarkerPtr CreateSkeletonMarker(
-      const dart::dynamics::SkeletonPtr& skeleton, const std::string& frameId);
-
   /// Visualizes a TSR.
   /// \param tsr TSR constraint
   /// \param nSamples Max number of samples to be used in visualization
@@ -119,15 +116,23 @@ protected:
   dart::common::NameManager<trajectory::ConstTrajectoryPtr>
       mTrajectoryNameManager;
 
+  /// Check if the update thread is running.
   std::atomic_bool mRunning;
-  std::atomic_bool mUpdating;
-  mutable std::mutex mMutex;
-  std::thread mThread;
 
+  /// Check if the updates are happening.
+  std::atomic_bool mUpdating;
+
+  /// Frame ID.
   std::string mFrameId;
 
   /// World that automatically updates the viewer
   aikido::planner::WorldPtr mWorld;
+
+  /// Mutex.
+  mutable std::mutex mMutex;
+
+  /// Thread running the updates.
+  std::thread mThread;
 };
 
 } // namespace rviz
