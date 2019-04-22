@@ -12,6 +12,7 @@
 #include <ros/ros.h>
 
 #include <aikido/constraint/dart/TSR.hpp>
+#include <aikido/planner/World.hpp>
 #include <aikido/rviz/TSRMarker.hpp>
 #include <aikido/rviz/pointers.hpp>
 #include <aikido/trajectory/Trajectory.hpp>
@@ -24,8 +25,12 @@ AIKIDO_DECLARE_POINTERS(InteractiveMarkerViewer)
 class InteractiveMarkerViewer
 {
 public:
+  /// Create an InteractiveMarkerViewer that reflects skeletons in a World.
+  /// \param[in] topicNamespace ROS topic to publish marker updates to
+  /// \param[in] frameId Base frame name
+  /// \param[in] env World to update viewer with
   InteractiveMarkerViewer(
-      const std::string& topicNamespace, const std::string& frameId);
+      const std::string& topicNamespace, const std::string& frameId, aikido::planner::WorldPtr env = nullptr);
   virtual ~InteractiveMarkerViewer();
 
   InteractiveMarkerViewer(const InteractiveMarkerViewer&) = delete;
@@ -34,9 +39,18 @@ public:
 
   interactive_markers::InteractiveMarkerServer& marker_server();
 
-  SkeletonMarkerPtr addSkeleton(const dart::dynamics::SkeletonPtr& skeleton);
+  /// Visualizes a Skeleton.
+  /// \param skeleton Skeleton to add to the viewer
+  /// \return Skeleton marker added to the viewer.
+  SkeletonMarkerPtr addSkeletonMarker(const dart::dynamics::SkeletonPtr& skeleton);
 
-  FrameMarkerPtr addFrame(
+  /// Visualizes a Frame as a cylinder.
+  /// \param[in] frame Target DART frame.
+  /// \param[in] length Length of the cylinderical frame (along z-axis).
+  /// \param[in] thickness Radius (thickness in x and y axes) of cylinder.
+  /// \param[in] alpha Opacity.
+  /// \return Frame marker added to this viewer.
+  FrameMarkerPtr addFrameMarker(
       dart::dynamics::Frame* frame,
       double length = 0.25,
       double thickness = 0.02,
@@ -49,7 +63,7 @@ public:
   /// \param tsr TSR constraint
   /// \param nSamples Max number of samples to be used in visualization
   /// \param basename Basename for markers
-  /// \return TSRMarkerPtr contains sampled frames of TSR.
+  /// \return TSR marker that contains sampled frames of TSR.
   TSRMarkerPtr addTSRMarker(
       const constraint::dart::TSR& tsr,
       int nSamples = 10,
@@ -77,15 +91,27 @@ public:
       double thickness = 0.01,
       std::size_t numLineSegments = 16u);
 
+  /// Set viewer auto-updating.
+  /// \param[in] flag Whether to auto-update the viewer.
   void setAutoUpdate(bool flag);
+
+  /// Update viewer with Skeletons from the World and existing markers.
   void update();
 
 protected:
+  /// Thread target for auto-updating the viewer.
   void autoUpdate();
 
+  /// Interactive Marker Server.
   interactive_markers::InteractiveMarkerServer mMarkerServer;
-  std::set<SkeletonMarkerPtr> mSkeletonMarkers;
+
+  /// Mapping of Skeletons to SkeletonMarkers
+  std::map<dart::dynamics::SkeletonPtr, SkeletonMarkerPtr> mSkeletonMarkers;
+
+  /// Set of frame markers.
   std::set<FrameMarkerPtr> mFrameMarkers;
+
+  /// Set of trajectory markers.
   std::set<TrajectoryMarkerPtr> mTrajectoryMarkers;
 
   /// NameManager for name uniqueness of trajectories in the same
@@ -99,6 +125,9 @@ protected:
   std::thread mThread;
 
   std::string mFrameId;
+
+  /// World that automatically updates the viewer
+  aikido::planner::WorldPtr mWorld;
 };
 
 } // namespace rviz

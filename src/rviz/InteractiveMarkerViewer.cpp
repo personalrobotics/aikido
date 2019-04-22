@@ -15,12 +15,13 @@ namespace rviz {
 
 //==============================================================================
 InteractiveMarkerViewer::InteractiveMarkerViewer(
-    const std::string& topicNamespace, const std::string& frameId)
+    const std::string& topicNamespace, const std::string& frameId, aikido::planner::WorldPtr env)
   : mMarkerServer(topicNamespace, "", true)
   , mTrajectoryNameManager("Trajectory Name Manager", "Trajectory")
   , mRunning(false)
   , mUpdating(false)
   , mFrameId(frameId)
+  , mWorld(std::move(env))
 {
   mTrajectoryNameManager.setPattern("Frame[%s(%d)]");
 }
@@ -39,17 +40,18 @@ InteractiveMarkerServer& InteractiveMarkerViewer::marker_server()
 }
 
 //==============================================================================
-SkeletonMarkerPtr InteractiveMarkerViewer::addSkeleton(
+SkeletonMarkerPtr InteractiveMarkerViewer::addSkeletonMarker(
     const SkeletonPtr& skeleton)
 {
   std::lock_guard<std::mutex> lock(mMutex);
-  const SkeletonMarkerPtr marker = CreateSkeletonMarker(skeleton, mFrameId);
-  mSkeletonMarkers.insert(marker);
+  const SkeletonMarkerPtr marker = std::make_shared<SkeletonMarker>(
+      nullptr, &mMarkerServer, skeleton, mFrameId);
+  mSkeletonMarkers.emplace(skeleton, marker);
   return marker;
 }
 
 //==============================================================================
-FrameMarkerPtr InteractiveMarkerViewer::addFrame(
+FrameMarkerPtr InteractiveMarkerViewer::addFrameMarker(
     dart::dynamics::Frame* frame, double length, double thickness, double alpha)
 {
   std::lock_guard<std::mutex> lock(mMutex);
@@ -95,7 +97,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
 
     auto tsrFrame = ::dart::common::make_unique<SimpleFrame>(
         Frame::World(), ss.str(), state.getIsometry());
-    addFrame(tsrFrame.get());
+    addFrameMarker(tsrFrame.get());
     tsrFrames.emplace_back(std::move(tsrFrame));
   }
 
@@ -130,14 +132,6 @@ TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
 }
 
 //==============================================================================
-SkeletonMarkerPtr InteractiveMarkerViewer::CreateSkeletonMarker(
-    const SkeletonPtr& skeleton, const std::string& frameId)
-{
-  return std::make_shared<SkeletonMarker>(
-      nullptr, &mMarkerServer, skeleton, frameId);
-}
-
-//==============================================================================
 void InteractiveMarkerViewer::setAutoUpdate(bool flag)
 {
   mUpdating.store(flag, std::memory_order_release);
@@ -168,34 +162,46 @@ void InteractiveMarkerViewer::update()
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
-  for (auto it = std::begin(mSkeletonMarkers);
-       it != std::end(mSkeletonMarkers);)
+  // Update SkeletonMarkers from the world.
+  for (std::size_t i = 0; i < mWorld->getNumSkeletons(); ++i)
   {
-    const dart::dynamics::SkeletonPtr skeleton = (*it)->getSkeleton();
+    const dart::dynamics::SkeletonPtr skeleton = mWorld->getSkeleton(i);
 
     if (skeleton)
     {
+      // Either a new SkeletonMarker or a previously-inserted SkeletonMarker
+      auto marker = addSkeletonMarker(skeleton);
+
       std::unique_lock<std::mutex> skeleton_lock(
           skeleton->getMutex(), std::try_to_lock);
       if (skeleton_lock.owns_lock())
-        (*it)->update();
+        marker->update();
+    }
+  }
 
+  // Clear removed skeletons
+  auto it = std::begin(mSkeletonMarkers);
+  while (it != std::end(mSkeletonMarkers))
+  {
+    // Skeleton still exists in the World, do nothing.
+    if (mWorld->hasSkeleton(it->first))
+    {
       ++it;
     }
-    // Skeleton no longer exists. Delete the marker.
+    // Skeleton does not exist. Delete our existing ShapeFrameMarker.
     else
     {
       it = mSkeletonMarkers.erase(it);
     }
   }
 
-  // TODO: Merge this into a unified update loop.
   for (const FrameMarkerPtr& marker : mFrameMarkers)
     marker->update();
 
   for (const auto& marker : mTrajectoryMarkers)
     marker->update();
 
+  // Apply changes anytime a marker has been modified.
   mMarkerServer.applyChanges();
 }
 
