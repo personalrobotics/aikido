@@ -12,6 +12,7 @@
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
+#include "aikido/planner/Planner.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/robot/Robot.hpp"
@@ -131,6 +132,7 @@ public:
   /// \param[in] metaSkeleton Metaskeleton to plan with.
   /// \param[in] goalState Goal state
   /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] planner Planner to plan with.
   /// \param[in] timelimit Max time to spend per planning to each IK
   /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfiguration(
@@ -138,6 +140,7 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::statespace::StateSpace::State* goalState,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+      aikido::planner::PlannerPtr planner,
       double timelimit);
 
   /// TODO: Replace this with Problem interface.
@@ -148,6 +151,7 @@ public:
   /// \param[in] metaSkeleton Metaskeleton to plan with.
   /// \param[in] goal Goal position
   /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] planner Planner to plan with.
   /// \param[in] timelimit Max time to spend per planning to each IK
   /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfiguration(
@@ -155,6 +159,7 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const Eigen::VectorXd& goal,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+      aikido::planner::PlannerPtr planner,
       double timelimit);
 
   /// TODO: Replace this with Problem interface.
@@ -164,6 +169,7 @@ public:
   /// \param[in] metaSkeleton Metaskeleton to plan with.
   /// \param[in] goalStates A set of goal states.
   /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] planner Planner to plan with.
   /// \param[in] timelimit Max time to spend per planning to each IK
   /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfigurations(
@@ -171,6 +177,7 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const std::vector<aikido::statespace::StateSpace::State*>& goalStates,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+      aikido::planner::PlannerPtr planner,
       double timelimit);
 
   /// TODO: Replace this with Problem interface.
@@ -180,6 +187,7 @@ public:
   /// \param[in] metaSkeleton Metaskeleton to plan with.
   /// \param[in] goals A set of goals.
   /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] planner Planner to plan with.
   /// \param[in] timelimit Max time to spend per planning to each IK
   /// \return Trajectory. nullptr if fails to find a trajectory.
   aikido::trajectory::TrajectoryPtr planToConfigurations(
@@ -187,6 +195,7 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const std::vector<Eigen::VectorXd>& goals,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+      aikido::planner::PlannerPtr planner,
       double timelimit);
 
   /// TODO: Replace this with Problem interface.
@@ -197,6 +206,7 @@ public:
   /// \param[in] bodyNode Bodynode whose frame for which TSR is constructed.
   /// \param[in] tsr TSR
   /// \param[in] collisionFree Testable constraint to check for collision.
+  /// \param[in] planner Planner to plan with.
   /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
   /// \param[in] maxNumTrials Max numer of trials to plan.
   /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
@@ -208,6 +218,7 @@ public:
       const dart::dynamics::BodyNodePtr& bodyNode,
       const aikido::constraint::dart::TSRPtr& tsr,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+      aikido::planner::PlannerPtr planner,
       double timelimit,
       std::size_t maxNumTrials,
       const distance::ConstConfigurationRankerPtr& ranker = nullptr);
@@ -241,6 +252,7 @@ public:
   aikido::trajectory::TrajectoryPtr planToNamedConfiguration(
       const std::string& name,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
+      aikido::planner::PlannerPtr planner,
       double timelimit);
 
   /// TODO: This should be revisited once we have Planner API.

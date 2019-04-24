@@ -11,6 +11,7 @@
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/io/yaml.hpp"
+#include "aikido/planner/Planner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
@@ -100,12 +101,13 @@ struct CRRTPlannerParameters
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
 /// \param[in] timelimit Max time to spend per planning to each IK
+/// \param[in] planner Planner to plan with.
 trajectory::TrajectoryPtr planToConfiguration(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const statespace::StateSpace::State* goalState,
     const constraint::TestablePtr& collisionTestable,
-    common::RNG* rng,
+    aikido::planner::PlannerPtr planner,
     double timelimit);
 
 /// Plan the robot to a set of configurations.
@@ -115,13 +117,14 @@ trajectory::TrajectoryPtr planToConfiguration(
 /// \param[in] goalStates Goal states
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
+/// \param[in] planner Planner to plan with.
 /// \param[in] timelimit Max time to spend per planning to each IK
 trajectory::TrajectoryPtr planToConfigurations(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const std::vector<statespace::StateSpace::State*>& goalStates,
     const constraint::TestablePtr& collisionTestable,
-    common::RNG* rng,
+    aikido::planner::PlannerPtr planner,
     double timelimit);
 
 /// Plan the configuration of the metakeleton such that
@@ -132,6 +135,7 @@ trajectory::TrajectoryPtr planToConfigurations(
 /// \param[in] tsr TSR to plan to.
 /// \param[in] collisionTestable Testable constraint to check for collision.
 /// \param[in] rng Random number generator
+/// \param[in] planner Planner to plan with.
 /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
 /// \param[in] maxNumTrials Number of retries before failure.
 /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
@@ -144,6 +148,7 @@ trajectory::TrajectoryPtr planToTSR(
     const constraint::dart::TSRPtr& tsr,
     const constraint::TestablePtr& collisionTestable,
     common::RNG* rng,
+    aikido::planner::PlannerPtr planner,
     double timelimit,
     std::size_t maxNumTrials,
     const distance::ConstConfigurationRankerPtr& ranker = nullptr);

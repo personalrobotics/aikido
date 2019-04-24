@@ -77,14 +77,12 @@ trajectory::TrajectoryPtr planToConfiguration(
     const MetaSkeletonPtr& metaSkeleton,
     const StateSpace::State* goalState,
     const TestablePtr& collisionTestable,
-    RNG* rng,
+    aikido::planner::PlannerPtr planner,
     double timelimit)
 {
   DART_UNUSED(timelimit);
 
-  using planner::ompl::planOMPL;
   using planner::ConfigurationToConfiguration;
-  using planner::SnapConfigurationToConfigurationPlanner;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
@@ -93,29 +91,27 @@ trajectory::TrajectoryPtr planToConfiguration(
   DART_UNUSED(saver);
 
   // First test with Snap Planner
-  SnapConfigurationToConfigurationPlanner::Result pResult;
+  aikido::planner::ConfigurationToConfigurationPlanner::Result pResult;
   TrajectoryPtr untimedTrajectory;
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
   auto problem = ConfigurationToConfiguration(
       space, startState, goalState, collisionTestable);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+
+  if (!planner)
+  {
+    planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
+  }
+
   untimedTrajectory = planner->plan(problem, &pResult);
 
   // Return if the trajectory is non-empty
   if (untimedTrajectory)
     return untimedTrajectory;
 
-  auto plannerOMPL = std::
-      make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
-                                                              RRTConnect>>(
-          space, rng);
-
-  untimedTrajectory = plannerOMPL->plan(problem, &pResult);
-
-  return untimedTrajectory;
+  return nullptr;
 }
 
 //==============================================================================
@@ -124,10 +120,9 @@ trajectory::TrajectoryPtr planToConfigurations(
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<StateSpace::State*>& goalStates,
     const TestablePtr& collisionTestable,
-    RNG* rng,
+    aikido::planner::PlannerPtr planner,
     double timelimit)
 {
-  using planner::ompl::planOMPL;
   DART_UNUSED(timelimit);
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
@@ -137,9 +132,13 @@ trajectory::TrajectoryPtr planToConfigurations(
   DART_UNUSED(saver);
 
   auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-  SnapConfigurationToConfigurationPlanner::Result pResult;
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+  aikido::planner::ConfigurationToConfigurationPlanner::Result pResult;
+
+  if (!planner)
+  {
+    planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
       space, std::make_shared<GeodesicInterpolator>(space));
+  }
 
   for (const auto& goalState : goalStates)
   {
@@ -149,16 +148,6 @@ trajectory::TrajectoryPtr planToConfigurations(
     TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
 
     // Return if the trajectory is non-empty
-    if (untimedTrajectory)
-      return untimedTrajectory;
-
-    auto plannerOMPL = std::
-        make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
-                                                                RRTConnect>>(
-            space, rng);
-
-    untimedTrajectory = plannerOMPL->plan(problem, &pResult);
-
     if (untimedTrajectory)
       return untimedTrajectory;
   }
@@ -174,6 +163,7 @@ trajectory::TrajectoryPtr planToTSR(
     const TSRPtr& tsr,
     const TestablePtr& collisionTestable,
     RNG* rng,
+    aikido::planner::PlannerPtr planner,
     double timelimit,
     std::size_t maxNumTrials,
     const distance::ConstConfigurationRankerPtr& ranker)
@@ -284,7 +274,7 @@ trajectory::TrajectoryPtr planToTSR(
         metaSkeleton,
         goalState,
         collisionTestable,
-        rng,
+        planner,
         std::min(timelimitPerSample, timelimit - timer.getElapsedTime()));
 
     if (traj)

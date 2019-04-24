@@ -350,6 +350,7 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     const MetaSkeletonPtr& metaSkeleton,
     const StateSpace::State* goalState,
     const CollisionFreePtr& collisionFree,
+    aikido::planner::PlannerPtr planner,
     double timelimit)
 {
   auto collisionConstraint
@@ -360,7 +361,7 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
       metaSkeleton,
       goalState,
       collisionConstraint,
-      cloneRNG().get(),
+      planner,
       timelimit);
 }
 
@@ -370,13 +371,14 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     const MetaSkeletonPtr& metaSkeleton,
     const Eigen::VectorXd& goal,
     const CollisionFreePtr& collisionFree,
+    aikido::planner::PlannerPtr planner,
     double timelimit)
 {
   auto goalState = stateSpace->createState();
   stateSpace->convertPositionsToState(goal, goalState);
 
   return planToConfiguration(
-      stateSpace, metaSkeleton, goalState, collisionFree, timelimit);
+      stateSpace, metaSkeleton, goalState, collisionFree, planner, timelimit);
 }
 
 //==============================================================================
@@ -385,6 +387,7 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<StateSpace::State*>& goalStates,
     const CollisionFreePtr& collisionFree,
+    aikido::planner::PlannerPtr planner,
     double timelimit)
 {
   return util::planToConfigurations(
@@ -392,7 +395,7 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
       metaSkeleton,
       goalStates,
       collisionFree,
-      cloneRNG().get(),
+      planner,
       timelimit);
 }
 
@@ -402,6 +405,7 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
     const MetaSkeletonPtr& metaSkeleton,
     const std::vector<Eigen::VectorXd>& goals,
     const CollisionFreePtr& collisionFree,
+    aikido::planner::PlannerPtr planner,
     double timelimit)
 {
   std::vector<StateSpace::State*> goalStates;
@@ -415,7 +419,7 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
   }
 
   return planToConfigurations(
-      stateSpace, metaSkeleton, goalStates, collisionFree, timelimit);
+      stateSpace, metaSkeleton, goalStates, collisionFree, planner, timelimit);
 }
 
 //==============================================================================
@@ -425,6 +429,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const BodyNodePtr& bn,
     const TSRPtr& tsr,
     const CollisionFreePtr& collisionFree,
+    aikido::planner::PlannerPtr planner,
     double timelimit,
     std::size_t maxNumTrials,
     const distance::ConstConfigurationRankerPtr& ranker)
@@ -439,6 +444,7 @@ TrajectoryPtr ConcreteRobot::planToTSR(
       tsr,
       collisionConstraint,
       cloneRNG().get(),
+      planner,
       timelimit,
       maxNumTrials,
       ranker);
@@ -473,6 +479,7 @@ TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
 TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
     const std::string& name,
     const CollisionFreePtr& collisionFree,
+    aikido::planner::PlannerPtr planner,
     double timelimit)
 {
   if (mNamedConfigurations.find(name) == mNamedConfigurations.end())
@@ -483,7 +490,7 @@ TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
   mStateSpace->convertPositionsToState(configuration, goalState);
 
   return planToConfiguration(
-      mStateSpace, mMetaSkeleton, goalState, collisionFree, timelimit);
+      mStateSpace, mMetaSkeleton, goalState, collisionFree, planner, timelimit);
 }
 
 //=============================================================================
