@@ -194,7 +194,7 @@ bool convertShape(
 
   const aiScene* scene = shape.getMesh();
   const std::string& meshPath = shape.getMeshPath();
-  if (!meshUri.empty())
+  if (!meshPath.empty())
   {
     marker->type = Marker::MESH_RESOURCE;
     marker->mesh_resource = meshUri;
