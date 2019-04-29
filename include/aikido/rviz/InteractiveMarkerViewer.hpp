@@ -91,11 +91,11 @@ public:
       double thickness = 0.01,
       std::size_t numLineSegments = 16u);
 
-  /// Set viewer auto-updating.
+  /// Sets viewer auto-updating to on (true) or off.
   /// \param[in] flag Whether to auto-update the viewer.
   void setAutoUpdate(bool flag);
 
-  /// Update viewer with Skeletons from the World and existing markers.
+  /// Updates viewer with Skeletons from the World and existing markers.
   void update();
 
 protected:
@@ -105,7 +105,7 @@ protected:
   /// Interactive Marker Server.
   interactive_markers::InteractiveMarkerServer mMarkerServer;
 
-  /// Mapping of Skeletons to SkeletonMarkers
+  /// Map of Skeletons to SkeletonMarkers
   std::map<dart::dynamics::SkeletonPtr, SkeletonMarkerPtr> mSkeletonMarkers;
 
   /// Set of frame markers.
