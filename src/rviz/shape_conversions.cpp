@@ -197,7 +197,7 @@ bool convertShape(
   if (!meshPath.empty())
   {
     marker->type = Marker::MESH_RESOURCE;
-    marker->mesh_resource = meshUri;
+    marker->mesh_resource = meshPath;
     marker->mesh_use_embedded_materials = true;
     return true;
   }
