@@ -49,7 +49,7 @@ public:
 
   /// Visualizes a Frame as a cylinder.
   /// \param[in] frame Target DART frame.
-  /// \param[in] length Length of the cylinderical frame (along z-axis).
+  /// \param[in] length Length of the cylindrical frame (along z-axis).
   /// \param[in] thickness Radius (thickness in x and y axes) of cylinder.
   /// \param[in] alpha Opacity.
   /// \return Frame marker added to this viewer.
