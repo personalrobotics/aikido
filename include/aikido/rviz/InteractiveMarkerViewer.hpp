@@ -25,7 +25,7 @@ AIKIDO_DECLARE_POINTERS(InteractiveMarkerViewer)
 class InteractiveMarkerViewer
 {
 public:
-  /// Create an InteractiveMarkerViewer that reflects skeletons in a World.
+  /// Creates an InteractiveMarkerViewer that reflects skeletons in a World.
   /// \param[in] topicNamespace ROS topic to publish marker updates to
   /// \param[in] frameId Base frame name
   /// \param[in] env World to update viewer with
