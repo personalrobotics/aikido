@@ -76,6 +76,7 @@
 * RViz
 
   * Fixed bug of not joining Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
+  * Fixed bug of not passing full file path to RViz when MeshShape is used: [#518](https://github.com/personalrobotics/aikido/pull/518)
 
 * IO
 
