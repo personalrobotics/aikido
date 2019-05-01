@@ -28,7 +28,8 @@ public:
   /// Creates an InteractiveMarkerViewer that reflects skeletons in a World.
   /// \param[in] topicNamespace ROS topic to publish marker updates to
   /// \param[in] frameId Base frame name
-  /// \param[in] env World to update the viewer with
+  /// \param[in] env World to update the viewer with. Default is nullptr if 
+  /// there is no underlying world attached to the markers.
   InteractiveMarkerViewer(
       const std::string& topicNamespace,
       const std::string& frameId,
@@ -101,6 +102,15 @@ public:
 protected:
   /// Thread target for auto-updating the viewer.
   void autoUpdate();
+
+  /// Helper function to update skeleton markers.
+  void updateSkeletonMarkers();
+
+  /// Helper function to update frame markers.
+  void updateFrameMarkers();
+
+  /// Helper function to update trajectory markers.
+  void updateTrajectoryMarkers();
 
   /// Interactive Marker Server.
   interactive_markers::InteractiveMarkerServer mMarkerServer;
