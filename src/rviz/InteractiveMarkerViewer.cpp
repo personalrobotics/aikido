@@ -185,22 +185,21 @@ void InteractiveMarkerViewer::update()
           result.first->second->update();
       }
     }
+  }
 
-    // Clear removed skeletons
-    auto it = std::begin(mSkeletonMarkers);
-    while (it != std::end(mSkeletonMarkers))
-    {
-      // Skeleton still exists in the World, do nothing.
-      if (mWorld->hasSkeleton(it->first))
-      {
-        ++it;
-      }
-      // Skeleton does not exist. Delete our existing ShapeFrameMarker.
-      else
-      {
-        it = mSkeletonMarkers.erase(it);
-      }
-    }
+  // Clear removed skeletons
+  auto it = std::begin(mSkeletonMarkers);
+  while (it != std::end(mSkeletonMarkers))
+  {
+    // Skeleton still exists in the World, do nothing.
+    if (mWorld && mWorld->hasSkeleton(it->first))
+      ++it;
+    // Skeleton not in the world, but a marker, update.
+    else if (it->first)
+      it->second->update();
+    // Skeleton does not exist anymore, remove from markers.
+    else
+      it = mSkeletonMarkers.erase(it);
   }
 
   for (const FrameMarkerPtr& marker : mFrameMarkers)
