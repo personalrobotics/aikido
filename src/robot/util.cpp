@@ -503,7 +503,7 @@ trajectory::TrajectoryPtr planToTSR(
       auto nominalState = space->createState();
       space->copyState(startState, nominalState);
       configurationRanker = std::make_shared<const NominalConfigurationRanker>(
-          space, metaSkeleton, std::vector<double>(), std::move(nominalState));
+          space, metaSkeleton, nominalState);
     }
 
     while (snapSamples < maxSnapSamples && generator->canSample())
