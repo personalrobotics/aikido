@@ -12,8 +12,7 @@
 * Distance
 
   * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
-  * Added weights as optinal paramter to rankers: [#484] (https://github.com/personalrobotics/aikido/pull/484)
-
+  * Added weights as optional parameter to rankers: [#484](https://github.com/personalrobotics/aikido/pull/484)
 
 * State Space
 
@@ -44,17 +43,20 @@
   * Added integrated PoseEstimatorModule: [#336](https://github.com/personalrobotics/aikido/pull/336)
   * Added voxel grid perception module: [#448](https://github.com/personalrobotics/aikido/pull/448)
   * Added YAML communication between PoseEstimatorModule and third-party perception algorithms: [#497](https://github.com/personalrobotics/aikido/pull/497)
+  * Made AssetDatabase key required for Marker text: [#508](https://github.com/personalrobotics/aikido/pull/508)
 
 * Trajectory
 
   * Added B-spline trajectory: [#453](https://github.com/personalrobotics/aikido/pull/453)
   * Added trajectory utility functions: [#462](https://github.com/personalrobotics/aikido/pull/462)
+  * Fixed toR1JointTrajectory to copy Waypoints with their time information: [#510](https://github.com/personalrobotics/aikido/pull/510)
+  * Removed incorrect Spline to Interpolated conversions: [#511](https://github.com/personalrobotics/aikido/pull/511)
 
 * Planner
 
   * Make all DART planners take MetaSkeleton, and add adapter for turning planners into DART planners: [#437](https://github.com/personalrobotics/aikido/pull/437)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
-  * Fixed step sequence iteration in VPF: [#303](https://github.com/personalrobotics/aikido/pull/303)
+  * Fixed step sequence iteration in VFP: [#303](https://github.com/personalrobotics/aikido/pull/303)
   * Refactored planning API: [#314](https://github.com/personalrobotics/aikido/pull/314), [#414](https://github.com/personalrobotics/aikido/pull/414), [#426](https://github.com/personalrobotics/aikido/pull/426), [#432](https://github.com/personalrobotics/aikido/pull/432)
   * Added flags to WorldStateSaver to specify what to save: [#339](https://github.com/personalrobotics/aikido/pull/339)
   * Changed interface for TrajectoryPostProcessor: [#341](https://github.com/personalrobotics/aikido/pull/341)
@@ -63,14 +65,18 @@
   * Fixed segmentation fault on 32-bit machines in vector-field planner: [#459](https://github.com/personalrobotics/aikido/pull/459)
   * Updated interface to OMPL planners to follow the style of the new refactored planning API: [#466](https://github.com/personalrobotics/aikido/pull/466)
   * Added convenience function for converting SO(2) trajectories to R1 trajectories, support for postprocessing SO(2) trajectories: [#496](https://github.com/personalrobotics/aikido/pull/496)
+  * Used ConfigurationRanker in TSR planners: [#503](https://github.com/personalrobotics/aikido/pull/503)
+  * Returned Interpolated trajectories from VFP: [#513](https://github.com/personalrobotics/aikido/pull/513)
 
 * Robot
 
   * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325](https://github.com/personalrobotics/aikido/pull/325), [#392](https://github.com/personalrobotics/aikido/pull/392)
+  * Added Kunz timer to Robot class: [#505](https://github.com/personalrobotics/aikido/pull/505)
 
 * RViz
 
   * Fixed bug of not joining Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
+  * Fixed bug of not passing full file path to RViz when MeshShape is used: [#518](https://github.com/personalrobotics/aikido/pull/518)
 
 * IO
 

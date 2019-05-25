@@ -193,11 +193,11 @@ bool convertShape(
   marker->scale = convertEigenToROSVector3(shape.getScale());
 
   const aiScene* scene = shape.getMesh();
-  const std::string& meshUri = shape.getMeshUri();
-  if (!meshUri.empty())
+  const std::string& meshPath = shape.getMeshPath();
+  if (!meshPath.empty())
   {
     marker->type = Marker::MESH_RESOURCE;
-    marker->mesh_resource = meshUri;
+    marker->mesh_resource = meshPath;
     marker->mesh_use_embedded_materials = true;
     return true;
   }

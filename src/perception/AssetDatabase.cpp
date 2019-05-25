@@ -42,7 +42,6 @@ AssetDatabase::AssetDatabase(
 //==============================================================================
 void AssetDatabase::getAssetByKey(
     const std::string& assetKey,
-    std::string& assetName,
     dart::common::Uri& assetResource,
     Eigen::Isometry3d& assetOffset) const
 {
@@ -63,17 +62,6 @@ void AssetDatabase::getAssetByKey(
   {
     throw std::runtime_error(
         "[AssetDatabase] Error in converting [resource] field");
-  }
-
-  // Convert name field
-  try
-  {
-    assetName = assetNode["name"].as<std::string>();
-  }
-  catch (const YAML::ParserException& ex)
-  {
-    throw std::runtime_error(
-        "[AssetDatabase] Error in converting [name] field");
   }
 
   // Convert offset field

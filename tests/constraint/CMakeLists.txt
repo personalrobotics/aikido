@@ -139,7 +139,7 @@ aikido_add_test(test_RejectionSampleable
 target_link_libraries(test_RejectionSampleable
   "${PROJECT_NAME}_constraint")
 
-format_add_sources(
+clang_format_add_sources(
   MockConstraints.hpp
   PolynomialConstraint.cpp
   PolynomialConstraint.hpp

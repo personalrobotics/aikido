@@ -3,7 +3,7 @@
 #include <string>
 #include <aikido/common/Spline.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
-#include <aikido/trajectory/Spline.hpp>
+#include <aikido/statespace/GeodesicInterpolator.hpp>
 #include "VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
@@ -42,6 +42,28 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     stateSpace->expMap(currentPosition, currState);
     outputTrajectory->addSegment(coefficients, segmentDuration, currState);
   }
+  return outputTrajectory;
+}
+
+//==============================================================================
+std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
+    const std::vector<Knot>& knots,
+    aikido::statespace::ConstStateSpacePtr stateSpace)
+{
+  auto interpolator
+      = std::make_shared<const aikido::statespace::GeodesicInterpolator>(
+          stateSpace);
+  auto outputTrajectory
+      = ::dart::common::make_unique<aikido::trajectory::Interpolated>(
+          stateSpace, interpolator);
+
+  auto currState = stateSpace->createState();
+  for (const auto& knot : knots)
+  {
+    stateSpace->expMap(knot.mPositions, currState);
+    outputTrajectory->addWaypoint(knot.mT, currState);
+  }
+
   return outputTrajectory;
 }
 

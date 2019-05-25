@@ -7,6 +7,7 @@
 #include <aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Spline.hpp>
+#include <aikido/trajectory/Interpolated.hpp>
 
 namespace aikido {
 namespace planner {
@@ -24,14 +25,21 @@ struct Knot
 
 /// Convert a sequence of waypoint and time pairs into a trajectory.
 ///
-/// \param[in] A seqeunce of waypoint and time pairs.
+/// \param[in] A sequence of waypoint and time pairs.
 /// \param[in] stateSpace State space of output trajectory.
 /// \return A trajectory.
 std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
     const std::vector<Knot>& knots,
     aikido::statespace::ConstStateSpacePtr stateSpace);
 
-
+/// Convert a sequence of waypoint and time pairs into a trajectory.
+///
+/// \param[in] A sequence of waypoint and time pairs.
+/// \param[in] stateSpace State space of output trajectory.
+/// \return A trajectory.
+std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
+    const std::vector<Knot>& knots,
+    aikido::statespace::ConstStateSpacePtr stateSpace);
 
 /// VectorField Planner generates a trajectory by following a vector field
 /// defined in joint space.
