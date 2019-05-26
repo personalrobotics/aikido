@@ -26,8 +26,8 @@ aikido_check_package(tf "aikido::perception" "tf")
 
 # Note: Intentionally use "Module" mode because the config file imports "gtest",
 # "tests", and "run_tests" that conflict with the targets defined by Aikido.
-find_package(octomap_ros QUIET MODULE)
-aikido_check_package(octomap_ros "aikido::perception" "octomap_ros")
+# find_package(octomap_ros QUIET MODULE)
+# aikido_check_package(octomap_ros "aikido::perception" "octomap_ros")
 
 if(NOT DART_HAS_VOXELGRIDSHAPE)
     message(WARNING "The installed version of DART ${DART_VERSION} is "
@@ -46,7 +46,7 @@ set(sources
   PoseEstimatorModule.cpp
   shape_conversions.cpp
   AssetDatabase.cpp
-  VoxelGridModule.cpp
+  # VoxelGridModule.cpp
   DetectedObject.cpp
 )
 
@@ -61,7 +61,7 @@ target_include_directories("${PROJECT_NAME}_perception" SYSTEM
     ${tf_INCLUDE_DIRS}
   PRIVATE
     ${visualization_msgs_INCLUDE_DIRS}
-    ${octomap_ros_INCLUDE_DIRS}
+    # ${octomap_ros_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_perception"
   PUBLIC
@@ -73,7 +73,7 @@ target_link_libraries("${PROJECT_NAME}_perception"
     ${tf_LIBRARIES}
   PRIVATE
     ${visualization_msgs_LIBRARIES}
-    ${octomap_ros_LIBRARIES}
+    # ${octomap_ros_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_perception"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
