@@ -51,6 +51,13 @@ matrix:
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
       services: docker
+    - os: linux
+      env:
+        - BUILD_NAME=BIONIC_FULL_RELEASE_AIKIDOPY
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DBUILD_AIKIDOPY=ON"
+      services: docker
     - os: osx
       osx_image: xcode9.3
       compiler: clang
