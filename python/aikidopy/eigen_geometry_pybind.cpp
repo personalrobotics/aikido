@@ -115,9 +115,9 @@ void CheckAngleAxis(const Eigen::AngleAxis<T>& value) {
 }  // namespace
 
 // PYBIND11_MODULE(eigen_geometry, m) {
-void eigen_geometry(pybind11::module& m)
+void eigen_geometry(pybind11::module& parent_m)
 {
-  // auto m = parent_m.def_submodule("math");
+  auto m = parent_m.def_submodule("math");
 
   m.doc() = "Bindings for Eigen geometric types.";
 

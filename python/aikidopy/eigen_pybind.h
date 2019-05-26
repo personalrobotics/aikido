@@ -37,7 +37,7 @@
 #include <Eigen/Dense>
 #include "pybind11/eigen.h"
 
-namespace herb {
+namespace aikido {
 namespace python {
 
 /// Provides a mutable Ref<> for a pointer.
@@ -70,4 +70,4 @@ template <typename T>
 }
 
 } // namespace python
-} // namespace libherb
+} // namespace aikido
