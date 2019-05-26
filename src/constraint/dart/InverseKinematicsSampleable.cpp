@@ -221,7 +221,7 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
     mInverseKinematics->getTarget()->setTransform(poseState.getIsometry());
 
     // Run the IK solver. If it succeeds, return the solution.
-    if (mInverseKinematics->solve(true))
+    if (mInverseKinematics->solveAndApply(true))
     {
       mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), outputState);
       return true;

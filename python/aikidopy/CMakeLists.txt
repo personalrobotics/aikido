@@ -98,12 +98,4 @@ install(TARGETS aikidopy
   LIBRARY DESTINATION "${PYTHON_SITE_PACKAGES}"
 )
 
-list(REMOVE_ITEM aikidopy_headers
-  ${CMAKE_CURRENT_LIST_DIR}/eigen_geometry_pybind.h
-  ${CMAKE_CURRENT_LIST_DIR}/eigen_pybind.h
-)
-list(REMOVE_ITEM aikidopy_sources
-  ${CMAKE_CURRENT_LIST_DIR}/eigen_geometry_pybind.cpp
-)
-
 clang_format_add_sources(${aikidopy_headers} ${aikidopy_sources})
