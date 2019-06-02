@@ -201,20 +201,31 @@ trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
     = VectorFieldPlannerParameters(),
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
-// trajectory::TrajectoryPtr planToEndEffectorOffset(
-//     const statespace::dart::MetaSkeletonStateSpacePtr& space,
-//     const State* startState,
-//     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-//     const dart::dynamics::BodyNodePtr& bodyNode,
-//     const Eigen::Vector3d& direction,
-//     const constraint::TestablePtr& collisionTestable,
-//     double distance,
-//     double timelimit,
-//     double positionTolerance = 1e-3,
-//     double angularTolerance = 1e-3,
-//     const VectorFieldPlannerParameters& vfParameters
-//     = VectorFieldPlannerParameters(),
-//     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
+trajectory::TrajectoryPtr planToEndEffectorOffset(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    State* startState,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Vector3d& direction,
+    const constraint::TestablePtr& collisionTestable,
+    double distance,
+    double timelimit,
+    double positionTolerance = 1e-3,
+    double angularTolerance = 1e-3,
+    const VectorFieldPlannerParameters& vfParameters
+    = VectorFieldPlannerParameters(),
+    const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
+
+trajectory::TrajectoryPtr planToEndEffectorPose(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Isometry3d& goalPose,
+    double poseErrorTolerance,
+    double conversionRatioInGeodesicDistance,
+    const constraint::TestablePtr& collisionTestable,
+    double timelimit,
+    const VectorFieldPlannerParameters& vfParameters);
 
 /// Plan to a desired end-effector offset with fixed orientation using CRRT.
 /// \param[in] space StateSpace for the metaskeleton

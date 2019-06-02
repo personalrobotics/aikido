@@ -152,37 +152,66 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
 
 //==============================================================================
 // designate a startState
-// trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
-//     const statespace::dart::MetaSkeletonStateSpacePtr& space,
-//     State* startState,
-//     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-//     const dart::dynamics::BodyNodePtr& body,
-//     const constraint::dart::CollisionFreePtr& collisionFree,
-//     const Eigen::Vector3d& direction,
-//     double distance,
-//     double timelimit,
-//     double positionTolerance,
-//     double angularTolerance)
-// {
+trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    State* startState,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    const Eigen::Vector3d& direction,
+    double distance,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance)
+{
 
-//   auto collision
-//       = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
-//   auto trajectory = util::planToEndEffectorOffset(
-//       space,
-//       startState,
-//       metaSkeleton,
-//       body,
-//       direction,
-//       collision,
-//       distance,
-//       timelimit,
-//       positionTolerance,
-//       angularTolerance,
-//       mVectorFieldParameters,
-//       mCRRTParameters);
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  auto trajectory = util::planToEndEffectorOffset(
+      space,
+      startState,
+      metaSkeleton,
+      body,
+      direction,
+      collision,
+      distance,
+      timelimit,
+      positionTolerance,
+      angularTolerance,
+      mVectorFieldParameters,
+      mCRRTParameters);
 
-//   return trajectory;
-// }
+  return trajectory;
+}
+
+//=============================================================================
+trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorPose(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    // State* startState,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    const Eigen::Isometry3d& goalPose,
+    double conversionRatioInGeodesicDistance,
+    double timelimit,
+    double poseErrorTolerance)
+{
+
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  auto trajectory = util::planToEndEffectorPose(
+    space,
+    metaSkeleton,
+    body,
+    goalPose,
+    poseErrorTolerance,
+    conversionRatioInGeodesicDistance,
+    collision,
+    timelimit,
+    mVectorFieldParameters);
+
+  return trajectory;
+}
 
 //==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(

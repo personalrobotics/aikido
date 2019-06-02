@@ -126,6 +126,20 @@ public:
     double positionTolerance,
     double angularTolerance);
 
+
+//=============================================================================
+trajectory::TrajectoryPtr planToEndEffectorPose(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    // State* startState,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    const Eigen::Isometry3d& goalPose,
+    double conversionRatioInGeodesicDistance,
+    double timelimit,
+    double poseErrorTolerance);
+
+
   /// TODO: Replace this with Problem interface.
   /// Plans to a desired end-effector offset along the z axis of the
   /// end-effector.
