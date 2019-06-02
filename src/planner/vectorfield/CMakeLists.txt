@@ -8,6 +8,7 @@ set(sources
   BodyNodePoseVectorField.cpp
   MoveEndEffectorOffsetVectorField.cpp
   MoveEndEffectorPoseVectorField.cpp
+  MoveEndEffectorTwistVectorField.cpp # new twist
 )
 
 add_library("${PROJECT_NAME}_planner_vectorfield" SHARED ${sources})

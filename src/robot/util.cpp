@@ -65,6 +65,7 @@ using trajectory::InterpolatedPtr;
 using trajectory::SplinePtr;
 
 using dart::collision::FCLCollisionDetector;
+using dart::common::make_unique;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::ChainPtr;
 using dart::dynamics::InverseKinematics;
@@ -688,7 +689,7 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 }
 
 //==============================================================================
-trajectory::TrajectoryPtr planToEndEffectorOffset(
+trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
     const MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& bodyNode,
@@ -727,8 +728,9 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
       vfParameters.constraintCheckResolution,
       std::chrono::duration<double>(timelimit));
 
-  return std::move(traj);
-
+  std::cout << "1!! utils: " << traj->getNumWaypoints() << std::endl;
+  // return std::move(traj);
+  return traj;
   /*
   return planToEndEffectorOffsetByCRRT(
       space,
@@ -743,6 +745,48 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
       crrtParameters);
       */
 }
+
+//==============================================================================
+// designate a startState
+// trajectory::TrajectoryPtr planToEndEffectorOffset(
+//     const statespace::dart::MetaSkeletonStateSpacePtr& space,
+//     const State* startState,
+//     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+//     const dart::dynamics::BodyNodePtr& bodyNode,
+//     const Eigen::Vector3d& direction,
+//     const constraint::TestablePtr& collisionTestable,
+//     double distance,
+//     double timelimit,
+//     double positionTolerance,
+//     double angularTolerance,
+//     const VectorFieldPlannerParameters& vfParameters,
+//     const CRRTPlannerParameters& crrtParameters)
+// {
+//   auto saver = MetaSkeletonStateSaver(metaSkeleton);
+//   DART_UNUSED(saver);
+
+//   auto minDistance
+//       = std::max(0.0, distance - vfParameters.negativeDistanceTolerance);
+//   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
+
+//   auto traj = planner::vectorfield::planToEndEffectorOffset(
+//       space,
+//       *startState,
+//       metaSkeleton,
+//       bodyNode,
+//       collisionTestable,
+//       direction,
+//       minDistance,
+//       maxDistance,
+//       positionTolerance,
+//       angularTolerance,
+//       vfParameters.initialStepSize,
+//       vfParameters.jointLimitTolerance,
+//       vfParameters.constraintCheckResolution,
+//       std::chrono::duration<double>(timelimit));
+
+//   return std::move(traj);
+// }
 
 //==============================================================================
 InterpolatedPtr planToEndEffectorOffsetByCRRT(
@@ -799,6 +843,96 @@ InterpolatedPtr planToEndEffectorOffsetByCRRT(
 
   return untimedTrajectory;
 }
+
+//==============================================================================
+trajectory::TrajectoryPtr planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
+    const constraint::TestablePtr& collisionTestable,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance,
+    const VectorFieldPlannerParameters& vfParameters)
+{
+  // if twist is a zero vector
+  if (twistSeq.norm() == 0)
+  {
+    throw std::runtime_error("Twists vector cannot be empty");
+  }
+
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
+
+  auto startState = space->createState();
+  space->getState(metaSkeleton.get(), startState);
+
+  // Using the twist and duration, compute the vectorfield, generate trajectory.
+  trajectory::TrajectoryPtr untimedTrajectory
+      = planner::vectorfield::planWithEndEffectorTwist(
+          space,
+          *startState,
+          metaSkeleton,
+          bodyNode,
+          twistSeq,
+          durationSeq,
+          collisionTestable,
+          positionTolerance,
+          angularTolerance,
+          0.1,
+          0.1,
+          0.1,
+          std::chrono::duration<double>(timelimit));
+  //          vfParameters.initialStepSize,
+  //          vfParameters.jointLimitTolerance,
+  //          vfParameters.constraintCheckResolution,
+  //          std::chrono::duration<double>(timelimit));
+
+  return std::move(untimedTrajectory);
+}
+
+//==============================================================================
+// trajectory::TrajectoryPtr planToEndEffectorPose(
+//     const statespace::dart::MetaSkeletonStateSpacePtr& space,
+//     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+//     const dart::dynamics::BodyNodePtr& bodyNode,
+//     const Eigen::Vector6d& twistSeq,
+//     double durationSeq,
+//     const constraint::TestablePtr& collisionTestable,
+//     double timelimit,
+//     double positionTolerance,
+//     double angularTolerance,
+//     const VectorFieldPlannerParameters& vfParameters)
+// {
+//   // if twist is a zero vector
+//   if (twistSeq.norm() == 0)
+//   {
+//     throw std::runtime_error("Twists vector cannot be empty");
+//   }
+
+//   auto saver = MetaSkeletonStateSaver(metaSkeleton);
+//   DART_UNUSED(saver);
+
+//   trajectory::TrajectoryPtr untimedTrajectory
+//       = planner::vectorfield::planToEndEffectorPose(
+//       space,
+//       metaSkeleton,
+//       bodyNode,
+//       collisionTestable,
+//       goalPose,
+//       double poseErrorTolerance,
+//       double conversionRatioInGeodesicDistance,
+//       vfParameters.initialStepSize,
+//       vfParameters.jointLimitTolerance,
+//       vfParameters.constraintCheckResolution
+//       std::chrono::duration<double>(timelimit),
+//       planner::Planner::Result* result);
+//   return std::move(untimedTrajectory);
+// }
+
+
 //==============================================================================
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node)

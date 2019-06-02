@@ -16,6 +16,8 @@
 #include "aikido/trajectory/Spline.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
+using State = aikido::statespace::dart::MetaSkeletonStateSpace::State;
+
 namespace aikido {
 namespace robot {
 
@@ -185,7 +187,7 @@ trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
 /// \param[in] vfParameters VectorFieldPlanenr parameters
 /// \param[in] crrtParameters CRRTPlanner parameters
 /// \return Output trajectory
-trajectory::TrajectoryPtr planToEndEffectorOffset(
+trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
@@ -198,6 +200,21 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
     const VectorFieldPlannerParameters& vfParameters
     = VectorFieldPlannerParameters(),
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
+
+// trajectory::TrajectoryPtr planToEndEffectorOffset(
+//     const statespace::dart::MetaSkeletonStateSpacePtr& space,
+//     const State* startState,
+//     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+//     const dart::dynamics::BodyNodePtr& bodyNode,
+//     const Eigen::Vector3d& direction,
+//     const constraint::TestablePtr& collisionTestable,
+//     double distance,
+//     double timelimit,
+//     double positionTolerance = 1e-3,
+//     double angularTolerance = 1e-3,
+//     const VectorFieldPlannerParameters& vfParameters
+//     = VectorFieldPlannerParameters(),
+//     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
 /// Plan to a desired end-effector offset with fixed orientation using CRRT.
 /// \param[in] space StateSpace for the metaskeleton
@@ -223,6 +240,32 @@ trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
     double positionTolerance = 1e-3,
     double angularTolerance = 1e-3,
     const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
+
+/// Plan with a desired end-effector twist.
+/// \param[in] space StateSpace for the metaskeleton
+/// \param[in] metaSkeleton Metaskeleton to plan with
+/// \param[in] body Bodynode for the end-effector
+/// \param[in] twist Twist for the end-effector
+/// \param[in] duration Time to plan with the desired twist
+/// \param[in] collisionTestable Collision constraint to check. Self-collision
+/// is checked by default.
+/// \param[in] timelimit Timelimit for the plan to be generated
+/// \param[in] positionTolerance Tolerance in position // do I need this?
+/// \param[in] angularTolerance Tolerance in angle // do I need this?
+/// \param[in] vfParameters VectorFieldPlanenr parameters
+/// \return Output trajectory
+trajectory::TrajectoryPtr planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector6d& twists,
+    double durations,
+    const constraint::TestablePtr& collisionTestable,
+    double timelimit,
+    double positionTolerance = 1e-3,
+    double angularTolerance = 1e-3,
+    const VectorFieldPlannerParameters& vfParameters
+    = VectorFieldPlannerParameters());
 
 /// Parses YAML node for named configurtaions
 /// \param[in] node YAML node containing named configurations

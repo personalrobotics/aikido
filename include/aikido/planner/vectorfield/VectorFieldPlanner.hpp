@@ -7,6 +7,10 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 
+#include "aikido/trajectory/Spline.hpp"
+// #include "aikido/robot/util.hpp"
+
+
 namespace aikido {
 namespace planner {
 namespace vectorfield {
@@ -103,6 +107,23 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     const Eigen::Isometry3d& goalPose,
     double poseErrorTolerance,
     double conversionRatioInGeodesicDistance,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double constraintCheckResolution,
+    std::chrono::duration<double> timelimit,
+    planner::Planner::Result* result = nullptr);
+
+// std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
+aikido::trajectory::UniqueInterpolatedPtr planWithEndEffectorTwist(
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
+    const aikido::constraint::ConstTestablePtr& constraint,
+    double positionTolerance,
+    double angularTolerance,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,

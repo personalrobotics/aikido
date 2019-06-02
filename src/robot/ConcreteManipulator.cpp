@@ -146,9 +146,43 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
       angularTolerance,
       mVectorFieldParameters,
       mCRRTParameters);
-
+  std::cout << "concret !!! number of waypoints: " << trajectory->getNumWaypoints() << std::endl;
   return trajectory;
 }
+
+//==============================================================================
+// designate a startState
+// trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
+//     const statespace::dart::MetaSkeletonStateSpacePtr& space,
+//     State* startState,
+//     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+//     const dart::dynamics::BodyNodePtr& body,
+//     const constraint::dart::CollisionFreePtr& collisionFree,
+//     const Eigen::Vector3d& direction,
+//     double distance,
+//     double timelimit,
+//     double positionTolerance,
+//     double angularTolerance)
+// {
+
+//   auto collision
+//       = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+//   auto trajectory = util::planToEndEffectorOffset(
+//       space,
+//       startState,
+//       metaSkeleton,
+//       body,
+//       direction,
+//       collision,
+//       distance,
+//       timelimit,
+//       positionTolerance,
+//       angularTolerance,
+//       mVectorFieldParameters,
+//       mCRRTParameters);
+
+//   return trajectory;
+// }
 
 //==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
@@ -188,6 +222,37 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
 
   return trajectory;
 }
+
+//==============================================================================
+trajectory::TrajectoryPtr ConcreteManipulator::planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector6d& twists,
+    double durations,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance)
+{
+
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  auto trajectory = util::planWithEndEffectorTwist(
+      space,
+      metaSkeleton,
+      body,
+      twists,
+      durations,
+      collision,
+      timelimit,
+      positionTolerance,
+      angularTolerance,
+      mVectorFieldParameters);
+
+  return trajectory;
+}
+
 
 //==============================================================================
 void ConcreteManipulator::setVectorFieldPlannerParameters(

@@ -6,9 +6,12 @@
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include "aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp"
 #include "aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp"
+#include "aikido/planner/vectorfield/MoveEndEffectorTwistVectorField.hpp"
 #include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/trajectory/Spline.hpp"
+// #include "aikido/robot/util.hpp"
+
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
@@ -126,6 +129,8 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
       return nullptr;
     }
   }
+  // std::cout << "type" << typeid(outputTrajectory).name() << std::endl;
+  // std::cout << "number of waypoints" << outputTrajectory->getNumWaypoints() << std::endl;
   return outputTrajectory;
 }
 
@@ -185,7 +190,8 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
-  return followVectorField(
+
+  auto outputTrajectory = followVectorField(
       *vectorfield,
       startState,
       *compoundConstraint,
@@ -193,6 +199,8 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
       initialStepSize,
       constraintCheckResolution,
       result);
+  // std::cout << "number of waypoints = " << outputTrajectory->getNumWaypoints() << std::endl;
+  return outputTrajectory;
 }
 
 //==============================================================================
@@ -239,6 +247,74 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
   return followVectorField(
       *vectorfield,
       *startState,
+      *compoundConstraint,
+      timelimit,
+      initialStepSize,
+      constraintCheckResolution,
+      result);
+}
+
+//==============================================================================
+aikido::trajectory::UniqueInterpolatedPtr planWithEndEffectorTwist(
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
+    const aikido::constraint::ConstTestablePtr& constraint,
+    double positionTolerance,
+    double angularTolerance,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double constraintCheckResolution,
+    std::chrono::duration<double> timelimit,
+    planner::Planner::Result* result)
+{
+  // ensure that no two planners run at the same time
+  if (metaskeleton->getNumBodyNodes() == 0)
+  {
+    throw std::runtime_error("MetaSkeleton doesn't have any body nodes.");
+  }
+  auto robot = metaskeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
+  // TODO(JS): The above code should be replaced by
+  // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
+  // once https://github.com/dartsim/dart/pull/1011 is released.
+
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+
+  // Save the current state of the space
+  auto saver = MetaSkeletonStateSaver(
+      metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
+  DART_UNUSED(saver);
+
+  stateSpace->setState(metaskeleton.get(), &startState);
+
+  auto vectorfield
+      = dart::common::make_aligned_shared<MoveEndEffectorTwistVectorField>(
+          stateSpace,
+          metaskeleton,
+          bn,
+          twistSeq,
+          durationSeq,
+          positionTolerance,
+          angularTolerance,
+          initialStepSize,
+          jointLimitTolerance);
+
+  auto compoundConstraint
+      = std::make_shared<constraint::TestableIntersection>(stateSpace);
+
+  if (constraint)
+    compoundConstraint->addConstraint(constraint);
+
+  compoundConstraint->addConstraint(
+      constraint::dart::createTestableBounds(stateSpace));
+
+  return followVectorField(
+      *vectorfield,
+      startState,
       *compoundConstraint,
       timelimit,
       initialStepSize,
