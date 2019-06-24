@@ -101,6 +101,7 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 /// \return Trajectory or \c nullptr if planning failed.
 aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const ::dart::dynamics::BodyNodePtr& bn,
     const aikido::constraint::TestablePtr& constraint,

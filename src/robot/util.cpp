@@ -746,47 +746,47 @@ trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
       */
 }
 
-//==============================================================================
+// ==============================================================================
 // designate a startState
-// trajectory::TrajectoryPtr planToEndEffectorOffset(
-//     const statespace::dart::MetaSkeletonStateSpacePtr& space,
-//     const State* startState,
-//     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-//     const dart::dynamics::BodyNodePtr& bodyNode,
-//     const Eigen::Vector3d& direction,
-//     const constraint::TestablePtr& collisionTestable,
-//     double distance,
-//     double timelimit,
-//     double positionTolerance,
-//     double angularTolerance,
-//     const VectorFieldPlannerParameters& vfParameters,
-//     const CRRTPlannerParameters& crrtParameters)
-// {
-//   auto saver = MetaSkeletonStateSaver(metaSkeleton);
-//   DART_UNUSED(saver);
+trajectory::TrajectoryPtr planToEndEffectorOffset(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    State* startState,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Vector3d& direction,
+    const constraint::TestablePtr& collisionTestable,
+    double distance,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance,
+    const VectorFieldPlannerParameters& vfParameters,
+    const CRRTPlannerParameters& crrtParameters)
+{
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
 
-//   auto minDistance
-//       = std::max(0.0, distance - vfParameters.negativeDistanceTolerance);
-//   auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
+  auto minDistance
+      = std::max(0.0, distance - vfParameters.negativeDistanceTolerance);
+  auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
 
-//   auto traj = planner::vectorfield::planToEndEffectorOffset(
-//       space,
-//       *startState,
-//       metaSkeleton,
-//       bodyNode,
-//       collisionTestable,
-//       direction,
-//       minDistance,
-//       maxDistance,
-//       positionTolerance,
-//       angularTolerance,
-//       vfParameters.initialStepSize,
-//       vfParameters.jointLimitTolerance,
-//       vfParameters.constraintCheckResolution,
-//       std::chrono::duration<double>(timelimit));
+  auto traj = planner::vectorfield::planToEndEffectorOffset(
+      space,
+      *startState,
+      metaSkeleton,
+      bodyNode,
+      collisionTestable,
+      direction,
+      minDistance,
+      maxDistance,
+      positionTolerance,
+      angularTolerance,
+      vfParameters.initialStepSize,
+      vfParameters.jointLimitTolerance,
+      vfParameters.constraintCheckResolution,
+      std::chrono::duration<double>(timelimit));
 
-//   return std::move(traj);
-// }
+  return std::move(traj);
+}
 
 //==============================================================================
 InterpolatedPtr planToEndEffectorOffsetByCRRT(
@@ -894,43 +894,40 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
 }
 
 //==============================================================================
-// trajectory::TrajectoryPtr planToEndEffectorPose(
-//     const statespace::dart::MetaSkeletonStateSpacePtr& space,
-//     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-//     const dart::dynamics::BodyNodePtr& bodyNode,
-//     const Eigen::Vector6d& twistSeq,
-//     double durationSeq,
-//     const constraint::TestablePtr& collisionTestable,
-//     double timelimit,
-//     double positionTolerance,
-//     double angularTolerance,
-//     const VectorFieldPlannerParameters& vfParameters)
-// {
-//   // if twist is a zero vector
-//   if (twistSeq.norm() == 0)
-//   {
-//     throw std::runtime_error("Twists vector cannot be empty");
-//   }
+trajectory::TrajectoryPtr planToEndEffectorPose(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const Eigen::Isometry3d& goalPose,
+    double poseErrorTolerance,
+    double conversionRatioInGeodesicDistance,
+    const constraint::TestablePtr& collisionTestable,
+    double timelimit,
+    const VectorFieldPlannerParameters& vfParameters)
+{
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
 
-//   auto saver = MetaSkeletonStateSaver(metaSkeleton);
-//   DART_UNUSED(saver);
+  auto startState = space->createState();
+  space->getState(metaSkeleton.get(), startState);
 
-//   trajectory::TrajectoryPtr untimedTrajectory
-//       = planner::vectorfield::planToEndEffectorPose(
-//       space,
-//       metaSkeleton,
-//       bodyNode,
-//       collisionTestable,
-//       goalPose,
-//       double poseErrorTolerance,
-//       double conversionRatioInGeodesicDistance,
-//       vfParameters.initialStepSize,
-//       vfParameters.jointLimitTolerance,
-//       vfParameters.constraintCheckResolution
-//       std::chrono::duration<double>(timelimit),
-//       planner::Planner::Result* result);
-//   return std::move(untimedTrajectory);
-// }
+  trajectory::TrajectoryPtr untimedTrajectory
+      = planner::vectorfield::planToEndEffectorPose(
+      space,
+      *startState,
+      metaSkeleton,
+      bodyNode,
+      collisionTestable,
+      goalPose,// ??? 
+      poseErrorTolerance,
+      conversionRatioInGeodesicDistance,
+      vfParameters.initialStepSize,
+      vfParameters.jointLimitTolerance,
+      vfParameters.constraintCheckResolution,
+      std::chrono::duration<double>(timelimit));
+
+  return std::move(untimedTrajectory);
+}
 
 
 //==============================================================================
