@@ -10,7 +10,6 @@
 #include "Path.h"
 #include "Trajectory.h"
 
-using dart::common::make_unique;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::trajectory::toR1JointTrajectory;
@@ -52,7 +51,7 @@ std::unique_ptr<Path> convertToKunzPath(
     stateSpace->logMap(tmpState, tmpVec);
     waypoints.push_back(tmpVec);
   }
-  auto path = make_unique<Path>(waypoints, maxDeviation);
+  auto path = ::dart::common::make_unique<Path>(waypoints, maxDeviation);
   return path;
 }
 

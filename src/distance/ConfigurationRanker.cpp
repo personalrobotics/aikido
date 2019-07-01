@@ -7,7 +7,6 @@ namespace distance {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
-using dart::common::make_unique;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
@@ -63,7 +62,7 @@ ConfigurationRanker::ConfigurationRanker(
     metrics.emplace_back(std::make_pair(std::move(metric), weights[i]));
   }
 
-  mDistanceMetric = make_unique<CartesianProductWeighted>(
+  mDistanceMetric = ::dart::common::make_unique<CartesianProductWeighted>(
       std::move(_sspace), std::move(metrics));
 }
 

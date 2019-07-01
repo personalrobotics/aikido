@@ -23,7 +23,6 @@ using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using dart::common::make_unique;
 
 using Eigen::Vector2d;
 using LinearSplineProblem
@@ -89,7 +88,7 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
     throw std::invalid_argument("Trajectory is empty.");
 
   auto outputTrajectory
-      = make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
+      = ::dart::common::make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
@@ -128,7 +127,7 @@ UniqueInterpolatedPtr concatenate(
   if (traj1.getInterpolator() != traj2.getInterpolator())
     throw std::runtime_error("Interpolator mismatch");
 
-  auto outputTrajectory = make_unique<Interpolated>(
+  auto outputTrajectory = ::dart::common::make_unique<Interpolated>(
       traj1.getStateSpace(), traj1.getInterpolator());
   if (traj1.getNumWaypoints() > 1u)
   {
@@ -197,7 +196,7 @@ UniqueSplinePtr createPartialTrajectory(
 
   const auto stateSpace = traj.getStateSpace();
   const int dimension = static_cast<int>(stateSpace->getDimension());
-  auto outputTrajectory = make_unique<Spline>(stateSpace, traj.getStartTime());
+  auto outputTrajectory = ::dart::common::make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;
@@ -279,7 +278,7 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 
   auto rSpace = std::make_shared<CartesianProduct>(subspaces);
   auto rInterpolator = std::make_shared<GeodesicInterpolator>(rSpace);
-  auto rTrajectory = make_unique<Interpolated>(rSpace, rInterpolator);
+  auto rTrajectory = ::dart::common::make_unique<Interpolated>(rSpace, rInterpolator);
 
   Eigen::VectorXd sourceVector(space->getDimension());
   auto sourceState = rSpace->createState();
