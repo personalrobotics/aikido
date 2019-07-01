@@ -21,68 +21,134 @@ matrix:
     - os: linux
       compiler: gcc
       env:
-        - BUILD_NAME=TRUSTY_RELEASE
+        - BUILD_NAME=TRUSTY_CATKIN_RELEASE
+        - DOCKER_FILE="ubuntu-trusty"
         - REQUIRED_ONLY=--required-only
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
+      services: docker
+
     - os: linux
       compiler: gcc
       env:
-        - BUILD_NAME=TRUSTY_FULL_DEBUG
+        - BUILD_NAME=TRUSTY_CATKIN_FULL_DEBUG
+        - DOCKER_FILE="ubuntu-trusty"
         - BUILD_TYPE=Debug
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
+      services: docker
+
     - os: linux
       compiler: gcc
       env:
-        - BUILD_NAME=TRUSTY_FULL_RELEASE
+        - BUILD_NAME=TRUSTY_CATKIN_FULL_RELEASE
+        - DOCKER_FILE="ubuntu-trusty"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
+      services: docker
+
     - os: linux
       env:
-        - BUILD_NAME=XENIAL_FULL_RELEASE
+        - BUILD_NAME=XENIAL_CATKIN_FULL_RELEASE
         - DOCKER_FILE="ubuntu-xenial"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
       services: docker
+
     - os: linux
       env:
-        - BUILD_NAME=BIONIC_FULL_RELEASE
+        - BUILD_NAME=BIONIC_CATKIN_FULL_RELEASE
         - DOCKER_FILE="ubuntu-bionic"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
       services: docker
+
+    - os: linux
+      env:
+        - BUILD_NAME=BIONIC_CMAKE_RELEASE
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - USE_CATKIN=OFF
+      services: docker
+
+    - os: linux
+      env:
+        - BUILD_NAME=DISCO_CMAKE_RELEASE
+        - DOCKER_FILE="ubuntu-disco"
+        - BUILD_TYPE=Release
+        - USE_CATKIN=OFF
+      services: docker
+
     - os: osx
       osx_image: xcode9.3
       compiler: clang
       env:
-        - BUILD_NAME=XCODE93_RELEASE
+        - BUILD_NAME=XCODE93_CMAKE_RELEASE
         - BUILD_TYPE=Release
+        - USE_CATKIN=OFF
+
     - os: linux
       compiler: gcc
       env:
         - BUILD_NAME=DOCS
+        - DOCKER_FILE="ubuntu-bionic"
         - BUILD_TYPE=Release
+        - USE_CATKIN=ON
+      services: docker
+
   allow_failures:
     - os: linux
+      compiler: gcc
       env:
-        - BUILD_NAME=XENIAL_FULL_RELEASE
+        - BUILD_NAME=TRUSTY_CATKIN_RELEASE
+        - DOCKER_FILE="ubuntu-trusty"
+        - REQUIRED_ONLY=--required-only
+        - BUILD_TYPE=Release
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
+      services: docker
+
+    - os: linux
+      compiler: gcc
+      env:
+        - BUILD_NAME=TRUSTY_CATKIN_FULL_DEBUG
+        - DOCKER_FILE="ubuntu-trusty"
+        - BUILD_TYPE=Debug
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
+      services: docker
+
+    - os: linux
+      compiler: gcc
+      env:
+        - BUILD_NAME=TRUSTY_CATKIN_FULL_RELEASE
+        - DOCKER_FILE="ubuntu-trusty"
+        - BUILD_TYPE=Release
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
+      services: docker
+
+    - os: linux
+      env:
+        - BUILD_NAME=XENIAL_CATKIN_FULL_RELEASE
         - DOCKER_FILE="ubuntu-xenial"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
       services: docker
+
     - os: linux
       env:
-        - BUILD_NAME=BIONIC_FULL_RELEASE
+        - BUILD_NAME=BIONIC_CATKIN_FULL_RELEASE
         - DOCKER_FILE="ubuntu-bionic"
         - BUILD_TYPE=Release
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
       services: docker
-    - os: osx
-      osx_image: xcode9.3
-      compiler: clang
-      env:
-        - BUILD_NAME=XCODE93_RELEASE
-        - BUILD_TYPE=Release
 
 before_install:
   - if [ -n "$DOCKER_FILE" ]; then
