@@ -10,11 +10,12 @@ namespace common {
 template<typename T, typename... Args>
 ::std::unique_ptr<T> make_unique(Args&&... args)
 {
+#if __cplusplus < 201300
   return ::std::unique_ptr<T>(new T(::std::forward<Args>(args)...));
+#else
+  return ::std::make_unique<T>(::std::forward<Args>(args)...);
+#endif
 }
-// TODO(JS): This is a stopgap solution as it was omitted from C++11 as "partly
-// an oversight". This can be replaced by std::make_unique<T> of the standard
-// library when we migrate to using C++14.
 
 } // namespace common
 } // namespace aikido
