@@ -5,7 +5,7 @@
 #include <vector>
 #include <boost/format.hpp>
 #include <dart/common/Console.hpp>
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <dart/math/Geometry.hpp>
 
 #undef dtwarn
