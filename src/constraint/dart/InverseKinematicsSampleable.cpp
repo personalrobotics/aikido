@@ -220,8 +220,17 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 
     mInverseKinematics->getTarget()->setTransform(poseState.getIsometry());
 
+<<<<<<< HEAD
     // Run the IK solver. If it succeeds, return the solution.
     if (mInverseKinematics->solveAndApply(true))
+=======
+    // Run the IK solver. If an exact solution is computed, apply it to the skeleton.
+#if DART_VERSION_AT_LEAST(6, 8, 0)
+    if (mInverseKinematics->solveAndApply(true))
+#else
+    if (mInverseKinematics->solve(true))
+#endif
+>>>>>>> egordon-dart-6.8.2_js
     {
       mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), outputState);
       return true;

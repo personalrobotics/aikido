@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <gtest/gtest.h>
 #include <aikido/common/StepSequence.hpp>
 

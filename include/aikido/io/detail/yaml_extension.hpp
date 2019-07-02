@@ -4,7 +4,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <Eigen/Dense>
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <yaml-cpp/yaml.h>
 
 namespace aikido {
