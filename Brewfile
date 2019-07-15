@@ -1,6 +1,7 @@
 brew 'boost'
 brew 'dartsim'
 brew 'eigen'
+brew 'libccd'
 brew 'libmicrohttpd'
 brew 'ompl'
 brew 'tinyxml2'
