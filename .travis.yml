@@ -84,7 +84,7 @@ matrix:
       services: docker
 
     - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode10.2
       compiler: clang
       env:
         - BUILD_NAME=XCODE93_CMAKE_RELEASE
