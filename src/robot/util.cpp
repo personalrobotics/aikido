@@ -69,8 +69,6 @@ using dart::dynamics::MetaSkeleton;
 using dart::dynamics::MetaSkeletonPtr;
 using dart::dynamics::SkeletonPtr;
 
-static const double collisionResolution = 0.1;
-
 //==============================================================================
 trajectory::TrajectoryPtr planToConfiguration(
     const MetaSkeletonStateSpacePtr& space,
@@ -201,7 +199,7 @@ trajectory::TrajectoryPtr planToTSR(
       tsr,
       createSampleableBounds(space, rng->clone()),
       ik,
-      maxNumTrials);
+      static_cast<int>(maxNumTrials));
 
   auto generator = ikSampleable.createSampleGenerator();
 
@@ -439,7 +437,7 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
       std::chrono::duration<double>(timelimit));
 
   if (traj)
-    return std::move(traj);
+    return traj;
 
   return planToEndEffectorOffsetByCRRT(
       space,
