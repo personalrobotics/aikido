@@ -23,6 +23,9 @@ public:
   /// \param[in] stateSpace State space that vector field is defined in.
   explicit VectorField(aikido::statespace::ConstStateSpacePtr stateSpace);
 
+  /// Destructor
+  virtual ~VectorField() = default;
+
   /// Vectorfield callback function.
   ///
   /// \param[in] state Statespace state.
