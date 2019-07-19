@@ -2,7 +2,7 @@
 
 set -ex
 
-unset -f cd; # Disable rvm ovveride of cd (see https://github.com/travis-ci/travis-ci/issues/8703)
+unset -f cd; # Disable rvm override of cd (see https://github.com/travis-ci/travis-ci/issues/8703)
 
 mkdir build
 cd build
