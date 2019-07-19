@@ -25,6 +25,7 @@ enum class ConstraintType
 class Differentiable
 {
 public:
+  /// Destructor
   virtual ~Differentiable() = default;
 
   /// Gets the StateSpace that this constraint operates on.
