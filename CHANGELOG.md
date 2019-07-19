@@ -29,6 +29,7 @@
 * Constraint
 
   * Added SequentialSampleable: [#393](https://github.com/personalrobotics/aikido/pull/393)
+  * Changed deprecated DART call in InverseKinematics: [#524](https://github.com/personalrobotics/aikido/pull/524)
 
 * Control
 
@@ -76,6 +77,7 @@
 * RViz
 
   * Fixed bug of not joining Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
+  * Fixed bug of not passing full file path to RViz when MeshShape is used: [#518](https://github.com/personalrobotics/aikido/pull/518)
 
 * IO
 
