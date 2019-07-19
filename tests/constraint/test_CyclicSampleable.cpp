@@ -1,5 +1,6 @@
-#include <dart/dart.hpp>
+#include <dart/common/Memory.hpp>
 #include <gtest/gtest.h>
+#include <aikido/common/memory.hpp>
 #include <aikido/constraint/CyclicSampleable.hpp>
 #include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
@@ -23,7 +24,7 @@ EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2d)
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
-  return ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
+  return ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
 }
 
 TEST(CyclicSampleableTest, ConstructorThrowsOnNullConstraint)
