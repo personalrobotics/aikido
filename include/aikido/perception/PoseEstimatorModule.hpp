@@ -3,7 +3,6 @@
 
 #include <string>
 #include <dart/dart.hpp>
-#include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/io/yaml.hpp"

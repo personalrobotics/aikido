@@ -75,4 +75,4 @@ add_component_dependencies(${PROJECT_NAME} rviz
 
 # Intentionally omit tests for or_rviz. It's not clear how to test a viewer.
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})

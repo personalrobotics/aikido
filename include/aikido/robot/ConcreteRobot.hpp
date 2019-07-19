@@ -11,6 +11,7 @@
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/robot/Robot.hpp"
@@ -60,6 +61,13 @@ public:
   virtual aikido::trajectory::UniqueSplinePtr retimePath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path) override;
+
+  // Documentation inherited.
+  virtual std::unique_ptr<aikido::trajectory::Spline> retimePathWithKunz(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
+      double maxDeviation,
+      double timestep) override;
 
   // Documentation inherited.
   virtual std::future<void> executeTrajectory(
@@ -191,6 +199,8 @@ public:
   /// \param[in] collisionFree Testable constraint to check for collision.
   /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
   /// \param[in] maxNumTrials Max numer of trials to plan.
+  /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
+  /// NominalConfigurationRanker is used with the current metaSkeleton pose.
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSR(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
@@ -199,7 +209,8 @@ public:
       const aikido::constraint::dart::TSRPtr& tsr,
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit,
-      std::size_t maxNumTrials);
+      std::size_t maxNumTrials,
+      const distance::ConstConfigurationRankerPtr& ranker = nullptr);
 
   /// TODO: Replace this with Problem interface.
   /// Returns a Trajectory that moves the configuration of the metakeleton such

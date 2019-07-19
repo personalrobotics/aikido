@@ -1,5 +1,6 @@
 #include "aikido/robot/ConcreteRobot.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
@@ -11,6 +12,7 @@ using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
 using constraint::ConstTestablePtr;
 using planner::TrajectoryPostProcessor;
+using planner::kunzretimer::KunzRetimer;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
 using statespace::dart::MetaSkeletonStateSpace;
@@ -149,6 +151,29 @@ UniqueSplinePtr ConcreteRobot::retimePath(
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
   auto retimer
       = std::make_shared<ParabolicTimer>(velocityLimits, accelerationLimits);
+
+  auto interpolated = dynamic_cast<const Interpolated*>(path);
+  if (interpolated)
+    return retimer->postprocess(*interpolated, *(cloneRNG().get()));
+
+  auto spline = dynamic_cast<const Spline*>(path);
+  if (spline)
+    return retimer->postprocess(*spline, *(cloneRNG().get()));
+
+  throw std::invalid_argument("Path should be either Spline or Interpolated.");
+}
+
+//==============================================================================
+UniqueSplinePtr ConcreteRobot::retimePathWithKunz(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const aikido::trajectory::Trajectory* path,
+    double maxDeviation,
+    double timestep)
+{
+  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
+  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
+  auto retimer = std::make_shared<KunzRetimer>(
+      velocityLimits, accelerationLimits, maxDeviation, timestep);
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)
@@ -401,7 +426,8 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const TSRPtr& tsr,
     const CollisionFreePtr& collisionFree,
     double timelimit,
-    std::size_t maxNumTrials)
+    std::size_t maxNumTrials,
+    const distance::ConstConfigurationRankerPtr& ranker)
 {
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
@@ -414,7 +440,8 @@ TrajectoryPtr ConcreteRobot::planToTSR(
       collisionConstraint,
       cloneRNG().get(),
       timelimit,
-      maxNumTrials);
+      maxNumTrials,
+      ranker);
 }
 
 //==============================================================================
