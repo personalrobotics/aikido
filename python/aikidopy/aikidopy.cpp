@@ -19,7 +19,6 @@ void aikidopy_rviz(py::module& m);
 PYBIND11_MODULE(aikidopy, m)
 {
   py::module::import("numpy");
-  py::module::import("dartpy");
 
   m.doc() = "aikidopy is a Python library for solving robotic motion planning "
       "and decision making problems.";
