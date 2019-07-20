@@ -1,0 +1,7 @@
+#include "robot/ConcreteManipulator.hpp"
+#include "robot/ConcreteRobot.hpp"
+#include "robot/GrabMetadata.hpp"
+#include "robot/Hand.hpp"
+#include "robot/Manipulator.hpp"
+#include "robot/Robot.hpp"
+#include "robot/util.hpp"
