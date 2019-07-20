@@ -100,14 +100,6 @@ matrix:
         - BUILD_TYPE=Release
         - USE_CATKIN=OFF
 
-    - os: osx
-      osx_image: xcode11
-      compiler: clang
-      env:
-        - BUILD_NAME=XCODE11_CMAKE_RELEASE
-        - BUILD_TYPE=Release
-        - USE_CATKIN=OFF
-
     - os: linux
       compiler: gcc
       env:
