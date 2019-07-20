@@ -2,7 +2,7 @@
 
 #include <sstream>
 #include <Eigen/Core>
-#include <dart/common/common.hpp>
+#include "aikido/common/memory.hpp"
 #include "aikido/common/StepSequence.hpp"
 
 namespace aikido {
@@ -167,7 +167,7 @@ BSpline& BSpline::operator=(BSpline&& other)
 //==============================================================================
 std::unique_ptr<Trajectory> BSpline::clone() const
 {
-  return dart::common::make_unique<BSpline>(*this);
+  return ::aikido::common::make_unique<BSpline>(*this);
 }
 
 //==============================================================================

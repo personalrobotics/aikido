@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/trajectory/Spline.hpp>
+#include <aikido/trajectory/util.hpp>
 
 using namespace aikido::statespace;
 using aikido::trajectory::Spline;
@@ -14,10 +16,14 @@ class SplineTest : public ::testing::Test
 protected:
   void SetUp() override
   {
-    mStateSpace = std::make_shared<R2>();
+    std::vector<ConstStateSpacePtr> subspaces;
+    for (std::size_t i = 0; i < 2; ++i)
+      subspaces.emplace_back(std::make_shared<R1>());
+    mStateSpace = std::make_shared<CartesianProduct>(subspaces);
 
-    mStartState = static_cast<R2::State*>(mStateSpace->allocateState());
-    mStateSpace->setValue(mStartState, START_VALUE);
+    mStartState
+        = static_cast<CartesianProduct::State*>(mStateSpace->allocateState());
+    mStateSpace->expMap(START_VALUE, mStartState);
   }
 
   void TearDown() override
@@ -25,8 +31,8 @@ protected:
     mStateSpace->freeState(mStartState);
   }
 
-  std::shared_ptr<R2> mStateSpace;
-  R2::State* mStartState;
+  std::shared_ptr<CartesianProduct> mStateSpace;
+  CartesianProduct::State* mStartState;
   std::shared_ptr<Spline> mTrajectory;
 };
 
@@ -219,7 +225,9 @@ TEST_F(SplineTest, evaluate_EvaluateStart_ReturnsStart)
   auto state = mStateSpace->createState();
 
   trajectory.evaluate(3., state);
-  EXPECT_TRUE(START_VALUE.isApprox(state.getValue()));
+  Eigen::VectorXd positions;
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(START_VALUE.isApprox(positions));
 }
 
 TEST_F(SplineTest, evaluate_EvaluateEnd_ReturnsEnd)
@@ -231,13 +239,17 @@ TEST_F(SplineTest, evaluate_EvaluateEnd_ReturnsEnd)
   Spline trajectory(mStateSpace, 3.);
   auto state = mStateSpace->createState();
 
+  Eigen::VectorXd positions;
+
   trajectory.addSegment(coefficients1, 1., mStartState);
   trajectory.evaluate(4., state);
-  EXPECT_TRUE(Vector2d(2., 4.).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(2., 4.).isApprox(positions));
 
   trajectory.addSegment(coefficients2, 2.);
   trajectory.evaluate(6., state);
-  EXPECT_TRUE(Vector2d(8., 12.).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(8., 12.).isApprox(positions));
 }
 
 TEST_F(SplineTest, evaluate_Middle_ReturnsInterpolation)
@@ -254,23 +266,31 @@ TEST_F(SplineTest, evaluate_Middle_ReturnsInterpolation)
 
   auto state = mStateSpace->createState();
 
+  Eigen::VectorXd positions;
+
   trajectory.evaluate(3.5, state);
-  EXPECT_TRUE(Vector2d(1.25, 2.75).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(1.25, 2.75).isApprox(positions));
 
   trajectory.evaluate(4.0, state);
-  EXPECT_TRUE(Vector2d(2.00, 4.00).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(2.00, 4.00).isApprox(positions));
 
   trajectory.evaluate(5.0, state);
-  EXPECT_TRUE(Vector2d(5.00, 8.00).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(5.00, 8.00).isApprox(positions));
 
   trajectory.evaluate(6.0, state);
-  EXPECT_TRUE(Vector2d(12., 16.).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(12., 16.).isApprox(positions));
 
   trajectory.evaluate(7.5, state);
-  EXPECT_TRUE(Vector2d(21.75, 27.25).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(21.75, 27.25).isApprox(positions));
 
   trajectory.evaluate(9.0, state);
-  EXPECT_TRUE(Vector2d(45.00, 52.00).isApprox(state.getValue()));
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(45.00, 52.00).isApprox(positions));
 }
 
 TEST_F(SplineTest, evaluateDerivative_IsEmpty_Throws)
@@ -353,4 +373,45 @@ TEST_F(SplineTest, EvaluateDerivative_HigherOrder_ReturnsZero)
 
   trajectory.evaluateDerivative(7.5, 3, tangentVector);
   EXPECT_TRUE(Vector2d::Zero().isApprox(tangentVector));
+}
+
+TEST_F(SplineTest, FindTimeOfClosetStateOnTrajectory)
+{
+  Matrix2d coefficients;
+  coefficients << 0., 1., 0., 1.;
+
+  std::shared_ptr<Spline> trajectory = std::make_shared<Spline>(mStateSpace);
+  auto startState = mStateSpace->createState();
+  mStateSpace->expMap(Vector2d(1., 1.), startState);
+  trajectory->addSegment(coefficients, 2., startState);
+
+  Vector2d query(1., 2.);
+  double time = findTimeOfClosestStateOnTrajectory(*trajectory, query, 1e-4);
+  EXPECT_EQ(time, 0.5);
+}
+
+TEST_F(SplineTest, CreatePartialTrajectory)
+{
+  Matrix2d coefficients;
+  coefficients << 0., 1., 0., 1.;
+
+  Spline trajectory(mStateSpace);
+  auto startState = mStateSpace->createState();
+  mStateSpace->expMap(Vector2d(1., 1.), startState);
+  trajectory.addSegment(coefficients, 2., startState);
+  auto state = mStateSpace->createState();
+
+  auto partialTraj = createPartialTrajectory(trajectory, 1.0);
+
+  Eigen::VectorXd positions;
+
+  partialTraj->evaluate(0., state);
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(2., 2.).isApprox(positions));
+
+  partialTraj->evaluate(1., state);
+  mStateSpace->logMap(state, positions);
+  EXPECT_TRUE(Vector2d(3., 3.).isApprox(positions));
+
+  EXPECT_EQ(partialTraj->getDuration() + 1.0, trajectory.getDuration());
 }

@@ -56,7 +56,7 @@ add_component_dependencies(${PROJECT_NAME} planner
   trajectory
 )
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})
 
 add_subdirectory("ompl")        # [constraint], [distance], [statespace], [trajectory], dart, ompl
 add_subdirectory("parabolic")   # [external], [common], [trajectory], [statespace], dart

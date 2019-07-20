@@ -22,10 +22,14 @@ public:
   /// \param[in] planner Non-DART ConfigurationToConfigurationPlanner planner to
   /// convert.
   /// \param[in] metaSkeleton MetaSkeleton for adapted planner to operate on.
+  /// \param[in] configurationRanker Ranker to rank configurations.
+  /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
+  /// NominalConfigurationRanker is used with the current metaSkeleton pose.
   ConfigurationToConfiguration_to_ConfigurationToTSR(
       std::shared_ptr<aikido::planner::ConfigurationToConfigurationPlanner>
           planner,
-      ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
+      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      distance::ConstConfigurationRankerPtr configurationRanker = nullptr);
 
   // Documentation inherited.
   virtual trajectory::TrajectoryPtr plan(

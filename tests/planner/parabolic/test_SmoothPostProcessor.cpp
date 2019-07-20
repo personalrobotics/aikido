@@ -2,18 +2,18 @@
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
+#include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include "eigen_tests.hpp"
 
 using Eigen::Vector2d;
-using Eigen::Vector3d;
 using aikido::trajectory::Interpolated;
+using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::R2;
-using aikido::statespace::StateSpacePtr;
+using aikido::statespace::R1;
+using aikido::statespace::CartesianProduct;
 using aikido::constraint::Satisfied;
-using aikido::common::cloneRNGFrom;
 using aikido::planner::parabolic::ParabolicSmoother;
 
 class SmoothPostProcessorTests : public ::testing::Test
@@ -24,7 +24,10 @@ protected:
   void SetUp() override
   {
     mRng = aikido::common::RNGWrapper<std::mt19937>(0);
-    mStateSpace = std::make_shared<R2>();
+    std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
+    for (std::size_t i = 0; i < 2; ++i)
+      subspaces.emplace_back(std::make_shared<R1>());
+    mStateSpace = std::make_shared<CartesianProduct>(subspaces);
     mMaxVelocity = Eigen::Vector2d(20., 20.);
     mMaxAcceleration = Eigen::Vector2d(10., 10.);
 
@@ -39,17 +42,17 @@ protected:
     auto state = mStateSpace->createState();
     Vector2d p1(1., 1.), p2(2., 1.2), p3(2.2, 2.), p4(3., 2.2), p5(3.2, 3.),
         p6(4., 3.2);
-    state.setValue(p1);
+    mStateSpace->expMap(p1, state);
     mTrajectory->addWaypoint(0., state);
-    state.setValue(p2);
+    mStateSpace->expMap(p2, state);
     mTrajectory->addWaypoint(1., state);
-    state.setValue(p3);
+    mStateSpace->expMap(p3, state);
     mTrajectory->addWaypoint(2., state);
-    state.setValue(p4);
+    mStateSpace->expMap(p4, state);
     mTrajectory->addWaypoint(3., state);
-    state.setValue(p5);
+    mStateSpace->expMap(p5, state);
     mTrajectory->addWaypoint(4., state);
-    state.setValue(p6);
+    mStateSpace->expMap(p6, state);
     mTrajectory->addWaypoint(5, state);
 
     double length = (p2 - p1).norm() + (p3 - p2).norm() + (p4 - p3).norm()
@@ -74,8 +77,20 @@ protected:
     return length;
   }
 
+  void evaluate(
+      aikido::trajectory::Trajectory* traj,
+      double t,
+      Eigen::VectorXd& positions)
+  {
+    // This utility function is just for convenience;
+    // states should be reused when possible.
+    auto state = traj->getStateSpace()->createState();
+    traj->evaluate(t, state);
+    traj->getStateSpace()->logMap(state, positions);
+  }
+
   aikido::common::RNGWrapper<std::mt19937> mRng;
-  std::shared_ptr<R2> mStateSpace;
+  std::shared_ptr<CartesianProduct> mStateSpace;
   Eigen::Vector2d mMaxVelocity;
   Eigen::Vector2d mMaxAcceleration;
 
@@ -113,16 +128,20 @@ TEST_F(SmoothPostProcessorTests, useShortcutting)
       = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
-  auto state = mStateSpace->createState();
-  smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
-  auto startState = mStateSpace->createState();
-  mTrajectory->evaluate(mTrajectory->getStartTime(), startState);
-  EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
+  Eigen::VectorXd statePositions, startPositions, goalPositions;
+  evaluate(mTrajectory.get(), mTrajectory->getStartTime(), startPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getStartTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(startPositions, statePositions, mTolerance);
 
-  smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
-  auto goalState = mStateSpace->createState();
-  mTrajectory->evaluate(mTrajectory->getEndTime(), goalState);
-  EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
+  evaluate(mTrajectory.get(), mTrajectory->getEndTime(), goalPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getEndTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(goalPositions, statePositions, mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
   EXPECT_TRUE(shortenLength < mOriginalTrajectoryLength);
@@ -154,16 +173,20 @@ TEST_F(SmoothPostProcessorTests, useBlend)
       = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
-  auto state = mStateSpace->createState();
-  smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
-  auto startState = mStateSpace->createState();
-  mTrajectory->evaluate(mTrajectory->getStartTime(), startState);
-  EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
+  Eigen::VectorXd statePositions, startPositions, goalPositions;
+  evaluate(mTrajectory.get(), mTrajectory->getStartTime(), startPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getStartTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(startPositions, statePositions, mTolerance);
 
-  smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
-  auto goalState = mStateSpace->createState();
-  mTrajectory->evaluate(mTrajectory->getEndTime(), goalState);
-  EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
+  evaluate(mTrajectory.get(), mTrajectory->getEndTime(), goalPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getEndTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(goalPositions, statePositions, mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
   EXPECT_TRUE(shortenLength < mOriginalTrajectoryLength);
@@ -195,16 +218,20 @@ TEST_F(SmoothPostProcessorTests, useShortcuttingAndBlend)
       = testSmoothPostProcessor.postprocess(*mTrajectory, mRng, testable);
 
   // Position.
-  auto state = mStateSpace->createState();
-  smoothedTrajectory->evaluate(smoothedTrajectory->getStartTime(), state);
-  auto startState = mStateSpace->createState();
-  mTrajectory->evaluate(mTrajectory->getStartTime(), startState);
-  EXPECT_EIGEN_EQUAL(startState.getValue(), state.getValue(), mTolerance);
+  Eigen::VectorXd statePositions, startPositions, goalPositions;
+  evaluate(mTrajectory.get(), mTrajectory->getStartTime(), startPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getStartTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(startPositions, statePositions, mTolerance);
 
-  smoothedTrajectory->evaluate(smoothedTrajectory->getEndTime(), state);
-  auto goalState = mStateSpace->createState();
-  mTrajectory->evaluate(mTrajectory->getEndTime(), goalState);
-  EXPECT_EIGEN_EQUAL(goalState.getValue(), state.getValue(), mTolerance);
+  evaluate(mTrajectory.get(), mTrajectory->getEndTime(), goalPositions);
+  evaluate(
+      smoothedTrajectory.get(),
+      smoothedTrajectory->getEndTime(),
+      statePositions);
+  EXPECT_EIGEN_EQUAL(goalPositions, statePositions, mTolerance);
 
   double shortenLength = getLength(smoothedTrajectory.get());
   EXPECT_TRUE(shortenLength < mOriginalTrajectoryLength);

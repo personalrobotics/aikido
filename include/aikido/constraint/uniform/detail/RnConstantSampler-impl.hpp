@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <dart/dart.hpp>
+#include "aikido/common/memory.hpp"
 #include "aikido/constraint/uniform/RnConstantSampler.hpp"
 
 #undef dtwarn
@@ -124,7 +125,7 @@ template <int N>
 std::unique_ptr<constraint::SampleGenerator>
 RConstantSampler<N>::createSampleGenerator() const
 {
-  return ::dart::common::make_unique<RnConstantSamplerSampleGenerator<N>>(
+  return ::aikido::common::make_unique<RnConstantSamplerSampleGenerator<N>>(
       mSpace, mValue);
 }
 

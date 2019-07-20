@@ -1,4 +1,5 @@
 #include "aikido/io/util.hpp"
+
 #include <dart/utils/urdf/DartLoader.hpp>
 #include "aikido/io/CatkinResourceRetriever.hpp"
 

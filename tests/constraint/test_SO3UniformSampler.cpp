@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/SO3UniformSampler.hpp>
 #include <aikido/distance/SO3Angular.hpp>
@@ -10,7 +10,6 @@ using aikido::constraint::SampleGenerator;
 using aikido::distance::SO3Angular;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
-using dart::common::make_unique;
 using Eigen::Vector3d;
 
 class SO3UniformSamplerTests : public ::testing::Test
@@ -24,7 +23,8 @@ protected:
   {
     mStateSpace = std::make_shared<SO3>();
     mDistance = std::make_shared<SO3Angular>(mStateSpace);
-    mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
+    mRng = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
+        0);
 
     mTargets.clear();
 

@@ -2,8 +2,12 @@
 
 set -ex
 
-if [ "${OS_NAME}" = "linux" ]; then
-  . "${BUILD_DIR}/.ci/install_linux.sh"
-elif [ "${OS_NAME}" = "osx"   ]; then
-  . "${BUILD_DIR}/.ci/install_macos.sh"
+if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+  if [ "${USE_CATKIN}" = "ON" ]; then
+    . "${TRAVIS_BUILD_DIR}/.ci/install_linux_catkin.sh"
+  else
+    . "${TRAVIS_BUILD_DIR}/.ci/install_linux_cmake.sh"
+  fi
+elif [ "${TRAVIS_OS_NAME}" = "osx"   ]; then
+  . "${TRAVIS_BUILD_DIR}/.ci/install_macos.sh"
 fi

@@ -1,5 +1,6 @@
-#include <dart/common/StlHelpers.hpp>
+#include <dart/common/Memory.hpp>
 #include <gtest/gtest.h>
+#include <aikido/common/memory.hpp>
 #include <aikido/constraint/uniform/SE2BoxConstraint.hpp>
 #include <aikido/distance/SE2Weighted.hpp>
 #include "SampleGeneratorCoverage.hpp"
@@ -11,7 +12,6 @@ using aikido::constraint::SampleGenerator;
 using aikido::distance::SE2Weighted;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
-using dart::common::make_unique;
 using Eigen::Vector2d;
 using Eigen::Vector3d;
 using Eigen::Isometry2d;
@@ -39,7 +39,8 @@ protected:
     mSE2StateSpace = dart::common::make_aligned_shared<SE2>();
     mSE2Distance
         = dart::common::make_aligned_shared<SE2Weighted>(mSE2StateSpace);
-    mRng = make_unique<RNGWrapper<std::default_random_engine>>(0);
+    mRng = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
+        0);
 
     mLowerLimits = Vector2d(-1., 1.);
     mUpperLimits = Vector2d(1., 2.);

@@ -2,6 +2,6 @@
 
 set -ex
 
-if [ "${OS_NAME}" = "linux" ]; then
-  . "${BUILD_DIR}/.ci/before_install_linux.sh"; 
+if [ "${USE_CATKIN}" = "ON" ]; then
+  . "${TRAVIS_BUILD_DIR}/.ci/before_install_catkin.sh";
 fi

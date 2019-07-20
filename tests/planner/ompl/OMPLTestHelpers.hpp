@@ -13,7 +13,6 @@
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
-using dart::common::make_unique;
 using aikido::constraint::DefaultTestableOutcome;
 using aikido::constraint::TestableOutcome;
 using aikido::statespace::CartesianProduct;
@@ -25,7 +24,7 @@ using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
-  return make_unique<RNGWrapper<std::default_random_engine>>(0);
+  return ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
 }
 
 dart::dynamics::SkeletonPtr createTranslationalRobot()
@@ -179,7 +178,7 @@ public:
   std::unique_ptr<aikido::constraint::SampleGenerator> createSampleGenerator()
       const override
   {
-    return make_unique<MockConstrainedSampleGenerator>(
+    return ::aikido::common::make_unique<MockConstrainedSampleGenerator>(
         mStateSpace, mSampleable->createSampleGenerator(), mValue);
   }
 

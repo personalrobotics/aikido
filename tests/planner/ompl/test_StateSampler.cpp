@@ -40,7 +40,7 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorCantSample)
 {
   StateSampler ssampler(
       gSpace.get(),
-      dart::common::make_unique<EmptySampleGenerator>(stateSpace));
+      ::aikido::common::make_unique<EmptySampleGenerator>(stateSpace));
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
   // Ensure we get two different states if we sample twice
@@ -54,7 +54,7 @@ TEST_F(StateSamplerTest, SampleUniformGeneratorFailsSample)
 {
   StateSampler ssampler(
       gSpace.get(),
-      dart::common::make_unique<EmptySampleGenerator>(stateSpace));
+      ::aikido::common::make_unique<EmptySampleGenerator>(stateSpace));
   auto s1 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
   // Ensure we get two different states if we sample twice

@@ -49,36 +49,6 @@ if(CODECOV)
 endif()
 
 #==============================================================================
-# Automatic code formatting setup
-#
-define_property(GLOBAL PROPERTY CODE_FORMATTING_SOURCES
-  BRIEF_DOCS "Source files that are automatically formatted by clang-format."
-  FULL_DOCS "Source files that are automatically formatted by clang-format."
-)
-
-function(format_add_sources)
-  foreach(source ${ARGN})
-    if(IS_ABSOLUTE "${source}")
-      set(source_abs "${source}")
-    else()
-      get_filename_component(source_abs
-        "${CMAKE_CURRENT_LIST_DIR}/${source}" ABSOLUTE)
-    endif()
-    if(EXISTS "${source_abs}")
-      set_property(GLOBAL APPEND PROPERTY CODE_FORMATTING_SOURCES "${source_abs}")
-    else()
-      message(FATAL_ERROR
-        "Source file '${source}' does not exist at absolute path"
-        " '${source_abs}'. This should never happen. Did you recently delete"
-        " this file or modify 'CMAKE_CURRENT_LIST_DIR'")
-    endif()
-  endforeach()
-endfunction()
-
-file(GLOB_RECURSE aikido_headers "${CMAKE_SOURCE_DIR}/include/*.hpp")
-format_add_sources(${aikido_headers})
-
-#==============================================================================
 # Helper functions.
 #
 function(aikido_space_delimit output_variable input_list)
@@ -95,26 +65,11 @@ macro(aikido_check_package variable component dependency)
     message(STATUS "Looking for ${dependency} - version ${${variable}_VERSION}"
                    " found")
   else()
-    message(STATUS "Looking for ${dependency} - NOT found, to use"
-                   " ${component}, please install ${dependency}")
+    message(WARNING "Looking for ${dependency} - NOT found, to use"
+                    " ${component}, please install ${dependency}")
     return()
   endif()
 endmacro()
-
-#==============================================================================
-# Register an Aikido test.
-#
-set_property(GLOBAL PROPERTY AIKIDO_TESTS)
-
-function(aikido_add_test target_name)
-  add_executable("${target_name}" ${ARGN})
-  add_test("${target_name}" "${target_name}")
-
-  target_link_libraries("${target_name}" gtest gtest_main)
-
-  set_property(GLOBAL APPEND PROPERTY AIKIDO_TESTS "${target_name}")
-  format_add_sources(${ARGN})
-endfunction()
 
 #==============================================================================
 # Required Dependencies
@@ -123,10 +78,11 @@ include(Components)
 initialize_component_helpers(aikido)
 include(CMakePackageConfigHelpers)
 include(FindPkgConfig)
+include(ClangFormat)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-find_package(DART 6.6.0 REQUIRED
+find_package(DART 6.6.2 REQUIRED
   COMPONENTS optimizer-nlopt utils
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
@@ -295,46 +251,16 @@ endif()
 #===============================================================================
 # Automatic code formatting using clang-format.
 #
-find_program(
-  CLANG_FORMAT_EXECUTABLE
-  NAMES clang-format-3.8
-)
 # We only support one specific ClangFormat version because different versions
 # result in different code formatting with the same configuration. ClangFormat
 # 3.8 is chosen since it's the latest version supported by Ubuntu Trusty.
 
-if (CLANG_FORMAT_EXECUTABLE)
-  get_property(formatting_files GLOBAL PROPERTY CODE_FORMATTING_SOURCES)
-  list(LENGTH formatting_files formatting_files_length)
+clang_format_setup(VERSION 3.8)
 
-  if (formatting_files)
-    add_custom_target(format
-        COMMAND ${CMAKE_COMMAND} -E echo "Formatting code style of"
-            "${formatting_files_length} files... "
-        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
-        COMMAND ${CMAKE_COMMAND} -E echo "Done."
-        DEPENDS ${CLANG_FORMAT_EXECUTABLE}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
-    add_custom_target(check-format
-        COMMAND ${CMAKE_COMMAND} -E echo "Checking code style of"
-            "${formatting_files_length} files... "
-        COMMAND ${CMAKE_SOURCE_DIR}/tools/check_format.sh
-            ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
-        COMMAND ${CMAKE_COMMAND} -E echo "Done."
-        DEPENDS ${CLANG_FORMAT_EXECUTABLE}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
-  else()
-    add_custom_target(format
-        COMMAND ${CMAKE_COMMAND} -E echo "No file to format code style."
-    )
-    add_custom_target(check-format
-        COMMAND ${CMAKE_COMMAND} -E echo "No file to check code style."
-    )
-  endif()
-else()
-  message(STATUS "Looking for clang-format - NOT found, please install clang-format to enable automatic code formatting")
+if (CLANG_FORMAT_EXECUTABLE)
+  clang_format_add_sources(${aikido_headers})
+
+  clang_format_add_targets()
 endif()
 
 #==============================================================================

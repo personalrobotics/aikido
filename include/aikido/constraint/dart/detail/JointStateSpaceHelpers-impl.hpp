@@ -1,5 +1,5 @@
 #include <sstream>
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include "aikido/common/metaprogramming.hpp"
 #include "aikido/constraint/Satisfied.hpp"
 #include "aikido/constraint/uniform/RnBoxConstraint.hpp"
@@ -18,8 +18,6 @@ namespace aikido {
 namespace constraint {
 namespace dart {
 namespace detail {
-
-using ::dart::common::make_unique;
 
 //==============================================================================
 using JointStateSpaceTypeList
@@ -69,7 +67,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 
   if (properties.isPositionLimited())
   {
-    return make_unique<uniform::RBoxConstraint<N>>(
+    return ::aikido::common::make_unique<uniform::RBoxConstraint<N>>(
         std::move(_stateSpace),
         std::move(_rng),
         properties.getPositionLowerLimits(),
@@ -77,7 +75,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   }
   else
   {
-    return make_unique<Satisfied>(std::move(_stateSpace));
+    return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
   }
 }
 
@@ -135,7 +133,7 @@ struct createSampleableFor_impl<const statespace::dart::RJoint<N>>
 
     if (properties.isPositionLimited())
     {
-      return make_unique<uniform::RBoxConstraint<N>>(
+      return ::aikido::common::make_unique<uniform::RBoxConstraint<N>>(
           std::move(_stateSpace),
           std::move(_rng),
           properties.getPositionLowerLimits(),
@@ -160,7 +158,7 @@ struct createDifferentiableFor_impl<const statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return make_unique<Satisfied>(std::move(_stateSpace));
+    return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -176,7 +174,7 @@ struct createTestableFor_impl<const statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return make_unique<Satisfied>(std::move(_stateSpace));
+    return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -192,7 +190,7 @@ struct createProjectableFor_impl<const statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return make_unique<Satisfied>(std::move(_stateSpace));
+    return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -209,7 +207,7 @@ struct createSampleableFor_impl<const statespace::dart::SO2Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO2Joint must not have limits.");
 
-    return make_unique<uniform::SO2UniformSampler>(
+    return ::aikido::common::make_unique<uniform::SO2UniformSampler>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
@@ -226,7 +224,7 @@ struct createDifferentiableFor_impl<const statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return make_unique<Satisfied>(std::move(_stateSpace));
+    return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -242,7 +240,7 @@ struct createTestableFor_impl<const statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return make_unique<Satisfied>(std::move(_stateSpace));
+    return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -258,7 +256,7 @@ struct createProjectableFor_impl<const statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return make_unique<Satisfied>(std::move(_stateSpace));
+    return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
   }
 };
 
@@ -275,7 +273,7 @@ struct createSampleableFor_impl<const statespace::dart::SO3Joint>
     if (_stateSpace->getProperties().isPositionLimited())
       throw std::invalid_argument("SO3Joint must not have limits.");
 
-    return make_unique<uniform::SO3UniformSampler>(
+    return ::aikido::common::make_unique<uniform::SO3UniformSampler>(
         std::move(_stateSpace), std::move(_rng));
   }
 };
@@ -290,7 +288,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
 
   if (properties.isPositionLimited())
   {
-    return make_unique<uniform::SE2BoxConstraint>(
+    return ::aikido::common::make_unique<uniform::SE2BoxConstraint>(
         std::move(_stateSpace),
         std::move(_rng),
         properties.getPositionLowerLimits().tail<2>(),
@@ -298,7 +296,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
   }
   else
   {
-    return make_unique<Satisfied>(std::move(_stateSpace));
+    return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
   }
 }
 
@@ -381,7 +379,7 @@ struct createSampleableFor_impl<const statespace::dart::SE2Joint>
     }
     else
     {
-      return make_unique<uniform::SE2BoxConstraint>(
+      return ::aikido::common::make_unique<uniform::SE2BoxConstraint>(
           std::move(stateSpace),
           std::move(rng),
           properties.getPositionLowerLimits().tail<2>(),
@@ -451,7 +449,7 @@ std::unique_ptr<OutputConstraint> createBoxConstraint(
     std::shared_ptr<const statespace::dart::WeldJoint> _stateSpace,
     std::unique_ptr<common::RNG> /*_rng*/)
 {
-  return make_unique<Satisfied>(std::move(_stateSpace));
+  return ::aikido::common::make_unique<Satisfied>(std::move(_stateSpace));
 }
 
 //==============================================================================
@@ -506,7 +504,7 @@ struct createSampleableFor_impl<const statespace::dart::WeldJoint>
     // A WeldJoint has zero DOFs
     Eigen::VectorXd positions = Eigen::Matrix<double, 0, 1>();
 
-    return make_unique<uniform::R0ConstantSampler>(
+    return ::aikido::common::make_unique<uniform::R0ConstantSampler>(
         std::move(_stateSpace), positions);
   }
 };

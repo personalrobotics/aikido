@@ -1,3 +1,5 @@
+#include "aikido/common/memory.hpp"
+
 #include "aikido/distance/ConfigurationRanker.hpp"
 
 namespace aikido {
@@ -10,7 +12,8 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 //==============================================================================
 ConfigurationRanker::ConfigurationRanker(
     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-    ConstMetaSkeletonPtr metaSkeleton)
+    ConstMetaSkeletonPtr metaSkeleton,
+    std::vector<double> weights)
   : mMetaSkeletonStateSpace(std::move(metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(metaSkeleton))
 {
@@ -20,14 +23,52 @@ ConfigurationRanker::ConfigurationRanker(
   if (!mMetaSkeleton)
     throw std::invalid_argument("MetaSkeleton is nullptr.");
 
-  mDistanceMetric = createDistanceMetricFor(
-      std::dynamic_pointer_cast<const statespace::CartesianProduct>(
-          mMetaSkeletonStateSpace));
+  if (weights.size() != 0)
+  {
+    if (weights.size() != mMetaSkeletonStateSpace->getDimension())
+    {
+      std::stringstream ss;
+      ss << "Size of weights should match "
+            "the dimension of MetaSkeletonStateSpace.";
+      throw std::invalid_argument(ss.str());
+    }
+
+    for (std::size_t i = 0; i < weights.size(); ++i)
+    {
+      if (weights[i] < 0)
+        throw std::invalid_argument("Weights should all be non-negative.");
+    }
+  }
+  else
+  {
+    weights.resize(mMetaSkeletonStateSpace->getDimension());
+    for (std::size_t i = 0; i < weights.size(); ++i)
+    {
+      weights[i] = 1;
+    }
+  }
+
+  // Create a temporary statespace to setup distance metric with weights.
+  auto _sspace = std::dynamic_pointer_cast<statespace::CartesianProduct>(
+      std::const_pointer_cast<MetaSkeletonStateSpace>(mMetaSkeletonStateSpace));
+
+  std::vector<std::pair<DistanceMetricPtr, double>> metrics;
+  metrics.reserve(_sspace->getNumSubspaces());
+
+  for (std::size_t i = 0; i < _sspace->getNumSubspaces(); ++i)
+  {
+    auto subspace = _sspace->getSubspace<>(i);
+    auto metric = createDistanceMetric(std::move(subspace));
+    metrics.emplace_back(std::make_pair(std::move(metric), weights[i]));
+  }
+
+  mDistanceMetric = ::aikido::common::make_unique<CartesianProductWeighted>(
+      std::move(_sspace), std::move(metrics));
 }
 
 //==============================================================================
 void ConfigurationRanker::rankConfigurations(
-    std::vector<MetaSkeletonStateSpace::ScopedState>& configurations)
+    std::vector<MetaSkeletonStateSpace::ScopedState>& configurations) const
 {
   std::unordered_map<const MetaSkeletonStateSpace::State*, double> costs;
   costs.reserve(configurations.size());

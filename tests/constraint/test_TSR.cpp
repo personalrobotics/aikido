@@ -1,6 +1,6 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <dart/math/Geometry.hpp>
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>
@@ -13,7 +13,6 @@ using aikido::constraint::ConstraintType;
 using aikido::statespace::SE3;
 using aikido::common::RNGWrapper;
 using aikido::common::RNG;
-using dart::common::make_unique;
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 

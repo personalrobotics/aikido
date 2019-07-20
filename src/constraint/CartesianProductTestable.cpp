@@ -1,10 +1,8 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <aikido/constraint/CartesianProductTestable.hpp>
 
 namespace aikido {
 namespace constraint {
-
-using dart::common::make_unique;
 
 //==============================================================================
 CartesianProductTestable::CartesianProductTestable(
