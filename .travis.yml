@@ -103,10 +103,10 @@ matrix:
       services: docker
 
     - os: osx
-      osx_image: xcode10.2
+      osx_image: xcode11
       compiler: clang
       env:
-        - BUILD_NAME=XCODE10_2_CMAKE_RELEASE
+        - BUILD_NAME=XCODE11_CMAKE_RELEASE
         - BUILD_TYPE=Release
         - USE_CATKIN=OFF
 
@@ -168,6 +168,14 @@ matrix:
         - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
         - USE_CATKIN=ON
       services: docker
+
+    - os: osx
+      osx_image: xcode11
+      compiler: clang
+      env:
+        - BUILD_NAME=XCODE11_CMAKE_RELEASE
+        - BUILD_TYPE=Release
+        - USE_CATKIN=OFF
 
 before_install:
   - if [ -n "$DOCKER_FILE" ]; then
