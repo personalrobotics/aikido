@@ -102,7 +102,8 @@ public:
   /// The caller of this method MUST LOCK the mutex of this World.
   /// \param state State to set this world to.
   /// \param names Names of skeletons in the state
-  void setState(const World::State& state, const std::vector<std::string>& names);
+  void setState(
+      const World::State& state, const std::vector<std::string>& names);
 
 protected:
   /// Name of this World

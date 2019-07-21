@@ -189,8 +189,14 @@ World::State World::getState(const std::vector<std::string>& names) const
 
   for (const auto& name : names)
   {
+    auto skeleton = getSkeleton(name);
+    if (!skeleton)
+    {
+      throw std::invalid_argument(
+          "Skeleton " + name + " does not exist in world.");
+    }
     state.configurations[name]
-        = getSkeleton(name)->getConfiguration(ConfigFlags::CONFIG_POSITIONS);
+        = skeleton->getConfiguration(ConfigFlags::CONFIG_POSITIONS);
   }
 
   return state;
@@ -214,7 +220,8 @@ void World::setState(const World::State& state)
 }
 
 //==============================================================================
-void World::setState(const World::State& state, const std::vector<std::string>& names)
+void World::setState(
+    const World::State& state, const std::vector<std::string>& names)
 {
   for (const auto& name : names)
   {
