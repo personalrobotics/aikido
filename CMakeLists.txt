@@ -36,6 +36,11 @@ set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PROJECT_NAME}/cmake")
 option(CODECOV "Enable codecov support" OFF)
 option(DOWNLOAD_TAGFILES "Download Doxygen tagfiles for dependencies" OFF)
 option(TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" OFF)
+option(BUILD_AIKIDOPY "Build aikidopy (the python binding)" OFF)
+
+if(BUILD_AIKIDOPY)
+  set(BUILD_SHARED_LIBS OFF)
+endif()
 
 #==============================================================================
 # codecov Setup
@@ -133,6 +138,8 @@ FILE(GLOB_RECURSE aikido_headers "include/*.hpp")
 add_custom_target(headers SOURCES ${aikido_headers})
 
 add_subdirectory("src")
+
+add_subdirectory("python")
 
 enable_testing()
 add_subdirectory("tests" EXCLUDE_FROM_ALL)

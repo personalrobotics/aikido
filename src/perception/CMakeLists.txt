@@ -83,6 +83,9 @@ if(DART_HAS_VOXELGRIDSHAPE)
     PUBLIC DART_HAS_VOXELGRIDSHAPE
   )
 endif()
+target_compile_definitions("${PROJECT_NAME}_perception"
+  PUBLIC AIKIDO_HAS_PERCEPTION
+)
 
 add_component(${PROJECT_NAME} perception)
 add_component_targets(${PROJECT_NAME} perception "${PROJECT_NAME}_perception")
