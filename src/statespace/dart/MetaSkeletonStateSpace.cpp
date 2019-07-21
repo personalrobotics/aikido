@@ -27,7 +27,7 @@ std::vector<Output> convertVectorType(const std::vector<Input>& input)
   for (const auto& x : input)
     output.emplace_back(x);
 
-  return std::move(output);
+  return output;
 }
 
 //==============================================================================
