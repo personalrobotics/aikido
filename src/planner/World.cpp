@@ -181,7 +181,7 @@ World::State World::getState() const
 }
 
 //==============================================================================
-World::State World::getState(std::vector<std::string>& names) const
+World::State World::getState(const std::vector<std::string>& names) const
 {
   using ConfigFlags = dart::dynamics::Skeleton::ConfigFlags;
 
@@ -214,7 +214,7 @@ void World::setState(const World::State& state)
 }
 
 //==============================================================================
-void World::setState(const World::State& state, std::vector<std::string>& names)
+void World::setState(const World::State& state, const std::vector<std::string>& names)
 {
   for (const auto& name : names)
   {

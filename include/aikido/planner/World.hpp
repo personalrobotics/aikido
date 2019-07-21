@@ -91,7 +91,7 @@ public:
   /// Returns the state of named skeletons in this World.
   /// \param names Names of skeletons that should be in the state
   /// \return State
-  World::State getState(std::vector<std::string>& names) const;
+  World::State getState(const std::vector<std::string>& names) const;
 
   /// Sets the state of this World to match State.
   /// The caller of this method MUST LOCK the mutex of this World.
@@ -102,7 +102,7 @@ public:
   /// The caller of this method MUST LOCK the mutex of this World.
   /// \param state State to set this world to.
   /// \param names Names of skeletons in the state
-  void setState(const World::State& state, std::vector<std::string>& names);
+  void setState(const World::State& state, const std::vector<std::string>& names);
 
 protected:
   /// Name of this World
