@@ -60,6 +60,9 @@ target_link_libraries("${PROJECT_NAME}_control_ros"
   ${control_msgs_LIBRARIES}
   ${roscpp_LIBRARIES}
 )
+target_compile_definitions("${PROJECT_NAME}_control_ros"
+  PUBLIC AIKIDO_HAS_CONTROL_ROS
+)
 
 add_component(${PROJECT_NAME} control_ros)
 add_component_targets(${PROJECT_NAME} control_ros "${PROJECT_NAME}_control_ros")
