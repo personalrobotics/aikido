@@ -2,7 +2,7 @@
 #include <cassert>
 #include <sstream>
 #include <dart/common/Console.hpp>
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include "aikido/statespace/dart/JointStateSpaceHelpers.hpp"
 
 namespace aikido {
@@ -27,7 +27,7 @@ std::vector<Output> convertVectorType(const std::vector<Input>& input)
   for (const auto& x : input)
     output.emplace_back(x);
 
-  return std::move(output);
+  return output;
 }
 
 //==============================================================================

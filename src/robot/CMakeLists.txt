@@ -32,6 +32,7 @@ target_link_libraries("${PROJECT_NAME}_robot"
     "${PROJECT_NAME}_planner"
     "${PROJECT_NAME}_planner_ompl"
     "${PROJECT_NAME}_planner_parabolic"
+    "${PROJECT_NAME}_planner_kunzretimer"
     "${PROJECT_NAME}_planner_vectorfield"
     "${PROJECT_NAME}_constraint"
     "${PROJECT_NAME}_distance"
@@ -59,4 +60,4 @@ add_component_dependencies(${PROJECT_NAME} robot
   trajectory
 )
 
-format_add_sources(${sources})
+clang_format_add_sources(${sources})

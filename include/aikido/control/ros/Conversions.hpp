@@ -4,8 +4,8 @@
 #include <memory>
 #include <sensor_msgs/JointState.h>
 #include <trajectory_msgs/JointTrajectory.h>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-#include <aikido/trajectory/Spline.hpp>
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace control {

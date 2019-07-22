@@ -7,6 +7,8 @@
 namespace aikido {
 namespace statespace {
 
+AIKIDO_DECLARE_POINTERS(CartesianProduct)
+
 // Defined in detail/CartesianProduct.hpp
 template <class>
 class CompoundStateHandle;

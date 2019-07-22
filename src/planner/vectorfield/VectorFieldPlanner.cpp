@@ -1,12 +1,14 @@
+#include "aikido/planner/vectorfield/VectorFieldPlanner.hpp"
+
 #include <boost/numeric/odeint.hpp>
-#include <aikido/constraint/TestableIntersection.hpp>
-#include <aikido/constraint/dart/JointStateSpaceHelpers.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
-#include <aikido/trajectory/Spline.hpp>
+
+#include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
+#include "aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp"
+#include "aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp"
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
+#include "aikido/trajectory/Spline.hpp"
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
@@ -22,7 +24,7 @@ namespace vectorfield {
 constexpr double integrationTimeInterval = 10.0;
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> followVectorField(
+aikido::trajectory::UniqueInterpolatedPtr followVectorField(
     const aikido::planner::vectorfield::VectorField& vectorField,
     const aikido::statespace::StateSpace::State& startState,
     const aikido::constraint::Testable& constraint,
@@ -103,8 +105,11 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
   std::vector<detail::Knot> newKnots(
       integrator->getKnots().begin(),
       integrator->getKnots().begin() + integrator->getCacheIndex());
+  // See https://github.com/personalrobotics/aikido/issues/512
+  // auto outputTrajectory
+  //     = detail::convertToSpline(newKnots, vectorField.getStateSpace());
   auto outputTrajectory
-      = detail::convertToSpline(newKnots, vectorField.getStateSpace());
+      = detail::convertToInterpolated(newKnots, vectorField.getStateSpace());
 
   // evaluate constraint satisfaction on last piece of trajectory
   double lastEvaluationTime = integrator->getLastEvaluationTime();
@@ -125,7 +130,7 @@ std::unique_ptr<aikido::trajectory::Spline> followVectorField(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
+aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
     const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State& startState,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
@@ -180,7 +185,6 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
-
   return followVectorField(
       *vectorfield,
       startState,
@@ -192,7 +196,7 @@ std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorOffset(
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> planToEndEffectorPose(
+aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::BodyNodePtr& bn,

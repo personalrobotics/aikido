@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <aikido/planner/World.hpp>
 
 namespace aikido {
@@ -171,10 +171,33 @@ bool World::State::operator!=(const State& other) const
 //==============================================================================
 World::State World::getState() const
 {
-  World::State state;
+  std::vector<std::string> names;
+  names.reserve(getNumSkeletons());
 
   for (const auto& skeleton : mSkeletons)
-    state.configurations[skeleton->getName()] = skeleton->getConfiguration();
+    names.push_back(skeleton->getName());
+
+  return getState(names);
+}
+
+//==============================================================================
+World::State World::getState(const std::vector<std::string>& names) const
+{
+  using ConfigFlags = dart::dynamics::Skeleton::ConfigFlags;
+
+  World::State state;
+
+  for (const auto& name : names)
+  {
+    auto skeleton = getSkeleton(name);
+    if (!skeleton)
+    {
+      throw std::invalid_argument(
+          "Skeleton " + name + " does not exist in world.");
+    }
+    state.configurations[name]
+        = skeleton->getConfiguration(ConfigFlags::CONFIG_POSITIONS);
+  }
 
   return state;
 }
@@ -187,19 +210,29 @@ void World::setState(const World::State& state)
         "World::State and this World do not have the same number of "
         "skeletons.");
 
+  std::vector<std::string> names;
+  names.reserve(getNumSkeletons());
+
   for (const auto& skeleton : mSkeletons)
+    names.push_back(skeleton->getName());
+
+  setState(state, names);
+}
+
+//==============================================================================
+void World::setState(
+    const World::State& state, const std::vector<std::string>& names)
+{
+  for (const auto& name : names)
   {
-    auto name = skeleton->getName();
     auto it = state.configurations.find(name);
     if (it == state.configurations.end())
       throw std::invalid_argument(
           "Skeleton " + name + " does not exist in state.");
-  }
 
-  for (const auto& skeleton : mSkeletons)
-  {
+    auto skeleton = getSkeleton(name);
     std::lock_guard<std::mutex> lock(skeleton->getMutex());
-    skeleton->setConfiguration(state.configurations.at(skeleton->getName()));
+    skeleton->setConfiguration(it->second);
   }
 }
 

@@ -4,6 +4,7 @@
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
+#include "aikido/distance/NominalConfigurationRanker.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
@@ -11,6 +12,8 @@ using aikido::common::cloneRNGFrom;
 using aikido::constraint::dart::InverseKinematicsSampleable;
 using aikido::constraint::dart::TSR;
 using aikido::constraint::dart::createSampleableBounds;
+using aikido::distance::ConstConfigurationRankerPtr;
+using aikido::distance::NominalConfigurationRanker;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using ::dart::dynamics::BodyNode;
@@ -27,7 +30,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::
     ConfigurationToConfiguration_to_ConfigurationToTSR(
         std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-        distance::ConfigurationRankerPtr configurationRanker)
+        distance::ConstConfigurationRankerPtr configurationRanker)
   : PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
                    ConfigurationToTSRPlanner>(
         std::move(planner), std::move(metaSkeleton))
@@ -84,24 +87,56 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 
+  auto robot = mMetaSkeleton->getBodyNode(0)->getSkeleton();
+
+  std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
+
+  // Use a ranker
+  ConstConfigurationRankerPtr configurationRanker(mConfigurationRanker);
+  if (!configurationRanker)
+  {
+    auto nominalState = mMetaSkeletonStateSpace->createState();
+    mMetaSkeletonStateSpace->copyState(startState, nominalState);
+    configurationRanker = std::make_shared<const NominalConfigurationRanker>(
+        mMetaSkeletonStateSpace, mMetaSkeleton, nominalState);
+  }
+
+  // Goal state
   auto goalState = mMetaSkeletonStateSpace->createState();
-  while (generator->canSample())
+
+  // Sample valid configurations first.
+  static const std::size_t maxSamples{100};
+  std::size_t samples = 0;
+  while (samples < maxSamples && generator->canSample())
   {
     // Sample from TSR
-    {
-      std::lock_guard<std::mutex> lock(skeleton->getMutex());
-      bool sampled = generator->sample(goalState);
-      if (!sampled)
-        continue;
-    }
+    std::lock_guard<std::mutex> lock(robot->getMutex());
+    bool sampled = generator->sample(goalState);
 
+    // Increment even if it's not a valid sample since this loop
+    // has to terminate even if none are valid.
+    ++samples;
+
+    if (!sampled)
+      continue;
+
+    configurations.emplace_back(goalState.clone());
+  }
+
+  if (configurations.empty())
+    return nullptr;
+
+  configurationRanker->rankConfigurations(configurations);
+
+  for (std::size_t i = 0; i < configurations.size(); ++i)
+  {
     // Create ConfigurationToConfiguration Problem.
     // NOTE: This is done here because the ConfigurationToConfiguration
     // problem stores a *cloned* scoped state of the passed state.
     auto delegateProblem = ConfigurationToConfiguration(
         mMetaSkeletonStateSpace,
         startState,
-        goalState,
+        configurations[i],
         problem.getConstraint());
 
     auto traj = mDelegate->plan(delegateProblem, result);

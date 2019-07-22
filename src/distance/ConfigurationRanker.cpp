@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 
 #include "aikido/distance/ConfigurationRanker.hpp"
 
@@ -7,7 +7,6 @@ namespace distance {
 
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
-using dart::common::make_unique;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
@@ -63,13 +62,13 @@ ConfigurationRanker::ConfigurationRanker(
     metrics.emplace_back(std::make_pair(std::move(metric), weights[i]));
   }
 
-  mDistanceMetric = make_unique<CartesianProductWeighted>(
+  mDistanceMetric = ::aikido::common::make_unique<CartesianProductWeighted>(
       std::move(_sspace), std::move(metrics));
 }
 
 //==============================================================================
 void ConfigurationRanker::rankConfigurations(
-    std::vector<MetaSkeletonStateSpace::ScopedState>& configurations)
+    std::vector<MetaSkeletonStateSpace::ScopedState>& configurations) const
 {
   std::unordered_map<const MetaSkeletonStateSpace::State*, double> costs;
   costs.reserve(configurations.size());

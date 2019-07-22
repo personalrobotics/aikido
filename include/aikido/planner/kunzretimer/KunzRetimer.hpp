@@ -38,34 +38,6 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
     double maxDeviation = 1e-2,
     double timeStep = 0.1);
 
-/// Computes the time-optimal timing of a spline trajectory under velocity
-/// and acceleration bounds. The output is another parabolic spline, encoded
-/// in cubic polynomials. In retiming, the input trajectory is used as a
-/// piecewise Geodesic trajectory (only the geometry of the input trajectory
-/// is considered; and the velocity information is ignored. It firstly
-/// preprocesses a non-differentiable path to a differentiable one by adding
-/// circular blends; and then \b exactly follows the preprocessed path.
-///
-/// The output trajectory consists of a sequence of trapezoidal velocity
-/// profiles that implement bang-bang control. This function curently only
-/// supports \c RealVector, \c SO2, and compound state spaces of those types.
-/// Additionally, this function requires that \c inputTrajectory to be
-/// a spline (only the geometry of the trajectory is considered in retiming).
-///
-/// \param[in] inputTrajectory Input piecewise Geodesic trajectory
-/// \param[in] maxVelocity Maximum velocity for each dimension
-/// \param[in] maxAcceleration Maximum acceleration for each dimension
-/// \param[in] maxDeviation Maximum deviation from a waypoint in doing circular
-/// blending around the waypoint
-/// \param[in] timeStep Time step in following the path
-/// \return Time optimal trajectory that satisfies acceleration constraints
-std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
-    const aikido::trajectory::Spline& inputTrajectory,
-    const Eigen::VectorXd& maxVelocity,
-    const Eigen::VectorXd& maxAcceleration,
-    double maxDeviation = 1e-2,
-    double timeStep = 0.1);
-
 /// Class for performing time-optimal trajectory retiming following subject to
 /// velocity and acceleration limits.
 class KunzRetimer : public aikido::planner::TrajectoryPostProcessor

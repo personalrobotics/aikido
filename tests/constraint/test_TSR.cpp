@@ -1,6 +1,6 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <dart/math/Geometry.hpp>
 #include <gtest/gtest.h>
 #include <aikido/common/RNG.hpp>

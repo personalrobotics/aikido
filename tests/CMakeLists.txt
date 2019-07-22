@@ -19,7 +19,7 @@ function(aikido_add_test target_name)
   target_link_libraries("${target_name}" gtest gtest_main)
 
   set_property(GLOBAL APPEND PROPERTY AIKIDO_TESTS "${target_name}")
-  format_add_sources(${ARGN})
+  clang_format_add_sources(${ARGN})
 endfunction()
 
 # Add helper scripts to the include path.
@@ -34,4 +34,4 @@ add_subdirectory("planner")
 add_subdirectory("statespace")
 add_subdirectory("trajectory")
 
-format_add_sources(eigen_tests.hpp)
+clang_format_add_sources(eigen_tests.hpp)

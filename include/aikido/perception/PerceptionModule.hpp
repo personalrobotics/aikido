@@ -1,6 +1,8 @@
 #ifndef AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 #define AIKIDO_PERCEPTION_PERCEPTIONMODULE_HPP_
 
+#include <ros/ros.h>
+#include "aikido/perception/DetectedObject.hpp"
 #include "aikido/planner/World.hpp"
 
 namespace aikido {
@@ -26,13 +28,16 @@ public:
   /// \param[in] timestamp Only detections more recent than this timestamp will
   /// be accepted. A timestamp of 0 greedily takes the first available message,
   /// and is the default behaviour.
-  /// \return Returns \c false if no detection observed, or if none of the
-  /// detections has a more recent timestamp than the parameter. Returns \c true
+  /// \param[out] detectedObjects An output vector for detected objects before
+  /// timeout.
+  /// \return Returns \c false if no detection observed before timeout. Returns
+  /// \c true
   /// otherwise.
   virtual bool detectObjects(
       const aikido::planner::WorldPtr& env,
-      ros::Duration timeout,
-      ros::Time timestamp)
+      ros::Duration timeout = ros::Duration(),
+      ros::Time timestamp = ros::Time(0.0),
+      std::vector<DetectedObject>* detectedObjects = nullptr)
       = 0;
 };
 
