@@ -68,6 +68,7 @@
   * Added convenience function for converting SO(2) trajectories to R1 trajectories, support for postprocessing SO(2) trajectories: [#496](https://github.com/personalrobotics/aikido/pull/496)
   * Used ConfigurationRanker in TSR planners: [#503](https://github.com/personalrobotics/aikido/pull/503)
   * Returned Interpolated trajectories from VFP: [#513](https://github.com/personalrobotics/aikido/pull/513)
+  * Added support for taking state snapshots with list of skeleton names: [#523](https://github.com/personalrobotics/aikido/pull/523)
 
 * Robot
 
@@ -92,6 +93,8 @@
   * Added DART 6.7 support: [#480](https://github.com/personalrobotics/aikido/pull/480)
   * Fixed use of dart::common::make_unique for C++14 enabled compilers: [#481](https://github.com/personalrobotics/aikido/pull/481)
   * Changed to use own build script for GoogleTest: [#485](https://github.com/personalrobotics/aikido/pull/485)
+  * Added aikido::common::make_unique wrapper: [#532](https://github.com/personalrobotics/aikido/pull/532)
+  * Manually generated (minimal) Python bindings: [#499](https://github.com/personalrobotics/aikido/pull/499)
 
 ### 0.2.0 (2018-01-09)
 
