@@ -14,7 +14,7 @@
 
   * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
   * Added weights as optional parameter to rankers: [#484](https://github.com/personalrobotics/aikido/pull/484)
-  * Updated constness of return type of SE2::getStateSpace(): [#484](https://github.com/personalrobotics/aikido/pull/484)
+  * Updated constness of return type of SE2::getStateSpace(): [#536](https://github.com/personalrobotics/aikido/pull/484)
 
 * State Space
 
