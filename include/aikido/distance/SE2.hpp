@@ -16,7 +16,7 @@ public:
   explicit SE2(std::shared_ptr<statespace::SE2> _space);
 
   // Documentation inherited
-  statespace::StateSpacePtr getStateSpace() const override;
+  statespace::ConstStateSpacePtr getStateSpace() const override;
 
   /// Computes shortest distance between two SE2 states.
 

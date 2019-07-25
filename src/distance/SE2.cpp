@@ -13,7 +13,7 @@ SE2::SE2(std::shared_ptr<statespace::SE2> _space)
 }
 
 //=============================================================================
-statespace::StateSpacePtr SE2::getStateSpace() const
+statespace::ConstStateSpacePtr SE2::getStateSpace() const
 {
   return mStateSpace;
 }
