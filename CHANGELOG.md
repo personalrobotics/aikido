@@ -9,10 +9,12 @@
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
   * Fixed bug in compiling with Boost 1.58 on Kinetic + Xenial: [#490](https://github.com/personalrobotics/aikido/pull/490)
   * Fixed bug in Interpolated::addWaypoint(): [#483](https://github.com/personalrobotics/aikido/pull/483)
+
 * Distance
 
   * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
   * Added weights as optional parameter to rankers: [#484](https://github.com/personalrobotics/aikido/pull/484)
+  * Updated constness of return type of SE2::getStateSpace(): [#536](https://github.com/personalrobotics/aikido/pull/536)
 
 * State Space
 
