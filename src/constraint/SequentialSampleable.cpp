@@ -175,7 +175,7 @@ std::unique_ptr<SampleGenerator> SequentialSampleable::createSampleGenerator()
   for (const auto& sampleable : mSampleables)
     generators.emplace_back(sampleable->createSampleGenerator());
 
-  return ::dart::common::make_unique<SequentialSampleGenerator>(
+  return std::make_unique<SequentialSampleGenerator>(
       mStateSpace, std::move(generators));
 }
 

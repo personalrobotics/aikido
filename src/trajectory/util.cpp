@@ -27,7 +27,6 @@ using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using dart::common::make_unique;
 
 using Eigen::Vector2d;
 using LinearSplineProblem
@@ -93,7 +92,7 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
     throw std::invalid_argument("Trajectory is empty.");
 
   auto outputTrajectory
-      = make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
+      = std::make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
@@ -132,7 +131,7 @@ UniqueInterpolatedPtr concatenate(
   if (traj1.getInterpolator() != traj2.getInterpolator())
     dtwarn << "Interpolator mismatch\n";
 
-  auto outputTrajectory = make_unique<Interpolated>(
+  auto outputTrajectory = std::make_unique<Interpolated>(
       traj1.getStateSpace(), traj1.getInterpolator());
   if (traj1.getNumWaypoints() > 1u)
   {
@@ -156,7 +155,7 @@ UniqueInterpolatedPtr concatenate(
 //==============================================================================
 double findTimeOfClosestStateOnTrajectory(
     const Trajectory& traj,
-    const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    __attribute__((unused)) const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const statespace::StateSpace::State* referenceState,
     double& distance,
     double timeStep)
@@ -206,7 +205,7 @@ UniqueSplinePtr createPartialTrajectory(
 
   const auto stateSpace = traj.getStateSpace();
   const int dimension = static_cast<int>(stateSpace->getDimension());
-  auto outputTrajectory = make_unique<Spline>(stateSpace, traj.getStartTime());
+  auto outputTrajectory = std::make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;
@@ -289,7 +288,7 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 
   auto rSpace = std::make_shared<CartesianProduct>(subspaces);
   auto rInterpolator = std::make_shared<GeodesicInterpolator>(rSpace);
-  auto rTrajectory = make_unique<Interpolated>(rSpace, rInterpolator);
+  auto rTrajectory = std::make_unique<Interpolated>(rSpace, rInterpolator);
 
   Eigen::VectorXd sourceVector(space->getDimension());
   auto sourceState = rSpace->createState();

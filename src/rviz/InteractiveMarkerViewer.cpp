@@ -93,7 +93,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
     std::stringstream ss;
     ss << "TSRMarker[" << name << "].frame[" << i << "]";
 
-    auto tsrFrame = ::dart::common::make_unique<SimpleFrame>(
+    auto tsrFrame = std::make_unique<SimpleFrame>(
         Frame::World(), ss.str(), state.getIsometry());
     addFrame(tsrFrame.get());
     tsrFrames.emplace_back(std::move(tsrFrame));

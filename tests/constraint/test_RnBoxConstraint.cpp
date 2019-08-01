@@ -31,7 +31,7 @@ protected:
     mRxStateSpace = std::make_shared<Rn>(2);
     mR2Distance = std::make_shared<R2Euclidean>(mR2StateSpace);
     mRxDistance = std::make_shared<RnEuclidean>(mRxStateSpace);
-    mRng = ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(
+    mRng = std::make_unique<RNGWrapper<std::default_random_engine>>(
         0);
 
     mLowerLimits = Vector2d(-1., 1.);

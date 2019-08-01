@@ -35,7 +35,7 @@ statespace::ConstStateSpacePtr CollisionFree::getStateSpace() const
 //==============================================================================
 bool CollisionFree::isSatisfied(
     const aikido::statespace::StateSpace::State* _state,
-    TestableOutcome* outcome) const
+    __attribute__((unused)) TestableOutcome* outcome) const
 {
   // CollisionFreeOutcome* collisionFreeOutcome
   //     = dynamic_cast_or_throw<CollisionFreeOutcome>(outcome);

@@ -177,7 +177,7 @@ trajectory::TrajectoryPtr planToTSR(
     const TSRPtr& tsr,
     const TestablePtr& collisionTestable,
     RNG* rng,
-    double timelimit,
+    __attribute__((unused)) double timelimit,
     std::size_t maxNumTrials,
     const distance::ConstConfigurationRankerPtr& ranker)
 {
@@ -475,7 +475,7 @@ trajectory::TrajectoryPtr planToTSR(
   auto goalState = space->createState();
 
   // TODO: Change this to timelimit once we use a fail-fast planner
-  double timelimitPerSample = timelimit / maxNumTrials;
+  // double timelimitPerSample = timelimit / maxNumTrials;
 
   // Save the current state of the space
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
@@ -699,7 +699,7 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
     double positionTolerance,
     double angularTolerance,
     const VectorFieldPlannerParameters& vfParameters,
-    const CRRTPlannerParameters& crrtParameters)
+    __attribute__((unused)) const CRRTPlannerParameters& crrtParameters)
 {
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);

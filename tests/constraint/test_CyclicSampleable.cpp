@@ -23,7 +23,7 @@ EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2d)
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
-  return ::dart::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
+  return std::make_unique<RNGWrapper<std::default_random_engine>>(0);
 }
 
 TEST(CyclicSampleableTest, ConstructorThrowsOnNullConstraint)

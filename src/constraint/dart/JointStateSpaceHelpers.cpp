@@ -47,7 +47,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
   // TODO: We should std::move constraints here, but we can't because
   // DifferentiableIntersection does not take by value.
-  return ::dart::common::make_unique<DifferentiableIntersection>(
+  return std::make_unique<DifferentiableIntersection>(
       constraints, _metaSkeleton);
 }
 
@@ -79,7 +79,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return ::dart::common::make_unique<CartesianProductProjectable>(
+  return std::make_unique<CartesianProductProjectable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
@@ -111,7 +111,7 @@ std::unique_ptr<Testable> createTestableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return ::dart::common::make_unique<CartesianProductTestable>(
+  return std::make_unique<CartesianProductTestable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
@@ -149,7 +149,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return ::dart::common::make_unique<CartesianProductSampleable>(
+  return std::make_unique<CartesianProductSampleable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 

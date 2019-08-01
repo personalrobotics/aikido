@@ -19,7 +19,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   std::size_t dimension = stateSpace->getDimension();
 
   auto outputTrajectory
-      = ::dart::common::make_unique<aikido::trajectory::Spline>(stateSpace);
+      = std::make_unique<aikido::trajectory::Spline>(stateSpace);
 
   using CubicSplineProblem = aikido::common::
       SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
@@ -54,7 +54,7 @@ std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
       = std::make_shared<const aikido::statespace::GeodesicInterpolator>(
           stateSpace);
   auto outputTrajectory
-      = ::dart::common::make_unique<aikido::trajectory::Interpolated>(
+      = std::make_unique<aikido::trajectory::Interpolated>(
           stateSpace, interpolator);
 
   auto currState = stateSpace->createState();

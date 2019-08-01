@@ -124,7 +124,7 @@ template <int N>
 std::unique_ptr<constraint::SampleGenerator>
 RConstantSampler<N>::createSampleGenerator() const
 {
-  return ::dart::common::make_unique<RnConstantSamplerSampleGenerator<N>>(
+  return std::make_unique<RnConstantSamplerSampleGenerator<N>>(
       mSpace, mValue);
 }
 

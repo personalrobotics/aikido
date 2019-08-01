@@ -152,7 +152,7 @@ statespace::ConstStateSpacePtr FiniteSampleable::getStateSpace() const
 //==============================================================================
 std::unique_ptr<SampleGenerator> FiniteSampleable::createSampleGenerator() const
 {
-  return ::dart::common::make_unique<FiniteSampleGenerator>(
+  return std::make_unique<FiniteSampleGenerator>(
       mStateSpace, mStates);
 }
 
