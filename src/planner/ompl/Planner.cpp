@@ -477,9 +477,8 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
     statespace::InterpolatorPtr _interpolator)
 {
-  auto returnInterpolated
-      = std::make_unique<trajectory::Interpolated>(
-          _interpolator->getStateSpace(), std::move(_interpolator));
+  auto returnInterpolated = std::make_unique<trajectory::Interpolated>(
+      _interpolator->getStateSpace(), std::move(_interpolator));
 
   for (std::size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {

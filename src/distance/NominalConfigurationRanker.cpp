@@ -24,11 +24,11 @@ using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
 NominalConfigurationRanker::NominalConfigurationRanker(
-      statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-      ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-      std::vector<double> weights,
-      statespace::CartesianProduct::ScopedState nominalConfiguration)
-: ConfigurationRanker(
+    statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
+    std::vector<double> weights,
+    statespace::CartesianProduct::ScopedState nominalConfiguration)
+  : ConfigurationRanker(
         std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
   , mNominalConfiguration(std::move(nominalConfiguration))
 {

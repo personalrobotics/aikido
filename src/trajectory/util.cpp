@@ -155,13 +155,14 @@ UniqueInterpolatedPtr concatenate(
 //==============================================================================
 double findTimeOfClosestStateOnTrajectory(
     const Trajectory& traj,
-    __attribute__((unused)) const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    __attribute__((unused))
+    const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const statespace::StateSpace::State* referenceState,
     double& distance,
     double timeStep)
 {
   auto stateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-    traj.getStateSpace());
+      traj.getStateSpace());
   if (!stateSpace)
     throw std::runtime_error("Failed to convert statespace");
 
@@ -195,7 +196,8 @@ double findTimeOfClosestStateOnTrajectory(
 UniqueSplinePtr createPartialTrajectory(
     const Spline& traj, double partialStartTime)
 {
-  std::cout << "traj starts at " << traj.getStartTime() << " ends at " << traj.getEndTime() << std::endl;
+  std::cout << "traj starts at " << traj.getStartTime() << " ends at "
+            << traj.getEndTime() << std::endl;
   if (partialStartTime < traj.getStartTime()
       || partialStartTime > traj.getEndTime())
   {
@@ -205,7 +207,8 @@ UniqueSplinePtr createPartialTrajectory(
 
   const auto stateSpace = traj.getStateSpace();
   const int dimension = static_cast<int>(stateSpace->getDimension());
-  auto outputTrajectory = std::make_unique<Spline>(stateSpace, traj.getStartTime());
+  auto outputTrajectory
+      = std::make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;
@@ -263,7 +266,8 @@ UniqueSplinePtr createPartialTrajectory(
         traj.getSegmentStartState(i));
   }
 
-  std::cout << "outputTrajectory starts at " << outputTrajectory->getStartTime() << " ends at " << outputTrajectory->getEndTime() << std::endl;
+  std::cout << "outputTrajectory starts at " << outputTrajectory->getStartTime()
+            << " ends at " << outputTrajectory->getEndTime() << std::endl;
   return outputTrajectory;
 }
 

@@ -129,11 +129,12 @@ bool computeJointVelocityFromTwist(
       dart::common::make_aligned_shared<DesiredTwistFunction>(
           desiredTwist, jacobian));
 
-  #if DART_VERSION_AT_LEAST(6, 9, 0)
-  dart::optimizer::NloptSolver solver(problem, dart::optimizer::NloptSolver::Algorithm::LD_LBFGS);
-  #else
+#if DART_VERSION_AT_LEAST(6, 9, 0)
+  dart::optimizer::NloptSolver solver(
+      problem, dart::optimizer::NloptSolver::Algorithm::LD_LBFGS);
+#else
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
-  #endif
+#endif
   if (!solver.solve())
   {
     return false;

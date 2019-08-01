@@ -124,8 +124,7 @@ template <int N>
 std::unique_ptr<constraint::SampleGenerator>
 RConstantSampler<N>::createSampleGenerator() const
 {
-  return std::make_unique<RnConstantSamplerSampleGenerator<N>>(
-      mSpace, mValue);
+  return std::make_unique<RnConstantSamplerSampleGenerator<N>>(mSpace, mValue);
 }
 
 //==============================================================================

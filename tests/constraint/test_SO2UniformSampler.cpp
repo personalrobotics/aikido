@@ -22,8 +22,7 @@ protected:
   {
     mStateSpace = std::make_shared<SO2>();
     mDistance = std::make_shared<SO2Angular>(mStateSpace);
-    mRng = std::make_unique<RNGWrapper<std::default_random_engine>>(
-        0);
+    mRng = std::make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
     for (std::size_t i = 0; i < NUM_TARGETS; ++i)

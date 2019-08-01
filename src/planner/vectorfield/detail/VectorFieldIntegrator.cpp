@@ -53,9 +53,8 @@ std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
   auto interpolator
       = std::make_shared<const aikido::statespace::GeodesicInterpolator>(
           stateSpace);
-  auto outputTrajectory
-      = std::make_unique<aikido::trajectory::Interpolated>(
-          stateSpace, interpolator);
+  auto outputTrajectory = std::make_unique<aikido::trajectory::Interpolated>(
+      stateSpace, interpolator);
 
   auto currState = stateSpace->createState();
   for (const auto& knot : knots)

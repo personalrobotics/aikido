@@ -23,8 +23,7 @@ protected:
   {
     mStateSpace = std::make_shared<SO3>();
     mDistance = std::make_shared<SO3Angular>(mStateSpace);
-    mRng = std::make_unique<RNGWrapper<std::default_random_engine>>(
-        0);
+    mRng = std::make_unique<RNGWrapper<std::default_random_engine>>(0);
 
     mTargets.clear();
 
