@@ -1,6 +1,6 @@
 #include <aikido/constraint/CyclicSampleable.hpp>
 
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -157,7 +157,7 @@ statespace::ConstStateSpacePtr CyclicSampleable::getStateSpace() const
 //==============================================================================
 std::unique_ptr<SampleGenerator> CyclicSampleable::createSampleGenerator() const
 {
-  return ::dart::common::make_unique<FiniteCyclicSampleGenerator>(
+  return ::aikido::common::make_unique<FiniteCyclicSampleGenerator>(
       mSampleable->createSampleGenerator());
 }
 

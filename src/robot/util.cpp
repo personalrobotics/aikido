@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <dart/common/Console.hpp>
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <dart/common/Timer.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 #include "aikido/common/RNG.hpp"

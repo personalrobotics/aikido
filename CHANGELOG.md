@@ -29,6 +29,7 @@
 * Constraint
 
   * Added SequentialSampleable: [#393](https://github.com/personalrobotics/aikido/pull/393)
+  * Changed deprecated DART call in InverseKinematics: [#524](https://github.com/personalrobotics/aikido/pull/524)
 
 * Control
 
