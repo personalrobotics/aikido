@@ -187,6 +187,17 @@ trajectory::TrajectoryPtr planToEndEffectorPose(
       double positionTolerance,
       double angularTolerance);
 
+  trajectory::TrajectoryPtr planWithEndEffectorTwist(
+      const statespace::dart::MetaSkeletonStateSpacePtr& space,
+      State* startState,
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const dart::dynamics::BodyNodePtr& body,
+      const Eigen::Vector6d& twists,
+      double durations,
+      const constraint::dart::CollisionFreePtr& collisionFree,
+      double timelimit,
+      double positionTolerance,
+      double angularTolerance);
 
   /// TODO: This should be revisited once we have Planner API.
   /// Sets VectorFieldPlanner parameters.

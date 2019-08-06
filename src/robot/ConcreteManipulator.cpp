@@ -146,7 +146,6 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
       angularTolerance,
       mVectorFieldParameters,
       mCRRTParameters);
-  std::cout << "concret !!! number of waypoints: " << trajectory->getNumWaypoints() << std::endl;
   return trajectory;
 }
 
@@ -282,6 +281,39 @@ trajectory::TrajectoryPtr ConcreteManipulator::planWithEndEffectorTwist(
   return trajectory;
 }
 
+//==============================================================================
+// designate a startState
+
+trajectory::TrajectoryPtr ConcreteManipulator::planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    State* startState,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector6d& twists,
+    double durations,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance)
+{
+
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  auto trajectory = util::planWithEndEffectorTwist(
+      space,
+      startState,
+      metaSkeleton,
+      body,
+      twists,
+      durations,
+      collision,
+      timelimit,
+      positionTolerance,
+      angularTolerance,
+      mVectorFieldParameters);
+
+  return trajectory;
+}
 
 //==============================================================================
 void ConcreteManipulator::setVectorFieldPlannerParameters(

@@ -277,6 +277,19 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     double angularTolerance = 1e-3,
     const VectorFieldPlannerParameters& vfParameters
     = VectorFieldPlannerParameters());
+trajectory::TrajectoryPtr planWithEndEffectorTwist(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    State* startState,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& body,
+    const Eigen::Vector6d& twists,
+    double durations,
+    const constraint::TestablePtr& collisionTestable,
+    double timelimit,
+    double positionTolerance = 1e-3,
+    double angularTolerance = 1e-3,
+    const VectorFieldPlannerParameters& vfParameters
+    = VectorFieldPlannerParameters());
 
 /// Parses YAML node for named configurtaions
 /// \param[in] node YAML node containing named configurations
