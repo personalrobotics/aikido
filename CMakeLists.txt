@@ -139,7 +139,9 @@ add_custom_target(headers SOURCES ${aikido_headers})
 
 add_subdirectory("src")
 
-add_subdirectory("python")
+if(BUILD_AIKIDOPY)
+  add_subdirectory("python")
+endif()
 
 enable_testing()
 add_subdirectory("tests" EXCLUDE_FROM_ALL)
