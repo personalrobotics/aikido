@@ -437,7 +437,7 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
       std::chrono::duration<double>(timelimit));
 
   if (traj)
-    return traj;
+    return std::move(traj);
 
   return planToEndEffectorOffsetByCRRT(
       space,
