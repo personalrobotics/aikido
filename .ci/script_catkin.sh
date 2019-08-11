@@ -17,6 +17,13 @@ if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
   ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
 fi
 
+# Build aikidopy and pytest
+if [ $BUILD_AIKIDOPY = ON ]; then
+  ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTREAT_WARNINGS_AS_ERRORS=OFF -DCODECOV=OFF --make-args aikidopy -- aikido
+  ./scripts/internal-run.sh make -C build/aikido pytest
+  exit 0
+fi
+
 # Manually build Aikido's tests; they are not built automatically because it is not a Catkin package.
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
   ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTREAT_WARNINGS_AS_ERRORS=ON -DCODECOV=ON --make-args tests -- aikido

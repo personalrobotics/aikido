@@ -73,8 +73,6 @@ using dart::dynamics::MetaSkeleton;
 using dart::dynamics::MetaSkeletonPtr;
 using dart::dynamics::SkeletonPtr;
 
-static const double collisionResolution = 0.1;
-
 //==============================================================================
 trajectory::TrajectoryPtr planToConfiguration(
     const MetaSkeletonStateSpacePtr& space,
@@ -468,7 +466,7 @@ trajectory::TrajectoryPtr planToTSR(
       tsr,
       seedSampleable,
       ik,
-      maxNumTrials);
+      static_cast<int>(maxNumTrials));
 
   auto generator = ikSampleable.createSampleGenerator();
 
