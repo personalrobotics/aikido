@@ -73,8 +73,6 @@ using dart::dynamics::MetaSkeleton;
 using dart::dynamics::MetaSkeletonPtr;
 using dart::dynamics::SkeletonPtr;
 
-static const double collisionResolution = 0.1;
-
 //==============================================================================
 trajectory::TrajectoryPtr planToConfiguration(
     const MetaSkeletonStateSpacePtr& space,
@@ -468,7 +466,7 @@ trajectory::TrajectoryPtr planToTSR(
       tsr,
       seedSampleable,
       ik,
-      maxNumTrials);
+      static_cast<int>(maxNumTrials));
 
   auto generator = ikSampleable.createSampleGenerator();
 
@@ -728,9 +726,7 @@ trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
       vfParameters.constraintCheckResolution,
       std::chrono::duration<double>(timelimit));
 
-  std::cout << "1!! utils: " << traj->getNumWaypoints() << std::endl;
-  // return std::move(traj);
-  return traj;
+  return std::move(traj);
   /*
   return planToEndEffectorOffsetByCRRT(
       space,
@@ -876,9 +872,9 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
           *startState,
           metaSkeleton,
           bodyNode,
+          collisionTestable,
           twistSeq,
           durationSeq,
-          collisionTestable,
           positionTolerance,
           angularTolerance,
           0.1,
@@ -928,9 +924,9 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
           *startState,
           metaSkeleton,
           bodyNode,
+          collisionTestable,
           twistSeq,
           durationSeq,
-          collisionTestable,
           positionTolerance,
           angularTolerance,
           0.1,
@@ -960,13 +956,9 @@ trajectory::TrajectoryPtr planToEndEffectorPose(
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
-  auto startState = space->createState();
-  space->getState(metaSkeleton.get(), startState);
-
   trajectory::TrajectoryPtr untimedTrajectory
       = planner::vectorfield::planToEndEffectorPose(
       space,
-      *startState,
       metaSkeleton,
       bodyNode,
       collisionTestable,

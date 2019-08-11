@@ -7,9 +7,7 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
 
-#include "aikido/trajectory/Spline.hpp"
-// #include "aikido/robot/util.hpp"
-
+#include <aikido/trajectory/Spline.hpp>
 
 namespace aikido {
 namespace planner {
@@ -44,6 +42,7 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
 /// distance.
 ///
 /// \param[in] stateSpace MetaSkeleton state space.
+/// \param[in] startState Start state of the planning.
 /// \param[in] metaskeleton MetaSkeleton to plan with
 /// \param[in] bn Body node of the end-effector.
 /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
@@ -77,7 +76,7 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
-    planner::Planner::Result* result = nullptr);
+    aikido::planner::Planner::Result* result = nullptr);
 
 /// Plan to an end-effector pose by following a geodesic loss function
 /// in SE(3) via an optimized Jacobian.
@@ -101,7 +100,6 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 /// \return Trajectory or \c nullptr if planning failed.
 aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const ::dart::dynamics::BodyNodePtr& bn,
     const aikido::constraint::TestablePtr& constraint,
@@ -114,22 +112,43 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     std::chrono::duration<double> timelimit,
     planner::Planner::Result* result = nullptr);
 
-// std::unique_ptr<aikido::trajectory::Spline> planWithEndEffectorTwist(
+/// Plan to a trajectory that moves the end-effector by a given twist(angular velocity 
+/// and linear velocity) and the duration of the twist.
+///
+/// \param[in] stateSpace MetaSkeleton state space.
+/// \param[in] startState Start state of the planning.
+/// \param[in] metaskeleton MetaSkeleton to plan with
+/// \param[in] bn Body node of the end-effector.
+/// \param[in] constraint Trajectory-wide constraint that must be satisfied.
+/// \param[in] twistSeq Twist(first 3 elements: angular velocity; last 3 elements: linear velocity).
+/// \param[in] durationSeq  How long to excute the twist.
+/// \param[in] positionTolerance How a planned trajectory is allowed to
+/// deviated from a straight line segment defined by the direction and the
+/// distance.
+/// \param[in] angularTolerance How a planned trajectory is allowed to deviate
+/// from a given direction.
+/// \param[in] initialStepSize Initial step size.
+/// \param[in] jointLimitTolerance If less then this distance to joint
+/// limit, velocity is bounded in that direction to 0.
+/// \param[in] constraintCheckResolution Resolution used in constraint checking.
+/// \param[in] timelimit timeout in seconds.
+/// \param[out] result information about success or failure.
+/// \return Trajectory or \c nullptr if planning failed.
 aikido::trajectory::UniqueInterpolatedPtr planWithEndEffectorTwist(
     const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Vector6d& twistSeq,
     double durationSeq,
-    const aikido::constraint::ConstTestablePtr& constraint,
     double positionTolerance,
     double angularTolerance,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
-    planner::Planner::Result* result = nullptr);
+    aikido::planner::Planner::Result* result = nullptr);
 
 } // namespace vectorfield
 } // namespace planner

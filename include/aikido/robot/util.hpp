@@ -256,8 +256,8 @@ trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with
 /// \param[in] body Bodynode for the end-effector
-/// \param[in] twist Twist for the end-effector
-/// \param[in] duration Time to plan with the desired twist
+/// \param[in] twistSeq Twist for the end-effector
+/// \param[in] durationSeq Time to plan with the desired twist
 /// \param[in] collisionTestable Collision constraint to check. Self-collision
 /// is checked by default.
 /// \param[in] timelimit Timelimit for the plan to be generated
@@ -269,14 +269,15 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
-    const Eigen::Vector6d& twists,
-    double durations,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
     const constraint::TestablePtr& collisionTestable,
     double timelimit,
     double positionTolerance = 1e-3,
     double angularTolerance = 1e-3,
     const VectorFieldPlannerParameters& vfParameters
     = VectorFieldPlannerParameters());
+
 trajectory::TrajectoryPtr planWithEndEffectorTwist(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
     State* startState,
