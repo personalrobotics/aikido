@@ -39,7 +39,7 @@ ShapeFrameMarker::ShapeFrameMarker(
   , mForceUpdate(true)
   , mVersion()
   , mShowVisual(true)
-  , mShowCollision(false)
+  , mShowCollision(true)
 {
   using std::placeholders::_1;
   using std::placeholders::_2;
