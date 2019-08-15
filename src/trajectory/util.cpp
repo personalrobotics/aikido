@@ -308,5 +308,45 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
   return rTrajectory;
 }
 
+//==============================================================================
+void saveTrajectory(const Spline& trajectory)
+{
+  std::ofstream file("test.yml");
+  Eigen::IOFormat cleanFmt(
+          Eigen::StreamPrecision, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
+
+  double startTime = trajectory.getStartTime();
+  statespace::ConstStateSpacePtr trajSpace = trajectory.getStateSpace();
+
+  file << "start_time: " << startTime << "\n";
+  Eigen::VectorXd position(trajSpace->getDimension());
+
+  for (std::size_t i = 0; i < trajectory.getNumSegments(); ++i)
+  { 
+    file << "seg_" << i << ":\n";
+
+    auto startState = trajectory.getSegmentStartState(i);
+    double duration = trajectory.getSegmentDuration(i);
+    auto segmentCoeff = trajectory.getSegmentCoefficients(i);
+
+    // Convert start state to position
+    trajSpace->logMap(startState, position);
+
+    file << "\tcoefficients: " << segmentCoeff.format(cleanFmt) << "\n";
+    file << "\tduration: " << duration << "\n";
+    file << "\tstart_state: " << position.format(cleanFmt) << "\n";
+  }
+}
+
+//==============================================================================
+// UniqueSplinePtr loadSplineTrajectory(const char& trajPath,
+//     const MetaSkeletonStateSpacePtr stateSpace)
+// {
+//   const auto space = std::dynamic_pointer_cast<statespace::ConstStateSpacePtr>(stateSpace);
+//   auto Trajectory
+//      = ::aikido::common::make_unique<Spline>(space);
+//   return Trajectory;
+// }
+
 } // namespace trajectory
 } // namespace aikido

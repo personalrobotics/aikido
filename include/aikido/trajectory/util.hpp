@@ -75,6 +75,15 @@ UniqueSplinePtr createPartialTrajectory(
 /// \return Converted trajectory.
 UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory);
 
+/// Saves a timed trajectory
+///
+/// Given a spline trajectory \c_traj, saves the trajectory as a yaml file
+/// for reuse later.
+void saveTrajectory(const Spline& trajectory);
+
+/// Load spline trajectory from yaml file
+UniqueSplinePtr loadSplineTrajectory(const char& trajPath);
+
 } // namespace trajectory
 } // namespace aikido
 
