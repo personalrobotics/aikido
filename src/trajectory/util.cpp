@@ -310,9 +310,9 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 }
 
 //==============================================================================
-void saveTrajectory(const Spline& trajectory)
+void saveTrajectory(const Spline& trajectory, const std::string& savePath)
 {
-  std::ofstream file("/home/rishabh/work/pr-ws/src/aikido/configs/trajectories/test.yml");
+  std::ofstream file(savePath);
   Eigen::IOFormat cleanFmt(
           Eigen::StreamPrecision, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
 
@@ -340,10 +340,10 @@ void saveTrajectory(const Spline& trajectory)
 }
 
 //==============================================================================
-UniqueSplinePtr loadSplineTrajectory(
+UniqueSplinePtr loadSplineTrajectory(const std::string& trajPath,
     const MetaSkeletonStateSpacePtr& stateSpace)
 {
-  YAML::Node trajFile = YAML::LoadFile("/home/rishabh/work/pr-ws/src/aikido/configs/trajectories/test.yml");
+  YAML::Node trajFile = YAML::LoadFile(trajPath);
   double startTime = trajFile["start_time"].as<double>();
   std::size_t dofs = trajFile["dofs"].as<std::size_t>();
   std::size_t numSegments = trajFile["num_segments"].as<std::size_t>();
