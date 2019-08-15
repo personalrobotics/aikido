@@ -7,6 +7,7 @@
 #include "aikido/common/memory.hpp"
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
+#include "aikido/io/yaml.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
@@ -311,20 +312,20 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 //==============================================================================
 void saveTrajectory(const Spline& trajectory)
 {
-  std::ofstream file("test.yml");
+  std::ofstream file("/home/rishabh/work/pr-ws/src/aikido/configs/trajectories/test.yml");
   Eigen::IOFormat cleanFmt(
           Eigen::StreamPrecision, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
 
-  double startTime = trajectory.getStartTime();
   statespace::ConstStateSpacePtr trajSpace = trajectory.getStateSpace();
 
-  file << "start_time: " << startTime << "\n";
+  file << "start_time: " << trajectory.getStartTime() << std::endl;
+  file << "dofs: " << trajSpace->getDimension() << std::endl;
+  file << "num_segments: " << trajectory.getNumSegments() << std::endl;
   Eigen::VectorXd position(trajSpace->getDimension());
 
   for (std::size_t i = 0; i < trajectory.getNumSegments(); ++i)
   { 
     file << "seg_" << i << ":\n";
-
     auto startState = trajectory.getSegmentStartState(i);
     double duration = trajectory.getSegmentDuration(i);
     auto segmentCoeff = trajectory.getSegmentCoefficients(i);
@@ -332,21 +333,42 @@ void saveTrajectory(const Spline& trajectory)
     // Convert start state to position
     trajSpace->logMap(startState, position);
 
-    file << "\tcoefficients: " << segmentCoeff.format(cleanFmt) << "\n";
-    file << "\tduration: " << duration << "\n";
-    file << "\tstart_state: " << position.format(cleanFmt) << "\n";
+    file << "  coefficients: " << segmentCoeff.format(cleanFmt) << std::endl;
+    file << "  duration: " << duration << std::endl;
+    file << "  start_state: " << position.format(cleanFmt) << std::endl;
   }
 }
 
 //==============================================================================
-// UniqueSplinePtr loadSplineTrajectory(const char& trajPath,
-//     const MetaSkeletonStateSpacePtr stateSpace)
-// {
-//   const auto space = std::dynamic_pointer_cast<statespace::ConstStateSpacePtr>(stateSpace);
-//   auto Trajectory
-//      = ::aikido::common::make_unique<Spline>(space);
-//   return Trajectory;
-// }
+UniqueSplinePtr loadSplineTrajectory(
+    const MetaSkeletonStateSpacePtr& stateSpace)
+{
+  YAML::Node trajFile = YAML::LoadFile("/home/rishabh/work/pr-ws/src/aikido/configs/trajectories/test.yml");
+  double startTime = trajFile["start_time"].as<double>();
+  std::size_t dofs = trajFile["dofs"].as<std::size_t>();
+  std::size_t numSegments = trajFile["num_segments"].as<std::size_t>();
+
+  auto Trajectory
+     = ::aikido::common::make_unique<Spline>(stateSpace, startTime);
+
+  for (std::size_t i = 0; i < numSegments; ++i)
+  {
+    auto segment_id = "seg_" + std::to_string(i);
+    Eigen::MatrixXd coeffVec = trajFile[segment_id]["coefficients"].as<Eigen::MatrixXd>();
+    double duration = trajFile[segment_id]["duration"].as<double>();
+    Eigen::VectorXd position = trajFile[segment_id]["start_state"].as<Eigen::VectorXd>();
+    
+    // Reshape coefficient matrix
+    Eigen::MatrixXd coefficients = Eigen::Map<Eigen::MatrixXd>(coeffVec.data(), 4, dofs).transpose(); 
+
+    // Convert position Eigen vector to StateSpace::State*
+    aikido::statespace::StateSpace::State* startState = stateSpace->allocateState();
+    stateSpace->expMap(position, startState);
+
+    Trajectory->addSegment(coefficients, duration, startState);
+  }
+  return Trajectory;
+}
 
 } // namespace trajectory
 } // namespace aikido

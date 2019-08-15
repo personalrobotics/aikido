@@ -3,6 +3,7 @@
 
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace trajectory {
@@ -82,7 +83,7 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory);
 void saveTrajectory(const Spline& trajectory);
 
 /// Load spline trajectory from yaml file
-UniqueSplinePtr loadSplineTrajectory(const char& trajPath);
+UniqueSplinePtr loadSplineTrajectory(const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace);
 
 } // namespace trajectory
 } // namespace aikido
