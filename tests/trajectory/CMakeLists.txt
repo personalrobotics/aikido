@@ -15,5 +15,8 @@ target_link_libraries(test_BSpline
 
 aikido_add_test(test_util test_util.cpp)
 target_link_libraries(test_util
+  "${PROJECT_NAME}_constraint"
+  "${PROJECT_NAME}_io"
+  "${PROJECT_NAME}_planner"
   "${PROJECT_NAME}_trajectory"
   "${PROJECT_NAME}_statespace")

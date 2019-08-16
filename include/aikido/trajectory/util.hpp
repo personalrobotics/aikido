@@ -82,7 +82,6 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory);
 /// trajectory as a yaml file for reuse later.
 /// \param[in] trajectory Spline trajectory
 /// \param[in] savePath save path for the trajectory yaml file
-
 void saveTrajectory(const Spline& trajectory, const std::string& savePath);
 
 /// Load spline trajectory from yaml file
