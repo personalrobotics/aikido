@@ -314,7 +314,7 @@ void saveTrajectory(const Spline& trajectory, const std::string& savePath)
 {
   std::ofstream file(savePath);
   Eigen::IOFormat cleanFmt(
-          Eigen::StreamPrecision, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
+      Eigen::StreamPrecision, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
 
   statespace::ConstStateSpacePtr trajSpace = trajectory.getStateSpace();
 
@@ -324,7 +324,7 @@ void saveTrajectory(const Spline& trajectory, const std::string& savePath)
   Eigen::VectorXd position(trajSpace->getDimension());
 
   for (std::size_t i = 0; i < trajectory.getNumSegments(); ++i)
-  { 
+  {
     file << "seg_" << i << ":\n";
     auto startState = trajectory.getSegmentStartState(i);
     double duration = trajectory.getSegmentDuration(i);
@@ -340,8 +340,8 @@ void saveTrajectory(const Spline& trajectory, const std::string& savePath)
 }
 
 //==============================================================================
-UniqueSplinePtr loadSplineTrajectory(const std::string& trajPath,
-    const MetaSkeletonStateSpacePtr& stateSpace)
+UniqueSplinePtr loadSplineTrajectory(
+    const std::string& trajPath, const MetaSkeletonStateSpacePtr& stateSpace)
 {
   YAML::Node trajFile = YAML::LoadFile(trajPath);
   double startTime = trajFile["start_time"].as<double>();
@@ -349,20 +349,24 @@ UniqueSplinePtr loadSplineTrajectory(const std::string& trajPath,
   std::size_t numSegments = trajFile["num_segments"].as<std::size_t>();
 
   auto Trajectory
-     = ::aikido::common::make_unique<Spline>(stateSpace, startTime);
+      = ::aikido::common::make_unique<Spline>(stateSpace, startTime);
 
   for (std::size_t i = 0; i < numSegments; ++i)
   {
     auto segment_id = "seg_" + std::to_string(i);
-    Eigen::MatrixXd coeffVec = trajFile[segment_id]["coefficients"].as<Eigen::MatrixXd>();
+    Eigen::MatrixXd coeffVec
+        = trajFile[segment_id]["coefficients"].as<Eigen::MatrixXd>();
     double duration = trajFile[segment_id]["duration"].as<double>();
-    Eigen::VectorXd position = trajFile[segment_id]["start_state"].as<Eigen::VectorXd>();
+    Eigen::VectorXd position
+        = trajFile[segment_id]["start_state"].as<Eigen::VectorXd>();
     
     // Reshape coefficient matrix
-    Eigen::MatrixXd coefficients = Eigen::Map<Eigen::MatrixXd>(coeffVec.data(), 4, dofs).transpose(); 
+    Eigen::MatrixXd coefficients
+        = Eigen::Map<Eigen::MatrixXd>(coeffVec.data(), 4, dofs).transpose(); 
 
     // Convert position Eigen vector to StateSpace::State*
-    aikido::statespace::StateSpace::State* startState = stateSpace->allocateState();
+    aikido::statespace::StateSpace::State* startState
+        = stateSpace->allocateState();
     stateSpace->expMap(position, startState);
 
     Trajectory->addSegment(coefficients, duration, startState);

@@ -181,18 +181,23 @@ TEST_F(SaveLoadTrajectoryTest, SavedMatchesLoaded)
 
   auto loadedSmoothTrajectory = loadSplineTrajectory("test.yml", stateSpace);
 
-  EXPECT_EQ(originalSmoothTrajectory->getDuration(), loadedSmoothTrajectory->getDuration());
+  EXPECT_EQ(originalSmoothTrajectory->getDuration(),
+      loadedSmoothTrajectory->getDuration());
   for (std::size_t i = 0; i < loadedSmoothTrajectory->getNumSegments(); ++i)
   {
     auto segment_id = "seg_" + std::to_string(i);
-    Eigen::MatrixXd originalCoefficients = originalSmoothTrajectory->getSegmentCoefficients(i);
-    Eigen::MatrixXd loadedCoefficients = loadedSmoothTrajectory->getSegmentCoefficients(i);
+    Eigen::MatrixXd originalCoefficients
+        = originalSmoothTrajectory->getSegmentCoefficients(i);
+    Eigen::MatrixXd loadedCoefficients
+        = loadedSmoothTrajectory->getSegmentCoefficients(i);
     EXPECT_TRUE(loadedCoefficients.isApprox(originalCoefficients));
 
     Eigen::VectorXd originalPosition(stateSpace->getDimension());
     Eigen::VectorXd loadedPosition(stateSpace->getDimension());
-    stateSpace->logMap(originalSmoothTrajectory->getSegmentStartState(i), originalPosition);
-    stateSpace->logMap(loadedSmoothTrajectory->getSegmentStartState(i), loadedPosition);
+    stateSpace->logMap(
+        originalSmoothTrajectory->getSegmentStartState(i), originalPosition);
+    stateSpace->logMap(
+        loadedSmoothTrajectory->getSegmentStartState(i), loadedPosition);
     EXPECT_TRUE(loadedPosition.isApprox(originalPosition));
   }
 }
