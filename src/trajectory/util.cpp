@@ -320,6 +320,7 @@ void saveTrajectory(const Spline& trajectory, const std::string& savePath)
 
   file << "start_time: " << trajectory.getStartTime() << std::endl;
   file << "dofs: " << trajSpace->getDimension() << std::endl;
+  file << "traj_order: " << trajectory.getNumDerivatives() << std::endl;
   file << "num_segments: " << trajectory.getNumSegments() << std::endl;
   Eigen::VectorXd position(trajSpace->getDimension());
 
@@ -346,6 +347,7 @@ UniqueSplinePtr loadSplineTrajectory(
   YAML::Node trajFile = YAML::LoadFile(trajPath);
   double startTime = trajFile["start_time"].as<double>();
   std::size_t dofs = trajFile["dofs"].as<std::size_t>();
+  std::size_t numCoeffs = trajFile["traj_order"].as<std::size_t>() + 1;
   std::size_t numSegments = trajFile["num_segments"].as<std::size_t>();
 
   auto Trajectory
@@ -362,7 +364,7 @@ UniqueSplinePtr loadSplineTrajectory(
     
     // Reshape coefficient matrix
     Eigen::MatrixXd coefficients
-        = Eigen::Map<Eigen::MatrixXd>(coeffVec.data(), 4, dofs).transpose(); 
+        = Eigen::Map<Eigen::MatrixXd>(coeffVec.data(), numCoeffs, dofs).transpose(); 
 
     // Convert position Eigen vector to StateSpace::State*
     aikido::statespace::StateSpace::State* startState

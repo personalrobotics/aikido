@@ -152,6 +152,7 @@ public:
     auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
         stateSpace, interpolator);
     auto traj = planner->plan(problem, &planningResult);
+    interpolated = std::dynamic_pointer_cast<Interpolated>(traj);
   }
 
   ~SaveLoadTrajectoryTest()
@@ -185,12 +186,11 @@ TEST_F(SaveLoadTrajectoryTest, SavedMatchesLoaded)
       loadedSmoothTrajectory->getDuration());
   for (std::size_t i = 0; i < loadedSmoothTrajectory->getNumSegments(); ++i)
   {
-    auto segment_id = "seg_" + std::to_string(i);
     Eigen::MatrixXd originalCoefficients
         = originalSmoothTrajectory->getSegmentCoefficients(i);
     Eigen::MatrixXd loadedCoefficients
         = loadedSmoothTrajectory->getSegmentCoefficients(i);
-    EXPECT_TRUE(loadedCoefficients.isApprox(originalCoefficients));
+    EXPECT_TRUE(loadedCoefficients.isApprox(originalCoefficients)) << loadedCoefficients;
 
     Eigen::VectorXd originalPosition(stateSpace->getDimension());
     Eigen::VectorXd loadedPosition(stateSpace->getDimension());
