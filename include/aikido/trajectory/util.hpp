@@ -78,18 +78,21 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory);
 
 /// Saves a timed trajectory
 ///
-/// Given a spline trajectory \c_traj and trajectory file path, saves the
-/// trajectory as a yaml file for reuse later.
+/// Given a spline trajectory \c_traj, object state space and trajectory
+/// file path, saves the trajectory as a yaml file for reuse later.
 /// \param[in] trajectory Spline trajectory
+/// \param[in] skelSpace Metaskeleton of the object
 /// \param[in] savePath save path for the trajectory yaml file
-void saveTrajectory(const Spline& trajectory, const std::string& savePath);
+void saveTrajectory(const Spline& trajectory,
+    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& skelSpace,
+    const std::string& savePath);
 
 /// Load spline trajectory from yaml file
 ///
 /// Given trajectory file and trajectory state space, this method parses
 /// the trajectory file and loads a timed trajectory for direct execution.
 /// \param[in] trajPath Spline trajectory
-/// \param[in] stateSpace Metaskeleton of the trajectory
+/// \param[in] stateSpace Metaskeleton for the trajectory
 /// \return Loaded spline trajectory
 UniqueSplinePtr loadSplineTrajectory(const std::string& trajPath,
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace);

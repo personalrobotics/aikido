@@ -8,6 +8,7 @@
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
 #include "aikido/io/yaml.hpp"
+#include "aikido/io/detail/yaml_extension.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
@@ -310,34 +311,48 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 }
 
 //==============================================================================
-void saveTrajectory(const Spline& trajectory, const std::string& savePath)
+void saveTrajectory(const Spline& trajectory,
+    const MetaSkeletonStateSpacePtr& skelSpace, const std::string& savePath)
 {
   std::ofstream file(savePath);
-  Eigen::IOFormat cleanFmt(
-      Eigen::StreamPrecision, Eigen::DontAlignCols, ",", ",", "", "", "[", "]");
+  YAML::Emitter emitter;
 
   statespace::ConstStateSpacePtr trajSpace = trajectory.getStateSpace();
+  emitter << YAML::BeginMap;
+  emitter << YAML::Key << "configuration" << YAML::BeginMap;
+  emitter << YAML::Key << "start_time" << YAML::Value << trajectory.getStartTime();
+  emitter << YAML::Key << "dofs" << YAML::Flow << skelSpace->getProperties().getDofNames();
+  emitter << YAML::Key << "type" << YAML::Value << "spline";
+  emitter << YAML::Key << "spline";
+  emitter << YAML::BeginMap;
+  emitter << YAML::Key << "order" << YAML::Value << trajectory.getNumDerivatives();
+  emitter << YAML::EndMap;
+  emitter << YAML::EndMap << YAML::Key << "data" << YAML::BeginSeq;
 
-  file << "start_time: " << trajectory.getStartTime() << std::endl;
-  file << "dofs: " << trajSpace->getDimension() << std::endl;
-  file << "traj_order: " << trajectory.getNumDerivatives() << std::endl;
-  file << "num_segments: " << trajectory.getNumSegments() << std::endl;
   Eigen::VectorXd position(trajSpace->getDimension());
+  aikido::io::detail::encode_impl<Eigen::MatrixXd, false> convertMatrix;
+  aikido::io::detail::encode_impl<Eigen::VectorXd, false> convertVector;
 
   for (std::size_t i = 0; i < trajectory.getNumSegments(); ++i)
   {
-    file << "seg_" << i << ":\n";
     auto startState = trajectory.getSegmentStartState(i);
     double duration = trajectory.getSegmentDuration(i);
     auto segmentCoeff = trajectory.getSegmentCoefficients(i);
 
     // Convert start state to position
     trajSpace->logMap(startState, position);
-
-    file << "  coefficients: " << segmentCoeff.format(cleanFmt) << std::endl;
-    file << "  duration: " << duration << std::endl;
-    file << "  start_state: " << position.format(cleanFmt) << std::endl;
+    
+    emitter << YAML::BeginMap;
+    emitter << YAML::Key << "coefficients" << YAML::Flow
+        << convertMatrix.encode(segmentCoeff);
+    emitter << YAML::Key << "duration" << YAML::Value << duration;
+    emitter << YAML::Key << "start_state" << YAML::Flow
+        << convertVector.encode(position);
+    emitter << YAML::EndMap;
   }
+
+  emitter << YAML::EndSeq << YAML::EndMap;
+  file << emitter.c_str();
 }
 
 //==============================================================================
@@ -345,26 +360,21 @@ UniqueSplinePtr loadSplineTrajectory(
     const std::string& trajPath, const MetaSkeletonStateSpacePtr& stateSpace)
 {
   YAML::Node trajFile = YAML::LoadFile(trajPath);
-  double startTime = trajFile["start_time"].as<double>();
-  std::size_t dofs = trajFile["dofs"].as<std::size_t>();
-  std::size_t numCoeffs = trajFile["traj_order"].as<std::size_t>() + 1;
-  std::size_t numSegments = trajFile["num_segments"].as<std::size_t>();
+  const YAML::Node& config = trajFile["configuration"];
+
+  double startTime = config["start_time"].as<double>();
+  std::vector<std::string> dofs = config["dofs"].as<std::vector<std::string>>();
+  std::string trajType = config["type"].as<std::string>();
 
   auto Trajectory
       = ::aikido::common::make_unique<Spline>(stateSpace, startTime);
 
-  for (std::size_t i = 0; i < numSegments; ++i)
-  {
-    auto segment_id = "seg_" + std::to_string(i);
-    Eigen::MatrixXd coeffVec
-        = trajFile[segment_id]["coefficients"].as<Eigen::MatrixXd>();
-    double duration = trajFile[segment_id]["duration"].as<double>();
-    Eigen::VectorXd position
-        = trajFile[segment_id]["start_state"].as<Eigen::VectorXd>();
-    
-    // Reshape coefficient matrix
-    Eigen::MatrixXd coefficients
-        = Eigen::Map<Eigen::MatrixXd>(coeffVec.data(), numCoeffs, dofs).transpose(); 
+  const YAML::Node& segments = trajFile["data"];
+  for (std::size_t i = 0; i < segments.size(); i++) {
+    const YAML::Node& segment = segments[i];
+    Eigen::MatrixXd coefficients = segment["coefficients"].as<Eigen::MatrixXd>();
+    double duration = segment["duration"].as<double>();
+    Eigen::VectorXd position = segment["start_state"].as<Eigen::VectorXd>();
 
     // Convert position Eigen vector to StateSpace::State*
     aikido::statespace::StateSpace::State* startState
