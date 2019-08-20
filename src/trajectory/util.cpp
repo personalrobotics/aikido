@@ -4,9 +4,9 @@
 #include <fstream>
 #include <iostream>
 #include <boost/program_options.hpp>
-#include <dart/common/StlHelpers.hpp>
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
+#include "aikido/common/memory.hpp"
 #include "aikido/distance/NominalConfigurationRanker.hpp"
 #include "aikido/distance/defaults.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
@@ -91,8 +91,8 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
 
-  auto outputTrajectory
-      = std::make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
+  auto outputTrajectory = ::aikido::common::make_unique<Spline>(
+      stateSpace, inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
@@ -131,7 +131,7 @@ UniqueInterpolatedPtr concatenate(
   if (traj1.getInterpolator() != traj2.getInterpolator())
     dtwarn << "Interpolator mismatch\n";
 
-  auto outputTrajectory = std::make_unique<Interpolated>(
+  auto outputTrajectory = ::aikido::common::make_unique<Interpolated>(
       traj1.getStateSpace(), traj1.getInterpolator());
   if (traj1.getNumWaypoints() > 1u)
   {
@@ -208,7 +208,7 @@ UniqueSplinePtr createPartialTrajectory(
   const auto stateSpace = traj.getStateSpace();
   const int dimension = static_cast<int>(stateSpace->getDimension());
   auto outputTrajectory
-      = std::make_unique<Spline>(stateSpace, traj.getStartTime());
+      = ::aikido::common::make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;
@@ -292,7 +292,8 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 
   auto rSpace = std::make_shared<CartesianProduct>(subspaces);
   auto rInterpolator = std::make_shared<GeodesicInterpolator>(rSpace);
-  auto rTrajectory = std::make_unique<Interpolated>(rSpace, rInterpolator);
+  auto rTrajectory
+      = ::aikido::common::make_unique<Interpolated>(rSpace, rInterpolator);
 
   Eigen::VectorXd sourceVector(space->getDimension());
   auto sourceState = rSpace->createState();
