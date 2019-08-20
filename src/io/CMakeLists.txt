@@ -28,6 +28,7 @@ check_cxx_source_compiles(
 set(sources
   CatkinResourceRetriever.cpp
   KinBodyParser.cpp
+  trajectory.cpp
   yaml.cpp
   util.cpp
 )
@@ -44,6 +45,7 @@ target_include_directories("${PROJECT_NAME}_io" SYSTEM
 target_link_libraries("${PROJECT_NAME}_io"
   PUBLIC
     "${PROJECT_NAME}_common"
+    "${PROJECT_NAME}_trajectory"
     ${Boost_FILESYSTEM_LIBRARY}
     ${DART_LIBRARIES}
     ${YAMLCPP_LIBRARIES}
@@ -67,6 +69,6 @@ endif()
 
 add_component(${PROJECT_NAME} io)
 add_component_targets(${PROJECT_NAME} io "${PROJECT_NAME}_io")
-add_component_dependencies(${PROJECT_NAME} io common)
+add_component_dependencies(${PROJECT_NAME} io common trajectory)
 
 clang_format_add_sources(${sources})
