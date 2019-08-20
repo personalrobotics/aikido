@@ -1,8 +1,8 @@
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 
-#include "aikido/common/memory.hpp"
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
+#include "aikido/common/memory.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"
