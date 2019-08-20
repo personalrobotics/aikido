@@ -4,11 +4,9 @@
 #include <fstream>
 #include <iostream>
 #include <boost/program_options.hpp>
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
-#include "aikido/distance/NominalConfigurationRanker.hpp"
-#include "aikido/distance/defaults.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
@@ -16,8 +14,6 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
-using aikido::distance::createDistanceMetric;
-using aikido::distance::NominalConfigurationRanker;
 using aikido::statespace::R;
 using aikido::statespace::R1;
 using aikido::statespace::SO2;
@@ -92,7 +88,7 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
     throw std::invalid_argument("Trajectory is empty.");
 
   auto outputTrajectory
-      = std::make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
+      = ::aikido::common::make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
@@ -129,9 +125,9 @@ UniqueInterpolatedPtr concatenate(
     throw std::runtime_error("State space mismatch");
 
   if (traj1.getInterpolator() != traj2.getInterpolator())
-    dtwarn << "Interpolator mismatch\n";
+    throw std::runtime_error("Interpolator mismatch");
 
-  auto outputTrajectory = std::make_unique<Interpolated>(
+  auto outputTrajectory = ::aikido::common::make_unique<Interpolated>(
       traj1.getStateSpace(), traj1.getInterpolator());
   if (traj1.getNumWaypoints() > 1u)
   {
@@ -155,16 +151,14 @@ UniqueInterpolatedPtr concatenate(
 //==============================================================================
 double findTimeOfClosestStateOnTrajectory(
     const Trajectory& traj,
-    __attribute__((unused))
-    const ::dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const statespace::StateSpace::State* referenceState,
-    double& distance,
+    const Eigen::VectorXd& referenceState,
     double timeStep)
 {
-  auto stateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-      traj.getStateSpace());
-  if (!stateSpace)
-    throw std::runtime_error("Failed to convert statespace");
+  auto stateSpace = traj.getStateSpace();
+  const std::size_t configSize
+      = static_cast<std::size_t>(referenceState.size());
+  if (configSize != stateSpace->getDimension())
+    throw std::runtime_error("Dimension mismatch");
 
   double findTime = traj.getStartTime();
   double minDist = std::numeric_limits<double>::max();
@@ -172,23 +166,21 @@ double findTimeOfClosestStateOnTrajectory(
   const common::StepSequence sequence(
       timeStep, true, true, traj.getStartTime(), traj.getEndTime());
 
-  auto metric = createDistanceMetric(stateSpace);
-
+  auto currState = stateSpace->createState();
+  Eigen::VectorXd currPos(stateSpace->getDimension());
   for (const double currTime : sequence)
   {
-    auto currState = stateSpace->createState();
     traj.evaluate(currTime, currState);
+    stateSpace->logMap(currState, currPos);
 
-    auto currDist = metric->distance(currState, referenceState);
-
+    const double currDist = (referenceState - currPos).norm();
     if (currDist < minDist)
     {
-      minDist = currDist;
       findTime = currTime;
-    };
+      minDist = currDist;
+    }
   }
 
-  distance = minDist;
   return findTime;
 }
 
@@ -196,19 +188,15 @@ double findTimeOfClosestStateOnTrajectory(
 UniqueSplinePtr createPartialTrajectory(
     const Spline& traj, double partialStartTime)
 {
-  std::cout << "traj starts at " << traj.getStartTime() << " ends at "
-            << traj.getEndTime() << std::endl;
   if (partialStartTime < traj.getStartTime()
       || partialStartTime > traj.getEndTime())
   {
-    dtwarn << "Wrong partial start time" << std::endl;
-    return nullptr;
+    throw std::runtime_error("Wrong partial start time");
   }
 
   const auto stateSpace = traj.getStateSpace();
   const int dimension = static_cast<int>(stateSpace->getDimension());
-  auto outputTrajectory
-      = std::make_unique<Spline>(stateSpace, traj.getStartTime());
+  auto outputTrajectory = ::aikido::common::make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;
@@ -266,8 +254,6 @@ UniqueSplinePtr createPartialTrajectory(
         traj.getSegmentStartState(i));
   }
 
-  std::cout << "outputTrajectory starts at " << outputTrajectory->getStartTime()
-            << " ends at " << outputTrajectory->getEndTime() << std::endl;
   return outputTrajectory;
 }
 
@@ -292,7 +278,7 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 
   auto rSpace = std::make_shared<CartesianProduct>(subspaces);
   auto rInterpolator = std::make_shared<GeodesicInterpolator>(rSpace);
-  auto rTrajectory = std::make_unique<Interpolated>(rSpace, rInterpolator);
+  auto rTrajectory = ::aikido::common::make_unique<Interpolated>(rSpace, rInterpolator);
 
   Eigen::VectorXd sourceVector(space->getDimension());
   auto sourceState = rSpace->createState();

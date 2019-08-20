@@ -6,33 +6,32 @@ namespace distance {
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
 
-// //==============================================================================
-// NominalConfigurationRanker::NominalConfigurationRanker(
-//     ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-//     ConstMetaSkeletonPtr metaSkeleton,
-//     std::vector<double> weights,
-//     const statespace::CartesianProduct::State* nominalConfiguration)
-//   : ConfigurationRanker(
-//         std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
-//   , mNominalConfiguration(nominalConfiguration)
-// {
-//   if (!mNominalConfiguration)
-//     mNominalConfiguration
-//         = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
-//             mMetaSkeleton.get());
-// }
+//==============================================================================
+NominalConfigurationRanker::NominalConfigurationRanker(
+    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    ConstMetaSkeletonPtr metaSkeleton,
+    const statespace::CartesianProduct::State* nominalConfiguration,
+    std::vector<double> weights)
+  : ConfigurationRanker(
+        std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
+  , mNominalConfiguration(
+        mMetaSkeletonStateSpace->cloneState(nominalConfiguration))
+{
+  // Do nothing
+}
 
 //==============================================================================
 NominalConfigurationRanker::NominalConfigurationRanker(
-    statespace::dart::ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
-    ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
-    std::vector<double> weights,
-    statespace::CartesianProduct::ScopedState nominalConfiguration)
+    ConstMetaSkeletonStateSpacePtr metaSkeletonStateSpace,
+    ConstMetaSkeletonPtr metaSkeleton,
+    std::vector<double> weights)
   : ConfigurationRanker(
         std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
-  , mNominalConfiguration(std::move(nominalConfiguration))
+  , mNominalConfiguration(
+        mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
+            mMetaSkeleton.get()))
 {
-  // do nothing
+  // Do nothing
 }
 
 //==============================================================================

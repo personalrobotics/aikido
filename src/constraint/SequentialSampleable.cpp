@@ -1,8 +1,7 @@
 #include "aikido/constraint/SequentialSampleable.hpp"
 
-#include <iostream>
 #include <dart/common/Console.hpp>
-#include <dart/common/Memory.hpp>
+#include "aikido/common/memory.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -90,13 +89,7 @@ bool SequentialSampleGenerator::sample(statespace::StateSpace::State* state)
   while (mIndex < mGenerators.size())
   {
     if (mGenerators[mIndex]->sample(state))
-    {
-      // Eigen::VectorXd positions;
-      // mStateSpace->logMap(state, positions);
-      // std::cout << "SequentialSampleGenerator " << mIndex << "/ " <<
-      // mGenerators.size() << " "  << positions.transpose() << std::endl;
       return true;
-    }
 
     mIndex++;
   }
@@ -176,7 +169,7 @@ std::unique_ptr<SampleGenerator> SequentialSampleable::createSampleGenerator()
   for (const auto& sampleable : mSampleables)
     generators.emplace_back(sampleable->createSampleGenerator());
 
-  return std::make_unique<SequentialSampleGenerator>(
+  return ::aikido::common::make_unique<SequentialSampleGenerator>(
       mStateSpace, std::move(generators));
 }
 

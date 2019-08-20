@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 
 namespace aikido {
@@ -131,7 +131,7 @@ CartesianProductSampleable::createSampleGenerator() const
   for (const auto& constraint : mConstraints)
     generators.emplace_back(constraint->createSampleGenerator());
 
-  return std::make_unique<SubspaceSampleGenerator>(
+  return ::aikido::common::make_unique<SubspaceSampleGenerator>(
       mStateSpace, std::move(generators));
 }
 

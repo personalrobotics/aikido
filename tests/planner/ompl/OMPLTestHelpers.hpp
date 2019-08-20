@@ -24,7 +24,7 @@ using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
-  return std::make_unique<RNGWrapper<std::default_random_engine>>(0);
+  return ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
 }
 
 dart::dynamics::SkeletonPtr createTranslationalRobot()
@@ -178,7 +178,7 @@ public:
   std::unique_ptr<aikido::constraint::SampleGenerator> createSampleGenerator()
       const override
   {
-    return std::make_unique<MockConstrainedSampleGenerator>(
+    return ::aikido::common::make_unique<MockConstrainedSampleGenerator>(
         mStateSpace, mSampleable->createSampleGenerator(), mValue);
   }
 

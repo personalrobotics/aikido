@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
 #include <aikido/constraint/Satisfied.hpp>
@@ -146,7 +146,8 @@ TEST_F(RnJointHelpersTests, createDifferentiableBounds)
 //==============================================================================
 TEST_F(RnJointHelpersTests, createSampleableBounds)
 {
-  auto rng = std::make_unique<RNGWrapper<std::default_random_engine>>(0);
+  auto rng
+      = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
   const auto testableConstraint = createTestableBoundsFor<R1Joint>(mStateSpace);
   const auto sampleableConstraint
       = createSampleableBoundsFor<R1Joint>(mStateSpace, std::move(rng));
@@ -217,7 +218,8 @@ TEST_F(SO2JointHelpersTests, createDifferentiableBounds)
 TEST_F(SO2JointHelpersTests, createSampleableBounds)
 {
   const auto sampleableConstraint = createSampleableBoundsFor<SO2Joint>(
-      mStateSpace, std::make_unique<RNGWrapper<std::default_random_engine>>(0));
+      mStateSpace,
+      ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(0));
 
   ASSERT_TRUE(!!sampleableConstraint);
   EXPECT_EQ(mStateSpace, sampleableConstraint->getStateSpace());
@@ -285,7 +287,8 @@ TEST_F(SO3JointHelpersTests, createDifferentiableBounds)
 TEST_F(SO3JointHelpersTests, createSampleableBounds)
 {
   const auto sampleableConstraint = createSampleableBoundsFor<SO3Joint>(
-      mStateSpace, std::make_unique<RNGWrapper<std::default_random_engine>>(0));
+      mStateSpace,
+      ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(0));
 
   ASSERT_TRUE(!!sampleableConstraint);
   EXPECT_EQ(mStateSpace, sampleableConstraint->getStateSpace());

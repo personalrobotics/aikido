@@ -1,5 +1,5 @@
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include "aikido/constraint/CartesianProductProjectable.hpp"
 #include "aikido/constraint/CartesianProductSampleable.hpp"
 #include "aikido/constraint/CartesianProductTestable.hpp"
@@ -47,7 +47,7 @@ std::unique_ptr<Differentiable> createDifferentiableBounds(
 
   // TODO: We should std::move constraints here, but we can't because
   // DifferentiableIntersection does not take by value.
-  return std::make_unique<DifferentiableIntersection>(
+  return ::aikido::common::make_unique<DifferentiableIntersection>(
       constraints, _metaSkeleton);
 }
 
@@ -79,7 +79,7 @@ std::unique_ptr<Projectable> createProjectableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return std::make_unique<CartesianProductProjectable>(
+  return ::aikido::common::make_unique<CartesianProductProjectable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
@@ -111,7 +111,7 @@ std::unique_ptr<Testable> createTestableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return std::make_unique<CartesianProductTestable>(
+  return ::aikido::common::make_unique<CartesianProductTestable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 
@@ -149,7 +149,7 @@ std::unique_ptr<Sampleable> createSampleableBounds(
     constraints.emplace_back(constraint.release());
   }
 
-  return std::make_unique<CartesianProductSampleable>(
+  return ::aikido::common::make_unique<CartesianProductSampleable>(
       std::move(_metaSkeleton), std::move(constraints));
 }
 

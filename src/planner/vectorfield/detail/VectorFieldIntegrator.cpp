@@ -1,6 +1,7 @@
 #include "VectorFieldIntegrator.hpp"
 #include <exception>
 #include <string>
+#include <aikido/common/memory.hpp>
 #include <aikido/common/Spline.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -19,7 +20,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   std::size_t dimension = stateSpace->getDimension();
 
   auto outputTrajectory
-      = std::make_unique<aikido::trajectory::Spline>(stateSpace);
+      = ::aikido::common::make_unique<aikido::trajectory::Spline>(stateSpace);
 
   using CubicSplineProblem = aikido::common::
       SplineProblem<double, int, 2, Eigen::Dynamic, Eigen::Dynamic>;
@@ -53,8 +54,9 @@ std::unique_ptr<aikido::trajectory::Interpolated> convertToInterpolated(
   auto interpolator
       = std::make_shared<const aikido::statespace::GeodesicInterpolator>(
           stateSpace);
-  auto outputTrajectory = std::make_unique<aikido::trajectory::Interpolated>(
-      stateSpace, interpolator);
+  auto outputTrajectory
+      = ::aikido::common::make_unique<aikido::trajectory::Interpolated>(
+          stateSpace, interpolator);
 
   auto currState = stateSpace->createState();
   for (const auto& knot : knots)

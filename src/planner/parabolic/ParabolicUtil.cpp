@@ -3,7 +3,7 @@
 #include <cassert>
 #include <set>
 
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <dart/dart.hpp>
 #include "aikido/common/Spline.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
@@ -101,7 +101,7 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(_inputPath, timePrev, positionPrev, velocityPrev);
 
-  auto _outputTrajectory = std::make_unique<aikido::trajectory::Spline>(
+  auto _outputTrajectory = ::aikido::common::make_unique<aikido::trajectory::Spline>(
       _stateSpace, timePrev + _startTime);
   auto segmentStartState = _stateSpace->createState();
 
@@ -162,7 +162,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     velocities.emplace_back(toVector(tangentVector));
   }
 
-  auto outputPath = std::make_unique<ParabolicRamp::DynamicPath>();
+  auto outputPath = ::aikido::common::make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
   if (_preserveWaypointVelocity)
   {
@@ -201,7 +201,7 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     milestones.emplace_back(toVector(currVec));
   }
 
-  auto outputPath = std::make_unique<ParabolicRamp::DynamicPath>();
+  auto outputPath = ::aikido::common::make_unique<ParabolicRamp::DynamicPath>();
   outputPath->Init(toVector(_maxVelocity), toVector(_maxAcceleration));
   outputPath->SetMilestones(milestones);
   if (!outputPath->IsValid())

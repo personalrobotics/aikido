@@ -13,6 +13,9 @@ namespace constraint {
 class TestableOutcome
 {
 public:
+  /// Destructor
+  virtual ~TestableOutcome() = default;
+
   /// Returns true if isSatisfied call this outcome object was passed to
   /// returned true. False otherwise.
   virtual bool isSatisfied() const = 0;

@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 #include <gtest/gtest.h>
 #include <aikido/constraint/uniform/SO3UniformSampler.hpp>
 #include <aikido/distance/SO3Angular.hpp>
@@ -23,7 +23,8 @@ protected:
   {
     mStateSpace = std::make_shared<SO3>();
     mDistance = std::make_shared<SO3Angular>(mStateSpace);
-    mRng = std::make_unique<RNGWrapper<std::default_random_engine>>(0);
+    mRng = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
+        0);
 
     mTargets.clear();
 

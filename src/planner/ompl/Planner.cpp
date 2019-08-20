@@ -1,3 +1,4 @@
+#include <aikido/common/memory.hpp>
 #include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/planner/ompl/CRRT.hpp>
 #include <aikido/planner/ompl/CRRTConnect.hpp>
@@ -477,8 +478,9 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
     const ::ompl::geometric::PathGeometric& _path,
     statespace::InterpolatorPtr _interpolator)
 {
-  auto returnInterpolated = std::make_unique<trajectory::Interpolated>(
-      _interpolator->getStateSpace(), std::move(_interpolator));
+  auto returnInterpolated
+      = ::aikido::common::make_unique<trajectory::Interpolated>(
+          _interpolator->getStateSpace(), std::move(_interpolator));
 
   for (std::size_t idx = 0; idx < _path.getStateCount(); ++idx)
   {

@@ -1,4 +1,4 @@
-#include <dart/common/StlHelpers.hpp>
+#include "aikido/common/memory.hpp"
 
 #include "aikido/distance/ConfigurationRanker.hpp"
 
@@ -62,7 +62,7 @@ ConfigurationRanker::ConfigurationRanker(
     metrics.emplace_back(std::make_pair(std::move(metric), weights[i]));
   }
 
-  mDistanceMetric = std::make_unique<CartesianProductWeighted>(
+  mDistanceMetric = ::aikido::common::make_unique<CartesianProductWeighted>(
       std::move(_sspace), std::move(metrics));
 }
 

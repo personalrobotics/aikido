@@ -131,7 +131,7 @@ bool computeJointVelocityFromTwist(
 
 #if DART_VERSION_AT_LEAST(6, 9, 0)
   dart::optimizer::NloptSolver solver(
-      problem, dart::optimizer::NloptSolver::Algorithm::LD_LBFGS);
+      problem, dart::optimizer::NloptSolver::LD_LBFGS);
 #else
   dart::optimizer::NloptSolver solver(problem, nlopt::LD_LBFGS);
 #endif
