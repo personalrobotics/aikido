@@ -158,8 +158,6 @@ double findTimeOfClosestStateOnTrajectory(
     double timeStep)
 {
   auto stateSpace = traj.getStateSpace();
-  if (!stateSpace)
-    throw std::runtime_error("Failed to convert statespace");
 
   double findTime = traj.getStartTime();
   double minDist = std::numeric_limits<double>::max();
