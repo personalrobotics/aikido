@@ -7,6 +7,7 @@
 #include "aikido/common/memory.hpp"
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
+#include "aikido/distance/defaults.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
@@ -23,6 +24,8 @@ using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::StateSpacePtr;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+
+using aikido::distance::createDistanceMetric;
 
 using Eigen::Vector2d;
 using LinearSplineProblem
@@ -151,14 +154,14 @@ UniqueInterpolatedPtr concatenate(
 //==============================================================================
 double findTimeOfClosestStateOnTrajectory(
     const Trajectory& traj,
-    const Eigen::VectorXd& referenceState,
+    const statespace::StateSpace::State* referenceState,
+    double& distance,
     double timeStep)
 {
-  auto stateSpace = traj.getStateSpace();
-  const std::size_t configSize
-      = static_cast<std::size_t>(referenceState.size());
-  if (configSize != stateSpace->getDimension())
-    throw std::runtime_error("Dimension mismatch");
+  auto stateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+      traj.getStateSpace());
+  if (!stateSpace)
+    throw std::runtime_error("Failed to convert statespace");
 
   double findTime = traj.getStartTime();
   double minDist = std::numeric_limits<double>::max();
@@ -166,21 +169,23 @@ double findTimeOfClosestStateOnTrajectory(
   const common::StepSequence sequence(
       timeStep, true, true, traj.getStartTime(), traj.getEndTime());
 
-  auto currState = stateSpace->createState();
-  Eigen::VectorXd currPos(stateSpace->getDimension());
+  auto metric = createDistanceMetric(stateSpace);
+
   for (const double currTime : sequence)
   {
+    auto currState = stateSpace->createState();
     traj.evaluate(currTime, currState);
-    stateSpace->logMap(currState, currPos);
 
-    const double currDist = (referenceState - currPos).norm();
+    auto currDist = metric->distance(currState, referenceState);
+
     if (currDist < minDist)
     {
-      findTime = currTime;
       minDist = currDist;
-    }
+      findTime = currTime;
+    };
   }
 
+  distance = minDist;
   return findTime;
 }
 
