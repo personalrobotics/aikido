@@ -3,9 +3,9 @@
 #include <cassert>
 #include <set>
 
-#include "aikido/common/memory.hpp"
 #include <dart/dart.hpp>
 #include "aikido/common/Spline.hpp"
+#include "aikido/common/memory.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
@@ -101,8 +101,9 @@ std::unique_ptr<aikido::trajectory::Spline> convertToSpline(
   Eigen::VectorXd positionPrev, velocityPrev;
   evaluateAtTime(_inputPath, timePrev, positionPrev, velocityPrev);
 
-  auto _outputTrajectory = ::aikido::common::make_unique<aikido::trajectory::Spline>(
-      _stateSpace, timePrev + _startTime);
+  auto _outputTrajectory
+      = ::aikido::common::make_unique<aikido::trajectory::Spline>(
+          _stateSpace, timePrev + _startTime);
   auto segmentStartState = _stateSpace->createState();
 
   for (const auto timeCurr : transitionTimes)
