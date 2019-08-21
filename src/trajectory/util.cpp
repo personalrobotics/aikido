@@ -159,7 +159,7 @@ double findTimeOfClosestStateOnTrajectory(
 {
   auto stateSpace = traj.getStateSpace();
 
-  double findTime = traj.getStartTime();
+  double timeOfClosestState = traj.getStartTime();
   double minDist = std::numeric_limits<double>::max();
 
   const common::StepSequence sequence(
@@ -177,12 +177,12 @@ double findTimeOfClosestStateOnTrajectory(
     if (currDist < minDist)
     {
       minDist = currDist;
-      findTime = currTime;
+      timeOfClosestState = currTime;
     }
   }
 
   distance = minDist;
-  return findTime;
+  return timeOfClosestState;
 }
 
 //==============================================================================
