@@ -157,8 +157,7 @@ double findTimeOfClosestStateOnTrajectory(
     double& distance,
     double timeStep)
 {
-  auto stateSpace
-      = std::dynamic_pointer_cast<const StateSpace>(traj.getStateSpace());
+  auto stateSpace = traj.getStateSpace();
   if (!stateSpace)
     throw std::runtime_error("Failed to convert statespace");
 
@@ -169,10 +168,10 @@ double findTimeOfClosestStateOnTrajectory(
       timeStep, true, true, traj.getStartTime(), traj.getEndTime());
 
   auto metric = createDistanceMetric(stateSpace);
+  auto currState = stateSpace->createState();
 
   for (const double currTime : sequence)
   {
-    auto currState = stateSpace->createState();
     traj.evaluate(currTime, currState);
 
     auto currDist = metric->distance(currState, referenceState);
@@ -181,7 +180,7 @@ double findTimeOfClosestStateOnTrajectory(
     {
       minDist = currDist;
       findTime = currTime;
-    };
+    }
   }
 
   distance = minDist;
