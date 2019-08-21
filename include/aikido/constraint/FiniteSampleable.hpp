@@ -18,15 +18,14 @@ public:
   /// \param _state The only sample in this constraint.
   FiniteSampleable(
       statespace::StateSpacePtr _stateSpace,
-      const aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState& _state);
-
+      const statespace::StateSpace::State* _state);
   /// Constructor for multiple samples.
   /// \param _stateSpace StateSpace in which _states belong.
   /// \param _states Samples in this constraint.
   ///        SampleGenerator will generate samples in this order.
   FiniteSampleable(
       statespace::StateSpacePtr _stateSpace,
-      const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states);
+      const std::vector<const statespace::StateSpace::State*>& _states);
 
   FiniteSampleable(const FiniteSampleable& other) = delete;
   FiniteSampleable(FiniteSampleable&& other) = delete;
@@ -44,7 +43,7 @@ public:
 
 private:
   statespace::ConstStateSpacePtr mStateSpace;
-  std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState> mStates;
+  std::vector<statespace::StateSpace::State*> mStates;
 };
 
 } // namespace constraint

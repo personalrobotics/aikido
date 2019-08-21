@@ -206,7 +206,6 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 //==============================================================================
 aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
     const dart::dynamics::BodyNodePtr& bn,
     const aikido::constraint::TestablePtr& constraint,
@@ -243,8 +242,8 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
 
-  // auto startState
-  //     = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
+  auto startState
+      = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
   return followVectorField(
       *vectorfield,
       startState,
@@ -261,8 +260,8 @@ aikido::trajectory::UniqueInterpolatedPtr planWithEndEffectorTwist(
     const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const ::dart::dynamics::ConstBodyNodePtr& bn,
-    const Eigen::Vector6d& twistSeq,
-    double durationSeq,
+    const Eigen::Vector6d& twist,
+    double duration,
     const aikido::constraint::ConstTestablePtr& constraint,
     double positionTolerance,
     double angularTolerance,

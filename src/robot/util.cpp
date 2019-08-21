@@ -726,9 +726,7 @@ trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
       vfParameters.constraintCheckResolution,
       std::chrono::duration<double>(timelimit));
 
-  std::cout << "1!! utils: " << traj->getNumWaypoints() << std::endl;
-  // return std::move(traj);
-  return traj;
+  return std::move(traj);
   /*
   return planToEndEffectorOffsetByCRRT(
       space,

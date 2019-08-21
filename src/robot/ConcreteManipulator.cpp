@@ -186,7 +186,6 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
 //=============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorPose(
     const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    // State* startState,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const dart::dynamics::BodyNodePtr& body,
     const constraint::dart::CollisionFreePtr& collisionFree,
