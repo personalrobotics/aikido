@@ -12,7 +12,7 @@
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SO2.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 using aikido::statespace::R;
@@ -22,8 +22,7 @@ using aikido::statespace::CartesianProduct;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::StateSpacePtr;
-using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+using aikido::statespace::StateSpace;
 
 using aikido::distance::createDistanceMetric;
 
@@ -158,8 +157,8 @@ double findTimeOfClosestStateOnTrajectory(
     double& distance,
     double timeStep)
 {
-  auto stateSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
-      traj.getStateSpace());
+  auto stateSpace
+      = std::dynamic_pointer_cast<const StateSpace>(traj.getStateSpace());
   if (!stateSpace)
     throw std::runtime_error("Failed to convert statespace");
 
