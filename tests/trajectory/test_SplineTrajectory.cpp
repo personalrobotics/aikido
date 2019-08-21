@@ -388,7 +388,8 @@ TEST_F(SplineTest, FindTimeOfClosetStateOnTrajectory)
   auto query = mStateSpace->createState();
   mStateSpace->expMap(Vector2d(1., 2.), query);
   double distance;
-  double time = findTimeOfClosestStateOnTrajectory(*trajectory, query, distance, 1e-4);
+  double time
+      = findTimeOfClosestStateOnTrajectory(*trajectory, query, distance, 1e-4);
   EXPECT_EQ(time, 0.5);
   EXPECT_EQ(distance, 0.0);
 }
