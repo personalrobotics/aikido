@@ -7,7 +7,7 @@ add_subdirectory("external/kunz_retimer")
 add_subdirectory("common")     # boost, dart
 add_subdirectory("statespace") # dart
 add_subdirectory("distance")   # [statespace], dart
-add_subdirectory("trajectory") # [common], [statespace]
+add_subdirectory("trajectory") # [common], [distance], [statespace]
 add_subdirectory("constraint") # [common], [statespace]
 add_subdirectory("planner")    # [external], [common], [statespace], [trajectory], [constraint], [distance], dart, ompl
 add_subdirectory("rviz")       # [constraint], [planner], boost, dart, roscpp, geometry_msgs, interactive_markers, std_msgs, visualization_msgs, libmicrohttpd

@@ -4,8 +4,8 @@
 #include <sstream>
 #include <unordered_map>
 #include <Eigen/Dense>
-#include "aikido/common/memory.hpp"
 #include <yaml-cpp/yaml.h>
+#include "aikido/common/memory.hpp"
 
 namespace aikido {
 namespace io {

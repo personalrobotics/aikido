@@ -2,8 +2,8 @@
 
 #include <sstream>
 #include <Eigen/Core>
-#include "aikido/common/memory.hpp"
 #include "aikido/common/StepSequence.hpp"
+#include "aikido/common/memory.hpp"
 
 namespace aikido {
 namespace trajectory {
