@@ -12,7 +12,7 @@ public:
   // For internal use only.
   FiniteSampleGenerator(
       statespace::ConstStateSpacePtr _stateSpace,
-      const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states);
+      const statespace::StateSpace::State* _state);
 
   FiniteSampleGenerator(const FiniteSampleGenerator&) = delete;
   FiniteSampleGenerator(FiniteSampleGenerator&& other) = delete;
@@ -103,7 +103,7 @@ bool FiniteSampleGenerator::canSample() const
 //==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
-    const aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState& _state)
+    const std::vector<const statespace::StateSpace::State*>& _states);
   : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
@@ -117,7 +117,7 @@ FiniteSampleable::FiniteSampleable(
 //==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
-    const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states)
+    std::vector<statespace::StateSpace::State*> mStates;
   : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
