@@ -1,6 +1,6 @@
 #include <aikido/constraint/FiniteSampleable.hpp>
-
-#include "aikido/common/memory.hpp"
+#include <iostream>
+#include <dart/common/StlHelpers.hpp>
 
 namespace aikido {
 namespace constraint {
@@ -12,7 +12,7 @@ public:
   // For internal use only.
   FiniteSampleGenerator(
       statespace::ConstStateSpacePtr _stateSpace,
-      const statespace::StateSpace::State* _state);
+      const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states);
 
   FiniteSampleGenerator(const FiniteSampleGenerator&) = delete;
   FiniteSampleGenerator(FiniteSampleGenerator&& other) = delete;
@@ -103,7 +103,7 @@ bool FiniteSampleGenerator::canSample() const
 //==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
-    const std::vector<const statespace::StateSpace::State*>& _states);
+    const aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState& _state)
   : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
@@ -117,7 +117,7 @@ FiniteSampleable::FiniteSampleable(
 //==============================================================================
 FiniteSampleable::FiniteSampleable(
     statespace::StateSpacePtr _stateSpace,
-    std::vector<statespace::StateSpace::State*> mStates;
+    const std::vector<aikido::statespace::dart::MetaSkeletonStateSpace::ScopedState>& _states)
   : mStateSpace(std::move(_stateSpace))
 {
   if (!mStateSpace)
@@ -152,7 +152,7 @@ statespace::ConstStateSpacePtr FiniteSampleable::getStateSpace() const
 //==============================================================================
 std::unique_ptr<SampleGenerator> FiniteSampleable::createSampleGenerator() const
 {
-  return ::aikido::common::make_unique<FiniteSampleGenerator>(
+  return ::dart::common::make_unique<FiniteSampleGenerator>(
       mStateSpace, mStates);
 }
 
