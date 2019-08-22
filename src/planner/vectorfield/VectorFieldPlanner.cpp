@@ -196,6 +196,74 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 }
 
 //==============================================================================
+aikido::trajectory::UniqueInterpolatedPtr planWithEndEffectorTwist(
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const Eigen::Vector6d& twistSeq,
+    double durationSeq,
+    const aikido::constraint::ConstTestablePtr& constraint,
+    double positionTolerance,
+    double angularTolerance,
+    double initialStepSize,
+    double jointLimitTolerance,
+    double constraintCheckResolution,
+    std::chrono::duration<double> timelimit,
+    planner::Planner::Result* result)
+{
+  // ensure that no two planners run at the same time
+  if (metaskeleton->getNumBodyNodes() == 0)
+  {
+    throw std::runtime_error("MetaSkeleton doesn't have any body nodes.");
+  }
+  auto robot = metaskeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
+  // TODO(JS): The above code should be replaced by
+  // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
+  // once https://github.com/dartsim/dart/pull/1011 is released.
+
+  // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
+
+  // Save the current state of the space
+  auto saver = MetaSkeletonStateSaver(
+      metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
+  DART_UNUSED(saver);
+
+  stateSpace->setState(metaskeleton.get(), &startState);
+
+  auto vectorfield
+      = dart::common::make_aligned_shared<MoveEndEffectorTwistVectorField>(
+          stateSpace,
+          metaskeleton,
+          bn,
+          twistSeq,
+          durationSeq,
+          positionTolerance,
+          angularTolerance,
+          initialStepSize,
+          jointLimitTolerance);
+
+  auto compoundConstraint
+      = std::make_shared<constraint::TestableIntersection>(stateSpace);
+
+  if (constraint)
+    compoundConstraint->addConstraint(constraint);
+
+  compoundConstraint->addConstraint(
+      constraint::dart::createTestableBounds(stateSpace));
+
+  return followVectorField(
+      *vectorfield,
+      startState,
+      *compoundConstraint,
+      timelimit,
+      initialStepSize,
+      constraintCheckResolution,
+      result);
+}
+
+//==============================================================================
 aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
     const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
