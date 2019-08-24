@@ -12,6 +12,7 @@
 
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::StateSpacePtr;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 using aikido::trajectory::Spline;
 using aikido::trajectory::UniqueSplinePtr;
@@ -20,14 +21,16 @@ namespace aikido {
 namespace io {
 
 void saveTrajectory(const aikido::trajectory::Spline& trajectory,
-    const MetaSkeletonStateSpacePtr& skelSpace, const std::string& savePath)
+    const std::string& savePath)
 {
   std::ofstream file(savePath);
   YAML::Emitter emitter;
 
-  statespace::ConstStateSpacePtr trajSpace = trajectory.getStateSpace();
+  auto skelSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>
+      (trajectory.getStateSpace());
   emitter << YAML::BeginMap;
-  emitter << YAML::Key << "configuration" << YAML::BeginMap;
+  emitter << YAML::Key << "configuration";
+  emitter << YAML::BeginMap;
   emitter << YAML::Key << "start_time" << YAML::Value << trajectory.getStartTime();
   emitter << YAML::Key << "dofs" << YAML::Flow << skelSpace->getProperties().getDofNames();
   emitter << YAML::Key << "type" << YAML::Value << "spline";
@@ -35,21 +38,23 @@ void saveTrajectory(const aikido::trajectory::Spline& trajectory,
   emitter << YAML::BeginMap;
   emitter << YAML::Key << "order" << YAML::Value << trajectory.getNumDerivatives();
   emitter << YAML::EndMap;
-  emitter << YAML::EndMap << YAML::Key << "data" << YAML::BeginSeq;
+  emitter << YAML::EndMap;
 
-  Eigen::VectorXd position(trajSpace->getDimension());
+  Eigen::VectorXd position(skelSpace->getDimension());
   aikido::io::detail::encode_impl<Eigen::MatrixXd, false> convertMatrix;
   aikido::io::detail::encode_impl<Eigen::VectorXd, false> convertVector;
 
+  emitter << YAML::Key << "data";
+  emitter << YAML::BeginSeq;
   for (std::size_t i = 0; i < trajectory.getNumSegments(); ++i)
   {
     auto startState = trajectory.getSegmentStartState(i);
     double duration = trajectory.getSegmentDuration(i);
     auto segmentCoeff = trajectory.getSegmentCoefficients(i);
 
-    // Convert start state to position
-    trajSpace->logMap(startState, position);
-    
+    // Convert start state to Eigen vector
+    skelSpace->logMap(startState, position);
+
     emitter << YAML::BeginMap;
     emitter << YAML::Key << "coefficients" << YAML::Flow
         << convertMatrix.encode(segmentCoeff);
@@ -74,24 +79,39 @@ UniqueSplinePtr loadSplineTrajectory(
   std::vector<std::string> dofs = config["dofs"].as<std::vector<std::string>>();
   std::string trajType = config["type"].as<std::string>();
 
-  auto Trajectory
+  auto paramDofs = stateSpace->getProperties().getDofNames();
+  bool is_equal = false;
+  is_equal = std::equal(dofs.begin(), dofs.end(), paramDofs.begin());
+
+  if (!is_equal)
+    throw std::runtime_error("Dof names should be same");
+
+  if (trajType.compare("spline"))
+  {
+    throw std::runtime_error("Trajectory type should be spline");
+  }
+
+  auto trajectory
       = ::aikido::common::make_unique<Spline>(stateSpace, startTime);
+  aikido::statespace::StateSpace::State* startState
+        = stateSpace->allocateState();
 
   const YAML::Node& segments = trajFile["data"];
-  for (std::size_t i = 0; i < segments.size(); i++) {
-    const YAML::Node& segment = segments[i];
+  for (YAML::const_iterator it = segments.begin(); it != segments.end(); ++it)
+  {
+    const YAML::Node& segment = *it;
     Eigen::MatrixXd coefficients = segment["coefficients"].as<Eigen::MatrixXd>();
     double duration = segment["duration"].as<double>();
     Eigen::VectorXd position = segment["start_state"].as<Eigen::VectorXd>();
 
     // Convert position Eigen vector to StateSpace::State*
-    aikido::statespace::StateSpace::State* startState
-        = stateSpace->allocateState();
     stateSpace->expMap(position, startState);
 
-    Trajectory->addSegment(coefficients, duration, startState);
+    trajectory->addSegment(coefficients, duration, startState);
   }
-  return Trajectory;
+
+  stateSpace->freeState(startState);
+  return trajectory;
 }
 
 } // namespace io

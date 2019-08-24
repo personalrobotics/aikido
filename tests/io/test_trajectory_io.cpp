@@ -91,7 +91,7 @@ TEST_F(SaveLoadTrajectoryTest, SavedMatchesLoaded)
   auto testable = std::make_shared<aikido::constraint::Satisfied>(stateSpace);
 
   auto originalSmoothTrajectory = convertToSpline(*interpolated);
-  saveTrajectory(*originalSmoothTrajectory, stateSpace, "test.yml");
+  saveTrajectory(*originalSmoothTrajectory, "test.yml");
 
   auto loadedSmoothTrajectory = loadSplineTrajectory("test.yml", stateSpace);
 
