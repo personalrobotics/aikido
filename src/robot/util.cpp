@@ -489,14 +489,10 @@ trajectory::TrajectoryPtr planWithEndEffectorTwist(
           durationSeq,
           positionTolerance,
           angularTolerance,
-          0.1,
-          0.1,
-          0.1,
+          vfParameters.initialStepSize,
+          vfParameters.jointLimitTolerance,
+          vfParameters.constraintCheckResolution,
           std::chrono::duration<double>(timelimit));
-  //          vfParameters.initialStepSize,
-  //          vfParameters.jointLimitTolerance,
-  //          vfParameters.constraintCheckResolution,
-  //          std::chrono::duration<double>(timelimit));
 
   return std::move(untimedTrajectory);
 }
