@@ -36,7 +36,7 @@ void saveTrajectory(const aikido::trajectory::Spline& trajectory,
 /// \param[in] metaSkeletonStateSpace MetaskeletonStateSpace for the trajectory
 /// \return Loaded spline trajectory
 aikido::trajectory::UniqueSplinePtr loadSplineTrajectory(const std::string& trajPath,
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& metaSkeletonStateSpace);
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& metaSkeletonStateSpace);
 } // namespace io
 } // namespace aikido
 

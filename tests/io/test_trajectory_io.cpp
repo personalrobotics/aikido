@@ -17,7 +17,6 @@
 #include <aikido/trajectory/util.hpp>
 #include "../constraint/MockConstraints.hpp"
 
-using std::shared_ptr;
 using std::make_shared;
 using aikido::io::loadSplineTrajectory;
 using aikido::io::saveTrajectory;
@@ -70,18 +69,19 @@ public:
 
   ~SaveLoadTrajectoryTest()
   {
-    std::remove("test.yml");
+    std::remove(trajFileName.c_str());
   }
 
   SkeletonPtr skel;
   std::pair<JointPtr, BodyNodePtr> jn_bn;
 
-  shared_ptr<MetaSkeletonStateSpace> stateSpace;
-  shared_ptr<ScopedState> startState;
-  shared_ptr<ScopedState> goalState;
-  shared_ptr<PassingConstraint> passingConstraint;
-  shared_ptr<GeodesicInterpolator> interpolator;
-  shared_ptr<Interpolated> interpolated;
+  std::shared_ptr<MetaSkeletonStateSpace> stateSpace;
+  std::shared_ptr<ScopedState> startState;
+  std::shared_ptr<ScopedState> goalState;
+  std::shared_ptr<PassingConstraint> passingConstraint;
+  std::shared_ptr<GeodesicInterpolator> interpolator;
+  std::shared_ptr<Interpolated> interpolated;
+  std::string trajFileName = "test.yml";
   SnapConfigurationToConfigurationPlanner::Result planningResult;
 };
 
@@ -91,9 +91,9 @@ TEST_F(SaveLoadTrajectoryTest, SavedMatchesLoaded)
   auto testable = std::make_shared<aikido::constraint::Satisfied>(stateSpace);
 
   auto originalSmoothTrajectory = convertToSpline(*interpolated);
-  saveTrajectory(*originalSmoothTrajectory, "test.yml");
+  saveTrajectory(*originalSmoothTrajectory, trajFileName);
 
-  auto loadedSmoothTrajectory = loadSplineTrajectory("test.yml", stateSpace);
+  auto loadedSmoothTrajectory = loadSplineTrajectory(trajFileName, stateSpace);
 
   EXPECT_EQ(originalSmoothTrajectory->getDuration(),
       loadedSmoothTrajectory->getDuration());
