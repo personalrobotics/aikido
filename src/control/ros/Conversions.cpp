@@ -1,7 +1,7 @@
 #include "aikido/control/ros/Conversions.hpp"
 
-#include <sstream>
 #include <iostream>
+#include <sstream>
 #include <unordered_set>
 #include <dart/dynamics/Joint.hpp>
 #include "aikido/common/Spline.hpp"
@@ -460,9 +460,12 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   {
     auto jointSpace = space->getJointSpace(citer);
     auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
-    if(!r1Joint) {
+    if (!r1Joint)
+    {
       subspaces.emplace_back(std::make_shared<aikido::statespace::SO2>());
-    } else {
+    }
+    else
+    {
       subspaces.emplace_back(std::make_shared<aikido::statespace::R1>());
     }
   }
@@ -507,7 +510,8 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     compoundSpace->compose(nextState, invCurrState, diffState);
     compoundSpace->logMap(diffState, diffPosition);
 
-    if (diffPosition.maxCoeff() > 6 || diffPosition.minCoeff() < -6) {
+    if (diffPosition.maxCoeff() > 6 || diffPosition.minCoeff() < -6)
+    {
       std::cout << "Current Position: " << currPosition << std::endl;
       std::cout << "Next Position: " << nextPosition << std::endl;
       std::cout << "Diff Position: " << diffPosition << std::endl;
