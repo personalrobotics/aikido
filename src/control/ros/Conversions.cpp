@@ -1,6 +1,7 @@
 #include "aikido/control/ros/Conversions.hpp"
 
 #include <sstream>
+#include <iostream>
 #include <unordered_set>
 #include <dart/dynamics/Joint.hpp>
 #include "aikido/common/Spline.hpp"
@@ -457,7 +458,13 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
   for (std::size_t citer = 0; citer < space->getDimension(); ++citer)
   {
-    subspaces.emplace_back(std::make_shared<aikido::statespace::R1>());
+    auto jointSpace = space->getJointSpace(citer);
+    auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
+    if(!r1Joint) {
+      subspaces.emplace_back(std::make_shared<aikido::statespace::SO2>());
+    } else {
+      subspaces.emplace_back(std::make_shared<aikido::statespace::R1>());
+    }
   }
 
   auto compoundSpace
@@ -465,6 +472,11 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   std::unique_ptr<SplineTrajectory> trajectory{
       new SplineTrajectory{compoundSpace}};
   auto currState = compoundSpace->createState();
+
+  // Temporary States
+  auto nextState = compoundSpace->createState();
+  auto invCurrState = compoundSpace->createState();
+  auto diffState = compoundSpace->createState();
 
   const auto& waypoints = jointTrajectory.points;
   for (std::size_t iWaypoint = 1; iWaypoint < waypoints.size(); ++iWaypoint)
@@ -486,6 +498,23 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
         unspecifiedMetaSkeletonJoints,
         startPositions);
 
+    // Calculate diffVec for Spline conversion
+    Eigen::VectorXd diffPosition;
+    compoundSpace->expMap(currPosition, currState);
+    compoundSpace->expMap(nextPosition, nextState);
+
+    compoundSpace->getInverse(currState, invCurrState);
+    compoundSpace->compose(nextState, invCurrState, diffState);
+    compoundSpace->logMap(diffState, diffPosition);
+
+    if (diffPosition.maxCoeff() > 6 || diffPosition.minCoeff() < -6) {
+      std::cout << "Current Position: " << currPosition << std::endl;
+      std::cout << "Next Position: " << nextPosition << std::endl;
+      std::cout << "Diff Position: " << diffPosition << std::endl;
+      std::cout << "Current Velocity" << currVelocity << std::endl;
+      std::cout << "Next Velocity" << nextVelocity << std::endl << std::endl;
+    }
+
     // Compute spline coefficients for this polynomial segment.
     const auto nextTimeFromStart = waypoints[iWaypoint].time_from_start.toSec();
     const auto segmentDuration = nextTimeFromStart - currTimeFromStart;
@@ -495,12 +524,11 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
         currVelocity,
         currAcceleration,
         segmentDuration,
-        nextPosition - currPosition,
+        diffPosition,
         nextVelocity,
         nextAcceleration,
         numCoefficients);
 
-    compoundSpace->expMap(currPosition, currState);
     trajectory->addSegment(segmentCoefficients, segmentDuration, currState);
 
     // Advance to the next segment.
