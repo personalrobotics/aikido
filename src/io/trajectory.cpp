@@ -5,8 +5,8 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include "aikido/common/Spline.hpp"
-#include "aikido/io/yaml.hpp"
 #include "aikido/io/detail/yaml_extension.hpp"
+#include "aikido/io/yaml.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
@@ -20,26 +20,30 @@ using aikido::trajectory::UniqueSplinePtr;
 namespace aikido {
 namespace io {
 
-void saveTrajectory(const aikido::trajectory::Spline& trajectory,
-    const std::string& savePath)
+void saveTrajectory(
+    const aikido::trajectory::Spline& trajectory, const std::string& savePath)
 {
   std::ofstream file(savePath);
   YAML::Emitter emitter;
 
-  auto skelSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>
-      (trajectory.getStateSpace());
+  auto skelSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
+      trajectory.getStateSpace());
   if (!skelSpace)
-    throw std::runtime_error("Trajectory state space is not MetaSkeletonStateSpace");
+    throw std::runtime_error(
+        "Trajectory state space is not MetaSkeletonStateSpace");
 
   emitter << YAML::BeginMap;
   emitter << YAML::Key << "configuration";
   emitter << YAML::BeginMap;
-  emitter << YAML::Key << "start_time" << YAML::Value << trajectory.getStartTime();
-  emitter << YAML::Key << "dofs" << YAML::Flow << skelSpace->getProperties().getDofNames();
+  emitter << YAML::Key << "start_time" << YAML::Value
+          << trajectory.getStartTime();
+  emitter << YAML::Key << "dofs" << YAML::Flow
+          << skelSpace->getProperties().getDofNames();
   emitter << YAML::Key << "type" << YAML::Value << "spline";
   emitter << YAML::Key << "spline";
   emitter << YAML::BeginMap;
-  emitter << YAML::Key << "order" << YAML::Value << trajectory.getNumDerivatives();
+  emitter << YAML::Key << "order" << YAML::Value
+          << trajectory.getNumDerivatives();
   emitter << YAML::EndMap;
   emitter << YAML::EndMap;
 
@@ -60,10 +64,10 @@ void saveTrajectory(const aikido::trajectory::Spline& trajectory,
 
     emitter << YAML::BeginMap;
     emitter << YAML::Key << "coefficients" << YAML::Flow
-        << convertMatrix.encode(segmentCoeff);
+            << convertMatrix.encode(segmentCoeff);
     emitter << YAML::Key << "duration" << YAML::Value << duration;
     emitter << YAML::Key << "start_state" << YAML::Flow
-        << convertVector.encode(position);
+            << convertVector.encode(position);
     emitter << YAML::EndMap;
   }
 
@@ -93,16 +97,17 @@ UniqueSplinePtr loadSplineTrajectory(
     throw std::runtime_error("Trajectory type should be spline");
   }
 
-  auto trajectory
-      = ::aikido::common::make_unique<Spline>(metaSkeletonStateSpace, startTime);
+  auto trajectory = ::aikido::common::make_unique<Spline>(
+      metaSkeletonStateSpace, startTime);
   aikido::statespace::StateSpace::State* startState
-        = metaSkeletonStateSpace->allocateState();
+      = metaSkeletonStateSpace->allocateState();
 
   const YAML::Node& segments = trajFile["data"];
   for (YAML::const_iterator it = segments.begin(); it != segments.end(); ++it)
   {
     const YAML::Node& segment = *it;
-    Eigen::MatrixXd coefficients = segment["coefficients"].as<Eigen::MatrixXd>();
+    Eigen::MatrixXd coefficients
+        = segment["coefficients"].as<Eigen::MatrixXd>();
     double duration = segment["duration"].as<double>();
     Eigen::VectorXd position = segment["start_state"].as<Eigen::VectorXd>();
 

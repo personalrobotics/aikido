@@ -95,7 +95,8 @@ TEST_F(SaveLoadTrajectoryTest, SavedMatchesLoaded)
 
   auto loadedSmoothTrajectory = loadSplineTrajectory(trajFileName, stateSpace);
 
-  EXPECT_EQ(originalSmoothTrajectory->getDuration(),
+  EXPECT_EQ(
+      originalSmoothTrajectory->getDuration(),
       loadedSmoothTrajectory->getDuration());
   for (std::size_t i = 0; i < loadedSmoothTrajectory->getNumSegments(); ++i)
   {
@@ -103,7 +104,8 @@ TEST_F(SaveLoadTrajectoryTest, SavedMatchesLoaded)
         = originalSmoothTrajectory->getSegmentCoefficients(i);
     Eigen::MatrixXd loadedCoefficients
         = loadedSmoothTrajectory->getSegmentCoefficients(i);
-    EXPECT_TRUE(loadedCoefficients.isApprox(originalCoefficients)) << loadedCoefficients;
+    EXPECT_TRUE(loadedCoefficients.isApprox(originalCoefficients))
+        << loadedCoefficients;
 
     Eigen::VectorXd originalPosition(stateSpace->getDimension());
     Eigen::VectorXd loadedPosition(stateSpace->getDimension());
