@@ -74,9 +74,8 @@ TEST_F(GoalRegionTest, DifferentSample)
   // Check that successive sample calls generate different states
   gr.sampleGoal(state1);
   gr.sampleGoal(state2);
-  EXPECT_FALSE(
-      getTranslationalState(stateSpace, state1)
-          .isApprox(getTranslationalState(stateSpace, state2)));
+  EXPECT_FALSE(getTranslationalState(stateSpace, state1)
+                   .isApprox(getTranslationalState(stateSpace, state2)));
   si->freeState(state1);
   si->freeState(state2);
 }

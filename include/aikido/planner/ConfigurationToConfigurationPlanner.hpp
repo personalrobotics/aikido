@@ -10,8 +10,9 @@ namespace planner {
 
 /// Base planner class for ConfigurationToConfiguration planning problem.
 class ConfigurationToConfigurationPlanner
-    : public SingleProblemPlanner<ConfigurationToConfigurationPlanner,
-                                  ConfigurationToConfiguration>
+  : public SingleProblemPlanner<
+        ConfigurationToConfigurationPlanner,
+        ConfigurationToConfiguration>
 {
 public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in

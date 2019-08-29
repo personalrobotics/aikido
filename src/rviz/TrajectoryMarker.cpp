@@ -66,8 +66,8 @@ TrajectoryMarker::~TrajectoryMarker()
 //==============================================================================
 void TrajectoryMarker::setTrajectory(trajectory::ConstTrajectoryPtr trajectory)
 {
-  using visualization_msgs::Marker;
   using aikido::statespace::dart::MetaSkeletonStateSpace;
+  using visualization_msgs::Marker;
 
   if (trajectory)
   {
@@ -197,9 +197,9 @@ void TrajectoryMarker::update()
 //==============================================================================
 void TrajectoryMarker::updatePoints()
 {
-  using visualization_msgs::Marker;
-  using aikido::statespace::dart::MetaSkeletonStateSpace;
   using aikido::statespace::dart::MetaSkeletonStateSaver;
+  using aikido::statespace::dart::MetaSkeletonStateSpace;
+  using visualization_msgs::Marker;
 
   if (!mNeedPointsUpdate)
     return;

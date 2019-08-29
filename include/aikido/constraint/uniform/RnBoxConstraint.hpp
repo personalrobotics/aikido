@@ -20,8 +20,8 @@ class RBoxConstraint : public constraint::Differentiable,
                        public constraint::Testable
 {
 public:
-  using constraint::Projectable::project;
   using constraint::Differentiable::getValueAndJacobian;
+  using constraint::Projectable::project;
 
   using VectorNd = Eigen::Matrix<double, N, 1>;
 

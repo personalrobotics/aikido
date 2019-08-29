@@ -9,18 +9,18 @@
 #include <aikido/trajectory/util.hpp>
 #include "eigen_tests.hpp"
 
-using Eigen::Vector2d;
-using aikido::trajectory::Interpolated;
+using aikido::constraint::Satisfied;
+using aikido::planner::parabolic::computeParabolicTiming;
+using aikido::planner::parabolic::doBlend;
+using aikido::planner::parabolic::doShortcut;
+using aikido::planner::parabolic::doShortcutAndBlend;
+using aikido::statespace::CartesianProduct;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R1;
-using aikido::statespace::CartesianProduct;
-using aikido::constraint::Satisfied;
 using aikido::trajectory::convertToSpline;
-using aikido::planner::parabolic::computeParabolicTiming;
-using aikido::planner::parabolic::doShortcut;
-using aikido::planner::parabolic::doBlend;
-using aikido::planner::parabolic::doShortcutAndBlend;
+using aikido::trajectory::Interpolated;
+using Eigen::Vector2d;
 
 class ParabolicSmootherTests : public ::testing::Test
 {

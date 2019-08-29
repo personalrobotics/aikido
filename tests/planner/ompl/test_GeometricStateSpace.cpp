@@ -235,9 +235,8 @@ TEST_F(GeometricStateSpaceTest, EnforceBoundsProjection)
 
   gSpace->enforceBounds(state);
 
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, state)
-          .isApprox(Eigen::Vector3d(-5, 5, 0)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, state)
+                  .isApprox(Eigen::Vector3d(-5, 5, 0)));
   gSpace->freeState(state);
 }
 
@@ -335,16 +334,14 @@ TEST_F(GeometricStateSpaceTest, CopyState)
 
   auto copyState = gSpace->allocState()->as<GeometricStateSpace::StateType>();
   gSpace->copyState(copyState, state);
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, copyState)
-          .isApprox(getTranslationalState(stateSpace, state)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, copyState)
+                  .isApprox(getTranslationalState(stateSpace, state)));
   EXPECT_TRUE(copyState->mValid);
 
   state->mValid = false;
   gSpace->copyState(copyState, state);
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, copyState)
-          .isApprox(getTranslationalState(stateSpace, state)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, copyState)
+                  .isApprox(getTranslationalState(stateSpace, state)));
   EXPECT_FALSE(copyState->mValid);
 
   gSpace->freeState(state);
@@ -484,19 +481,16 @@ TEST_F(GeometricStateSpaceTest, Interpolate)
   auto s3 = gSpace->allocState()->as<GeometricStateSpace::StateType>();
 
   gSpace->interpolate(s1, s2, 0, s3);
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, s3)
-          .isApprox(getTranslationalState(stateSpace, s1)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, s3)
+                  .isApprox(getTranslationalState(stateSpace, s1)));
 
   gSpace->interpolate(s1, s2, 1, s3);
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, s3)
-          .isApprox(getTranslationalState(stateSpace, s2)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, s3)
+                  .isApprox(getTranslationalState(stateSpace, s2)));
 
   gSpace->interpolate(s1, s2, 0.5, s3);
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, s3)
-          .isApprox(Eigen::Vector3d(0.5, 3.5, 0)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, s3)
+                  .isApprox(Eigen::Vector3d(0.5, 3.5, 0)));
 
   gSpace->freeState(s1);
   gSpace->freeState(s2);
@@ -547,9 +541,8 @@ TEST_F(GeometricStateSpaceTest, CopyAlloc)
 
   auto s2
       = gSpace->allocState(s1->mState)->as<GeometricStateSpace::StateType>();
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, s1)
-          .isApprox(getTranslationalState(stateSpace, s2)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, s1)
+                  .isApprox(getTranslationalState(stateSpace, s2)));
 
   gSpace->freeState(s1);
   gSpace->freeState(s2);

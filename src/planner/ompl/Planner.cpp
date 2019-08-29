@@ -497,6 +497,6 @@ std::unique_ptr<trajectory::Interpolated> toInterpolatedTrajectory(
 }
 //==============================================================================
 
-} // ns ompl
-} // ns planner
-} // ns aikido
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

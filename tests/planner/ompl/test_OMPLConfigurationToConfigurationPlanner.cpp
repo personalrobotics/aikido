@@ -11,10 +11,10 @@
 #include "OMPLTestHelpers.hpp"
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::planner::ConfigurationToConfiguration;
 using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::ompl_dynamic_pointer_cast;
 using aikido::planner::ompl::OMPLConfigurationToConfigurationPlanner;
-using aikido::planner::ConfigurationToConfiguration;
 
 //==============================================================================
 class UnknownProblem : public aikido::planner::Problem
@@ -54,17 +54,16 @@ TEST_F(PlannerTest, CanSolveProblems)
   auto subState2 = stateSpace->getSubStateHandle<R3>(goalState, 0);
   subState2.setValue(goalPose);
 
-  auto planner = std::
-      make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::
-                                                              RRTConnect>>(
-          stateSpace,
-          nullptr,
-          interpolator,
-          std::move(dmetric),
-          std::move(sampler),
-          std::move(boundsConstraint),
-          std::move(boundsProjection),
-          0.1);
+  auto planner = std::make_shared<
+      OMPLConfigurationToConfigurationPlanner<ompl::geometric::RRTConnect>>(
+      stateSpace,
+      nullptr,
+      interpolator,
+      std::move(dmetric),
+      std::move(sampler),
+      std::move(boundsConstraint),
+      std::move(boundsProjection),
+      0.1);
 
   auto problem = ConfigurationToConfiguration(
       stateSpace, startState, goalState, collConstraint);
@@ -92,17 +91,16 @@ TEST_F(PlannerTest, PlanToConfiguration)
 
   auto problem = ConfigurationToConfiguration(
       stateSpace, startState, goalState, collConstraint);
-  auto planner = std::
-      make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::
-                                                              RRTConnect>>(
-          stateSpace,
-          nullptr,
-          interpolator,
-          std::move(dmetric),
-          std::move(sampler),
-          std::move(boundsConstraint),
-          std::move(boundsProjection),
-          0.1);
+  auto planner = std::make_shared<
+      OMPLConfigurationToConfigurationPlanner<ompl::geometric::RRTConnect>>(
+      stateSpace,
+      nullptr,
+      interpolator,
+      std::move(dmetric),
+      std::move(sampler),
+      std::move(boundsConstraint),
+      std::move(boundsProjection),
+      0.1);
   auto traj = planner->plan(problem);
 
   // Check the first waypoint
@@ -139,17 +137,16 @@ TEST_F(PlannerTest, PlannerSpecificParameters)
   auto problem = ConfigurationToConfiguration(
       stateSpace, startState, goalState, freeConstraint);
 
-  auto planner = std::
-      make_shared<OMPLConfigurationToConfigurationPlanner<ompl::geometric::
-                                                              RRTConnect>>(
-          stateSpace,
-          nullptr,
-          interpolator,
-          std::move(dmetric),
-          std::move(sampler),
-          std::move(boundsConstraint),
-          std::move(boundsProjection),
-          0.1);
+  auto planner = std::make_shared<
+      OMPLConfigurationToConfigurationPlanner<ompl::geometric::RRTConnect>>(
+      stateSpace,
+      nullptr,
+      interpolator,
+      std::move(dmetric),
+      std::move(sampler),
+      std::move(boundsConstraint),
+      std::move(boundsProjection),
+      0.1);
   auto rrtPlanner
       = planner->getOMPLPlanner()->as<ompl::geometric::RRTConnect>();
   if (rrtPlanner)

@@ -11,11 +11,11 @@
 #include "Path.h"
 #include "Trajectory.h"
 
-using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::ConstStateSpacePtr;
-using aikido::trajectory::toR1JointTrajectory;
-using aikido::trajectory::ConstSplinePtr;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::trajectory::ConstInterpolatedPtr;
+using aikido::trajectory::ConstSplinePtr;
+using aikido::trajectory::toR1JointTrajectory;
 
 namespace aikido {
 namespace planner {

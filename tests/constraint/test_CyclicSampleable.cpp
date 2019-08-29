@@ -8,16 +8,16 @@
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 
-using aikido::statespace::SO2;
-using aikido::constraint::uniform::SO2UniformSampler;
-using aikido::statespace::R1;
-using aikido::statespace::R2;
 using aikido::constraint::CyclicSampleable;
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
+using aikido::constraint::uniform::SO2UniformSampler;
+using aikido::statespace::R1;
+using aikido::statespace::R2;
+using aikido::statespace::SO2;
 using State = aikido::statespace::StateSpace::State;
-using aikido::common::RNGWrapper;
 using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2d)

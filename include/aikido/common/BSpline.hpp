@@ -72,14 +72,13 @@ public:
       ControlPointVectorType;
 
   /**
-  * \brief Creates a (constant) zero spline.
-  * For Splines with dynamic degree, the resulting degree will be 0.
-  **/
+   * \brief Creates a (constant) zero spline.
+   * For Splines with dynamic degree, the resulting degree will be 0.
+   **/
   BSpline()
     : m_knots(1, (Degree == Eigen::Dynamic ? 2 : 2 * Degree + 2))
-    , m_ctrls(
-          ControlPointVectorType::Zero(
-              Dimension, (Degree == Eigen::Dynamic ? 1 : Degree + 1)))
+    , m_ctrls(ControlPointVectorType::Zero(
+          Dimension, (Degree == Eigen::Dynamic ? 1 : Degree + 1)))
   {
     // in theory this code can go to the initializer list but it will get pretty
     // much unreadable ...
@@ -94,10 +93,10 @@ public:
   }
 
   /**
-  * \brief Creates a spline from a knot vector and control points.
-  * \param knots The spline's knot vector.
-  * \param ctrls The spline's control point vector.
-  **/
+   * \brief Creates a spline from a knot vector and control points.
+   * \param knots The spline's knot vector.
+   * \param ctrls The spline's control point vector.
+   **/
   template <typename OtherVectorType, typename OtherArrayType>
   BSpline(const OtherVectorType& knots, const OtherArrayType& ctrls)
     : m_knots(knots), m_ctrls(ctrls)
@@ -105,9 +104,9 @@ public:
   }
 
   /**
-  * \brief Copy constructor for splines.
-  * \param spline The input spline.
-  **/
+   * \brief Copy constructor for splines.
+   * \param spline The input spline.
+   **/
   template <int OtherDegree>
   BSpline(const BSpline<Scalar, Dimension, OtherDegree>& spline)
     : m_knots(spline.knots()), m_ctrls(spline.ctrls())
@@ -287,8 +286,8 @@ template <typename _Scalar, int _Dim, int _Degree>
 Eigen::DenseIndex BSpline<_Scalar, _Dim, _Degree>::Span(
     typename SplineTraits<BSpline<_Scalar, _Dim, _Degree> >::Scalar u,
     Eigen::DenseIndex degree,
-    const typename SplineTraits<BSpline<_Scalar, _Dim, _Degree> >::
-        KnotVectorType& knots)
+    const typename SplineTraits<
+        BSpline<_Scalar, _Dim, _Degree> >::KnotVectorType& knots)
 {
   // Piegl & Tiller, "The NURBS Book", A2.1 (p. 68)
   if (u <= knots(0))
@@ -440,10 +439,10 @@ BSpline<_Scalar, _Dim, _Degree>::derivatives(
 
 template <typename _Scalar, int _Dim, int _Degree>
 template <int DerivativeOrder>
-typename SplineTraits<BSpline<_Scalar, _Dim, _Degree>,
-                      DerivativeOrder>::DerivativeType
-BSpline<_Scalar, _Dim, _Degree>::derivatives(
-    Scalar u, Eigen::DenseIndex order) const
+typename SplineTraits<BSpline<_Scalar, _Dim, _Degree>, DerivativeOrder>::
+    DerivativeType
+    BSpline<_Scalar, _Dim, _Degree>::derivatives(
+        Scalar u, Eigen::DenseIndex order) const
 {
   typename SplineTraits<BSpline, DerivativeOrder>::DerivativeType res;
   derivativesImpl(*this, u, order, res);
@@ -594,13 +593,13 @@ BSpline<_Scalar, _Dim, _Degree>::basisFunctionDerivatives(
 
 template <typename _Scalar, int _Dim, int _Degree>
 template <int DerivativeOrder>
-typename SplineTraits<BSpline<_Scalar, _Dim, _Degree>,
-                      DerivativeOrder>::BasisDerivativeType
-BSpline<_Scalar, _Dim, _Degree>::basisFunctionDerivatives(
-    Scalar u, Eigen::DenseIndex order) const
+typename SplineTraits<BSpline<_Scalar, _Dim, _Degree>, DerivativeOrder>::
+    BasisDerivativeType
+    BSpline<_Scalar, _Dim, _Degree>::basisFunctionDerivatives(
+        Scalar u, Eigen::DenseIndex order) const
 {
-  typename SplineTraits<BSpline<_Scalar, _Dim, _Degree>,
-                        DerivativeOrder>::BasisDerivativeType der;
+  typename SplineTraits<BSpline<_Scalar, _Dim, _Degree>, DerivativeOrder>::
+      BasisDerivativeType der;
   BasisFunctionDerivativesImpl(u, order, degree(), knots(), der);
   return der;
 }

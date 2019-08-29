@@ -23,7 +23,7 @@ void throwIfInvalidIndex(
   }
 }
 
-} // (anonymous) namespace
+} // namespace
 
 //==============================================================================
 BSpline::BSpline(

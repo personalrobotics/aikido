@@ -9,9 +9,9 @@
 using aikido::constraint::DifferentiableSubspace;
 using aikido::constraint::Satisfied;
 using aikido::statespace::CartesianProduct;
-using aikido::statespace::SO2;
 using aikido::statespace::R1;
 using aikido::statespace::R3;
+using aikido::statespace::SO2;
 
 class DifferentiableSubspaceTest : public testing::Test
 {

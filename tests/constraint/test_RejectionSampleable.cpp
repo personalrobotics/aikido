@@ -10,8 +10,8 @@
 
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::RejectionSampleable;
-using aikido::constraint::TestablePtr;
 using aikido::constraint::SampleablePtr;
+using aikido::constraint::TestablePtr;
 
 using aikido::statespace::R1;
 
@@ -121,9 +121,8 @@ TEST_F(
     EXPECT_TRUE(rsGenerator->sample(rsState));
     EXPECT_TRUE(generator->sample(expected));
 
-    EXPECT_TRUE(
-        mStateSpace->getValue(rsState).isApprox(
-            mStateSpace->getValue(expected)));
+    EXPECT_TRUE(mStateSpace->getValue(rsState).isApprox(
+        mStateSpace->getValue(expected)));
   }
 }
 
