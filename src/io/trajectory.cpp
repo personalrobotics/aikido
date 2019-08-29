@@ -28,7 +28,8 @@ void saveTrajectory(const aikido::trajectory::Spline& trajectory,
 
   auto skelSpace = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>
       (trajectory.getStateSpace());
-  assert(skelSpace != nullptr);
+  if (!skelSpace)
+    throw std::runtime_error("Trajectory state space is not MetaSkeletonStateSpace");
 
   emitter << YAML::BeginMap;
   emitter << YAML::Key << "configuration";
