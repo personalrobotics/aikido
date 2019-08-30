@@ -10,9 +10,10 @@ namespace dart {
 
 /// \c SE3 for a DART \c FreeJoint. This class does not support
 /// position limits on the three rotational <tt>DegreeOfFreedom</tt>s.
-class SE3Joint : public SE3,
-                 public JointStateSpace,
-                 public std::enable_shared_from_this<SE3Joint>
+class SE3Joint
+  : public SE3
+  , public JointStateSpace
+  , public std::enable_shared_from_this<SE3Joint>
 {
 public:
   using SE3::State;

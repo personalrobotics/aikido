@@ -18,9 +18,10 @@ namespace dart {
 /// of \c JointStateSpace to for a \c Joint you most likely should use
 /// the \c createJointStateSpace helper function.
 template <int N>
-class RJoint : public R<N>,
-               public JointStateSpace,
-               public std::enable_shared_from_this<RJoint<N>>
+class RJoint
+  : public R<N>
+  , public JointStateSpace
+  , public std::enable_shared_from_this<RJoint<N>>
 {
 public:
   static constexpr int DimensionAtCompileTime = N;

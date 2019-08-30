@@ -9,9 +9,10 @@ namespace dart {
 
 /// \c SEStateSpace for a DART \c PlanarJoint This class does not support
 /// position limits on the rotational \c DegreeOfFreedom.
-class SE2Joint : public SE2,
-                 public JointStateSpace,
-                 public std::enable_shared_from_this<SE2Joint>
+class SE2Joint
+  : public SE2
+  , public JointStateSpace
+  , public std::enable_shared_from_this<SE2Joint>
 {
 public:
   using SE2::Isometry2d;

@@ -117,9 +117,10 @@ private:
   double mValue;
 };
 
-class MockProjectionConstraint : public aikido::constraint::Projectable,
-                                 public aikido::constraint::Testable,
-                                 public aikido::constraint::Sampleable
+class MockProjectionConstraint
+  : public aikido::constraint::Projectable
+  , public aikido::constraint::Testable
+  , public aikido::constraint::Sampleable
 {
 public:
   // Construct a constraint that project to x=_val

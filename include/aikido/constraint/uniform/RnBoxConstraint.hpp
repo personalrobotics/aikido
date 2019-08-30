@@ -14,10 +14,11 @@ namespace uniform {
 /// A BoxConstraint on RealVectorStates.
 /// For each dimension, this constraint has lowerLimit and upperLimit.
 template <int N>
-class RBoxConstraint : public constraint::Differentiable,
-                       public constraint::Projectable,
-                       public constraint::Sampleable,
-                       public constraint::Testable
+class RBoxConstraint
+  : public constraint::Differentiable
+  , public constraint::Projectable
+  , public constraint::Sampleable
+  , public constraint::Testable
 {
 public:
   using constraint::Differentiable::getValueAndJacobian;

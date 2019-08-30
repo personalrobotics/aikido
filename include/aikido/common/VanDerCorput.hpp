@@ -67,11 +67,12 @@ private:
   double mMinResolution;
 };
 
-class VanDerCorput::const_iterator : public boost::iterator_facade<
-                                         VanDerCorput::const_iterator,
-                                         const double,
-                                         boost::forward_traversal_tag,
-                                         const double>
+class VanDerCorput::const_iterator
+  : public boost::iterator_facade<
+        VanDerCorput::const_iterator,
+        const double,
+        boost::forward_traversal_tag,
+        const double>
 {
 public:
   /// Dereference implementation for boost::iterator_facade
