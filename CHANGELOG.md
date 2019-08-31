@@ -86,6 +86,7 @@
 * IO
 
   * Added loadSkeletonFromURDF convenience function: [#388](https://github.com/personalrobotics/aikido/pull/388), [#401](https://github.com/personalrobotics/aikido/pull/401)
+  * Added methods for caching and retrieving trajectories: [#541](https://github.com/personalrobotics/aikido/pull/541)
 
 * Build & Testing & ETC
 
