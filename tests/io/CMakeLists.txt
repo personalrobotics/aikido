@@ -43,3 +43,10 @@ target_compile_definitions(test_loadSkeletonFromURDF
 
 aikido_add_test(test_yaml_extension test_yaml_extension.cpp)
 target_link_libraries(test_yaml_extension "${PROJECT_NAME}_io")
+
+aikido_add_test(test_trajectory_io test_trajectory_io.cpp)
+target_link_libraries(test_trajectory_io
+  "${PROJECT_NAME}_constraint"
+  "${PROJECT_NAME}_io"
+  "${PROJECT_NAME}_planner"
+  "${PROJECT_NAME}_trajectory")

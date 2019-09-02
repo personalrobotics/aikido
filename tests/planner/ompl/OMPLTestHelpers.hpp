@@ -24,7 +24,8 @@ using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
-  return ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
+  return ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
+      0);
 }
 
 dart::dynamics::SkeletonPtr createTranslationalRobot()

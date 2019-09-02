@@ -5,8 +5,8 @@
 #include <vector>
 #include <boost/format.hpp>
 #include <dart/common/Console.hpp>
-#include "aikido/common/memory.hpp"
 #include <dart/math/Geometry.hpp>
+#include "aikido/common/memory.hpp"
 
 #undef dtwarn
 #define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))

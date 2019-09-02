@@ -220,8 +220,9 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 
     mInverseKinematics->getTarget()->setTransform(poseState.getIsometry());
 
-    // Run the IK solver. If an exact solution is computed, apply it to the skeleton.
 #if DART_VERSION_AT_LEAST(6, 8, 0)
+    // Run the IK solver. If an exact solution is computed, apply it to the
+    // skeleton.
     if (mInverseKinematics->solveAndApply(true))
 #else
     if (mInverseKinematics->solve(true))
