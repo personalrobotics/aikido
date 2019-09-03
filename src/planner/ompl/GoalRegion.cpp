@@ -78,6 +78,6 @@ bool GoalRegion::isSatisfied(const ::ompl::base::State* _state) const
     return false;
   return mTestable->isSatisfied(state->mState);
 }
-}
-}
-}
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

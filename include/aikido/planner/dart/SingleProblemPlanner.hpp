@@ -12,7 +12,7 @@ namespace dart {
 /// MetaSkeleton related code a bunch of times.
 template <typename Derived, typename ProblemT>
 class SingleProblemPlanner
-    : public planner::SingleProblemPlanner<Derived, ProblemT>
+  : public planner::SingleProblemPlanner<Derived, ProblemT>
 {
 public:
   /// Constructor

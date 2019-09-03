@@ -62,5 +62,5 @@ if [ $BUILD_DOCS = "ON" ]; then
 fi
 
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  sudo apt-get install -y clang-format-3.8
+  sudo apt-get install -y clang-format-6.0
 fi

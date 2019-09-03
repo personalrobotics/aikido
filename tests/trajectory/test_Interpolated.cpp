@@ -5,8 +5,8 @@
 
 using namespace aikido::statespace;
 using aikido::trajectory::Interpolated;
-using std::shared_ptr;
 using std::make_shared;
+using std::shared_ptr;
 
 class InterpolatedTest : public ::testing::Test
 {
@@ -58,9 +58,8 @@ TEST_F(InterpolatedTest, EvaluatePt)
   EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(.75, .75)));
 
   traj->evaluate(6, istate);
-  EXPECT_TRUE(
-      rvss->getValue(istate).isApprox(
-          Eigen::Vector2d(3 + 5 * 0.75, 3 - 2 * .75)));
+  EXPECT_TRUE(rvss->getValue(istate).isApprox(
+      Eigen::Vector2d(3 + 5 * 0.75, 3 - 2 * .75)));
 
   traj->evaluate(7, istate);
   EXPECT_TRUE(rvss->getValue(istate).isApprox(Eigen::Vector2d(8, 1)));

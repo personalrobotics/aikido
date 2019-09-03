@@ -5,8 +5,8 @@
 #include <aikido/statespace/SO2.hpp>
 #include "MockConstraints.hpp"
 
-using aikido::constraint::TestableIntersection;
 using aikido::constraint::Testable;
+using aikido::constraint::TestableIntersection;
 using aikido::statespace::R0;
 
 TEST(ConjuntionConstraintTest, ThrowOnNullStateSpace)

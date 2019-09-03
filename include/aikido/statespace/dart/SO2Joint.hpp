@@ -10,9 +10,10 @@ namespace dart {
 
 /// \c SO2 for a DART \c SingleDofJoint. This class does not support
 /// position limits.
-class SO2Joint : public SO2,
-                 public JointStateSpace,
-                 public std::enable_shared_from_this<SO2Joint>
+class SO2Joint
+  : public SO2
+  , public JointStateSpace
+  , public std::enable_shared_from_this<SO2Joint>
 {
 public:
   using SO2::State;

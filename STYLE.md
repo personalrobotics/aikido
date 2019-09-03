@@ -218,7 +218,7 @@ int ExampleClass::exampleMethod(int a, int b, int* out) const
 
 You can automatically format all AIKIDO code
 using [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) through
-CMake. Make sure `clang-format 3.8` is installed.
+CMake. Make sure `clang-format 6.0` is installed.
 
 #### Using CMake
 

@@ -9,17 +9,17 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 using aikido::common::cloneRNGFrom;
+using aikido::constraint::dart::createSampleableBounds;
 using aikido::constraint::dart::InverseKinematicsSampleable;
 using aikido::constraint::dart::TSR;
-using aikido::constraint::dart::createSampleableBounds;
 using aikido::distance::ConstConfigurationRankerPtr;
 using aikido::distance::NominalConfigurationRanker;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using ::dart::dynamics::BodyNode;
-using ::dart::dynamics::InverseKinematics;
-using ::dart::dynamics::ConstBodyNodePtr;
 using ::dart::dynamics::BodyNodePtr;
+using ::dart::dynamics::ConstBodyNodePtr;
+using ::dart::dynamics::InverseKinematics;
 
 namespace aikido {
 namespace planner {
@@ -31,9 +31,9 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::
         std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
         distance::ConstConfigurationRankerPtr configurationRanker)
-  : PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
-                   ConfigurationToTSRPlanner>(
-        std::move(planner), std::move(metaSkeleton))
+  : PlannerAdapter<
+        planner::ConfigurationToConfigurationPlanner,
+        ConfigurationToTSRPlanner>(std::move(planner), std::move(metaSkeleton))
 {
   mConfigurationRanker = std::move(configurationRanker);
 }

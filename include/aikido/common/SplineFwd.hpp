@@ -68,21 +68,23 @@ struct SplineTraits<BSpline<_Scalar, _Dim, _Degree>, Eigen::Dynamic>
 
   /** \brief The data type used to store the values of the basis function
    * derivatives. */
-  typedef Eigen::Array<Scalar,
-                       Eigen::Dynamic,
-                       Eigen::Dynamic,
-                       Eigen::RowMajor,
-                       NumOfDerivativesAtCompileTime,
-                       OrderAtCompileTime>
+  typedef Eigen::Array<
+      Scalar,
+      Eigen::Dynamic,
+      Eigen::Dynamic,
+      Eigen::RowMajor,
+      NumOfDerivativesAtCompileTime,
+      OrderAtCompileTime>
       BasisDerivativeType;
 
   /** \brief The data type used to store the spline's derivative values. */
-  typedef Eigen::Array<Scalar,
-                       Dimension,
-                       Eigen::Dynamic,
-                       DerivativeMemoryLayout,
-                       Dimension,
-                       NumOfDerivativesAtCompileTime>
+  typedef Eigen::Array<
+      Scalar,
+      Dimension,
+      Eigen::Dynamic,
+      DerivativeMemoryLayout,
+      Dimension,
+      NumOfDerivativesAtCompileTime>
       DerivativeType;
 
   /** \brief The point type the spline is representing. */
@@ -108,7 +110,7 @@ struct SplineTraits<BSpline<_Scalar, _Dim, _Degree>, Eigen::Dynamic>
  **/
 template <typename _Scalar, int _Dim, int _Degree, int _DerivativeOrder>
 struct SplineTraits<BSpline<_Scalar, _Dim, _Degree>, _DerivativeOrder>
-    : public SplineTraits<BSpline<_Scalar, _Dim, _Degree> >
+  : public SplineTraits<BSpline<_Scalar, _Dim, _Degree> >
 {
   enum
   {
@@ -136,21 +138,23 @@ struct SplineTraits<BSpline<_Scalar, _Dim, _Degree>, _DerivativeOrder>
 
   /** \brief The data type used to store the values of the basis function
    * derivatives. */
-  typedef Eigen::Array<_Scalar,
-                       Eigen::Dynamic,
-                       Eigen::Dynamic,
-                       Eigen::RowMajor,
-                       NumOfDerivativesAtCompileTime,
-                       OrderAtCompileTime>
+  typedef Eigen::Array<
+      _Scalar,
+      Eigen::Dynamic,
+      Eigen::Dynamic,
+      Eigen::RowMajor,
+      NumOfDerivativesAtCompileTime,
+      OrderAtCompileTime>
       BasisDerivativeType;
 
   /** \brief The data type used to store the spline's derivative values. */
-  typedef Eigen::Array<_Scalar,
-                       _Dim,
-                       Eigen::Dynamic,
-                       DerivativeMemoryLayout,
-                       _Dim,
-                       NumOfDerivativesAtCompileTime>
+  typedef Eigen::Array<
+      _Scalar,
+      _Dim,
+      Eigen::Dynamic,
+      DerivativeMemoryLayout,
+      _Dim,
+      NumOfDerivativesAtCompileTime>
       DerivativeType;
 };
 

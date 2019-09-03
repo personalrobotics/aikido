@@ -42,18 +42,16 @@ void CRRTConnect::setup()
   if (!mGoalTree)
     mGoalTree.reset(new ::ompl::NearestNeighborsGNAT<Motion*>);
 
-  mStartTree->setDistanceFunction(
-      ompl_bind(
-          &CRRTConnect::distanceFunction,
-          this,
-          OMPL_PLACEHOLDER(_1),
-          OMPL_PLACEHOLDER(_2)));
-  mGoalTree->setDistanceFunction(
-      ompl_bind(
-          &CRRTConnect::distanceFunction,
-          this,
-          OMPL_PLACEHOLDER(_1),
-          OMPL_PLACEHOLDER(_2)));
+  mStartTree->setDistanceFunction(ompl_bind(
+      &CRRTConnect::distanceFunction,
+      this,
+      OMPL_PLACEHOLDER(_1),
+      OMPL_PLACEHOLDER(_2)));
+  mGoalTree->setDistanceFunction(ompl_bind(
+      &CRRTConnect::distanceFunction,
+      this,
+      OMPL_PLACEHOLDER(_1),
+      OMPL_PLACEHOLDER(_2)));
 }
 
 //==============================================================================

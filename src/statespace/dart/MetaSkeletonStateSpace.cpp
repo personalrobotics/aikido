@@ -11,8 +11,8 @@ namespace dart {
 
 namespace {
 
-using ::dart::dynamics::MetaSkeleton;
 using ::dart::dynamics::INVALID_INDEX;
+using ::dart::dynamics::MetaSkeleton;
 
 using JointStateSpacePtr = std::shared_ptr<JointStateSpace>;
 using ConstJointStateSpacePtr = std::shared_ptr<const JointStateSpace>;
@@ -375,8 +375,8 @@ void MetaSkeletonStateSpace::setState(
 MetaSkeletonStateSpace::getControlledMetaSkeleton(
     const ::dart::dynamics::SkeletonPtr& skeleton) const
 {
-  using ::dart::dynamics::Group;
   using ::dart::dynamics::DegreeOfFreedom;
+  using ::dart::dynamics::Group;
 
   std::vector<DegreeOfFreedom*> dofs;
   dofs.reserve(mProperties.getNumDofs());

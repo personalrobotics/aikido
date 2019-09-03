@@ -12,8 +12,9 @@ namespace dart {
 /// Converts a non-DART ConfigurationToConfiguration planner into the DART
 /// version.
 class ConfigurationToConfiguration_to_ConfigurationToConfiguration
-    : public PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
-                            planner::dart::ConfigurationToConfigurationPlanner>
+  : public PlannerAdapter<
+        planner::ConfigurationToConfigurationPlanner,
+        planner::dart::ConfigurationToConfigurationPlanner>
 {
 public:
   /// Constructor

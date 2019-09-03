@@ -10,23 +10,23 @@
 using Vector0d = Eigen::Matrix<double, 0, 1>;
 using Vector1d = Eigen::Matrix<double, 1, 1>;
 
+using aikido::common::RNGWrapper;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::Satisfied;
+using aikido::statespace::dart::R1Joint;
+using aikido::statespace::dart::SO2Joint;
+using aikido::statespace::dart::SO3Joint;
 using dart::dynamics::BallJoint;
 using dart::dynamics::BodyNode;
 using dart::dynamics::Joint;
 using dart::dynamics::RevoluteJoint;
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
-using aikido::constraint::SampleGenerator;
-using aikido::constraint::Satisfied;
-using aikido::statespace::dart::R1Joint;
-using aikido::statespace::dart::SO2Joint;
-using aikido::statespace::dart::SO3Joint;
-using aikido::common::RNGWrapper;
 
 using aikido::constraint::dart::createDifferentiableBoundsFor;
 using aikido::constraint::dart::createProjectableBoundsFor;
-using aikido::constraint::dart::createTestableBoundsFor;
 using aikido::constraint::dart::createSampleableBoundsFor;
+using aikido::constraint::dart::createTestableBoundsFor;
 
 //==============================================================================
 class RnJointHelpersTests : public ::testing::Test

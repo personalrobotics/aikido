@@ -17,9 +17,9 @@ class ConcreteManipulator : public Manipulator
 {
 public:
   // Expose base class functions
+  using Manipulator::getHand;
   using Robot::getMetaSkeleton;
   using Robot::getStateSpace;
-  using Manipulator::getHand;
 
   /// Constructor.
   /// \param[in] robot Robot corresponding to this manipulator.
