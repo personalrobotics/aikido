@@ -6,10 +6,10 @@
 
 #include <gtest/gtest.h>
 
-using aikido::statespace::R1;
-using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
+using aikido::statespace::R1;
+using aikido::statespace::R2;
 using State = aikido::statespace::StateSpace::State;
 
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2d)

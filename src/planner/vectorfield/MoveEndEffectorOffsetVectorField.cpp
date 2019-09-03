@@ -50,8 +50,8 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 bool MoveEndEffectorOffsetVectorField::evaluateCartesianVelocity(
     const Eigen::Isometry3d& pose, Eigen::Vector6d& cartesianVelocity) const
 {
-  using ::dart::math::logMap;
   using aikido::planner::vectorfield::computeGeodesicError;
+  using ::dart::math::logMap;
 
   Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mStartPose);
   desiredTwist.tail<3>() = mDirection;

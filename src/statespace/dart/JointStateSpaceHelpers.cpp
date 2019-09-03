@@ -8,11 +8,11 @@ namespace dart {
 std::unique_ptr<JointStateSpace> createJointStateSpace(
     const ::dart::dynamics::Joint* joint)
 {
-  auto space
-      = common::DynamicCastFactory<detail::createJointStateSpaceFor_impl,
-                                   common::DynamicCastFactory_raw_ptr,
-                                   const ::dart::dynamics::Joint,
-                                   detail::ConstSupportedJoints>::create(joint);
+  auto space = common::DynamicCastFactory<
+      detail::createJointStateSpaceFor_impl,
+      common::DynamicCastFactory_raw_ptr,
+      const ::dart::dynamics::Joint,
+      detail::ConstSupportedJoints>::create(joint);
 
   if (!space)
   {

@@ -14,8 +14,9 @@ ConfigurationToConfiguration_to_ConfigurationToConfiguration::
     ConfigurationToConfiguration_to_ConfigurationToConfiguration(
         std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
-                   planner::dart::ConfigurationToConfigurationPlanner>(
+  : PlannerAdapter<
+        planner::ConfigurationToConfigurationPlanner,
+        planner::dart::ConfigurationToConfigurationPlanner>(
         std::move(planner), std::move(metaSkeleton))
 {
   // Do nothing

@@ -10,20 +10,20 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
-using aikido::constraint::dart::FramePairDifferentiable;
-using aikido::constraint::dart::TSR;
-using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using aikido::statespace::SO2;
-using aikido::statespace::SE3;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
+using aikido::constraint::dart::FramePairDifferentiable;
+using aikido::constraint::dart::TSR;
+using aikido::statespace::SE3;
+using aikido::statespace::SO2;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 
+using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
+using dart::dynamics::FreeJoint;
 using dart::dynamics::Skeleton;
 using dart::dynamics::SkeletonPtr;
-using dart::dynamics::FreeJoint;
-using dart::dynamics::BodyNode;
 
 class FramePairDifferentiableTest : public ::testing::Test
 {

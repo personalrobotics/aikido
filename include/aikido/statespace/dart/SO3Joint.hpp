@@ -10,9 +10,10 @@ namespace dart {
 
 /// \c SO3 for a DART \c BallJoint. This class does not support
 /// position limits.
-class SO3Joint : public SO3,
-                 public JointStateSpace,
-                 public std::enable_shared_from_this<SO3Joint>
+class SO3Joint
+  : public SO3
+  , public JointStateSpace
+  , public std::enable_shared_from_this<SO3Joint>
 {
 public:
   using SO3::State;

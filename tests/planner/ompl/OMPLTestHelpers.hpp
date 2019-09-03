@@ -13,13 +13,13 @@
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using aikido::constraint::DefaultTestableOutcome;
 using aikido::constraint::TestableOutcome;
+using aikido::planner::ompl::GeometricStateSpace;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R3;
-using aikido::planner::ompl::GeometricStateSpace;
-using aikido::common::RNGWrapper;
-using aikido::common::RNG;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 static std::unique_ptr<DefaultRNG> make_rng()
@@ -68,7 +68,7 @@ Eigen::Vector3d getTranslationalState(
 }
 
 class MockConstrainedSampleGenerator
-    : public aikido::constraint::SampleGenerator
+  : public aikido::constraint::SampleGenerator
 {
 
 public:
@@ -117,9 +117,10 @@ private:
   double mValue;
 };
 
-class MockProjectionConstraint : public aikido::constraint::Projectable,
-                                 public aikido::constraint::Testable,
-                                 public aikido::constraint::Sampleable
+class MockProjectionConstraint
+  : public aikido::constraint::Projectable
+  , public aikido::constraint::Testable
+  , public aikido::constraint::Sampleable
 {
 public:
   // Construct a constraint that project to x=_val

@@ -106,18 +106,15 @@ void KinematicSimulationTrajectoryExecutor::step(
 
   if (!mInProgress && mTraj)
   {
-    mPromise->set_exception(
-        std::make_exception_ptr(
-            std::runtime_error("Trajectory terminated while in execution.")));
+    mPromise->set_exception(std::make_exception_ptr(
+        std::runtime_error("Trajectory terminated while in execution.")));
     mTraj.reset();
     mMetaSkeleton.reset();
   }
   else if (mInProgress && !mTraj)
   {
-    mPromise->set_exception(
-        std::make_exception_ptr(
-            std::runtime_error(
-                "Set for execution but no trajectory is provided.")));
+    mPromise->set_exception(std::make_exception_ptr(std::runtime_error(
+        "Set for execution but no trajectory is provided.")));
     mMetaSkeleton.reset();
     mInProgress = false;
   }

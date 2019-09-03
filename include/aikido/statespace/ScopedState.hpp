@@ -15,9 +15,9 @@ class ScopedState : public _Handle
 {
 public:
   using Handle = _Handle;
-  using typename Handle::StateSpace;
-  using typename Handle::State;
   using typename Handle::QualifiedState;
+  using typename Handle::State;
+  using typename Handle::StateSpace;
 
   /// Construct a \c ScopedState by allocating a new state in \c _space. This
   /// state will be freed when \c ScopedState is destructed.

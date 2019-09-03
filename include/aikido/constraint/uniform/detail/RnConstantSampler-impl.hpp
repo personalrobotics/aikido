@@ -93,7 +93,7 @@ bool RnConstantSamplerSampleGenerator<N>::canSample() const
   return true;
 }
 
-} // namespace anonymous
+} // namespace
 
 //==============================================================================
 template <int N>

@@ -95,18 +95,18 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::WeldJoint>
 };
 
 //==============================================================================
-using ConstSupportedJoints
-    = common::type_list<const ::dart::dynamics::BallJoint,
-                        const ::dart::dynamics::FreeJoint,
-                        const ::dart::dynamics::PlanarJoint,
-                        const ::dart::dynamics::PrismaticJoint,
-                        const ::dart::dynamics::RevoluteJoint,
-                        const ::dart::dynamics::TranslationalJoint,
-                        const ::dart::dynamics::WeldJoint
-                        // TODO: Support ScrewJoint.
-                        // TODO: Support UniversalJoint.
-                        // TODO: Support EulerJoint.
-                        >;
+using ConstSupportedJoints = common::type_list<
+    const ::dart::dynamics::BallJoint,
+    const ::dart::dynamics::FreeJoint,
+    const ::dart::dynamics::PlanarJoint,
+    const ::dart::dynamics::PrismaticJoint,
+    const ::dart::dynamics::RevoluteJoint,
+    const ::dart::dynamics::TranslationalJoint,
+    const ::dart::dynamics::WeldJoint
+    // TODO: Support ScrewJoint.
+    // TODO: Support UniversalJoint.
+    // TODO: Support EulerJoint.
+    >;
 
 } // namespace detail
 

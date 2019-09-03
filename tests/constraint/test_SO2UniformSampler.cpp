@@ -4,12 +4,12 @@
 #include <aikido/distance/SO2Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
-using aikido::statespace::SO2;
-using aikido::constraint::uniform::SO2UniformSampler;
-using aikido::constraint::SampleGenerator;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::uniform::SO2UniformSampler;
 using aikido::distance::SO2Angular;
+using aikido::statespace::SO2;
 
 class SO2UniformSamplerTests : public ::testing::Test
 {

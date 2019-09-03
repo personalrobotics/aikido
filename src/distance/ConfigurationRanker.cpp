@@ -5,9 +5,9 @@
 namespace aikido {
 namespace distance {
 
+using ::dart::dynamics::ConstMetaSkeletonPtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
-using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
 ConfigurationRanker::ConfigurationRanker(

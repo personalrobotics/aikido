@@ -273,6 +273,6 @@ double GeometricStateSpace::getMaxDistanceBetweenValidityChecks() const
   return mMaxDistanceBetweenValidityChecks;
 }
 
-} // ompl
-} // planner
-} // aikido
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

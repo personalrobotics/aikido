@@ -53,10 +53,9 @@ bool SO3UniformSampleGenerator::sample(statespace::StateSpace::State* _state)
 {
   mSpace->setQuaternion(
       static_cast<statespace::SO3::State*>(_state),
-      common::sampleQuaternion<common::RNG,
-                               double,
-                               statespace::SO3::Quaternion>(
-          *mRng, mDistribution));
+      common::
+          sampleQuaternion<common::RNG, double, statespace::SO3::Quaternion>(
+              *mRng, mDistribution));
 
   return true;
 }
