@@ -587,4 +587,4 @@ void transformElementNamesToLowerCases(tinyxml2::XMLDocument& doc)
 
 } // anonymous namespace
 } // namespace io
-} // namespace dart
+} // namespace aikido

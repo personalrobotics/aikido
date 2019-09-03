@@ -32,32 +32,32 @@ namespace constraint {
 // Add aliases for long class names here.
 
 using uniform::R0BoxConstraint;
-using uniform::R1BoxConstraint;
-using uniform::R2BoxConstraint;
-using uniform::R3BoxConstraint;
-using uniform::R6BoxConstraint;
-using uniform::RnBoxConstraint;
 using uniform::R0ConstantSampler;
+using uniform::R1BoxConstraint;
 using uniform::R1ConstantSampler;
+using uniform::R2BoxConstraint;
 using uniform::R2ConstantSampler;
+using uniform::R3BoxConstraint;
 using uniform::R3ConstantSampler;
+using uniform::R6BoxConstraint;
 using uniform::R6ConstantSampler;
+using uniform::RnBoxConstraint;
 using uniform::RnConstantSampler;
+using uniform::SE2BoxConstraint;
 using uniform::SO2UniformSampler;
 using uniform::SO3UniformSampler;
-using uniform::SE2BoxConstraint;
 
 using dart::CollisionFree;
 using dart::CollisionFreeOutcome;
+using dart::createDifferentiableBounds;
+using dart::createProjectableBounds;
+using dart::createSampleableBounds;
+using dart::createTestableBounds;
 using dart::FrameDifferentiable;
 using dart::FramePairDifferentiable;
 using dart::FrameTestable;
 using dart::InverseKinematicsSampleable;
 using dart::TSR;
-using dart::createDifferentiableBounds;
-using dart::createProjectableBounds;
-using dart::createTestableBounds;
-using dart::createSampleableBounds;
 
 } // namespace constraint
 } // namespace aikido

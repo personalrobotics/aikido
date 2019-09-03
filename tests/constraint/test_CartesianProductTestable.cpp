@@ -8,14 +8,14 @@
 #include "../eigen_tests.hpp"
 
 using aikido::constraint::CartesianProductTestable;
-using aikido::constraint::Satisfied;
-using aikido::statespace::CartesianProduct;
-using aikido::statespace::SO2;
-using aikido::statespace::R3;
-using aikido::constraint::TestablePtr;
 using aikido::constraint::ConstTestablePtr;
+using aikido::constraint::Satisfied;
 using aikido::constraint::Testable;
+using aikido::constraint::TestablePtr;
 using aikido::constraint::uniform::R3BoxConstraint;
+using aikido::statespace::CartesianProduct;
+using aikido::statespace::R3;
+using aikido::statespace::SO2;
 
 class CartesianProductTestableTest : public testing::Test
 {

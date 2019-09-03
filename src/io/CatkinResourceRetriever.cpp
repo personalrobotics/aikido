@@ -20,8 +20,8 @@ namespace {
 //==============================================================================
 std::string getPackageNameFromXML(const std::string& _path)
 {
-  using tinyxml2::XMLHandle;
   using tinyxml2::XMLElement;
+  using tinyxml2::XMLHandle;
 
   tinyxml2::XMLDocument document;
   if (document.LoadFile(_path.c_str()))
@@ -72,9 +72,9 @@ void searchForPackages(
     std::unordered_map<std::string, std::string>& _packageMap)
 {
   using boost::filesystem::directory_iterator;
-  using boost::filesystem::path;
-  using boost::filesystem::file_status;
   using boost::filesystem::exists;
+  using boost::filesystem::file_status;
+  using boost::filesystem::path;
 
   // Ignore this directory if it contains a CATKIN_IGNORE file.
   const path catkin_ignore_path = _packagePath / "CATKIN_IGNORE";
@@ -164,8 +164,8 @@ dart::common::ResourcePtr CatkinResourceRetriever::retrieve(const Uri& _uri)
 //==============================================================================
 auto CatkinResourceRetriever::getWorkspaces() const -> std::vector<Workspace>
 {
-  using dart::common::ResourcePtr;
   using boost::filesystem::path;
+  using dart::common::ResourcePtr;
 
   const char* cmake_prefix_path = std::getenv("CMAKE_PREFIX_PATH");
   if (!cmake_prefix_path)

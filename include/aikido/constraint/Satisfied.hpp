@@ -11,9 +11,10 @@ namespace constraint {
 /// A constraint which is always satisfied.
 /// This class is often used in CartesianProduct constraints
 /// to represent that some subspace doesn't have any constraint.
-class Satisfied : public constraint::Differentiable,
-                  public constraint::Projectable,
-                  public constraint::Testable
+class Satisfied
+  : public constraint::Differentiable
+  , public constraint::Projectable
+  , public constraint::Testable
 {
 public:
   using Differentiable::getValueAndJacobian;

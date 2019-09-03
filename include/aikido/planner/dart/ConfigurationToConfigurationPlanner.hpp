@@ -12,8 +12,9 @@ namespace dart {
 
 /// Base planner class for ConfigurationToEndEffectorOffset planning problem.
 class ConfigurationToConfigurationPlanner
-    : public dart::SingleProblemPlanner<ConfigurationToConfigurationPlanner,
-                                        ConfigurationToConfiguration>
+  : public dart::SingleProblemPlanner<
+        ConfigurationToConfigurationPlanner,
+        ConfigurationToConfiguration>
 {
 public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in

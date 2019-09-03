@@ -68,7 +68,7 @@ aikido::trajectory::InterpolatedPtr constructTrajectory(
   return returnInterpolated;
 }
 
-} // nampespace
+} // namespace
 
 // Test that the start and goal positions do not change
 TEST_F(SimplifierTest, EndPointsRemainUnchanged)

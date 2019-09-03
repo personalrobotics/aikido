@@ -14,12 +14,12 @@
 
 #include "DynamicPath.h"
 
-using Eigen::Vector2d;
 using aikido::statespace::StateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::trajectory::toR1JointTrajectory;
 using aikido::trajectory::ConstInterpolatedPtr;
 using aikido::trajectory::ConstSplinePtr;
+using aikido::trajectory::toR1JointTrajectory;
+using Eigen::Vector2d;
 
 using CubicSplineProblem
     = aikido::common::SplineProblem<double, int, 4, Eigen::Dynamic, 2>;

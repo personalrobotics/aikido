@@ -15,14 +15,14 @@
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
-using aikido::statespace::R;
-using aikido::statespace::R1;
-using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::StateSpacePtr;
+using aikido::statespace::R;
+using aikido::statespace::R1;
+using aikido::statespace::SO2;
 using aikido::statespace::StateSpace;
+using aikido::statespace::StateSpacePtr;
 
 using aikido::distance::createDistanceMetric;
 

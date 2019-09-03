@@ -20,7 +20,7 @@ namespace ros {
 /// pr_control_msgs/SetPosition. It specifies a set of target
 /// positions and sends it to the ROS server for execution
 class RosPositionCommandExecutor
-    : public aikido::control::PositionCommandExecutor
+  : public aikido::control::PositionCommandExecutor
 {
 public:
   /// Constructor

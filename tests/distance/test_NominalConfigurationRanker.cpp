@@ -12,11 +12,11 @@ static constexpr double EPS = 1e-6;
 using aikido::distance::NominalConfigurationRanker;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using dart::dynamics::Skeleton;
-using dart::dynamics::SkeletonPtr;
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 
 static BodyNode::Properties create_BodyNodeProperties(const std::string& name)
 {

@@ -10,13 +10,13 @@
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/util.hpp>
 
-using std::shared_ptr;
-using std::make_shared;
-using aikido::trajectory::Interpolated;
-using aikido::statespace::R1;
 using aikido::statespace::CartesianProduct;
-using aikido::trajectory::toR1JointTrajectory;
 using aikido::statespace::ConstStateSpacePtr;
+using aikido::statespace::R1;
+using aikido::trajectory::Interpolated;
+using aikido::trajectory::toR1JointTrajectory;
+using std::make_shared;
+using std::shared_ptr;
 
 //==============================================================================
 class TrajectoryConversionTest : public ::testing::Test

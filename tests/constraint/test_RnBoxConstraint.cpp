@@ -5,18 +5,18 @@
 #include <aikido/distance/RnEuclidean.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
-using aikido::statespace::R2;
-using aikido::statespace::Rn;
-using aikido::constraint::uniform::R2BoxConstraint;
-using aikido::constraint::uniform::RnBoxConstraint;
-using aikido::constraint::ConstraintType;
-using aikido::constraint::SampleGenerator;
-using aikido::distance::R2Euclidean;
-using aikido::distance::RnEuclidean;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
-using Eigen::Vector2d;
+using aikido::constraint::ConstraintType;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::uniform::R2BoxConstraint;
+using aikido::constraint::uniform::RnBoxConstraint;
+using aikido::distance::R2Euclidean;
+using aikido::distance::RnEuclidean;
+using aikido::statespace::R2;
+using aikido::statespace::Rn;
 using Eigen::Matrix2d;
+using Eigen::Vector2d;
 
 class RnBoxConstraintTests : public ::testing::Test
 {

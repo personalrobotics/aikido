@@ -7,14 +7,14 @@
 #include <aikido/statespace/Rn.hpp>
 #include "eigen_tests.hpp"
 
-using Eigen::Vector2d;
-using aikido::trajectory::Interpolated;
+using aikido::constraint::Satisfied;
+using aikido::planner::parabolic::ParabolicSmoother;
+using aikido::statespace::CartesianProduct;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R1;
-using aikido::statespace::CartesianProduct;
-using aikido::constraint::Satisfied;
-using aikido::planner::parabolic::ParabolicSmoother;
+using aikido::trajectory::Interpolated;
+using Eigen::Vector2d;
 
 class SmoothPostProcessorTests : public ::testing::Test
 {

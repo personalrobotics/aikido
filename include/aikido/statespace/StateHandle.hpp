@@ -20,10 +20,10 @@ public:
   using QualifiedState = _QualifiedState;
 
   using State = typename StateSpace::State;
-  using ConstState =
-      typename std::conditional<std::is_const<QualifiedState>::value,
-                                QualifiedState,
-                                const QualifiedState>::type;
+  using ConstState = typename std::conditional<
+      std::is_const<QualifiedState>::value,
+      QualifiedState,
+      const QualifiedState>::type;
 
   /// Constructs a nullptr handle.
   StateHandle();

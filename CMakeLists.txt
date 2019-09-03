@@ -261,10 +261,10 @@ endif()
 # Automatic code formatting using clang-format.
 #
 # We only support one specific ClangFormat version because different versions
-# result in different code formatting with the same configuration. ClangFormat
-# 3.8 is chosen since it's the latest version supported by Ubuntu Trusty.
+# result in different code formatting with the same configuration. The current
+# supported version is 6.0.
 
-clang_format_setup(VERSION 3.8)
+clang_format_setup(VERSION 6.0)
 
 if (CLANG_FORMAT_EXECUTABLE)
   clang_format_add_sources(${aikido_headers})

@@ -21,12 +21,14 @@ testing::AssertionResult CompareEigenMatrices(
     double _epsilon)
 {
   static_assert(
-      std::is_same<typename Eigen::MatrixBase<Derived1>::Index,
-                   typename Eigen::MatrixBase<Derived2>::Index>::value,
+      std::is_same<
+          typename Eigen::MatrixBase<Derived1>::Index,
+          typename Eigen::MatrixBase<Derived2>::Index>::value,
       "Matrices have different Index types.");
   static_assert(
-      std::is_same<typename Eigen::MatrixBase<Derived1>::Scalar,
-                   typename Eigen::MatrixBase<Derived2>::Scalar>::value,
+      std::is_same<
+          typename Eigen::MatrixBase<Derived1>::Scalar,
+          typename Eigen::MatrixBase<Derived2>::Scalar>::value,
       "Matrices have different Scalar types.");
 
   using Index = typename Eigen::MatrixBase<Derived1>::Index;
