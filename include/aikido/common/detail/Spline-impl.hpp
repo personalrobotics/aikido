@@ -6,15 +6,17 @@
 namespace aikido {
 namespace common {
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::SplineND(
     const TimeVector& _times,
-    const std::vector<SolutionMatrix,
-                      Eigen::aligned_allocator<SolutionMatrix> >& _solution)
+    const std::vector<
+        SolutionMatrix,
+        Eigen::aligned_allocator<SolutionMatrix> >& _solution)
   : mTimes(_times), mSolution(_solution)
 {
   if (static_cast<std::size_t>(mTimes.size()) != mSolution.size() + 1u)
@@ -24,77 +26,84 @@ SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::SplineND(
     throw std::invalid_argument("Times are not monotonically increasing.");
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 void SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::setTime(
     Index _index, Scalar _t)
 {
   mTimes[_index] = _t;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 void SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     setTimes(TimeVector&& _t)
 {
   mTimes = _t;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 void SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     setTimes(const TimeVector& _t)
 {
   mTimes = _t;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getTimes() const -> const TimeVector&
 {
   return mTimes;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getCoefficients() const -> const SolutionMatrices&
 {
   return mSolution;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 Index SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getNumKnots() const
 {
   return mTimes.size();
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 Index SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getNumOutputs() const
 {
@@ -106,11 +115,12 @@ Index SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     return 0;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 Index SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getNumCoefficients() const
 {
@@ -122,22 +132,24 @@ Index SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     return 0;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 Index SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getNumDerivatives() const
 {
   return getNumCoefficients() - 1;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 Scalar
 SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::getDuration()
     const
@@ -148,11 +160,12 @@ SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::getDuration()
     return 0;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getSegmentIndex(Scalar _t) const -> Index
 {
@@ -174,11 +187,12 @@ auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
   }
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     evaluate(Scalar _t, Index _derivative) const -> OutputVector
 {
@@ -218,11 +232,12 @@ auto SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
 
 // --
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     SplineProblem(const TimeVector& _times)
   : SplineProblem(_times, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime)
@@ -235,11 +250,12 @@ SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
       "NumOutputsAtCompileTime must be static to use this constructor.");
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     SplineProblem(
         const TimeVector& _times, Index _numCoefficients, Index _numOutputs)
@@ -264,11 +280,12 @@ SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
   }
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     addConstantConstraint(
         Index _knot, Index _derivative, const OutputVector& _value)
@@ -317,11 +334,12 @@ void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
   }
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     addContinuityConstraint(Index _knot, Index _derivative)
 {
@@ -354,11 +372,12 @@ void SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
   ++mRowIndex;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     createTimeVector(Scalar _t, Index _i, Index _n) -> CoefficientVector
 {
@@ -383,11 +402,12 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
   return exponents;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     fit() -> Spline
 {
@@ -422,11 +442,12 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
   return Spline(mTimes, mSolution);
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     createCoefficientMatrix(Index _n) -> CoefficientMatrix
 {
@@ -448,33 +469,36 @@ auto SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
   return coefficients;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 Index SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getNumKnots() const
 {
   return mNumKnots;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 Index SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getNumOutputs() const
 {
   return mNumOutputs;
 }
 
-template <class Scalar,
-          class Index,
-          Index _NumCoefficients,
-          Index _NumOutputs,
-          Index _NumKnots>
+template <
+    class Scalar,
+    class Index,
+    Index _NumCoefficients,
+    Index _NumOutputs,
+    Index _NumKnots>
 Scalar SplineProblem<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>::
     getDuration() const
 {

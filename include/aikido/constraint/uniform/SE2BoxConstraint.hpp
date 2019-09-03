@@ -15,9 +15,10 @@ namespace uniform {
 ///
 /// This class does *not* allow constraint on rotation. For each dimension x and
 /// y, this constraint has lowerLimit and upperLimit.
-class SE2BoxConstraint : public constraint::Projectable,
-                         public constraint::Sampleable,
-                         public constraint::Testable
+class SE2BoxConstraint
+  : public constraint::Projectable
+  , public constraint::Sampleable
+  , public constraint::Testable
 {
 public:
   using constraint::Projectable::project;

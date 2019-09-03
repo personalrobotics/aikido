@@ -1,7 +1,7 @@
 #include <aikido/rviz/InteractiveMarkerViewer.hpp>
 
-#include "aikido/common/memory.hpp"
 #include <dart/dart.hpp>
+#include "aikido/common/memory.hpp"
 #include <aikido/rviz/FrameMarker.hpp>
 #include <aikido/rviz/SkeletonMarker.hpp>
 #include <aikido/rviz/TrajectoryMarker.hpp>

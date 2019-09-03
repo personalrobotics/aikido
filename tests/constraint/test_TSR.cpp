@@ -1,18 +1,18 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include "aikido/common/memory.hpp"
 #include <dart/math/Geometry.hpp>
 #include <gtest/gtest.h>
+#include "aikido/common/memory.hpp"
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/Differentiable.hpp>
 #include <aikido/constraint/dart/TSR.hpp>
 #include <aikido/statespace/SE3.hpp>
 
-using aikido::constraint::dart::TSR;
-using aikido::constraint::ConstraintType;
-using aikido::statespace::SE3;
-using aikido::common::RNGWrapper;
 using aikido::common::RNG;
+using aikido::common::RNGWrapper;
+using aikido::constraint::ConstraintType;
+using aikido::constraint::dart::TSR;
+using aikido::statespace::SE3;
 
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 

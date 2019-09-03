@@ -11,7 +11,7 @@ namespace vectorfield {
 /// Planner that generates a trajectory that moves the end-effector by a given
 /// direction and distance.
 class VectorFieldConfigurationToEndEffectorOffsetPlanner
-    : public planner::dart::ConfigurationToEndEffectorOffsetPlanner
+  : public planner::dart::ConfigurationToEndEffectorOffsetPlanner
 {
 public:
   /// Constructor.

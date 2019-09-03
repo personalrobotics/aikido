@@ -20,7 +20,6 @@ namespace ompl {
 using aikido::constraint::dart::createProjectableBounds;
 using aikido::constraint::dart::createSampleableBounds;
 using aikido::constraint::dart::createTestableBounds;
-using aikido::constraint::dart::createProjectableBounds;
 using aikido::distance::createDistanceMetric;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 

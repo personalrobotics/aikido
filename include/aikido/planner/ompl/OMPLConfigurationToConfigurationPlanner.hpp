@@ -26,7 +26,7 @@ namespace ompl {
 /// \tparam PlannerType The OMPL Planner to use.
 template <class PlannerType>
 class OMPLConfigurationToConfigurationPlanner
-    : public aikido::planner::ConfigurationToConfigurationPlanner
+  : public aikido::planner::ConfigurationToConfigurationPlanner
 {
 public:
   /// Constructor.

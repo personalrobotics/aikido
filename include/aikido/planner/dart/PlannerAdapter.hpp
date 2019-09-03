@@ -10,9 +10,10 @@ namespace dart {
 ///
 /// \tparam DelegatePlanner type of \c SingleProblemPlanner to delegate to
 /// \tparam TargetPlanner type of \c dart::SingleProblemPlanner to implement
-template <typename DelegatePlanner,
-          typename TargetPlanner,
-          typename DelegateIsDartPlanner = void>
+template <
+    typename DelegatePlanner,
+    typename TargetPlanner,
+    typename DelegateIsDartPlanner = void>
 class PlannerAdapter : public TargetPlanner
 {
 public:
@@ -38,16 +39,14 @@ protected:
 /// \tparam DelegatePlanner type of \c dart::SingleProblemPlanner to delegate to
 /// \tparam TargetPlanner type of \c dart::SingleProblemPlanner to implement
 template <typename DelegatePlanner, typename TargetPlanner>
-class
-    PlannerAdapter<DelegatePlanner,
-                   TargetPlanner,
-                   typename std::
-                       enable_if<std::
-                                     is_base_of<dart::
-                                                    SingleProblemPlanner<DelegatePlanner,
-                                                                         typename DelegatePlanner::
-                                                                             SolvableProblem>,
-                                                DelegatePlanner>::value>::type>
+class PlannerAdapter<
+    DelegatePlanner,
+    TargetPlanner,
+    typename std::enable_if<std::is_base_of<
+        dart::SingleProblemPlanner<
+            DelegatePlanner,
+            typename DelegatePlanner::SolvableProblem>,
+        DelegatePlanner>::value>::type>
 {
 public:
   /// Constructor to adapt DART planners.

@@ -10,14 +10,14 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using aikido::constraint::dart::FrameDifferentiable;
 using aikido::constraint::dart::TSR;
 using aikido::statespace::SE3;
 using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using aikido::common::RNG;
-using aikido::common::RNGWrapper;
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::FreeJoint;

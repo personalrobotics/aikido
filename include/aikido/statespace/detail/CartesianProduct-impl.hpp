@@ -9,15 +9,15 @@ namespace statespace {
 /// necessary to support both \c const and non-<tt>const</tt> states.
 template <class _QualifiedState>
 class CompoundStateHandle
-    : public statespace::StateHandle<CartesianProduct, _QualifiedState>
+  : public statespace::StateHandle<CartesianProduct, _QualifiedState>
 {
 public:
-  using typename statespace::StateHandle<CartesianProduct,
-                                         _QualifiedState>::State;
-  using typename statespace::StateHandle<CartesianProduct,
-                                         _QualifiedState>::StateSpace;
-  using typename statespace::StateHandle<CartesianProduct,
-                                         _QualifiedState>::QualifiedState;
+  using typename statespace::StateHandle<CartesianProduct, _QualifiedState>::
+      State;
+  using typename statespace::StateHandle<CartesianProduct, _QualifiedState>::
+      StateSpace;
+  using typename statespace::StateHandle<CartesianProduct, _QualifiedState>::
+      QualifiedState;
 
   /// Construct and initialize to \c nullptr.
   CompoundStateHandle()

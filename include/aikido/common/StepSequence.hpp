@@ -93,10 +93,11 @@ private:
 };
 
 class StepSequence::const_iterator
-    : public boost::iterator_facade<StepSequence::const_iterator,
-                                    double,
-                                    boost::forward_traversal_tag,
-                                    double>
+  : public boost::iterator_facade<
+        StepSequence::const_iterator,
+        double,
+        boost::forward_traversal_tag,
+        double>
 {
 public:
   /// Dereference implementation for boost::iterator_facade.

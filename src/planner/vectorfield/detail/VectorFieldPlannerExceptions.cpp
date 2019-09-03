@@ -45,7 +45,7 @@ TimeLimitError::TimeLimitError() : VectorFieldTerminated("Reached time limit.")
   // DO nothing
 }
 
-} // detail namespace
+} // namespace detail
 } // namespace vectorfield
 } // namespace planner
 } // namespace aikido

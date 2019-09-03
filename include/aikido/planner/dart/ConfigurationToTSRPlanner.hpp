@@ -13,8 +13,8 @@ namespace dart {
 
 /// Base planner class for ConfigurationToTSR planning problem.
 class ConfigurationToTSRPlanner
-    : public dart::SingleProblemPlanner<ConfigurationToTSRPlanner,
-                                        ConfigurationToTSR>
+  : public dart::
+        SingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>
 {
 public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in

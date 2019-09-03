@@ -4,25 +4,27 @@
 #include <fstream>
 #include <iostream>
 #include <boost/program_options.hpp>
-#include "aikido/common/memory.hpp"
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
+#include "aikido/common/memory.hpp"
+#include "aikido/distance/defaults.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SO2.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
-using aikido::statespace::R;
-using aikido::statespace::R1;
-using aikido::statespace::SO2;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
+using aikido::statespace::R;
+using aikido::statespace::R1;
+using aikido::statespace::SO2;
+using aikido::statespace::StateSpace;
 using aikido::statespace::StateSpacePtr;
-using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+
+using aikido::distance::createDistanceMetric;
 
 using Eigen::Vector2d;
 using LinearSplineProblem
@@ -87,8 +89,8 @@ UniqueSplinePtr convertToSpline(const Interpolated& inputTrajectory)
   if (numWaypoints == 0)
     throw std::invalid_argument("Trajectory is empty.");
 
-  auto outputTrajectory
-      = ::aikido::common::make_unique<Spline>(stateSpace, inputTrajectory.getStartTime());
+  auto outputTrajectory = ::aikido::common::make_unique<Spline>(
+      stateSpace, inputTrajectory.getStartTime());
 
   Eigen::VectorXd currentVec, nextVec;
   for (std::size_t iwaypoint = 0; iwaypoint < numWaypoints - 1; ++iwaypoint)
@@ -151,37 +153,36 @@ UniqueInterpolatedPtr concatenate(
 //==============================================================================
 double findTimeOfClosestStateOnTrajectory(
     const Trajectory& traj,
-    const Eigen::VectorXd& referenceState,
+    const statespace::StateSpace::State* referenceState,
+    double& distance,
     double timeStep)
 {
   auto stateSpace = traj.getStateSpace();
-  const std::size_t configSize
-      = static_cast<std::size_t>(referenceState.size());
-  if (configSize != stateSpace->getDimension())
-    throw std::runtime_error("Dimension mismatch");
 
-  double findTime = traj.getStartTime();
+  double timeOfClosestState = traj.getStartTime();
   double minDist = std::numeric_limits<double>::max();
 
   const common::StepSequence sequence(
       timeStep, true, true, traj.getStartTime(), traj.getEndTime());
 
+  auto metric = createDistanceMetric(stateSpace);
   auto currState = stateSpace->createState();
-  Eigen::VectorXd currPos(stateSpace->getDimension());
+
   for (const double currTime : sequence)
   {
     traj.evaluate(currTime, currState);
-    stateSpace->logMap(currState, currPos);
 
-    const double currDist = (referenceState - currPos).norm();
+    auto currDist = metric->distance(currState, referenceState);
+
     if (currDist < minDist)
     {
-      findTime = currTime;
       minDist = currDist;
+      timeOfClosestState = currTime;
     }
   }
 
-  return findTime;
+  distance = minDist;
+  return timeOfClosestState;
 }
 
 //==============================================================================
@@ -196,7 +197,8 @@ UniqueSplinePtr createPartialTrajectory(
 
   const auto stateSpace = traj.getStateSpace();
   const int dimension = static_cast<int>(stateSpace->getDimension());
-  auto outputTrajectory = ::aikido::common::make_unique<Spline>(stateSpace, traj.getStartTime());
+  auto outputTrajectory
+      = ::aikido::common::make_unique<Spline>(stateSpace, traj.getStartTime());
 
   double currSegmentStartTime = traj.getStartTime();
   double currSegmentEndTime = currSegmentStartTime;
@@ -278,7 +280,8 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 
   auto rSpace = std::make_shared<CartesianProduct>(subspaces);
   auto rInterpolator = std::make_shared<GeodesicInterpolator>(rSpace);
-  auto rTrajectory = ::aikido::common::make_unique<Interpolated>(rSpace, rInterpolator);
+  auto rTrajectory
+      = ::aikido::common::make_unique<Interpolated>(rSpace, rInterpolator);
 
   Eigen::VectorXd sourceVector(space->getDimension());
   auto sourceState = rSpace->createState();

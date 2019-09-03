@@ -6,13 +6,13 @@
 #include <aikido/rviz/ResourceServer.hpp>
 #include <aikido/rviz/shape_conversions.hpp>
 
+using dart::dynamics::CollisionAspect;
+using dart::dynamics::ConstShapePtr;
+using dart::dynamics::ShapeFrame;
+using dart::dynamics::VisualAspect;
 using interactive_markers::InteractiveMarkerServer;
 using visualization_msgs::InteractiveMarkerControl;
 using visualization_msgs::Marker;
-using dart::dynamics::CollisionAspect;
-using dart::dynamics::VisualAspect;
-using dart::dynamics::ShapeFrame;
-using dart::dynamics::ConstShapePtr;
 
 namespace aikido {
 namespace rviz {

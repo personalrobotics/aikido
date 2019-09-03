@@ -12,9 +12,9 @@
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
-using aikido::planner::vectorfield::detail::VectorFieldIntegrator;
 using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
 using aikido::planner::vectorfield::MoveEndEffectorPoseVectorField;
+using aikido::planner::vectorfield::detail::VectorFieldIntegrator;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
 
 namespace aikido {
@@ -34,12 +34,12 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
     planner::Planner::Result* result)
 {
   using namespace std::placeholders;
-  using errorStepper = boost::numeric::odeint::
-      runge_kutta_dopri5<Eigen::VectorXd,
-                         double,
-                         Eigen::VectorXd,
-                         double,
-                         boost::numeric::odeint::vector_space_algebra>;
+  using errorStepper = boost::numeric::odeint::runge_kutta_dopri5<
+      Eigen::VectorXd,
+      double,
+      Eigen::VectorXd,
+      double,
+      boost::numeric::odeint::vector_space_algebra>;
 
   std::size_t dimension = vectorField.getStateSpace()->getDimension();
   auto integrator = std::make_shared<detail::VectorFieldIntegrator>(

@@ -89,6 +89,6 @@ bool MotionValidator::checkMotion(
 
   return valid;
 }
-}
-}
-}
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

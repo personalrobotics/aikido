@@ -7,9 +7,9 @@
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
 
-using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::planner::ompl::MotionValidator;
 using aikido::planner::ompl::ompl_make_shared;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
 
 /// This test creates a world with a translational robot
 /// and a .2x.2x.2 block obstacle at the origin
@@ -100,9 +100,8 @@ TEST_F(MotionValidatorTest, SuccessValidationLastValid)
   lastValid.first = si->allocState();
   EXPECT_TRUE(validator->checkMotion(state1, state2, lastValid));
   EXPECT_DOUBLE_EQ(1.0, lastValid.second);
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, lastValid.first)
-          .isApprox(Eigen::Vector3d(-5, 5, 0.)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, lastValid.first)
+                  .isApprox(Eigen::Vector3d(-5, 5, 0.)));
 }
 
 TEST_F(MotionValidatorTest, FailedValidationLastValid)
@@ -114,9 +113,8 @@ TEST_F(MotionValidatorTest, FailedValidationLastValid)
   lastValid.first = si->allocState();
   EXPECT_FALSE(validator->checkMotion(state1, state2, lastValid));
   EXPECT_DOUBLE_EQ((5 - 0.2) / 10, lastValid.second);
-  EXPECT_TRUE(
-      getTranslationalState(stateSpace, lastValid.first)
-          .isApprox(Eigen::Vector3d(0, -0.2, 0.)));
+  EXPECT_TRUE(getTranslationalState(stateSpace, lastValid.first)
+                  .isApprox(Eigen::Vector3d(0, -0.2, 0.)));
 }
 
 TEST_F(MotionValidatorTest, BadValidationSmallResolution)

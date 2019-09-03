@@ -62,7 +62,7 @@ protected:
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
-}
+} // namespace
 
 //==============================================================================
 bool computeJointVelocityFromTwist(
@@ -125,9 +125,8 @@ bool computeJointVelocityFromTwist(
   }
 
   problem->setInitialGuess(initialGuess);
-  problem->setObjective(
-      dart::common::make_aligned_shared<DesiredTwistFunction>(
-          desiredTwist, jacobian));
+  problem->setObjective(dart::common::make_aligned_shared<DesiredTwistFunction>(
+      desiredTwist, jacobian));
 
 #if DART_VERSION_AT_LEAST(6, 9, 0)
   dart::optimizer::NloptSolver solver(

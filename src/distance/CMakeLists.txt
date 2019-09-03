@@ -5,6 +5,7 @@ set(sources
   JointAvoidanceConfigurationRanker.cpp
   NominalConfigurationRanker.cpp
   RnEuclidean.cpp
+  SE2.cpp
   SE2Weighted.cpp
   SO2Angular.cpp
   SO3Angular.cpp
