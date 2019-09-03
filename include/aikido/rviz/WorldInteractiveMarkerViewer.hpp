@@ -2,6 +2,7 @@
 #define AIKIDO_RVIZ_WORLDINTERACTIVEMARKERVIEWER_HPP_
 
 #include <map>
+
 #include <aikido/planner/World.hpp>
 #include <aikido/rviz/InteractiveMarkerViewer.hpp>
 #include <aikido/rviz/pointers.hpp>

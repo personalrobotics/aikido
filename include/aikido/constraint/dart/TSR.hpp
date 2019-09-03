@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <dart/math/MathTypes.hpp>
+
 #include "aikido/constraint/Differentiable.hpp"
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"

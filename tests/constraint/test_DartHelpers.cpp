@@ -1,5 +1,6 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
+
 #include "aikido/common/memory.hpp"
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/dart/JointStateSpaceHelpers.hpp>

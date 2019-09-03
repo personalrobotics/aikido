@@ -3,6 +3,7 @@
 
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/StateValidityChecker.h>
+
 #include "../../constraint/Testable.hpp"
 #include "../../statespace/StateSpace.hpp"
 

@@ -2,6 +2,7 @@
 #include <Eigen/Geometry>
 #include <dart/math/Geometry.hpp>
 #include <gtest/gtest.h>
+
 #include "aikido/common/memory.hpp"
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/Differentiable.hpp>

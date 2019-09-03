@@ -1,9 +1,9 @@
-#include <aikido/common/VanDerCorput.hpp>
-
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <stdexcept>
+
+#include <aikido/common/VanDerCorput.hpp>
 
 namespace aikido {
 namespace common {

@@ -4,12 +4,14 @@
 #include <chrono>
 #include <future>
 #include <mutex>
+
 #include <Eigen/Dense>
 #include <actionlib/client/action_client.h>
 #include <pr_control_msgs/SetPositionAction.h>
 #include <ros/callback_queue.h>
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
+
 #include "aikido/control/PositionCommandExecutor.hpp"
 
 namespace aikido {

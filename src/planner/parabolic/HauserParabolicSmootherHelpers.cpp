@@ -1,7 +1,10 @@
 #include "HauserParabolicSmootherHelpers.hpp"
+
 #include <chrono>
 #include <cmath>
+
 #include <aikido/common/VanDerCorput.hpp>
+
 #include "Config.h"
 #include "HauserMath.h"
 #include "ParabolicUtil.hpp"

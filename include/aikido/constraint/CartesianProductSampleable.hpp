@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_CARTESIANPRODUCTSAMPLEABLE_HPP_
 
 #include <vector>
+
 #include "../statespace/CartesianProduct.hpp"
 #include "Sampleable.hpp"
 

@@ -1,5 +1,6 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SE2.hpp>

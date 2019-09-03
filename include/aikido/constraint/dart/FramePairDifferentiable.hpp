@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/constraint/Differentiable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 

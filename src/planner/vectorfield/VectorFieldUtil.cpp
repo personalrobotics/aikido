@@ -1,6 +1,7 @@
 #include <Eigen/Geometry>
 #include <dart/optimizer/Solver.hpp>
 #include <dart/optimizer/nlopt/NloptSolver.hpp>
+
 #include <aikido/common/algorithm.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/trajectory/Spline.hpp>

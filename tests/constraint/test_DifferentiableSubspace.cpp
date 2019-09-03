@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/DifferentiableSubspace.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
+
 #include "../eigen_tests.hpp"
 #include "PolynomialConstraint.hpp"
 

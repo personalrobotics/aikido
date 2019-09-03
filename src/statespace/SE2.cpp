@@ -1,4 +1,5 @@
 #include <Eigen/Geometry>
+
 #include <aikido/statespace/SE2.hpp>
 
 namespace aikido {

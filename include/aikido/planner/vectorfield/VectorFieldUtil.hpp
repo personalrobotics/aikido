@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELDUTIL_HPP_
 
 #include <dart/dynamics/BodyNode.hpp>
+
 #include <aikido/common/Spline.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>

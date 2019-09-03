@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include <aikido/statespace/CartesianProduct.hpp>
 
 namespace aikido {

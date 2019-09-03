@@ -5,6 +5,7 @@
 #include <ros/topic.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+
 #include "aikido/perception/shape_conversions.hpp"
 
 namespace aikido {

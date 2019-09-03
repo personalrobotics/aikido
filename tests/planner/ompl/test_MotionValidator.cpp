@@ -1,9 +1,11 @@
 #include <boost/make_shared.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/StateValidityChecker.hpp>
 #include <aikido/planner/ompl/dart.hpp>
+
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
 

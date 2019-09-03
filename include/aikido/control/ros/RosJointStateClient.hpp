@@ -2,6 +2,7 @@
 #define AIKIDO_CONTROL_ROS_ROSJOINTSTATECLIENT_HPP_
 
 #include <string>
+
 #include <boost/circular_buffer.hpp>
 #include <dart/dynamics/dynamics.hpp>
 #include <ros/callback_queue.h>

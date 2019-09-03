@@ -1,5 +1,6 @@
 #include <ompl/base/goals/GoalSampleableRegion.h>
 #include <ompl/tools/config/SelfConfig.h>
+
 #include <aikido/planner/ompl/BackwardCompatibility.hpp>
 #include <aikido/planner/ompl/CRRTConnect.hpp>
 #include <aikido/planner/ompl/GeometricStateSpace.hpp>

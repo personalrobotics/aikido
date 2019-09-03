@@ -1,6 +1,7 @@
 #ifndef AIKIDO_STATESPACE_SE2STATESPACE_HPP_
 #define AIKIDO_STATESPACE_SE2STATESPACE_HPP_
 #include <Eigen/Geometry>
+
 #include "ScopedState.hpp"
 #include "StateSpace.hpp"
 

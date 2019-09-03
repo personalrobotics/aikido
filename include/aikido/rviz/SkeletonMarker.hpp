@@ -2,10 +2,13 @@
 #define AIKIDO_RVIZ_SKELETONMARKER_HPP_
 
 #include <unordered_map>
+
 #include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
+
 #include "aikido/common/pointers.hpp"
+
 #include "BodyNodeMarker.hpp"
 #include "ResourceServer.hpp"
 

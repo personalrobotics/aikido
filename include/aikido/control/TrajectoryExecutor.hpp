@@ -4,6 +4,7 @@
 #include <chrono>
 #include <future>
 #include <set>
+
 #include "aikido/common/pointers.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 

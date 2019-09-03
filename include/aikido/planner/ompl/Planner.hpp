@@ -4,6 +4,13 @@
 #include <chrono>
 #include <utility> // std::pair
 
+#include <ompl/base/Planner.h>
+#include <ompl/base/ProblemDefinition.h>
+#include <ompl/base/ScopedState.h>
+#include <ompl/base/SpaceInformation.h>
+#include <ompl/base/goals/GoalRegion.h>
+#include <ompl/geometric/PathSimplifier.h>
+
 #include "../../constraint/Projectable.hpp"
 #include "../../constraint/Sampleable.hpp"
 #include "../../constraint/Testable.hpp"
@@ -13,14 +20,6 @@
 #include "../../statespace/Interpolator.hpp"
 #include "../../statespace/StateSpace.hpp"
 #include "../../trajectory/Interpolated.hpp"
-
-#include <ompl/base/Planner.h>
-#include <ompl/base/ProblemDefinition.h>
-#include <ompl/base/ScopedState.h>
-#include <ompl/base/SpaceInformation.h>
-#include <ompl/base/goals/GoalRegion.h>
-
-#include <ompl/geometric/PathSimplifier.h>
 
 namespace aikido {
 namespace planner {

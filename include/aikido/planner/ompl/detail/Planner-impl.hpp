@@ -1,4 +1,5 @@
 #include <ompl/geometric/PathGeometric.h>
+
 #include "../../../planner/ompl/BackwardCompatibility.hpp"
 #include "../../../trajectory/Interpolated.hpp"
 #include "../GeometricStateSpace.hpp"

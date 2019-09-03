@@ -1,8 +1,8 @@
-#include <aikido/planner/ompl/MotionValidator.hpp>
-
 #include <ompl/base/SpaceInformation.h>
+
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/common/VanDerCorput.hpp>
+#include <aikido/planner/ompl/MotionValidator.hpp>
 
 namespace aikido {
 namespace planner {

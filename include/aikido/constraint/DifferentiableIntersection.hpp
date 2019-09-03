@@ -2,7 +2,9 @@
 #define AIKIDO_CONSTRAINT_DIFFERENTIABLEINTERSECTION_HPP_
 
 #include <memory>
+
 #include <Eigen/Dense>
+
 #include "../statespace/StateSpace.hpp"
 #include "Differentiable.hpp"
 

@@ -1,6 +1,7 @@
 #include "aikido/constraint/SequentialSampleable.hpp"
 
 #include <dart/common/Console.hpp>
+
 #include "aikido/common/memory.hpp"
 
 namespace aikido {

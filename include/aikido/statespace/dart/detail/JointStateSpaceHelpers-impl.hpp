@@ -1,5 +1,7 @@
 #include <memory>
+
 #include "aikido/common/memory.hpp"
+
 #include "../../../common/metaprogramming.hpp"
 #include "../RnJoint.hpp"
 #include "../SE2Joint.hpp"

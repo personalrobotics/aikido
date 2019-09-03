@@ -1,4 +1,5 @@
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
+
 #include "aikido/statespace/SE3.hpp"
 
 #undef dtwarn

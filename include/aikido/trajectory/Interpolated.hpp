@@ -2,6 +2,7 @@
 #define AIKIDO_TRAJECTORY_PIECEWISELINEAR_TRAJECTORY_HPP_
 
 #include "aikido/common/pointers.hpp"
+
 #include "../statespace/GeodesicInterpolator.hpp"
 #include "Trajectory.hpp"
 

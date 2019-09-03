@@ -2,6 +2,7 @@
 #define AIKIDO_TRAJECTORY_SPLINETRAJECTORY2_HPP_
 
 #include "aikido/common/pointers.hpp"
+
 #include "Trajectory.hpp"
 
 namespace aikido {

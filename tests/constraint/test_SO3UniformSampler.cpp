@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
+
 #include "aikido/common/memory.hpp"
 #include <aikido/constraint/uniform/SO3UniformSampler.hpp>
 #include <aikido/distance/SO3Angular.hpp>
+
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::common::RNG;

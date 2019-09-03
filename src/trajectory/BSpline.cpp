@@ -1,7 +1,9 @@
 #include "aikido/trajectory/BSpline.hpp"
 
 #include <sstream>
+
 #include <Eigen/Core>
+
 #include "aikido/common/StepSequence.hpp"
 #include "aikido/common/memory.hpp"
 

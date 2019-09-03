@@ -1,7 +1,9 @@
 #ifndef AIKIDO_TESTS_CONSTRAINT_SAMPLEGENERATORCOVERAGE_H_
 #define AIKIDO_TESTS_CONSTRAINT_SAMPLEGENERATORCOVERAGE_H_
 #include <vector>
+
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/Sampleable.hpp>
 #include <aikido/distance/DistanceMetric.hpp>
 

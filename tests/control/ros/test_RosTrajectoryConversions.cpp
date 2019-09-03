@@ -1,20 +1,22 @@
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/control/ros/Conversions.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/trajectory/Spline.hpp>
+
 #include "eigen_tests.hpp"
 
-using dart::dynamics::SkeletonPtr;
-using dart::dynamics::Skeleton;
+using aikido::control::ros::toRosJointTrajectory;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+using aikido::tests::make_vector;
+using aikido::trajectory::Spline;
+using dart::dynamics::BallJoint;
 using dart::dynamics::BodyNode;
 using dart::dynamics::RevoluteJoint;
-using dart::dynamics::BallJoint;
-using aikido::trajectory::Spline;
-using aikido::control::ros::toRosJointTrajectory;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::tests::make_vector;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 
 static const double kTolerance{1e-6};
 

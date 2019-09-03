@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_PROJECTABLE_H
 
 #include <Eigen/Dense>
+
 #include "../statespace/StateSpace.hpp"
 
 namespace aikido {

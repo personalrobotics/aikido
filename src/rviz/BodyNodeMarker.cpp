@@ -1,7 +1,7 @@
-#include <aikido/rviz/BodyNodeMarker.hpp>
-
 #include <sstream>
 #include <unordered_set>
+
+#include <aikido/rviz/BodyNodeMarker.hpp>
 #include <aikido/rviz/shape_conversions.hpp>
 
 using dart::dynamics::BodyNode;

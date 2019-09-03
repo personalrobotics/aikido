@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_DART_CONFIGURATIONTOENDEFFECTORPOSE_HPP_
 
 #include <dart/dart.hpp>
+
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Interpolated.hpp"

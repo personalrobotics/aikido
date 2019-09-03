@@ -2,6 +2,7 @@
 #define AIKIDO_STATESPACE_SO2STATESPACE_HPP_
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+
 #include "ScopedState.hpp"
 #include "StateSpace.hpp"
 

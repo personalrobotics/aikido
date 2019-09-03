@@ -3,8 +3,10 @@
 
 #include <sstream>
 #include <unordered_map>
+
 #include <Eigen/Dense>
 #include <yaml-cpp/yaml.h>
+
 #include "aikido/common/memory.hpp"
 
 namespace aikido {

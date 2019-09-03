@@ -1,7 +1,10 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+
 #include <cassert>
 #include <sstream>
+
 #include <dart/common/Console.hpp>
+
 #include "aikido/common/memory.hpp"
 #include "aikido/statespace/dart/JointStateSpaceHelpers.hpp"
 

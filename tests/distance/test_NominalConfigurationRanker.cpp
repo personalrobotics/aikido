@@ -1,10 +1,12 @@
-#include "aikido/distance/NominalConfigurationRanker.hpp"
-
 #include <random>
+
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
+#include "aikido/distance/NominalConfigurationRanker.hpp"
 #include <aikido/common/RNG.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+
 #include "eigen_tests.hpp"
 
 static constexpr double EPS = 1e-6;

@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_OMPL_DART_HPP_
 
 #include <ompl/base/SpaceInformation.h>
+
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 

@@ -1,5 +1,7 @@
 #include <chrono>
+
 #include <gtest/gtest.h>
+
 #include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
