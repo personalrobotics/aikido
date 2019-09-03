@@ -2,10 +2,10 @@
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/statespace/Rn.hpp>
 
-using aikido::statespace::R2;
 using aikido::constraint::Satisfied;
-using Eigen::Vector2d;
+using aikido::statespace::R2;
 using Eigen::Matrix2d;
+using Eigen::Vector2d;
 
 class SatisfiedTests : public ::testing::Test
 {

@@ -1,15 +1,15 @@
-#include "aikido/common/memory.hpp"
 #include <gtest/gtest.h>
+#include "aikido/common/memory.hpp"
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
-using aikido::statespace::SO2;
-using aikido::constraint::uniform::SO2UniformSampler;
-using aikido::constraint::SampleGenerator;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::uniform::SO2UniformSampler;
 using aikido::distance::SO2Angular;
+using aikido::statespace::SO2;
 
 class SO2UniformSamplerTests : public ::testing::Test
 {
@@ -22,8 +22,9 @@ protected:
   {
     mStateSpace = std::make_shared<SO2>();
     mDistance = std::make_shared<SO2Angular>(mStateSpace);
-    mRng = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
-        0);
+    mRng
+        = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
+            0);
 
     mTargets.clear();
     for (std::size_t i = 0; i < NUM_TARGETS; ++i)

@@ -25,10 +25,11 @@ AIKIDO_DECLARE_POINTERS(TSR)
 /// "Task space regions: A framework for pose-constrained manipulation
 /// planning." IJRR 2001:
 /// http://repository.cmu.edu/cgi/viewcontent.cgi?article=2024&context=robotics
-class TSR : public Sampleable,
-            public Differentiable,
-            public Testable,
-            public Projectable
+class TSR
+  : public Sampleable
+  , public Differentiable
+  , public Testable
+  , public Projectable
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

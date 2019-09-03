@@ -13,8 +13,8 @@
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include "../../constraint/MockConstraints.hpp"
 
-using std::shared_ptr;
 using std::make_shared;
+using std::shared_ptr;
 
 class VectorFieldPlannerTest : public ::testing::Test
 {
@@ -267,50 +267,47 @@ TEST_F(VectorFieldPlannerTest, ComputeJointVelocityFromTwistTest)
   desiredTwist1.tail<3>() << 1.0, 1.0, 1.0;
 
   Eigen::VectorXd qd = Eigen::VectorXd::Zero(mNumDof);
-  EXPECT_TRUE(
-      computeJointVelocityFromTwist(
-          qd,
-          desiredTwist1,
-          mSkel,
-          mBodynode,
-          padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
-          maxStepSize));
+  EXPECT_TRUE(computeJointVelocityFromTwist(
+      qd,
+      desiredTwist1,
+      mSkel,
+      mBodynode,
+      padding,
+      jointVelocityLowerLimits,
+      jointVelocityUpperLimits,
+      true,
+      maxStepSize));
 
   // Angular only
   Eigen::Vector6d desiredTwist2 = Eigen::Vector6d::Zero();
   desiredTwist2.head<3>() << 1.0, 1.0, 1.0;
 
-  EXPECT_TRUE(
-      computeJointVelocityFromTwist(
-          qd,
-          desiredTwist2,
-          mSkel,
-          mBodynode,
-          padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
-          maxStepSize));
+  EXPECT_TRUE(computeJointVelocityFromTwist(
+      qd,
+      desiredTwist2,
+      mSkel,
+      mBodynode,
+      padding,
+      jointVelocityLowerLimits,
+      jointVelocityUpperLimits,
+      true,
+      maxStepSize));
 
   // Both linear and angular
   Eigen::Vector6d desiredTwist3 = Eigen::Vector6d::Zero();
   desiredTwist3.head<3>() << 1.0, 1.0, 1.0;
   desiredTwist3.tail<3>() << 1.0, 1.0, 1.0;
 
-  EXPECT_TRUE(
-      computeJointVelocityFromTwist(
-          qd,
-          desiredTwist2,
-          mSkel,
-          mBodynode,
-          padding,
-          jointVelocityLowerLimits,
-          jointVelocityUpperLimits,
-          true,
-          maxStepSize));
+  EXPECT_TRUE(computeJointVelocityFromTwist(
+      qd,
+      desiredTwist2,
+      mSkel,
+      mBodynode,
+      padding,
+      jointVelocityLowerLimits,
+      jointVelocityUpperLimits,
+      true,
+      maxStepSize));
 }
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
@@ -435,9 +432,9 @@ TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 
 TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
 {
-  using dart::math::eulerXYXToMatrix;
   using aikido::planner::vectorfield::computeGeodesicDistance;
   using aikido::planner::vectorfield::MoveEndEffectorOffsetVectorField;
+  using dart::math::eulerXYXToMatrix;
 
   Eigen::VectorXd goalConfig = Eigen::VectorXd::Zero(mNumDof);
   goalConfig << 1.13746, -0.363612, 0.77876, 1.07515, 1.58646, -1.00034,

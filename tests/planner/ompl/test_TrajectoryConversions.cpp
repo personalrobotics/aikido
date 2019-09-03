@@ -42,7 +42,7 @@ aikido::trajectory::InterpolatedPtr constructTrajectory(
 
   return returnInterpolated;
 }
-}
+} // namespace
 
 // Test if the durations of the two trajectories remains constant
 TEST_F(PlannerTest, OMPLNumWaypointsUnchanged)

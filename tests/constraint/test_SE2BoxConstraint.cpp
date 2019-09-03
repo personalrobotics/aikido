@@ -5,17 +5,17 @@
 #include <aikido/distance/SE2Weighted.hpp>
 #include "SampleGeneratorCoverage.hpp"
 
-using aikido::statespace::SE2;
-using aikido::constraint::uniform::SE2BoxConstraint;
-using aikido::constraint::ConstraintType;
-using aikido::constraint::SampleGenerator;
-using aikido::distance::SE2Weighted;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
-using Eigen::Vector2d;
-using Eigen::Vector3d;
+using aikido::constraint::ConstraintType;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::uniform::SE2BoxConstraint;
+using aikido::distance::SE2Weighted;
+using aikido::statespace::SE2;
 using Eigen::Isometry2d;
 using Eigen::Matrix2d;
+using Eigen::Vector2d;
+using Eigen::Vector3d;
 
 class SE2BoxConstraintTests : public ::testing::Test
 {
@@ -39,8 +39,9 @@ protected:
     mSE2StateSpace = dart::common::make_aligned_shared<SE2>();
     mSE2Distance
         = dart::common::make_aligned_shared<SE2Weighted>(mSE2StateSpace);
-    mRng = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
-        0);
+    mRng
+        = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
+            0);
 
     mLowerLimits = Vector2d(-1., 1.);
     mUpperLimits = Vector2d(1., 2.);

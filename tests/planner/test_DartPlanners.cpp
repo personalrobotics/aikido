@@ -14,11 +14,11 @@
 #include <aikido/trajectory/Interpolated.hpp>
 #include "../constraint/MockConstraints.hpp"
 
-using std::shared_ptr;
-using std::make_shared;
-using aikido::trajectory::Interpolated;
 using aikido::planner::ConfigurationToConfiguration;
 using aikido::planner::SnapConfigurationToConfigurationPlanner;
+using aikido::trajectory::Interpolated;
+using std::make_shared;
+using std::shared_ptr;
 
 using aikido::planner::ConfigurationToConfigurationPlanner;
 using aikido::planner::dart::ConfigurationToConfiguration_to_ConfigurationToTSR;

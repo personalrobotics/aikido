@@ -8,10 +8,10 @@ namespace aikido {
 namespace constraint {
 namespace dart {
 
+using ::dart::dynamics::INVALID_INDEX;
+using statespace::SE3;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
-using statespace::SE3;
-using ::dart::dynamics::INVALID_INDEX;
 
 // For internal use only.
 class IkSampleGenerator : public SampleGenerator
@@ -132,14 +132,13 @@ statespace::ConstStateSpacePtr InverseKinematicsSampleable::getStateSpace()
 std::unique_ptr<SampleGenerator>
 InverseKinematicsSampleable::createSampleGenerator() const
 {
-  return std::unique_ptr<IkSampleGenerator>(
-      new IkSampleGenerator(
-          mMetaSkeletonStateSpace,
-          mMetaSkeleton,
-          mInverseKinematics,
-          mPoseConstraint->createSampleGenerator(),
-          mSeedConstraint->createSampleGenerator(),
-          mMaxNumTrials));
+  return std::unique_ptr<IkSampleGenerator>(new IkSampleGenerator(
+      mMetaSkeletonStateSpace,
+      mMetaSkeleton,
+      mInverseKinematics,
+      mPoseConstraint->createSampleGenerator(),
+      mSeedConstraint->createSampleGenerator(),
+      mMaxNumTrials));
 }
 
 //==============================================================================
@@ -220,8 +219,9 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
 
     mInverseKinematics->getTarget()->setTransform(poseState.getIsometry());
 
-    // Run the IK solver. If an exact solution is computed, apply it to the skeleton.
 #if DART_VERSION_AT_LEAST(6, 8, 0)
+    // Run the IK solver. If an exact solution is computed, apply it to the
+    // skeleton.
     if (mInverseKinematics->solveAndApply(true))
 #else
     if (mInverseKinematics->solve(true))

@@ -2,9 +2,9 @@
 #include <gtest/gtest.h>
 #include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
 
-using dart::dynamics::Skeleton;
-using dart::dynamics::RevoluteJoint;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
+using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
 
 class MetaSkeletonStateSaverTest : public testing::Test
 {

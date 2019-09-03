@@ -9,8 +9,9 @@ ConfigurationToEndEffectorOffsetPlanner::
     ConfigurationToEndEffectorOffsetPlanner(
         statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : dart::SingleProblemPlanner<ConfigurationToEndEffectorOffsetPlanner,
-                               ConfigurationToEndEffectorOffset>(
+  : dart::SingleProblemPlanner<
+        ConfigurationToEndEffectorOffsetPlanner,
+        ConfigurationToEndEffectorOffset>(
         std::move(stateSpace), std::move(metaSkeleton))
 {
   // Do nothing

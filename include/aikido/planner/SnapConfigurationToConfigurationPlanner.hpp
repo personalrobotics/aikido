@@ -19,7 +19,7 @@ namespace planner {
 /// as the first item in a Sequence meta-planner to avoid calling a motion
 /// planner when the trivial solution is valid.
 class SnapConfigurationToConfigurationPlanner
-    : public ConfigurationToConfigurationPlanner
+  : public ConfigurationToConfigurationPlanner
 {
 public:
   /// Constructor.

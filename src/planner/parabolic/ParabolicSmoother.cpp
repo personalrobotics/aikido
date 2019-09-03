@@ -2,8 +2,8 @@
 
 #include <cassert>
 #include <set>
-#include "aikido/common/memory.hpp"
 #include "aikido/common/Spline.hpp"
+#include "aikido/common/memory.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "DynamicPath.h"
 #include "HauserParabolicSmootherHelpers.hpp"

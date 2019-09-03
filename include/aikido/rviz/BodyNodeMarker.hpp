@@ -34,8 +34,8 @@ public:
   void ResetColor();
 
 private:
-  using ShapeFrameMarkerMap = std::map<const dart::dynamics::ShapeNode*,
-                                       std::unique_ptr<ShapeFrameMarker>>;
+  using ShapeFrameMarkerMap = std::
+      map<const dart::dynamics::ShapeNode*, std::unique_ptr<ShapeFrameMarker>>;
 
   dart::dynamics::WeakBodyNodePtr mBodyNode;
   dart::common::Connection mOnStructuralChange;

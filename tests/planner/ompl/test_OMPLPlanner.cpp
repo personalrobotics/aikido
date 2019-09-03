@@ -9,9 +9,9 @@
 #include "OMPLTestHelpers.hpp"
 
 using StateSpace = aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::CRRT;
 using aikido::planner::ompl::CRRTConnect;
+using aikido::planner::ompl::getSpaceInformation;
 using aikido::planner::ompl::ompl_dynamic_pointer_cast;
 
 TEST_F(PlannerTest, PlanToConfiguration)

@@ -9,10 +9,12 @@
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
   * Fixed bug in compiling with Boost 1.58 on Kinetic + Xenial: [#490](https://github.com/personalrobotics/aikido/pull/490)
   * Fixed bug in Interpolated::addWaypoint(): [#483](https://github.com/personalrobotics/aikido/pull/483)
+
 * Distance
 
   * Added methods to rank configurations based on specified metric: [#423](https://github.com/personalrobotics/aikido/pull/423)
   * Added weights as optional parameter to rankers: [#484](https://github.com/personalrobotics/aikido/pull/484)
+  * Updated constness of return type of SE2::getStateSpace(): [#536](https://github.com/personalrobotics/aikido/pull/536)
 
 * State Space
 
@@ -52,6 +54,7 @@
   * Added trajectory utility functions: [#462](https://github.com/personalrobotics/aikido/pull/462)
   * Fixed toR1JointTrajectory to copy Waypoints with their time information: [#510](https://github.com/personalrobotics/aikido/pull/510)
   * Removed incorrect Spline to Interpolated conversions: [#511](https://github.com/personalrobotics/aikido/pull/511)
+  * Updated findTimeOfClosestStateTrajectory to use StateSpace Distance Metric: [#543](https://github.com/personalrobotics/aikido/pull/543)
 
 * Planner
 
@@ -68,6 +71,7 @@
   * Added convenience function for converting SO(2) trajectories to R1 trajectories, support for postprocessing SO(2) trajectories: [#496](https://github.com/personalrobotics/aikido/pull/496)
   * Used ConfigurationRanker in TSR planners: [#503](https://github.com/personalrobotics/aikido/pull/503)
   * Returned Interpolated trajectories from VFP: [#513](https://github.com/personalrobotics/aikido/pull/513)
+  * Added support for taking state snapshots with list of skeleton names: [#523](https://github.com/personalrobotics/aikido/pull/523)
 
 * Robot
 
@@ -82,6 +86,7 @@
 * IO
 
   * Added loadSkeletonFromURDF convenience function: [#388](https://github.com/personalrobotics/aikido/pull/388), [#401](https://github.com/personalrobotics/aikido/pull/401)
+  * Added methods for caching and retrieving trajectories: [#541](https://github.com/personalrobotics/aikido/pull/541)
 
 * Build & Testing & ETC
 
@@ -92,6 +97,8 @@
   * Added DART 6.7 support: [#480](https://github.com/personalrobotics/aikido/pull/480)
   * Fixed use of dart::common::make_unique for C++14 enabled compilers: [#481](https://github.com/personalrobotics/aikido/pull/481)
   * Changed to use own build script for GoogleTest: [#485](https://github.com/personalrobotics/aikido/pull/485)
+  * Added aikido::common::make_unique wrapper: [#532](https://github.com/personalrobotics/aikido/pull/532)
+  * Manually generated (minimal) Python bindings: [#499](https://github.com/personalrobotics/aikido/pull/499)
 
 ### 0.2.0 (2018-01-09)
 

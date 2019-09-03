@@ -14,7 +14,7 @@ namespace parabolic {
 namespace detail {
 
 class SmootherFeasibilityCheckerBase
-    : public ParabolicRamp::FeasibilityCheckerBase
+  : public ParabolicRamp::FeasibilityCheckerBase
 {
 public:
   SmootherFeasibilityCheckerBase(
