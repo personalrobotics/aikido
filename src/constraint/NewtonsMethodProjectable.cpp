@@ -1,3 +1,5 @@
+#include "aikido/constraint/NewtonsMethodProjectable.hpp"
+
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -5,7 +7,6 @@
 #include <dart/math/Geometry.hpp>
 
 #include "aikido/common/PseudoInverse.hpp"
-#include "aikido/constraint/NewtonsMethodProjectable.hpp"
 
 namespace aikido {
 namespace constraint {

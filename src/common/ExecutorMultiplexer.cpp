@@ -1,6 +1,6 @@
-#include <dart/dart.hpp>
-
 #include "aikido/common/ExecutorMultiplexer.hpp"
+
+#include <dart/dart.hpp>
 
 namespace aikido {
 namespace common {

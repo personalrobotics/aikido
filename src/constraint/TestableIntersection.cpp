@@ -1,6 +1,6 @@
-#include <stdexcept>
-
 #include "aikido/constraint/TestableIntersection.hpp"
+
+#include <stdexcept>
 
 namespace aikido {
 namespace constraint {

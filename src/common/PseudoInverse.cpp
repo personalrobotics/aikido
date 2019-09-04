@@ -1,10 +1,10 @@
+#include "aikido/common/PseudoInverse.hpp"
+
 #include <iostream>
 #include <limits>
 #include <memory>
 
 #include <Eigen/Dense>
-
-#include "aikido/common/PseudoInverse.hpp"
 
 namespace aikido {
 namespace common {

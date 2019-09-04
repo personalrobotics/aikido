@@ -1,7 +1,8 @@
+#include "aikido/planner/ompl/dart.hpp"
+
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include "aikido/distance/defaults.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
-#include "aikido/planner/ompl/dart.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 

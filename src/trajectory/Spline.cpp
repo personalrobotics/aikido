@@ -1,5 +1,6 @@
-#include "aikido/common/Spline.hpp"
 #include "aikido/trajectory/Spline.hpp"
+
+#include "aikido/common/Spline.hpp"
 
 namespace aikido {
 namespace trajectory {

@@ -1,9 +1,10 @@
+#include "aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp"
+
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
 
-#include "aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp"
 #include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
 
 #include "detail/VectorFieldPlannerExceptions.hpp"

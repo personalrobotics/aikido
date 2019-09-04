@@ -1,6 +1,6 @@
-#include <boost/math/constants/constants.hpp>
-
 #include "aikido/distance/SE2Weighted.hpp"
+
+#include <boost/math/constants/constants.hpp>
 
 namespace aikido {
 namespace distance {
