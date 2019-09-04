@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
-#include "aikido/distance/NominalConfigurationRanker.hpp"
+#include <aikido/distance/NominalConfigurationRanker.hpp>
 #include <aikido/common/RNG.hpp>
 #include <aikido/statespace/StateSpace.hpp>
 

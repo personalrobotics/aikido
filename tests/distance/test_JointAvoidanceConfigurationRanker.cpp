@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
-#include "aikido/distance/JointAvoidanceConfigurationRanker.hpp"
+#include <aikido/distance/JointAvoidanceConfigurationRanker.hpp>
 #include <aikido/common/RNG.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>

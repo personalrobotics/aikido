@@ -3,7 +3,7 @@
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
 
-#include "aikido/io/trajectory.hpp"
+#include <aikido/io/trajectory.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/io/yaml.hpp>

@@ -1,9 +1,9 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 #include <tuple>
 
 #include <dart/dart.hpp>
 
-#include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
+#include <aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>

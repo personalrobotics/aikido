@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "aikido/common/memory.hpp"
+#include <aikido/common/memory.hpp>
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 

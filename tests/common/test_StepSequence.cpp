@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "aikido/common/memory.hpp"
+#include <aikido/common/memory.hpp>
 #include <aikido/common/StepSequence.hpp>
 
 using aikido::common::StepSequence;
