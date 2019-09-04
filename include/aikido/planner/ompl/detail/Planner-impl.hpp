@@ -1,9 +1,9 @@
 #include <ompl/geometric/PathGeometric.h>
 
-#include "aikido/GeometricStateSpace.hpp"
-#include "aikido/GoalRegion.hpp"
-#include "aikido/StateValidityChecker.hpp"
 #include "aikido/planner/ompl/BackwardCompatibility.hpp"
+#include "aikido/planner/ompl/GeometricStateSpace.hpp"
+#include "aikido/planner/ompl/GoalRegion.hpp"
+#include "aikido/planner/ompl/StateValidityChecker.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {

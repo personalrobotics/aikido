@@ -1,13 +1,13 @@
 #include <memory>
 
-#include "aikido/RnJoint.hpp"
-#include "aikido/SE2Joint.hpp"
-#include "aikido/SE3Joint.hpp"
-#include "aikido/SO2Joint.hpp"
-#include "aikido/SO3Joint.hpp"
-#include "aikido/WeldJoint.hpp"
 #include "aikido/common/memory.hpp"
 #include "aikido/common/metaprogramming.hpp"
+#include "aikido/statespace/dart/RnJoint.hpp"
+#include "aikido/statespace/dart/SE2Joint.hpp"
+#include "aikido/statespace/dart/SE3Joint.hpp"
+#include "aikido/statespace/dart/SO2Joint.hpp"
+#include "aikido/statespace/dart/SO3Joint.hpp"
+#include "aikido/statespace/dart/WeldJoint.hpp"
 
 namespace aikido {
 namespace statespace {
