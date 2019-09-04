@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "../statespace/CartesianProduct.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 #include "Testable.hpp"
 
 namespace aikido {

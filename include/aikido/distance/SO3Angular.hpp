@@ -1,7 +1,7 @@
 #ifndef AIKIDO_DISTANCE_GEODESICDISTANCEMETRIC_HPP_
 #define AIKIDO_DISTANCE_GEODESICDISTANCEMETRIC_HPP_
 
-#include "../statespace/SO3.hpp"
+#include "aikido/statespace/SO3.hpp"
 #include "DistanceMetric.hpp"
 
 namespace aikido {

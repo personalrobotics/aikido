@@ -1,6 +1,6 @@
 #ifndef AIKIDO_STATESPACE_DART_SE2JOINTSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_DART_SE2JOINTSTATESPACE_HPP_
-#include "../SE2.hpp"
+#include "aikido/SE2.hpp"
 #include "JointStateSpace.hpp"
 
 namespace aikido {

@@ -2,13 +2,13 @@
 
 #include "aikido/common/memory.hpp"
 
-#include "../../../common/metaprogramming.hpp"
-#include "../RnJoint.hpp"
-#include "../SE2Joint.hpp"
-#include "../SE3Joint.hpp"
-#include "../SO2Joint.hpp"
-#include "../SO3Joint.hpp"
-#include "../WeldJoint.hpp"
+#include "aikido/common/metaprogramming.hpp"
+#include "aikido/RnJoint.hpp"
+#include "aikido/SE2Joint.hpp"
+#include "aikido/SE3Joint.hpp"
+#include "aikido/SO2Joint.hpp"
+#include "aikido/SO3Joint.hpp"
+#include "aikido/WeldJoint.hpp"
 
 namespace aikido {
 namespace statespace {

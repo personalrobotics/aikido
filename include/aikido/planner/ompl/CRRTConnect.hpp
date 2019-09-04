@@ -6,7 +6,7 @@
 
 #include "aikido/planner/ompl/CRRT.hpp"
 
-#include "../../constraint/Projectable.hpp"
+#include "aikido/constraint/Projectable.hpp"
 
 namespace aikido {
 namespace planner {

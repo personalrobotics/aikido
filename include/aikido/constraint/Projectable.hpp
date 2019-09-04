@@ -3,7 +3,7 @@
 
 #include <Eigen/Dense>
 
-#include "../statespace/StateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace constraint {

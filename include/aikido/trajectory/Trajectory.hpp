@@ -6,7 +6,7 @@
 #include "aikido/common/pointers.hpp"
 #include "aikido/trajectory/TrajectoryMetadata.hpp"
 
-#include "../statespace/StateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace trajectory {

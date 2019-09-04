@@ -3,7 +3,7 @@
 
 #include <ompl/base/StateSampler.h>
 
-#include "../../constraint/Sampleable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
 
 namespace aikido {
 namespace planner {

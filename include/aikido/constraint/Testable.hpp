@@ -5,7 +5,7 @@
 
 #include "aikido/common/pointers.hpp"
 
-#include "../statespace/StateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "DefaultTestableOutcome.hpp"
 
 namespace aikido {

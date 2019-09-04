@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_HPP_
 #define AIKIDO_CONSTRAINT_DIFFERENTIABLESUBSPACE_HPP_
 
-#include "../statespace/CartesianProduct.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 #include "Differentiable.hpp"
 
 namespace aikido {

@@ -11,15 +11,15 @@
 #include <ompl/base/goals/GoalRegion.h>
 #include <ompl/geometric/PathSimplifier.h>
 
-#include "../../constraint/Projectable.hpp"
-#include "../../constraint/Sampleable.hpp"
-#include "../../constraint/Testable.hpp"
-#include "../../distance/DistanceMetric.hpp"
-#include "../../planner/ompl/BackwardCompatibility.hpp"
-#include "../../planner/ompl/GeometricStateSpace.hpp"
-#include "../../statespace/Interpolator.hpp"
-#include "../../statespace/StateSpace.hpp"
-#include "../../trajectory/Interpolated.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/distance/DistanceMetric.hpp"
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
+#include "aikido/planner/ompl/GeometricStateSpace.hpp"
+#include "aikido/statespace/Interpolator.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
 namespace planner {

@@ -1,7 +1,7 @@
 #ifndef AIKIDO_DISTANCE_DISTANCEMETRICDEFAULTS_HPP_
 #define AIKIDO_DISTANCE_DISTANCEMETRICDEFAULTS_HPP_
 
-#include "../statespace/StateSpace.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "DistanceMetric.hpp"
 
 namespace aikido {

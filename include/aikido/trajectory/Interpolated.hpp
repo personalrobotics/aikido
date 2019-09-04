@@ -3,7 +3,7 @@
 
 #include "aikido/common/pointers.hpp"
 
-#include "../statespace/GeodesicInterpolator.hpp"
+#include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "Trajectory.hpp"
 
 namespace aikido {
