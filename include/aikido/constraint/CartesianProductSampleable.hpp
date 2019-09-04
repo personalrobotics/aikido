@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "aikido/statespace/CartesianProduct.hpp"
-#include "Sampleable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
 
 namespace aikido {
 namespace constraint {

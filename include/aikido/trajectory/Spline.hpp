@@ -3,7 +3,7 @@
 
 #include "aikido/common/pointers.hpp"
 
-#include "Trajectory.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace trajectory {

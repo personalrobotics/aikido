@@ -6,7 +6,7 @@
 #include <Eigen/Dense>
 
 #include "aikido/statespace/StateSpace.hpp"
-#include "Differentiable.hpp"
+#include "aikido/constraint/Differentiable.hpp"
 
 namespace aikido {
 namespace constraint {

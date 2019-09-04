@@ -3,8 +3,8 @@
 
 #include <Eigen/Dense>
 
-#include "Differentiable.hpp"
-#include "Projectable.hpp"
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/constraint/Projectable.hpp"
 
 namespace aikido {
 namespace constraint {

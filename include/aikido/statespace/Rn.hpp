@@ -2,8 +2,8 @@
 #define AIKIDO_STATESPACE_REALVECTORSTATESPACE_HPP_
 #include <Eigen/Core>
 
-#include "ScopedState.hpp"
-#include "StateSpace.hpp"
+#include "aikido/statespace/ScopedState.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {

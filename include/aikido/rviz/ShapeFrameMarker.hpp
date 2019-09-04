@@ -8,7 +8,7 @@
 
 #include "aikido/common/pointers.hpp"
 
-#include "ResourceServer.hpp"
+#include "aikido/rviz/ResourceServer.hpp"
 
 namespace aikido {
 namespace rviz {

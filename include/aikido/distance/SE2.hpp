@@ -2,7 +2,7 @@
 #define AIKIDO_DISTANCE_SE2DISTANCEMETRIC_HPP_
 
 #include "aikido/statespace/SE2.hpp"
-#include "DistanceMetric.hpp"
+#include "aikido/distance/DistanceMetric.hpp"
 
 namespace aikido {
 namespace distance {

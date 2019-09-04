@@ -2,8 +2,8 @@
 #define AIKIDO_CONSTRAINT_REJECTIONSAMPLEABLE_HPP_
 
 #include "aikido/statespace/StateSpace.hpp"
-#include "Sampleable.hpp"
-#include "Testable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace constraint {

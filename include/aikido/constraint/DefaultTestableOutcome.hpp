@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_DEFAULTTESTABLEOUTCOME_HPP_
 #define AIKIDO_CONSTRAINT_DEFAULTTESTABLEOUTCOME_HPP_
 
-#include "TestableOutcome.hpp"
+#include "aikido/constraint/TestableOutcome.hpp"
 
 namespace aikido {
 namespace constraint {

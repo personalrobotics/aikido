@@ -6,7 +6,7 @@
 #include "aikido/common/pointers.hpp"
 
 #include "aikido/statespace/StateSpace.hpp"
-#include "DefaultTestableOutcome.hpp"
+#include "aikido/constraint/DefaultTestableOutcome.hpp"
 
 namespace aikido {
 namespace constraint {

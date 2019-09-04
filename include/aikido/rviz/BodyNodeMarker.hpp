@@ -9,8 +9,8 @@
 
 #include "aikido/common/pointers.hpp"
 
-#include "ResourceServer.hpp"
-#include "ShapeFrameMarker.hpp"
+#include "aikido/rviz/ResourceServer.hpp"
+#include "aikido/rviz/ShapeFrameMarker.hpp"
 
 namespace aikido {
 namespace rviz {
