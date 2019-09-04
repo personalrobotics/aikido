@@ -1,9 +1,6 @@
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/statespace/SE3.hpp"
 
-#undef dtwarn
-#define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))
-
 namespace aikido {
 namespace constraint {
 namespace dart {
