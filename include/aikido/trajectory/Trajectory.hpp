@@ -4,9 +4,8 @@
 #include <Eigen/Core>
 
 #include "aikido/common/pointers.hpp"
-#include "aikido/trajectory/TrajectoryMetadata.hpp"
-
 #include "aikido/statespace/StateSpace.hpp"
+#include "aikido/trajectory/TrajectoryMetadata.hpp"
 
 namespace aikido {
 namespace trajectory {

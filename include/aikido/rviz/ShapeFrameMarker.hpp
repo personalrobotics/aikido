@@ -7,7 +7,6 @@
 #include <visualization_msgs/InteractiveMarker.h>
 
 #include "aikido/common/pointers.hpp"
-
 #include "aikido/rviz/ResourceServer.hpp"
 
 namespace aikido {

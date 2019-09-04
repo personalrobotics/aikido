@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/constraint/Testable.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace constraint {

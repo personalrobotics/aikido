@@ -1,16 +1,15 @@
+#include "aikido/CartesianProductWeighted.hpp"
+#include "aikido/RnEuclidean.hpp"
+#include "aikido/SE2Weighted.hpp"
+#include "aikido/SO2Angular.hpp"
+#include "aikido/SO3Angular.hpp"
 #include "aikido/common/memory.hpp"
-
 #include "aikido/common/metaprogramming.hpp"
 #include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/statespace/Rn.hpp"
 #include "aikido/statespace/SE2.hpp"
 #include "aikido/statespace/SO2.hpp"
 #include "aikido/statespace/SO3.hpp"
-#include "aikido/CartesianProductWeighted.hpp"
-#include "aikido/RnEuclidean.hpp"
-#include "aikido/SE2Weighted.hpp"
-#include "aikido/SO2Angular.hpp"
-#include "aikido/SO3Angular.hpp"
 
 namespace aikido {
 namespace distance {

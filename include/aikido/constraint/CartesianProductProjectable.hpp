@@ -1,8 +1,8 @@
 #ifndef AIKIDO_CONSTRAINT_CARTESIANPRODUCTPROJECTABLE_HPP_
 #define AIKIDO_CONSTRAINT_CARTESIANPRODUCTPROJECTABLE_HPP_
 
-#include "aikido/statespace/CartesianProduct.hpp"
 #include "aikido/constraint/Projectable.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace constraint {

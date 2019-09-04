@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "aikido/common/pointers.hpp"
-
 #include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {

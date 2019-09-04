@@ -2,7 +2,6 @@
 #define AIKIDO_DISTANCE_DISTANCEMETRIC_HPP_
 
 #include "aikido/common/pointers.hpp"
-
 #include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {

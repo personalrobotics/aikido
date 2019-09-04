@@ -6,9 +6,8 @@
 
 #include <boost/optional.hpp>
 
-#include "aikido/common/pointers.hpp"
-
 #include "aikido/common/RNG.hpp"
+#include "aikido/common/pointers.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {

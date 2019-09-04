@@ -5,8 +5,8 @@
 
 #include <Eigen/Dense>
 
-#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/constraint/Differentiable.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace constraint {
