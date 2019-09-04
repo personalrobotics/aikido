@@ -1,7 +1,7 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTOROFFSETVECTORFIELD_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTOROFFSETVECTORFIELD_HPP_
 
-#include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
+#include "aikido/planner/vectorfield/BodyNodePoseVectorField.hpp"
 
 namespace aikido {
 namespace planner {

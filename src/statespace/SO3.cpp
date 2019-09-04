@@ -2,7 +2,7 @@
 
 #include <dart/math/Geometry.hpp>
 
-#include <aikido/statespace/SO3.hpp>
+#include "aikido/statespace/SO3.hpp"
 
 namespace aikido {
 namespace statespace {

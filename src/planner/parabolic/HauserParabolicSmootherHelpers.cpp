@@ -3,7 +3,7 @@
 #include <chrono>
 #include <cmath>
 
-#include <aikido/common/VanDerCorput.hpp>
+#include "aikido/common/VanDerCorput.hpp"
 
 #include "Config.h"
 #include "HauserMath.h"

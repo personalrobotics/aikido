@@ -7,7 +7,7 @@
 #include <ros/network.h>
 #include <sys/socket.h>
 
-#include <aikido/rviz/ResourceServer.hpp>
+#include "aikido/rviz/ResourceServer.hpp"
 
 namespace aikido {
 namespace rviz {

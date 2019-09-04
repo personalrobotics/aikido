@@ -4,7 +4,7 @@
 #include <Eigen/Core>
 
 #include "aikido/common/pointers.hpp"
-#include <aikido/trajectory/TrajectoryMetadata.hpp>
+#include "aikido/trajectory/TrajectoryMetadata.hpp"
 
 #include "../statespace/StateSpace.hpp"
 

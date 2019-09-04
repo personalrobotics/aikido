@@ -1,4 +1,4 @@
-#include <aikido/constraint/DefaultTestableOutcome.hpp>
+#include "aikido/constraint/DefaultTestableOutcome.hpp"
 
 namespace aikido {
 namespace constraint {

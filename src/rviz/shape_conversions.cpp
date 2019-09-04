@@ -3,8 +3,8 @@
 #include <boost/filesystem.hpp>
 #include <dart/dynamics/dynamics.hpp>
 
-#include <aikido/rviz/ResourceServer.hpp>
-#include <aikido/rviz/shape_conversions.hpp>
+#include "aikido/rviz/ResourceServer.hpp"
+#include "aikido/rviz/shape_conversions.hpp"
 
 using dart::dynamics::BoxShape;
 using dart::dynamics::CylinderShape;

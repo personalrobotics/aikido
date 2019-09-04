@@ -1,5 +1,5 @@
-#include <aikido/planner/ompl/GeometricStateSpace.hpp>
-#include <aikido/planner/ompl/GoalRegion.hpp>
+#include "aikido/planner/ompl/GeometricStateSpace.hpp"
+#include "aikido/planner/ompl/GoalRegion.hpp"
 
 namespace aikido {
 namespace planner {

@@ -1,6 +1,6 @@
-#include <aikido/common/StepSequence.hpp>
-#include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include "aikido/common/StepSequence.hpp"
+#include "aikido/planner/vectorfield/BodyNodePoseVectorField.hpp"
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
 
 #include "detail/VectorFieldPlannerExceptions.hpp"
 

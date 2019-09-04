@@ -1,5 +1,5 @@
 #include "aikido/common/memory.hpp"
-#include <aikido/constraint/FiniteSampleable.hpp>
+#include "aikido/constraint/FiniteSampleable.hpp"
 
 namespace aikido {
 namespace constraint {

@@ -3,7 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 
-#include <aikido/common/VanDerCorput.hpp>
+#include "aikido/common/VanDerCorput.hpp"
 
 namespace aikido {
 namespace common {

@@ -1,5 +1,5 @@
 #include "aikido/common/memory.hpp"
-#include <aikido/constraint/CartesianProductSampleable.hpp>
+#include "aikido/constraint/CartesianProductSampleable.hpp"
 
 namespace aikido {
 namespace constraint {

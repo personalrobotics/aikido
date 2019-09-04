@@ -3,8 +3,8 @@
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
 
-#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include "aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp"
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
 
 #include "detail/VectorFieldPlannerExceptions.hpp"
 

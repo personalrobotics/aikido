@@ -3,7 +3,7 @@
 
 #include <boost/functional/hash.hpp>
 
-#include <aikido/common/pair.hpp>
+#include "aikido/common/pair.hpp"
 
 namespace aikido {
 namespace common {

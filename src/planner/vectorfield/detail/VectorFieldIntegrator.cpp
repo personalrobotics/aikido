@@ -3,10 +3,10 @@
 #include <exception>
 #include <string>
 
-#include <aikido/common/Spline.hpp>
-#include <aikido/common/memory.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
-#include <aikido/statespace/GeodesicInterpolator.hpp>
+#include "aikido/common/Spline.hpp"
+#include "aikido/common/memory.hpp"
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
+#include "aikido/statespace/GeodesicInterpolator.hpp"
 
 #include "VectorFieldPlannerExceptions.hpp"
 

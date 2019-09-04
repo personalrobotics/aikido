@@ -1,5 +1,5 @@
 #include "aikido/common/memory.hpp"
-#include <aikido/planner/World.hpp>
+#include "aikido/planner/World.hpp"
 
 namespace aikido {
 namespace planner {

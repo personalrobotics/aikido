@@ -1,6 +1,6 @@
 #include <dart/math/Geometry.hpp>
 
-#include <aikido/statespace/SE3.hpp>
+#include "aikido/statespace/SE3.hpp"
 
 namespace aikido {
 namespace statespace {

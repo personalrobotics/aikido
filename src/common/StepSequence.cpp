@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 
-#include <aikido/common/StepSequence.hpp>
+#include "aikido/common/StepSequence.hpp"
 
 namespace aikido {
 namespace common {

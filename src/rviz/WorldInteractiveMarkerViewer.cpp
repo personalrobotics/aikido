@@ -1,10 +1,10 @@
 #include <dart/dart.hpp>
 
-#include <aikido/rviz/FrameMarker.hpp>
-#include <aikido/rviz/InteractiveMarkerViewer.hpp>
-#include <aikido/rviz/SkeletonMarker.hpp>
-#include <aikido/rviz/TrajectoryMarker.hpp>
-#include <aikido/rviz/WorldInteractiveMarkerViewer.hpp>
+#include "aikido/rviz/FrameMarker.hpp"
+#include "aikido/rviz/InteractiveMarkerViewer.hpp"
+#include "aikido/rviz/SkeletonMarker.hpp"
+#include "aikido/rviz/TrajectoryMarker.hpp"
+#include "aikido/rviz/WorldInteractiveMarkerViewer.hpp"
 
 using aikido::rviz::InteractiveMarkerViewer;
 

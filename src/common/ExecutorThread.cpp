@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <aikido/common/ExecutorThread.hpp>
+#include "aikido/common/ExecutorThread.hpp"
 
 namespace aikido {
 namespace common {

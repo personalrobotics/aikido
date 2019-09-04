@@ -4,7 +4,7 @@
 
 #include <Eigen/Dense>
 
-#include <aikido/common/PseudoInverse.hpp>
+#include "aikido/common/PseudoInverse.hpp"
 
 namespace aikido {
 namespace common {
