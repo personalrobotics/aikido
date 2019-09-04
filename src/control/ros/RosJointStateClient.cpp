@@ -79,7 +79,9 @@ void RosJointStateClient::jointStateCallback(
   {
     ROS_WARN_STREAM(
         "Incorrect number of positions: expected "
-        << _jointState.name.size() << ", got " << _jointState.position.size()
+        << _jointState.name.size()
+        << ", got "
+        << _jointState.position.size()
         << ".");
     return;
   }
@@ -97,8 +99,10 @@ void RosJointStateClient::jointStateCallback(
       // Ignore out of order JointState message.
       ROS_WARN_STREAM(
           "Ignoring out of order message: received timestamp of "
-          << _jointState.header.stamp << " is before previously "
-          << "received timestamp of " << buffer.back().mStamp);
+          << _jointState.header.stamp
+          << " is before previously "
+          << "received timestamp of "
+          << buffer.back().mStamp);
 
       continue;
     }
