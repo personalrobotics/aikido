@@ -333,6 +333,13 @@ ConcreteRobot::getTrajectoryPostProcessor(
   Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
 
+  return std::make_shared<KunzRetimer>(
+    velocityLimits,
+    accelerationLimits,
+    0.1,
+    0.01
+    );
+
   return std::make_shared<ParabolicSmoother>(
       velocityLimits,
       accelerationLimits,
