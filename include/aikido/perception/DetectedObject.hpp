@@ -70,7 +70,7 @@ public:
   std::string getName() const;
 
   /// Get the map of keys to additional informations
-  YAML::Node getYamlNode();
+  YAML::Node getYamlNode() const;
 
   /// Get the metaSkeleton associated with this object.
   dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;
