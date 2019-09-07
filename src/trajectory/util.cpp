@@ -126,8 +126,8 @@ UniqueInterpolatedPtr concatenate(
   if (traj1.getStateSpace() != traj2.getStateSpace())
     throw std::runtime_error("State space mismatch");
 
-  if (traj1.getInterpolator() != traj2.getInterpolator())
-    throw std::runtime_error("Interpolator mismatch");
+  // if (traj1.getInterpolator() != traj2.getInterpolator())
+    // throw std::runtime_error("Interpolator mismatch");
 
   auto outputTrajectory = ::aikido::common::make_unique<Interpolated>(
       traj1.getStateSpace(), traj1.getInterpolator());
