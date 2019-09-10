@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/planner/parabolic/ParabolicSmoother.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
+
 #include "eigen_tests.hpp"
 
 using aikido::constraint::Satisfied;

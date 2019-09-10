@@ -2,7 +2,9 @@
 
 #include <sstream>
 #include <unordered_set>
+
 #include <dart/dynamics/Joint.hpp>
+
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
 #include "aikido/control/ros/Conversions.hpp"
@@ -518,8 +520,8 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
     const aikido::trajectory::ConstTrajectoryPtr& trajectory, double timestep)
 {
   using statespace::dart::MetaSkeletonStateSpace;
-  using statespace::dart::SO2Joint;
   using statespace::dart::R1Joint;
+  using statespace::dart::SO2Joint;
 
   if (!trajectory)
     throw std::invalid_argument("Trajectory is null.");

@@ -2,8 +2,9 @@
 #define AIKIDO_STATESPACE_SO2STATESPACE_HPP_
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include "ScopedState.hpp"
-#include "StateSpace.hpp"
+
+#include "aikido/statespace/ScopedState.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {

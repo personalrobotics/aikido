@@ -1,4 +1,4 @@
-#include <aikido/common/RNG.hpp>
+#include "aikido/common/RNG.hpp"
 
 namespace aikido {
 namespace common {

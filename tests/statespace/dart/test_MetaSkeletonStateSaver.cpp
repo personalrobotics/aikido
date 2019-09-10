@@ -1,5 +1,6 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/statespace/dart/MetaSkeletonStateSaver.hpp>
 
 using aikido::statespace::dart::MetaSkeletonStateSaver;

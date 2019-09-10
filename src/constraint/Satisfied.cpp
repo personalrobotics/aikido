@@ -1,4 +1,4 @@
-#include <aikido/constraint/Satisfied.hpp>
+#include "aikido/constraint/Satisfied.hpp"
 
 namespace aikido {
 namespace constraint {

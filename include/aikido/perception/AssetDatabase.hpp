@@ -2,8 +2,10 @@
 #define AIKIDO_PERCEPTION_ASSET_DATABASE_HPP_
 
 #include <stdexcept>
+
 #include <dart/common/LocalResourceRetriever.hpp>
 #include <dart/dart.hpp>
+
 #include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/io/yaml.hpp"
 

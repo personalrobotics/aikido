@@ -1,8 +1,10 @@
 #include <dart/common/Memory.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/common/memory.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
+
 #include "SampleGeneratorCoverage.hpp"
 
 using aikido::common::RNG;

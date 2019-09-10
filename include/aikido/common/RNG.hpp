@@ -6,7 +6,9 @@
 #include <cstdint>
 #include <memory>
 #include <random>
+
 #include <Eigen/Geometry>
+
 #include "aikido/common/pointers.hpp"
 
 namespace aikido {

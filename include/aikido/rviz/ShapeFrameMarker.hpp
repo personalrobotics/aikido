@@ -5,8 +5,9 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
+
 #include "aikido/common/pointers.hpp"
-#include "ResourceServer.hpp"
+#include "aikido/rviz/ResourceServer.hpp"
 
 namespace aikido {
 namespace rviz {

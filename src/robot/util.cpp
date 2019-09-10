@@ -1,9 +1,11 @@
 #include "aikido/robot/util.hpp"
 
 #include <algorithm>
+
 #include <dart/common/Console.hpp>
 #include <dart/common/Timer.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+
 #include "aikido/common/RNG.hpp"
 #include "aikido/common/memory.hpp"
 #include "aikido/constraint/CyclicSampleable.hpp"
@@ -20,6 +22,7 @@
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/CRRTConnect.hpp"
+#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
@@ -28,8 +31,6 @@
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-
-#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
 
 namespace aikido {
 namespace robot {

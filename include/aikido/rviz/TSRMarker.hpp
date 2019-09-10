@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <dart/dynamics/SimpleFrame.hpp>
+
 #include "aikido/common/pointers.hpp"
 
 namespace aikido {

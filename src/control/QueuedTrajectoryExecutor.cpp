@@ -1,4 +1,5 @@
 #include "aikido/control/QueuedTrajectoryExecutor.hpp"
+
 #include <chrono>
 
 namespace aikido {

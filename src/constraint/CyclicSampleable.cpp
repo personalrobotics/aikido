@@ -1,4 +1,4 @@
-#include <aikido/constraint/CyclicSampleable.hpp>
+#include "aikido/constraint/CyclicSampleable.hpp"
 
 #include "aikido/common/memory.hpp"
 

@@ -1,4 +1,4 @@
-#include <aikido/common/stream.hpp>
+#include "aikido/common/stream.hpp"
 
 namespace aikido {
 namespace common {

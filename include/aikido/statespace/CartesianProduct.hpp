@@ -1,8 +1,9 @@
 #ifndef AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_
 #define AIKIDO_STATESPACE_COMPOUNDSTATESPACE_HPP_
 #include <vector>
-#include "ScopedState.hpp"
-#include "StateSpace.hpp"
+
+#include "aikido/statespace/ScopedState.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {

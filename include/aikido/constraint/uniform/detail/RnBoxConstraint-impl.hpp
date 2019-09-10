@@ -1,4 +1,5 @@
 #include <stdexcept>
+
 #include "aikido/constraint/uniform/RnBoxConstraint.hpp"
 
 namespace aikido {

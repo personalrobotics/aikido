@@ -4,8 +4,10 @@
 #include <chrono>
 #include <string>
 #include <unordered_map>
+
 #include <Eigen/Core>
 #include <dart/dart.hpp>
+
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/CollisionFree.hpp"

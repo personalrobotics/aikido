@@ -1,5 +1,6 @@
 #include <dart/common/Memory.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/common/memory.hpp>
 #include <aikido/constraint/CyclicSampleable.hpp>
 #include <aikido/constraint/FiniteSampleable.hpp>

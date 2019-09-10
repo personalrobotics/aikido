@@ -2,8 +2,10 @@
 #define AIKIDO_PERCEPTION_POSEESTIMATORMODULE_HPP_
 
 #include <string>
+
 #include <dart/dart.hpp>
 #include <tf/transform_listener.h>
+
 #include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/io/yaml.hpp"
 #include "aikido/perception/AssetDatabase.hpp"

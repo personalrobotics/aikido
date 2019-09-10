@@ -2,8 +2,9 @@
 #define AIKIDO_OMPL_GOALREGION_HPP_
 
 #include <ompl/base/goals/GoalSampleableRegion.h>
-#include "../../constraint/Sampleable.hpp"
-#include "../../constraint/Testable.hpp"
+
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace planner {

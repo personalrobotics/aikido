@@ -4,6 +4,7 @@
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
 #include <ompl/base/State.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint.hpp>
 #include <aikido/distance/defaults.hpp>

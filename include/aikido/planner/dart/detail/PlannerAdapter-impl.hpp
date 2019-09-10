@@ -1,4 +1,5 @@
 #include <type_traits>
+
 #include "aikido/planner/dart/PlannerAdapter.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 

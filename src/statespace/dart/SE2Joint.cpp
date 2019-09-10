@@ -1,4 +1,4 @@
-#include <aikido/statespace/dart/SE2Joint.hpp>
+#include "aikido/statespace/dart/SE2Joint.hpp"
 
 namespace aikido {
 namespace statespace {

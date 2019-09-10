@@ -1,5 +1,7 @@
 #include <cstdlib>
+
 #include <gtest/gtest.h>
+
 #include <aikido/io/CatkinResourceRetriever.hpp>
 
 #define STR_EXPAND(tok) #tok

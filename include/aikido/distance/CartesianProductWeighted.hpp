@@ -1,8 +1,8 @@
 #ifndef AIKIDO_DISTANCE_CARTESIANPRODUCTWEIGHTED_HPP_
 #define AIKIDO_DISTANCE_CARTESIANPRODUCTWEIGHTED_HPP_
 
-#include "../statespace/CartesianProduct.hpp"
-#include "DistanceMetric.hpp"
+#include "aikido/distance/DistanceMetric.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace distance {

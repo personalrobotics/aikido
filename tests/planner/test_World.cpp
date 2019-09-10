@@ -1,6 +1,7 @@
 #include <dart/dart.hpp>
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/planner/World.hpp>
 
 using std::make_shared;

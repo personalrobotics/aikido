@@ -2,6 +2,7 @@
 #define AIKIDO_COMMON_STREAM_HPP_
 
 #include <iostream>
+
 #include <dart/collision/collision.hpp>
 
 namespace aikido {

@@ -1,6 +1,8 @@
 #include <random>
+
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/CyclicSampleable.hpp>
 #include <aikido/constraint/FiniteSampleable.hpp>
@@ -10,6 +12,7 @@
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+
 #include "MockConstraints.hpp"
 
 using aikido::common::RNG;

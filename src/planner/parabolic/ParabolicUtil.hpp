@@ -3,9 +3,9 @@
 
 #include <memory>
 #include <Eigen/Dense>
-#include <aikido/statespace/StateSpace.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
-#include <aikido/trajectory/Spline.hpp>
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
 #include "DynamicPath.h"
 
 namespace aikido {

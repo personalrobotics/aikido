@@ -1,5 +1,7 @@
 #include "aikido/control/ros/RosTrajectoryExecutor.hpp"
+
 #include <dart/common/Console.hpp>
+
 #include "aikido/control/TrajectoryRunningException.hpp"
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/RosTrajectoryExecutionException.hpp"
