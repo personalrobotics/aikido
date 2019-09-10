@@ -8,7 +8,6 @@
 #include <vector>
 
 #include <Eigen/Dense>
-
 #include <dart/utils/utils.hpp>
 
 #include "aikido/common/string.hpp"

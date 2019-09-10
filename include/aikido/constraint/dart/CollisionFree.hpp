@@ -4,10 +4,12 @@
 #include <memory>
 #include <tuple>
 #include <vector>
+
 #include <dart/collision/CollisionDetector.hpp>
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
+
 #include "aikido/common/pointers.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/dart/CollisionFreeOutcome.hpp"

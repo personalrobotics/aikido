@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/trajectory/BSpline.hpp>
 

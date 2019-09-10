@@ -1,6 +1,8 @@
 #include <dart/utils/utils.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/io/util.hpp>
+
 #include "eigen_tests.hpp"
 
 #define STR_EXPAND(tok) #tok

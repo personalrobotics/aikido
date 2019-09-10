@@ -4,6 +4,7 @@
 #include <set>
 
 #include <dart/dart.hpp>
+
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/memory.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"

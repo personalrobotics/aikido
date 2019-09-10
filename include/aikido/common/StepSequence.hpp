@@ -4,6 +4,7 @@
 #include <cassert>
 #include <limits>
 #include <tuple>
+
 #include <boost/iterator/iterator_facade.hpp>
 
 namespace aikido {

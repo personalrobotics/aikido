@@ -1,30 +1,31 @@
-#include "aikido/io/trajectory.hpp"
-
 #include <tuple>
+
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/Testable.hpp>
+#include <aikido/io/trajectory.hpp>
 #include <aikido/io/yaml.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
 #include <aikido/planner/SnapConfigurationToConfigurationPlanner.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/Spline.hpp>
 #include <aikido/trajectory/util.hpp>
+
 #include "../constraint/MockConstraints.hpp"
 
-using std::make_shared;
 using aikido::io::loadSplineTrajectory;
 using aikido::io::saveTrajectory;
-using aikido::trajectory::Interpolated;
 using aikido::planner::ConfigurationToConfiguration;
 using aikido::planner::SnapConfigurationToConfigurationPlanner;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::trajectory::convertToSpline;
+using aikido::trajectory::Interpolated;
+using std::make_shared;
 
 //==============================================================================
 class SaveLoadTrajectoryTest : public ::testing::Test

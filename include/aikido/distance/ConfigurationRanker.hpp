@@ -1,11 +1,11 @@
 #ifndef AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 #define AIKIDO_DISTANCE_CONFIGURATIONRANKER_HPP_
 
+#include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/distance/DistanceMetric.hpp"
 #include "aikido/distance/defaults.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-
-#include <dart/dynamics/dynamics.hpp>
 
 namespace aikido {
 namespace distance {

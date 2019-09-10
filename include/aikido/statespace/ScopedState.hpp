@@ -1,7 +1,8 @@
 #ifndef AIKIDO_STATESPACE_SCOPEDSTATE_HPP_
 #define AIKIDO_STATESPACE_SCOPEDSTATE_HPP_
 #include <memory>
-#include "StateHandle.hpp"
+
+#include "aikido/statespace/StateHandle.hpp"
 
 namespace aikido {
 namespace statespace {

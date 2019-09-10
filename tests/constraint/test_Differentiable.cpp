@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
-#include "../eigen_tests.hpp"
 
 #include <aikido/constraint/Differentiable.hpp>
+
+#include "../eigen_tests.hpp"
 #include "PolynomialConstraint.hpp"
 
 using aikido::constraint::DifferentiablePtr;

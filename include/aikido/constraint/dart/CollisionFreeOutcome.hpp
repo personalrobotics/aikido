@@ -2,11 +2,13 @@
 #define AIKIDO_CONSTRAINT_DART_COLLISIONFREEOUTCOME_HPP_
 
 #include <vector>
+
 #include <dart/collision/CollisionObject.hpp>
 #include <dart/collision/Contact.hpp>
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/dynamics/ShapeFrame.hpp>
 #include <dart/dynamics/ShapeNode.hpp>
+
 #include "aikido/constraint/TestableOutcome.hpp"
 
 namespace aikido {

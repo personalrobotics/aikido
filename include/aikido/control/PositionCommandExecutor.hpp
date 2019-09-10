@@ -3,7 +3,9 @@
 
 #include <chrono>
 #include <future>
+
 #include <Eigen/Dense>
+
 #include "aikido/common/pointers.hpp"
 
 namespace aikido {

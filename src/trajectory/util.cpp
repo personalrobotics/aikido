@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+
 #include <boost/program_options.hpp>
+
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/StepSequence.hpp"
 #include "aikido/common/memory.hpp"

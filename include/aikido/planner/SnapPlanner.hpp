@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_SNAPPLANNER_HPP_
 
 #include <memory>
+
 #include "aikido/common/deprecated.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/PlanningResult.hpp"

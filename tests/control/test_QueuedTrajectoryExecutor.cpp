@@ -1,5 +1,7 @@
 #include <chrono>
+
 #include <gtest/gtest.h>
+
 #include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
 #include <aikido/control/QueuedTrajectoryExecutor.hpp>
 #include <aikido/control/TrajectoryExecutor.hpp>

@@ -1,11 +1,13 @@
-#include "aikido/distance/JointAvoidanceConfigurationRanker.hpp"
-
 #include <random>
+
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
+#include <aikido/distance/JointAvoidanceConfigurationRanker.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+
 #include "eigen_tests.hpp"
 
 using aikido::distance::JointAvoidanceConfigurationRanker;

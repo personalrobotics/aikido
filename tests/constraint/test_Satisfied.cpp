@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/statespace/Rn.hpp>
 

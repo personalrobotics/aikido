@@ -5,8 +5,8 @@
 #include <ompl/datastructures/NearestNeighbors.h>
 #include <ompl/geometric/planners/PlannerIncludes.h>
 
-#include "../../constraint/Projectable.hpp"
-#include "../../planner/ompl/BackwardCompatibility.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
 
 namespace aikido {
 namespace planner {

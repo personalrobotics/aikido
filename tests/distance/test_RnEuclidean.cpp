@@ -1,7 +1,7 @@
+#include <gtest/gtest.h>
+
 #include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/statespace/Rn.hpp>
-
-#include <gtest/gtest.h>
 
 using namespace aikido::distance;
 using namespace aikido::statespace;

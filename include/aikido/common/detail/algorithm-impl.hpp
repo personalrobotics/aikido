@@ -1,10 +1,10 @@
 #ifndef AIKIDO_COMMON_DETAIL_ALGORITHM_IMPL_HPP_
 #define AIKIDO_COMMON_DETAIL_ALGORITHM_IMPL_HPP_
 
-#include "aikido/common/algorithm.hpp"
-
 #include <cassert>
 #include <functional>
+
+#include "aikido/common/algorithm.hpp"
 
 namespace aikido {
 namespace common {

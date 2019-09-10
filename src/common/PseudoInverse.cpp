@@ -1,8 +1,9 @@
-#include <aikido/common/PseudoInverse.hpp>
+#include "aikido/common/PseudoInverse.hpp"
 
 #include <iostream>
 #include <limits>
 #include <memory>
+
 #include <Eigen/Dense>
 
 namespace aikido {

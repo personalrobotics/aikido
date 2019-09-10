@@ -1,5 +1,6 @@
 #include <dart/common/StlHelpers.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/common/VanDerCorput.hpp>
 
 using aikido::common::VanDerCorput;

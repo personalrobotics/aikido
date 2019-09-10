@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/trajectory/util.hpp>
+
 #include "eigen_tests.hpp"
 
 using aikido::planner::parabolic::ParabolicTimer;

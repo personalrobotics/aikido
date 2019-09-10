@@ -1,4 +1,5 @@
 #include <sstream>
+
 #include "aikido/common/memory.hpp"
 #include "aikido/common/metaprogramming.hpp"
 #include "aikido/constraint/Satisfied.hpp"

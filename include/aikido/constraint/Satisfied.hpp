@@ -1,9 +1,9 @@
 #ifndef AIKIDO_CONSTRAINT_SATISFIED_HPP_
 #define AIKIDO_CONSTRAINT_SATISFIED_HPP_
-#include "Differentiable.hpp"
-#include "Projectable.hpp"
-#include "Sampleable.hpp"
-#include "Testable.hpp"
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace constraint {

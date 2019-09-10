@@ -2,6 +2,7 @@
 #define AIKIDO_CONSTRAINT_DART_FRAMETESTABLE_HPP_
 
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/statespace/SE3.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
