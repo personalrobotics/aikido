@@ -437,6 +437,8 @@ trajectory::TrajectoryPtr planToEndEffectorOffset(
   if (traj)
     return std::move(traj);
 
+  std::cout << "VECTORFIELD FAIL" << std::endl;
+
   return planToEndEffectorOffsetByCRRT(
       space,
       metaSkeleton,
