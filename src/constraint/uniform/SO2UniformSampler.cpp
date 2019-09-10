@@ -1,4 +1,5 @@
 #include "aikido/constraint/uniform/SO2UniformSampler.hpp"
+
 #include <cmath>
 
 namespace aikido {

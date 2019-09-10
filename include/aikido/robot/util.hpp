@@ -3,6 +3,7 @@
 
 #include <dart/dart.hpp>
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/Testable.hpp"

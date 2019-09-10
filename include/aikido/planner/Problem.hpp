@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_PROBLEM_HPP_
 
 #include <string>
+
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 

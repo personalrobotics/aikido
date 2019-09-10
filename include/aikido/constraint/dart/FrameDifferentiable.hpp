@@ -1,11 +1,11 @@
 #ifndef AIKIDO_CONSTRAINT_DART_FRAMEDIFFERENTIABLE_HPP_
 #define AIKIDO_CONSTRAINT_DART_FRAMEDIFFERENTIABLE_HPP_
 
+#include <Eigen/Dense>
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/constraint/Differentiable.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
-
-#include <Eigen/Dense>
 
 namespace aikido {
 namespace constraint {

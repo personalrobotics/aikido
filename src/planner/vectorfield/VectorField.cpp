@@ -1,4 +1,4 @@
-#include <aikido/planner/vectorfield/VectorField.hpp>
+#include "aikido/planner/vectorfield/VectorField.hpp"
 
 namespace aikido {
 namespace planner {

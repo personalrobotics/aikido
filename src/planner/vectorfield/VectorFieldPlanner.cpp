@@ -9,6 +9,7 @@
 #include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/trajectory/Spline.hpp"
+
 #include "detail/VectorFieldIntegrator.hpp"
 #include "detail/VectorFieldPlannerExceptions.hpp"
 

@@ -1,6 +1,8 @@
 #include <ompl/base/spaces/SO2StateSpace.h>
+
 #include <aikido/planner/ompl/GoalRegion.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
+
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
 

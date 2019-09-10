@@ -1,5 +1,6 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
 #include <aikido/common/PseudoInverse.hpp>
 
 using namespace aikido::common;

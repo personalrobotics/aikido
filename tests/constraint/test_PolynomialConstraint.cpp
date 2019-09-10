@@ -1,6 +1,8 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
+
 #include "PolynomialConstraint.hpp"
 
 using aikido::statespace::R1;

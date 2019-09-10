@@ -1,8 +1,10 @@
 #include <dart/dart.hpp>
+
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
+
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
 #include "eigen_tests.hpp"

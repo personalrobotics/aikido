@@ -2,7 +2,9 @@
 #define AIKIDO_STATESPACE_STATESPACE_HPP_
 
 #include <memory>
+
 #include <Eigen/Dense>
+
 #include "aikido/common/RNG.hpp"
 #include "aikido/common/pointers.hpp"
 #include "aikido/statespace/ScopedState.hpp"

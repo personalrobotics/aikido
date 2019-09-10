@@ -2,6 +2,7 @@
 #define AIKIDO_OMPL_AIKIDOGEOMETRICSTATESPACE_HPP_
 
 #include <ompl/base/StateSpace.h>
+
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"
 #include "aikido/constraint/Testable.hpp"

@@ -1,5 +1,7 @@
 #include <stdexcept>
+
 #include <dart/dart.hpp>
+
 #include "aikido/common/memory.hpp"
 #include "aikido/constraint/uniform/RnConstantSampler.hpp"
 

@@ -1,5 +1,6 @@
+#include "aikido/constraint/CartesianProductProjectable.hpp"
+
 #include <sstream>
-#include <aikido/constraint/CartesianProductProjectable.hpp>
 
 namespace aikido {
 namespace constraint {

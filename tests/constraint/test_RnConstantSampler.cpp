@@ -1,6 +1,8 @@
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/uniform/RnConstantSampler.hpp>
+
 #include "eigen_tests.hpp"
 
 using namespace aikido;

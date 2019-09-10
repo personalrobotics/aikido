@@ -2,7 +2,9 @@
 #define AIKIDO_CONTROL_QUEUEDTRAJECTORYEXECUTOR_HPP_
 
 #include <queue>
+
 #include <dart/dart.hpp>
+
 #include "aikido/control/TrajectoryExecutor.hpp"
 
 namespace aikido {

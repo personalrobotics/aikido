@@ -1,6 +1,8 @@
 #include <boost/make_shared.hpp>
 #include <ompl/base/spaces/SO2StateSpace.h>
+
 #include <aikido/planner/ompl/StateSampler.hpp>
+
 #include "OMPLTestHelpers.hpp"
 
 using aikido::planner::ompl::GeometricStateSpace;
