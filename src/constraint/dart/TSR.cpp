@@ -11,9 +11,6 @@
 
 #include "aikido/common/memory.hpp"
 
-#undef dtwarn
-#define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))
-
 using aikido::statespace::SE3;
 using boost::format;
 using boost::str;

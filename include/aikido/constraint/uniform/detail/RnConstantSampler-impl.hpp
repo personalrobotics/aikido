@@ -5,9 +5,6 @@
 #include "aikido/common/memory.hpp"
 #include "aikido/constraint/uniform/RnConstantSampler.hpp"
 
-#undef dtwarn
-#define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))
-
 namespace aikido {
 namespace constraint {
 namespace uniform {
