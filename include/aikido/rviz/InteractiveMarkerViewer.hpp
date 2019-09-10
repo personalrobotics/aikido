@@ -11,10 +11,10 @@
 #include <interactive_markers/interactive_marker_server.h>
 #include <ros/ros.h>
 
-#include <aikido/constraint/dart/TSR.hpp>
-#include <aikido/rviz/TSRMarker.hpp>
-#include <aikido/rviz/pointers.hpp>
-#include <aikido/trajectory/Trajectory.hpp>
+#include "aikido/constraint/dart/TSR.hpp"
+#include "aikido/rviz/TSRMarker.hpp"
+#include "aikido/rviz/pointers.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace rviz {

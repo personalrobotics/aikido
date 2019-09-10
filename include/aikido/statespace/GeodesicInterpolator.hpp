@@ -1,7 +1,7 @@
 #ifndef AIKIDO_STATESPACE_GEODESICINTERPOLATOR_HPP_
 #define AIKIDO_STATESPACE_GEODESICINTERPOLATOR_HPP_
-#include "Interpolator.hpp"
-#include "StateSpace.hpp"
+#include "aikido/statespace/Interpolator.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
 namespace statespace {

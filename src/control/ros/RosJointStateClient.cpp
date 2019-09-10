@@ -1,4 +1,4 @@
-#include <aikido/control/ros/RosJointStateClient.hpp>
+#include "aikido/control/ros/RosJointStateClient.hpp"
 
 namespace aikido {
 namespace control {

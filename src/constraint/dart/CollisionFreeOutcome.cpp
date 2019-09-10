@@ -1,4 +1,5 @@
 #include "aikido/constraint/dart/CollisionFreeOutcome.hpp"
+
 #include <sstream>
 
 namespace aikido {

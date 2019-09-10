@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_PARABOLIC_PARABOLICTIMER_HPP_
 
 #include <Eigen/Dense>
+
 #include "aikido/planner/TrajectoryPostProcessor.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
 #include "aikido/trajectory/Spline.hpp"

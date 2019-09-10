@@ -1,6 +1,6 @@
-#include "aikido/statespace/Rn.hpp"
-
 #include <type_traits>
+
+#include "aikido/statespace/Rn.hpp"
 
 namespace aikido {
 namespace statespace {

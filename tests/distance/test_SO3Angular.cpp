@@ -1,7 +1,7 @@
+#include <gtest/gtest.h>
+
 #include <aikido/distance/SO3Angular.hpp>
 #include <aikido/statespace/SO3.hpp>
-
-#include <gtest/gtest.h>
 
 using namespace aikido::distance;
 using namespace aikido::statespace;

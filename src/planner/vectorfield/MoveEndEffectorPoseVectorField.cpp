@@ -1,9 +1,12 @@
+#include "aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp"
+
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
+
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {

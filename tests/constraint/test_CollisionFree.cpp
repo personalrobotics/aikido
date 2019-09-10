@@ -1,5 +1,6 @@
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/dart/CollisionFree.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SE3.hpp>

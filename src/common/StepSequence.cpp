@@ -1,4 +1,4 @@
-#include <aikido/common/StepSequence.hpp>
+#include "aikido/common/StepSequence.hpp"
 
 #include <cmath>
 #include <iostream>

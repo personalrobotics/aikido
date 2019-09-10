@@ -1,7 +1,7 @@
 #ifndef AIKIDO_CONSTRAINT_CYCLICSAMPLEABLE_HPP_
 #define AIKIDO_CONSTRAINT_CYCLICSAMPLEABLE_HPP_
 
-#include "Sampleable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
 
 namespace aikido {
 namespace constraint {

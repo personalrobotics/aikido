@@ -1,10 +1,11 @@
 #include <Eigen/StdVector>
+#include <gtest/gtest.h>
+
 #include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
-#include "../eigen_tests.hpp"
 
-#include <gtest/gtest.h>
+#include "../eigen_tests.hpp"
 
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;

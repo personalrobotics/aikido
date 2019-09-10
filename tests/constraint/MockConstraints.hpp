@@ -2,6 +2,7 @@
 #define AIKIDO_TESTS_CONSTRAINT_MOCK_CONSTRAINTS_HPP_
 
 #include <memory>
+
 #include <aikido/constraint/Testable.hpp>
 
 using aikido::constraint::DefaultTestableOutcome;

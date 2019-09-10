@@ -1,10 +1,10 @@
+#include <gtest/gtest.h>
+
 #include <aikido/distance/CartesianProductWeighted.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
-
-#include <gtest/gtest.h>
 
 using namespace aikido::distance;
 using namespace aikido::statespace;

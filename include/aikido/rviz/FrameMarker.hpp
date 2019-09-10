@@ -2,8 +2,10 @@
 #define AIKIDO_RVIZ_FRAMEMARKER_HPP_
 
 #include <memory>
+
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
+
 #include "aikido/common/pointers.hpp"
 
 namespace dart {

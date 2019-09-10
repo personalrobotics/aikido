@@ -1,4 +1,4 @@
-#include <aikido/distance/RnEuclidean.hpp>
+#include "aikido/distance/RnEuclidean.hpp"
 
 namespace aikido {
 namespace distance {

@@ -1,12 +1,12 @@
+#include <Eigen/Dense>
+#include <gtest/gtest.h>
+
 #include <aikido/constraint/NewtonsMethodProjectable.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/dart/TSR.hpp>
-#include "PolynomialConstraint.hpp"
-
 #include <aikido/statespace/Rn.hpp>
 
-#include <Eigen/Dense>
-#include <gtest/gtest.h>
+#include "PolynomialConstraint.hpp"
 
 using aikido::constraint::NewtonsMethodProjectable;
 using aikido::constraint::Satisfied;

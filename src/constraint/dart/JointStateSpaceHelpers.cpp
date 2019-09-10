@@ -1,4 +1,5 @@
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
+
 #include "aikido/common/memory.hpp"
 #include "aikido/constraint/CartesianProductProjectable.hpp"
 #include "aikido/constraint/CartesianProductSampleable.hpp"

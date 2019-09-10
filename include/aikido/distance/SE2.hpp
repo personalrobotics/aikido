@@ -1,8 +1,8 @@
 #ifndef AIKIDO_DISTANCE_SE2DISTANCEMETRIC_HPP_
 #define AIKIDO_DISTANCE_SE2DISTANCEMETRIC_HPP_
 
-#include "../statespace/SE2.hpp"
-#include "DistanceMetric.hpp"
+#include "aikido/distance/DistanceMetric.hpp"
+#include "aikido/statespace/SE2.hpp"
 
 namespace aikido {
 namespace distance {

@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <boost/python.hpp>
-#include <aikido/rviz/InteractiveMarkerViewer.hpp>
-#include <aikido/rviz/SkeletonMarker.hpp>
+#include "aikido/rviz/InteractiveMarkerViewer.hpp"
+#include "aikido/rviz/SkeletonMarker.hpp"
 
 using aikido::rviz::InteractiveMarkerViewer;
 

@@ -1,4 +1,4 @@
-#include <aikido/constraint/TestableIntersection.hpp>
+#include "aikido/constraint/TestableIntersection.hpp"
 
 #include <stdexcept>
 

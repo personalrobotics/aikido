@@ -1,4 +1,5 @@
 #include "aikido/robot/ConcreteRobot.hpp"
+
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/util.hpp"
