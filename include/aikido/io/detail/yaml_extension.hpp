@@ -3,9 +3,11 @@
 
 #include <sstream>
 #include <unordered_map>
+
 #include <Eigen/Dense>
-#include "aikido/common/memory.hpp"
 #include <yaml-cpp/yaml.h>
+
+#include "aikido/common/memory.hpp"
 
 namespace aikido {
 namespace io {
@@ -88,14 +90,15 @@ namespace YAML {
 // Specialization for Eigen::Matrix<...>. This enables to use YAML::Node
 // with std::unordered_map as `Node(Eigen::Matrix3d::Identity())` and
 // `node.as<Eigen::Matrix3d>()`.
-template <typename _Scalar,
-          int _Rows,
-          int _Cols,
-          int _Options,
-          int _MaxRows,
-          int _MaxCols>
-struct convert<Eigen::
-                   Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>>
+template <
+    typename _Scalar,
+    int _Rows,
+    int _Cols,
+    int _Options,
+    int _MaxRows,
+    int _MaxCols>
+struct convert<
+    Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>>
 {
   using MatrixType
       = Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>;
@@ -238,11 +241,12 @@ struct convert<Eigen::Transform<_Scalar, _Dim, _Mode, _Options>>
 // Specialization for std::unordered_map<...>. This enables to use YAML::Node
 // with std::unordered_map as `Node(std::unorderd_map<...>())` and
 // `node.as<std::unordered_map<...>>()`.
-template <typename _Key,
-          typename _Tp,
-          typename _Hash,
-          typename _Pred,
-          typename _Alloc>
+template <
+    typename _Key,
+    typename _Tp,
+    typename _Hash,
+    typename _Pred,
+    typename _Alloc>
 struct convert<std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>>
 {
   using UnorderedMap = std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>;

@@ -1,8 +1,11 @@
+#include "aikido/planner/ompl/CRRT.hpp"
+
 #include <limits>
+
 #include <ompl/base/goals/GoalSampleableRegion.h>
 #include <ompl/tools/config/SelfConfig.h>
-#include <aikido/planner/ompl/CRRT.hpp>
-#include <aikido/planner/ompl/GeometricStateSpace.hpp>
+
+#include "aikido/planner/ompl/GeometricStateSpace.hpp"
 
 namespace aikido {
 namespace planner {
@@ -171,12 +174,11 @@ void CRRT::setup()
   if (!mStartTree)
     mStartTree.reset(new ::ompl::NearestNeighborsGNAT<Motion*>);
 
-  mStartTree->setDistanceFunction(
-      ompl_bind(
-          &CRRT::distanceFunction,
-          this,
-          OMPL_PLACEHOLDER(_1),
-          OMPL_PLACEHOLDER(_2)));
+  mStartTree->setDistanceFunction(ompl_bind(
+      &CRRT::distanceFunction,
+      this,
+      OMPL_PLACEHOLDER(_1),
+      OMPL_PLACEHOLDER(_2)));
 }
 
 //==============================================================================
@@ -400,9 +402,8 @@ CRRT::Motion* CRRT::constrainedExtend(
 //==============================================================================
 ::ompl::base::PlannerStatus CRRT::solve(double solveTime)
 {
-  return solve(
-      ::ompl::base::timedPlannerTerminationCondition(
-          solveTime)); //, std::min(solveTime/100., 0.1)));
+  return solve(::ompl::base::timedPlannerTerminationCondition(
+      solveTime)); //, std::min(solveTime/100., 0.1)));
 }
 
 //==============================================================================
@@ -410,6 +411,6 @@ double CRRT::distanceFunction(const Motion* a, const Motion* b) const
 {
   return si_->distance(a->state, b->state);
 }
-}
-}
-}
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

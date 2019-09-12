@@ -1,10 +1,11 @@
 #include <dart/dart.hpp>
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/planner/World.hpp>
 
-using std::shared_ptr;
 using std::make_shared;
+using std::shared_ptr;
 
 class WorldTest : public ::testing::Test
 {

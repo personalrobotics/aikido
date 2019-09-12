@@ -1,4 +1,4 @@
-#include <aikido/distance/SO2Angular.hpp>
+#include "aikido/distance/SO2Angular.hpp"
 
 namespace aikido {
 namespace distance {

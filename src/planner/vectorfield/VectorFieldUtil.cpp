@@ -1,9 +1,11 @@
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
+
 #include <Eigen/Geometry>
 #include <dart/optimizer/Solver.hpp>
 #include <dart/optimizer/nlopt/NloptSolver.hpp>
-#include <aikido/common/algorithm.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
-#include <aikido/trajectory/Spline.hpp>
+
+#include "aikido/common/algorithm.hpp"
+#include "aikido/trajectory/Spline.hpp"
 
 namespace aikido {
 namespace planner {
@@ -62,7 +64,7 @@ protected:
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
-}
+} // namespace
 
 //==============================================================================
 bool computeJointVelocityFromTwist(
@@ -125,9 +127,8 @@ bool computeJointVelocityFromTwist(
   }
 
   problem->setInitialGuess(initialGuess);
-  problem->setObjective(
-      dart::common::make_aligned_shared<DesiredTwistFunction>(
-          desiredTwist, jacobian));
+  problem->setObjective(dart::common::make_aligned_shared<DesiredTwistFunction>(
+      desiredTwist, jacobian));
 
 #if DART_VERSION_AT_LEAST(6, 9, 0)
   dart::optimizer::NloptSolver solver(

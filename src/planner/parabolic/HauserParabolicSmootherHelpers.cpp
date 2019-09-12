@@ -1,7 +1,10 @@
 #include "HauserParabolicSmootherHelpers.hpp"
+
 #include <chrono>
 #include <cmath>
-#include <aikido/common/VanDerCorput.hpp>
+
+#include "aikido/common/VanDerCorput.hpp"
+
 #include "Config.h"
 #include "HauserMath.h"
 #include "ParabolicUtil.hpp"
@@ -14,7 +17,7 @@ namespace parabolic {
 namespace detail {
 
 class SmootherFeasibilityCheckerBase
-    : public ParabolicRamp::FeasibilityCheckerBase
+  : public ParabolicRamp::FeasibilityCheckerBase
 {
 public:
   SmootherFeasibilityCheckerBase(

@@ -1,4 +1,4 @@
-#include <aikido/common/string.hpp>
+#include "aikido/common/string.hpp"
 
 namespace aikido {
 namespace common {

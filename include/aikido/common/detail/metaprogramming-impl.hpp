@@ -28,9 +28,10 @@ struct DynamicCastFactory_raw_ptr
 };
 
 //==============================================================================
-template <template <class> class Factory,
-          template <class> class Pointer,
-          class BaseParameter>
+template <
+    template <class> class Factory,
+    template <class> class Pointer,
+    class BaseParameter>
 struct DynamicCastFactory<Factory, Pointer, BaseParameter, common::type_list<>>
 {
   template <class... Parameters>
@@ -43,23 +44,24 @@ struct DynamicCastFactory<Factory, Pointer, BaseParameter, common::type_list<>>
 };
 
 //==============================================================================
-template <template <class> class Factory,
-          template <class> class Pointer,
-          class BaseParameter,
-          class Arg,
-          class... Args>
-struct DynamicCastFactory<Factory,
-                          Pointer,
-                          BaseParameter,
-                          common::type_list<Arg, Args...>>
+template <
+    template <class> class Factory,
+    template <class> class Pointer,
+    class BaseParameter,
+    class Arg,
+    class... Args>
+struct DynamicCastFactory<
+    Factory,
+    Pointer,
+    BaseParameter,
+    common::type_list<Arg, Args...>>
 {
   template <class... Parameters>
   static auto create(
       typename Pointer<BaseParameter>::type _base, Parameters&&... _params)
-      -> decltype(
-          Factory<Arg>::create(
-              Pointer<BaseParameter>::template cast<Arg>(_base),
-              std::forward<Parameters>(_params)...))
+      -> decltype(Factory<Arg>::create(
+          Pointer<BaseParameter>::template cast<Arg>(_base),
+          std::forward<Parameters>(_params)...))
   {
     if (auto derived = Pointer<BaseParameter>::template cast<Arg>(_base))
     {
@@ -68,10 +70,11 @@ struct DynamicCastFactory<Factory,
     }
     else
     {
-      return DynamicCastFactory<Factory,
-                                Pointer,
-                                BaseParameter,
-                                common::type_list<Args...>>::
+      return DynamicCastFactory<
+          Factory,
+          Pointer,
+          BaseParameter,
+          common::type_list<Args...>>::
           create(std::move(_base), std::forward<Parameters>(_params)...);
     }
   }

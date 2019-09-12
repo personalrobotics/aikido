@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
 
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
@@ -14,8 +15,9 @@ ConfigurationToConfiguration_to_ConfigurationToConfiguration::
     ConfigurationToConfiguration_to_ConfigurationToConfiguration(
         std::shared_ptr<planner::ConfigurationToConfigurationPlanner> planner,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
-  : PlannerAdapter<planner::ConfigurationToConfigurationPlanner,
-                   planner::dart::ConfigurationToConfigurationPlanner>(
+  : PlannerAdapter<
+        planner::ConfigurationToConfigurationPlanner,
+        planner::dart::ConfigurationToConfigurationPlanner>(
         std::move(planner), std::move(metaSkeleton))
 {
   // Do nothing

@@ -1,9 +1,9 @@
 #ifndef AIKIDO_CONSTRAINT_SATISFIED_HPP_
 #define AIKIDO_CONSTRAINT_SATISFIED_HPP_
-#include "Differentiable.hpp"
-#include "Projectable.hpp"
-#include "Sampleable.hpp"
-#include "Testable.hpp"
+#include "aikido/constraint/Differentiable.hpp"
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace constraint {
@@ -11,9 +11,10 @@ namespace constraint {
 /// A constraint which is always satisfied.
 /// This class is often used in CartesianProduct constraints
 /// to represent that some subspace doesn't have any constraint.
-class Satisfied : public constraint::Differentiable,
-                  public constraint::Projectable,
-                  public constraint::Testable
+class Satisfied
+  : public constraint::Differentiable
+  , public constraint::Projectable
+  , public constraint::Testable
 {
 public:
   using Differentiable::getValueAndJacobian;

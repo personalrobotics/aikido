@@ -1,6 +1,8 @@
 #include <random>
+
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/CyclicSampleable.hpp>
 #include <aikido/constraint/FiniteSampleable.hpp>
@@ -10,28 +12,29 @@
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+
 #include "MockConstraints.hpp"
 
-using aikido::statespace::R2;
-using aikido::constraint::FiniteSampleable;
-using aikido::constraint::dart::InverseKinematicsSampleable;
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using aikido::constraint::CyclicSampleable;
+using aikido::constraint::FiniteSampleable;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::dart::InverseKinematicsSampleable;
+using aikido::constraint::dart::TSR;
+using aikido::statespace::R2;
 using aikido::statespace::SE3;
 using aikido::statespace::SO2;
-using dart::dynamics::FreeJoint;
-using aikido::constraint::SampleGenerator;
-using aikido::constraint::dart::TSR;
-using aikido::common::RNGWrapper;
-using aikido::common::RNG;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using dart::dynamics::Skeleton;
-using dart::dynamics::SkeletonPtr;
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
-using dart::dynamics::RevoluteJoint;
+using dart::dynamics::FreeJoint;
 using dart::dynamics::InverseKinematics;
 using dart::dynamics::InverseKinematicsPtr;
+using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 
 static BodyNode::Properties create_BodyNodeProperties(const std::string& _name)
 {
@@ -364,9 +367,8 @@ TEST_F(InverseKinematicsSampleableTest, MultipleGeneratorsSampleSameSequence)
     ASSERT_TRUE(generator1->sample(state1));
     ASSERT_TRUE(generator2->sample(state2));
 
-    EXPECT_TRUE(
-        state1.getSubStateHandle<SE3>(0).getIsometry().isApprox(
-            state2.getSubStateHandle<SE3>(0).getIsometry()));
+    EXPECT_TRUE(state1.getSubStateHandle<SE3>(0).getIsometry().isApprox(
+        state2.getSubStateHandle<SE3>(0).getIsometry()));
 
     EXPECT_DOUBLE_EQ(
         state1.getSubStateHandle<SO2>(1).toAngle(),

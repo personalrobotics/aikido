@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/io/yaml.hpp>
 
 //==============================================================================
@@ -144,11 +145,10 @@ TEST(YamlEigenExtension, LoadVectorMatrix3dIsometry3d)
 
   EXPECT_TRUE(YAML::Node(closed).as<Eigen::VectorXd>() == closed);
   EXPECT_TRUE(YAML::Node(relative_pose).as<Eigen::Matrix3d>() == relative_pose);
-  EXPECT_TRUE(
-      YAML::Node(absolute_pose)
-          .as<Eigen::Isometry3d>()
-          .matrix()
-          .isApprox(absolute_pose.matrix()));
+  EXPECT_TRUE(YAML::Node(absolute_pose)
+                  .as<Eigen::Isometry3d>()
+                  .matrix()
+                  .isApprox(absolute_pose.matrix()));
 }
 
 //==============================================================================
@@ -174,13 +174,13 @@ TEST(YamlEigenExtension, UnorderedMap)
 //==============================================================================
 TEST(YamlEigenExtension, TsrTransforms)
 {
-  using TransformMap = std::
-      unordered_map<std::string,
-                    Eigen::Isometry3d,
-                    std::hash<std::string>,
-                    std::equal_to<std::string>,
-                    Eigen::aligned_allocator<std::pair<const std::string,
-                                                       Eigen::Isometry3d>>>;
+  using TransformMap = std::unordered_map<
+      std::string,
+      Eigen::Isometry3d,
+      std::hash<std::string>,
+      std::equal_to<std::string>,
+      Eigen::aligned_allocator<
+          std::pair<const std::string, Eigen::Isometry3d>>>;
 
   using TransformsMap = std::unordered_map<std::string, TransformMap>;
 

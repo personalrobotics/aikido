@@ -3,8 +3,8 @@
 namespace aikido {
 namespace distance {
 
-using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using ::dart::dynamics::ConstMetaSkeletonPtr;
+using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 
 //==============================================================================
 JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(

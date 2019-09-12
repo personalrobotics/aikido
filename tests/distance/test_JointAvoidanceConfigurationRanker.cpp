@@ -1,22 +1,24 @@
-#include "aikido/distance/JointAvoidanceConfigurationRanker.hpp"
-
 #include <random>
+
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
+#include <aikido/distance/JointAvoidanceConfigurationRanker.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+
 #include "eigen_tests.hpp"
 
 using aikido::distance::JointAvoidanceConfigurationRanker;
 using aikido::statespace::R1;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using dart::dynamics::Skeleton;
-using dart::dynamics::SkeletonPtr;
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 
 static constexpr double EPS = 1e-6;
 

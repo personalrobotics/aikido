@@ -1,4 +1,5 @@
 #include "aikido/robot/ConcreteManipulator.hpp"
+
 #include "aikido/planner/dart/util.hpp"
 #include "aikido/robot/util.hpp"
 

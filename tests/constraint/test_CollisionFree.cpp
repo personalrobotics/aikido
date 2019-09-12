@@ -1,18 +1,19 @@
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/dart/CollisionFree.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
-using aikido::statespace::dart::MetaSkeletonStateSpace;
-using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
+using aikido::constraint::TestableOutcome;
 using aikido::constraint::dart::CollisionFree;
 using aikido::constraint::dart::CollisionFreeOutcome;
-using aikido::constraint::TestableOutcome;
-using aikido::statespace::SO2;
 using aikido::statespace::SE3;
+using aikido::statespace::SO2;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
 
 using namespace dart::dynamics;
 using namespace dart::collision;

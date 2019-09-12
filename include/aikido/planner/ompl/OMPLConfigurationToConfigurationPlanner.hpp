@@ -7,6 +7,7 @@
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/goals/GoalRegion.h>
 #include <ompl/geometric/PathSimplifier.h>
+
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/Projectable.hpp"
 #include "aikido/constraint/Sampleable.hpp"
@@ -26,7 +27,7 @@ namespace ompl {
 /// \tparam PlannerType The OMPL Planner to use.
 template <class PlannerType>
 class OMPLConfigurationToConfigurationPlanner
-    : public aikido::planner::ConfigurationToConfigurationPlanner
+  : public aikido::planner::ConfigurationToConfigurationPlanner
 {
 public:
   /// Constructor.

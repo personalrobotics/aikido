@@ -1,4 +1,5 @@
 #include <sstream>
+
 #include "aikido/common/memory.hpp"
 #include "aikido/common/metaprogramming.hpp"
 #include "aikido/constraint/Satisfied.hpp"
@@ -20,17 +21,17 @@ namespace dart {
 namespace detail {
 
 //==============================================================================
-using JointStateSpaceTypeList
-    = common::type_list<const statespace::dart::R0Joint,
-                        const statespace::dart::R1Joint,
-                        const statespace::dart::R2Joint,
-                        const statespace::dart::R3Joint,
-                        const statespace::dart::R6Joint,
-                        const statespace::dart::SO2Joint,
-                        const statespace::dart::SO3Joint,
-                        const statespace::dart::SE2Joint,
-                        const statespace::dart::SE3Joint,
-                        const statespace::dart::WeldJoint>;
+using JointStateSpaceTypeList = common::type_list<
+    const statespace::dart::R0Joint,
+    const statespace::dart::R1Joint,
+    const statespace::dart::R2Joint,
+    const statespace::dart::R3Joint,
+    const statespace::dart::R6Joint,
+    const statespace::dart::SO2Joint,
+    const statespace::dart::SO3Joint,
+    const statespace::dart::SE2Joint,
+    const statespace::dart::SE3Joint,
+    const statespace::dart::WeldJoint>;
 
 //==============================================================================
 template <class T>
@@ -371,8 +372,8 @@ struct createSampleableFor_impl<const statespace::dart::SE2Joint>
       throw std::invalid_argument(
           "Rotational component of SE2Joint must not have limits.");
     }
-    else if (
-        !(properties.hasPositionLimit(1) && properties.hasPositionLimit(2)))
+    else if (!(properties.hasPositionLimit(1)
+               && properties.hasPositionLimit(2)))
     {
       throw std::runtime_error(
           "Unable to create Sampleable for unbounded SE2.");

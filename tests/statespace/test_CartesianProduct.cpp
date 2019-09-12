@@ -1,5 +1,6 @@
 #include <dart/math/Helpers.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SE2.hpp>
@@ -9,9 +10,9 @@
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R2;
 using aikido::statespace::R3;
+using aikido::statespace::SE2;
 using aikido::statespace::SO2;
 using aikido::statespace::SO3;
-using aikido::statespace::SE2;
 
 TEST(CartesianProduct, Clone)
 {
@@ -33,9 +34,8 @@ TEST(CartesianProduct, Clone)
     EXPECT_DOUBLE_EQ(
         s1.getSubStateHandle<SO2>(0).toAngle(),
         s2.getSubStateHandle<SO2>(0).toAngle());
-    EXPECT_TRUE(
-        s1.getSubStateHandle<R2>(1).getValue().isApprox(
-            s2.getSubStateHandle<R2>(1).getValue()));
+    EXPECT_TRUE(s1.getSubStateHandle<R2>(1).getValue().isApprox(
+        s2.getSubStateHandle<R2>(1).getValue()));
   }
 }
 
@@ -146,12 +146,11 @@ TEST(CartesianProduct, LogMap)
 
 TEST(CartesianProduct, CopyState)
 {
-  CartesianProduct space(
-      {
-          std::make_shared<SO2>(),
-          std::make_shared<R3>(),
-          std::make_shared<SO3>(),
-      });
+  CartesianProduct space({
+      std::make_shared<SO2>(),
+      std::make_shared<R3>(),
+      std::make_shared<SO3>(),
+  });
 
   auto source = space.createState();
   auto dest = space.createState();
@@ -179,14 +178,13 @@ TEST(CartesianProduct, CopyState)
 
 TEST(CartesianProduct, PrintState)
 {
-  CartesianProduct space(
-      {
-          std::make_shared<SO2>(),
-          std::make_shared<R3>(),
-          std::make_shared<SO3>(),
-          std::make_shared<SE2>(),
-          //      std::make_shared<SE3>(),
-      });
+  CartesianProduct space({
+      std::make_shared<SO2>(),
+      std::make_shared<R3>(),
+      std::make_shared<SO3>(),
+      std::make_shared<SE2>(),
+      //      std::make_shared<SE3>(),
+  });
 
   auto source = space.createState();
 

@@ -1,16 +1,15 @@
 #include "aikido/common/memory.hpp"
-
-#include "../../common/metaprogramming.hpp"
-#include "../../statespace/CartesianProduct.hpp"
-#include "../../statespace/Rn.hpp"
-#include "../../statespace/SE2.hpp"
-#include "../../statespace/SO2.hpp"
-#include "../../statespace/SO3.hpp"
-#include "../CartesianProductWeighted.hpp"
-#include "../RnEuclidean.hpp"
-#include "../SE2Weighted.hpp"
-#include "../SO2Angular.hpp"
-#include "../SO3Angular.hpp"
+#include "aikido/common/metaprogramming.hpp"
+#include "aikido/distance/CartesianProductWeighted.hpp"
+#include "aikido/distance/RnEuclidean.hpp"
+#include "aikido/distance/SE2Weighted.hpp"
+#include "aikido/distance/SO2Angular.hpp"
+#include "aikido/distance/SO3Angular.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
+#include "aikido/statespace/Rn.hpp"
+#include "aikido/statespace/SE2.hpp"
+#include "aikido/statespace/SO2.hpp"
+#include "aikido/statespace/SO3.hpp"
 
 namespace aikido {
 namespace distance {
@@ -131,16 +130,16 @@ struct createDistanceMetricFor_impl<const statespace::SE2>
 };
 
 //==============================================================================
-using SupportedStateSpaces
-    = common::type_list<const statespace::CartesianProduct,
-                        const statespace::R0,
-                        const statespace::R1,
-                        const statespace::R2,
-                        const statespace::R3,
-                        const statespace::R6,
-                        const statespace::SO2,
-                        const statespace::SO3,
-                        const statespace::SE2>;
+using SupportedStateSpaces = common::type_list<
+    const statespace::CartesianProduct,
+    const statespace::R0,
+    const statespace::R1,
+    const statespace::R2,
+    const statespace::R3,
+    const statespace::R6,
+    const statespace::SO2,
+    const statespace::SO3,
+    const statespace::SE2>;
 
 } // namespace detail
 

@@ -1,5 +1,6 @@
+#include "aikido/statespace/SE2.hpp"
+
 #include <Eigen/Geometry>
-#include <aikido/statespace/SE2.hpp>
 
 namespace aikido {
 namespace statespace {

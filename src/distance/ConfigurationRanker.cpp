@@ -1,13 +1,13 @@
-#include "aikido/common/memory.hpp"
-
 #include "aikido/distance/ConfigurationRanker.hpp"
+
+#include "aikido/common/memory.hpp"
 
 namespace aikido {
 namespace distance {
 
+using ::dart::dynamics::ConstMetaSkeletonPtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
-using ::dart::dynamics::ConstMetaSkeletonPtr;
 
 //==============================================================================
 ConfigurationRanker::ConfigurationRanker(

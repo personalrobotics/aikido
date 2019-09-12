@@ -1,4 +1,4 @@
-#include <aikido/constraint/DifferentiableIntersection.hpp>
+#include "aikido/constraint/DifferentiableIntersection.hpp"
 
 namespace aikido {
 namespace constraint {

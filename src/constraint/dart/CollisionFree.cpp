@@ -45,8 +45,8 @@ bool CollisionFree::isSatisfied(
     collisionFreeOutcome->clear();
   }
 
-  auto skelStatePtr = static_cast<const aikido::statespace::dart::
-                                      MetaSkeletonStateSpace::State*>(_state);
+  auto skelStatePtr = static_cast<
+      const aikido::statespace::dart::MetaSkeletonStateSpace::State*>(_state);
   mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
 
   bool collision = false;

@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/trajectory/Spline.hpp>
@@ -378,16 +379,20 @@ TEST_F(SplineTest, EvaluateDerivative_HigherOrder_ReturnsZero)
 TEST_F(SplineTest, FindTimeOfClosetStateOnTrajectory)
 {
   Matrix2d coefficients;
-  coefficients << 0., 1., 0., 1.;
+  coefficients << 0., 2., 0., 0.;
 
   std::shared_ptr<Spline> trajectory = std::make_shared<Spline>(mStateSpace);
   auto startState = mStateSpace->createState();
   mStateSpace->expMap(Vector2d(1., 1.), startState);
-  trajectory->addSegment(coefficients, 2., startState);
+  trajectory->addSegment(coefficients, 1., startState);
 
-  Vector2d query(1., 2.);
-  double time = findTimeOfClosestStateOnTrajectory(*trajectory, query, 1e-4);
-  EXPECT_EQ(time, 0.5);
+  auto query = mStateSpace->createState();
+  mStateSpace->expMap(Vector2d(2., 2.), query);
+  double distance;
+  double time
+      = findTimeOfClosestStateOnTrajectory(*trajectory, query, distance, 1e-4);
+  EXPECT_EQ(time, 0.5);     // Half way through trajectory of length 1
+  EXPECT_EQ(distance, 1.0); // Manhattan distance (1,2) <-> (2,2)
 }
 
 TEST_F(SplineTest, CreatePartialTrajectory)

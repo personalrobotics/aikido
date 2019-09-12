@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/Sampleable.hpp>
@@ -6,17 +7,18 @@
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
+
 #include "../eigen_tests.hpp"
 
-using aikido::constraint::CartesianProductSampleable;
-using aikido::constraint::SampleablePtr;
-using aikido::statespace::CartesianProduct;
-using aikido::statespace::SO2;
-using aikido::constraint::uniform::SO2UniformSampler;
-using aikido::statespace::R3;
-using aikido::constraint::uniform::R3BoxConstraint;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
+using aikido::constraint::CartesianProductSampleable;
+using aikido::constraint::SampleablePtr;
+using aikido::constraint::uniform::R3BoxConstraint;
+using aikido::constraint::uniform::SO2UniformSampler;
+using aikido::statespace::CartesianProduct;
+using aikido::statespace::R3;
+using aikido::statespace::SO2;
 
 class CartesianProductSampleableTest : public testing::Test
 {

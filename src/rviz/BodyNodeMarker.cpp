@@ -1,15 +1,15 @@
-#include <aikido/rviz/BodyNodeMarker.hpp>
-
 #include <sstream>
 #include <unordered_set>
-#include <aikido/rviz/shape_conversions.hpp>
+
+#include "aikido/rviz/BodyNodeMarker.hpp"
+#include "aikido/rviz/shape_conversions.hpp"
 
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::ConstBodyNodePtr;
-using dart::dynamics::WeakBodyNodePtr;
 using dart::dynamics::ShapeFrame;
 using dart::dynamics::ShapeNode;
+using dart::dynamics::WeakBodyNodePtr;
 
 using interactive_markers::InteractiveMarkerServer;
 
@@ -77,13 +77,12 @@ bool BodyNodeMarker::update()
 
     mShapeFrameMarkers.emplace(
         shapeNode,
-        std::unique_ptr<ShapeFrameMarker>(
-            new ShapeFrameMarker(
-                mResourceServer,
-                mMarkerServer,
-                shapeNodeName.str(),
-                shapeNode,
-                mFrameId)));
+        std::unique_ptr<ShapeFrameMarker>(new ShapeFrameMarker(
+            mResourceServer,
+            mMarkerServer,
+            shapeNodeName.str(),
+            shapeNode,
+            mFrameId)));
   }
 
   // Update all of the ShapeFrameMarkers.

@@ -2,8 +2,9 @@
 #define AIKIDO_CONSTRAINT_CARTESIANPRODUCTSAMPLEABLE_HPP_
 
 #include <vector>
-#include "../statespace/CartesianProduct.hpp"
-#include "Sampleable.hpp"
+
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace constraint {

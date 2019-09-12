@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/planner/kunzretimer/KunzRetimer.hpp>
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
@@ -6,16 +7,17 @@
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/trajectory/util.hpp>
+
 #include "eigen_tests.hpp"
 
-using Eigen::Vector2d;
-using aikido::trajectory::Interpolated;
+using aikido::planner::kunzretimer::KunzRetimer;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R1;
 using aikido::trajectory::convertToSpline;
-using aikido::planner::kunzretimer::KunzRetimer;
+using aikido::trajectory::Interpolated;
+using Eigen::Vector2d;
 
 class KunzRetimerPostProcessorTests : public ::testing::Test
 {

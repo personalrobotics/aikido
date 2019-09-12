@@ -4,6 +4,7 @@
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
 #include <ompl/base/State.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint.hpp>
 #include <aikido/distance/defaults.hpp>
@@ -13,18 +14,19 @@
 #include <aikido/statespace/StateSpace.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
+using aikido::common::RNG;
+using aikido::common::RNGWrapper;
 using aikido::constraint::DefaultTestableOutcome;
 using aikido::constraint::TestableOutcome;
+using aikido::planner::ompl::GeometricStateSpace;
 using aikido::statespace::CartesianProduct;
 using aikido::statespace::R3;
-using aikido::planner::ompl::GeometricStateSpace;
-using aikido::common::RNGWrapper;
-using aikido::common::RNG;
 using DefaultRNG = RNGWrapper<std::default_random_engine>;
 
 static std::unique_ptr<DefaultRNG> make_rng()
 {
-  return ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(0);
+  return ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
+      0);
 }
 
 dart::dynamics::SkeletonPtr createTranslationalRobot()
@@ -67,7 +69,7 @@ Eigen::Vector3d getTranslationalState(
 }
 
 class MockConstrainedSampleGenerator
-    : public aikido::constraint::SampleGenerator
+  : public aikido::constraint::SampleGenerator
 {
 
 public:
@@ -116,9 +118,10 @@ private:
   double mValue;
 };
 
-class MockProjectionConstraint : public aikido::constraint::Projectable,
-                                 public aikido::constraint::Testable,
-                                 public aikido::constraint::Sampleable
+class MockProjectionConstraint
+  : public aikido::constraint::Projectable
+  , public aikido::constraint::Testable
+  , public aikido::constraint::Sampleable
 {
 public:
   // Construct a constraint that project to x=_val

@@ -12,9 +12,9 @@ namespace dart {
 /// Converts a non-DART ConfigurationToConfiguration planner into a DART
 /// ConfigurationToTSR planner.
 class ConfigurationToConfiguration_to_ConfigurationToTSR
-    : public PlannerAdapter<aikido::planner::
-                                ConfigurationToConfigurationPlanner,
-                            ConfigurationToTSRPlanner>
+  : public PlannerAdapter<
+        aikido::planner::ConfigurationToConfigurationPlanner,
+        ConfigurationToTSRPlanner>
 {
 public:
   /// Constructor

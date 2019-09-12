@@ -1,9 +1,11 @@
 #include "aikido/trajectory/BSpline.hpp"
 
 #include <sstream>
+
 #include <Eigen/Core>
-#include "aikido/common/memory.hpp"
+
 #include "aikido/common/StepSequence.hpp"
+#include "aikido/common/memory.hpp"
 
 namespace aikido {
 namespace trajectory {
@@ -23,7 +25,7 @@ void throwIfInvalidIndex(
   }
 }
 
-} // (anonymous) namespace
+} // namespace
 
 //==============================================================================
 BSpline::BSpline(

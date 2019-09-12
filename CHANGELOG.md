@@ -54,6 +54,7 @@
   * Added trajectory utility functions: [#462](https://github.com/personalrobotics/aikido/pull/462)
   * Fixed toR1JointTrajectory to copy Waypoints with their time information: [#510](https://github.com/personalrobotics/aikido/pull/510)
   * Removed incorrect Spline to Interpolated conversions: [#511](https://github.com/personalrobotics/aikido/pull/511)
+  * Updated findTimeOfClosestStateTrajectory to use StateSpace Distance Metric: [#543](https://github.com/personalrobotics/aikido/pull/543)
 
 * Planner
 
@@ -85,6 +86,7 @@
 * IO
 
   * Added loadSkeletonFromURDF convenience function: [#388](https://github.com/personalrobotics/aikido/pull/388), [#401](https://github.com/personalrobotics/aikido/pull/401)
+  * Added methods for caching and retrieving trajectories: [#541](https://github.com/personalrobotics/aikido/pull/541)
 
 * Build & Testing & ETC
 

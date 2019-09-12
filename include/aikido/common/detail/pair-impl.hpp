@@ -1,9 +1,9 @@
 #ifndef AIKIDO_COMMON_DETAIL_PAIR_IMPL_HPP_
 #define AIKIDO_COMMON_DETAIL_PAIR_IMPL_HPP_
 
-#include <aikido/common/pair.hpp>
-
 #include <boost/functional/hash.hpp>
+
+#include "aikido/common/pair.hpp"
 
 namespace aikido {
 namespace common {

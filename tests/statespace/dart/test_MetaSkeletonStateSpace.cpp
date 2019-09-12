@@ -1,5 +1,6 @@
 #include <dart/dynamics/dynamics.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SE2.hpp>
@@ -8,18 +9,18 @@
 #include <aikido/statespace/SO3.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 
-using Eigen::Isometry3d;
-using Eigen::Vector3d;
-using dart::dynamics::Skeleton;
-using dart::dynamics::RevoluteJoint;
-using dart::dynamics::PrismaticJoint;
-using dart::dynamics::TranslationalJoint;
-using dart::dynamics::FreeJoint;
-using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::R1;
 using aikido::statespace::R3;
-using aikido::statespace::SO2;
 using aikido::statespace::SE3;
+using aikido::statespace::SO2;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
+using dart::dynamics::FreeJoint;
+using dart::dynamics::PrismaticJoint;
+using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
+using dart::dynamics::TranslationalJoint;
+using Eigen::Isometry3d;
+using Eigen::Vector3d;
 
 static Eigen::Matrix<double, 1, 1> make_scalar(double _value)
 {

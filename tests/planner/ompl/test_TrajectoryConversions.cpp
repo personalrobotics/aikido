@@ -1,6 +1,7 @@
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/planner/ompl/MotionValidator.hpp>
 #include <aikido/planner/ompl/Planner.hpp>
+
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
 #include "eigen_tests.hpp"
@@ -42,7 +43,7 @@ aikido::trajectory::InterpolatedPtr constructTrajectory(
 
   return returnInterpolated;
 }
-}
+} // namespace
 
 // Test if the durations of the two trajectories remains constant
 TEST_F(PlannerTest, OMPLNumWaypointsUnchanged)

@@ -1,6 +1,6 @@
-#include "aikido/statespace/Rn.hpp"
-
 #include <type_traits>
+
+#include "aikido/statespace/Rn.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -25,8 +25,8 @@ extern template class R<Eigen::Dynamic>;
 /// \tparam _QualifiedState type of \c State being wrapped
 template <class _QualifiedState>
 class RStateHandle
-    : public statespace::StateHandle<R<_QualifiedState::DimensionAtCompileTime>,
-                                     _QualifiedState>
+  : public statespace::
+        StateHandle<R<_QualifiedState::DimensionAtCompileTime>, _QualifiedState>
 {
 public:
   static constexpr int DimensionAtCompileTime
@@ -34,16 +34,17 @@ public:
 
   using VectorNd = typename R<DimensionAtCompileTime>::VectorNd;
 
-  using typename statespace::StateHandle<R<DimensionAtCompileTime>,
-                                         _QualifiedState>::State;
-  using typename statespace::StateHandle<R<DimensionAtCompileTime>,
-                                         _QualifiedState>::StateSpace;
-  using typename statespace::StateHandle<R<DimensionAtCompileTime>,
-                                         _QualifiedState>::QualifiedState;
+  using typename statespace::
+      StateHandle<R<DimensionAtCompileTime>, _QualifiedState>::State;
+  using typename statespace::
+      StateHandle<R<DimensionAtCompileTime>, _QualifiedState>::StateSpace;
+  using typename statespace::
+      StateHandle<R<DimensionAtCompileTime>, _QualifiedState>::QualifiedState;
 
-  using ValueType = std::conditional<std::is_const<QualifiedState>::value,
-                                     const VectorNd,
-                                     VectorNd>;
+  using ValueType = std::conditional<
+      std::is_const<QualifiedState>::value,
+      const VectorNd,
+      VectorNd>;
 
   /// Construct and initialize to \c nullptr.
   RStateHandle()

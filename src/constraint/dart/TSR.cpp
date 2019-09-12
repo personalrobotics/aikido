@@ -1,19 +1,19 @@
 #include "aikido/constraint/dart/TSR.hpp"
+
 #include <cmath>
 #include <random>
 #include <stdexcept>
 #include <vector>
+
 #include <boost/format.hpp>
 #include <dart/common/Console.hpp>
-#include "aikido/common/memory.hpp"
 #include <dart/math/Geometry.hpp>
 
-#undef dtwarn
-#define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))
+#include "aikido/common/memory.hpp"
 
+using aikido::statespace::SE3;
 using boost::format;
 using boost::str;
-using aikido::statespace::SE3;
 
 namespace aikido {
 namespace constraint {
@@ -108,9 +108,8 @@ TSR::TSR(
   , mBw(_Bw)
   , mTw_e(_Tw_e)
   , mTestableTolerance(_testableTolerance)
-  , mRng(
-        std::unique_ptr<common::RNG>(
-            new common::RNGWrapper<std::default_random_engine>(0)))
+  , mRng(std::unique_ptr<common::RNG>(
+        new common::RNGWrapper<std::default_random_engine>(0)))
   , mStateSpace(std::make_shared<SE3>())
 {
   validate();
@@ -195,8 +194,7 @@ std::unique_ptr<SampleGenerator> TSR::createSampleGenerator() const
       if (!std::isfinite(mBw(i, j)))
         throw std::invalid_argument(
             str(format("Sampling requires finite bounds. Bw[%d, %d] is %f.") % i
-                % j
-                % mBw(i, j)));
+                % j % mBw(i, j)));
     }
   }
 
@@ -244,9 +242,7 @@ void TSR::validate() const
     {
       throw std::logic_error(
           str(format("Lower bound exceeds upper bound on dimension %d: %f > %f")
-              % i
-              % mBw(i, 0)
-              % mBw(i, 1)));
+              % i % mBw(i, 0) % mBw(i, 1)));
     }
   }
 }

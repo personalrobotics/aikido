@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
+
 #include <aikido/statespace/Rn.hpp>
 
-using aikido::statespace::Rn;
 using aikido::statespace::R3;
+using aikido::statespace::Rn;
 using R4 = aikido::statespace::R<4>;
 
 //==============================================================================

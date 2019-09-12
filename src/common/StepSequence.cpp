@@ -1,4 +1,4 @@
-#include <aikido/common/StepSequence.hpp>
+#include "aikido/common/StepSequence.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -196,5 +196,5 @@ StepSequence::const_iterator::const_iterator(
     mValue = mSeq[mStep];
 }
 
-} // namespace commons
+} // namespace common
 } // namespace aikido

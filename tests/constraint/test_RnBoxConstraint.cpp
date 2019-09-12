@@ -1,22 +1,24 @@
 #include <dart/common/Memory.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/common/memory.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
+
 #include "SampleGeneratorCoverage.hpp"
 
-using aikido::statespace::R2;
-using aikido::statespace::Rn;
-using aikido::constraint::uniform::R2BoxConstraint;
-using aikido::constraint::uniform::RnBoxConstraint;
-using aikido::constraint::ConstraintType;
-using aikido::constraint::SampleGenerator;
-using aikido::distance::R2Euclidean;
-using aikido::distance::RnEuclidean;
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;
-using Eigen::Vector2d;
+using aikido::constraint::ConstraintType;
+using aikido::constraint::SampleGenerator;
+using aikido::constraint::uniform::R2BoxConstraint;
+using aikido::constraint::uniform::RnBoxConstraint;
+using aikido::distance::R2Euclidean;
+using aikido::distance::RnEuclidean;
+using aikido::statespace::R2;
+using aikido::statespace::Rn;
 using Eigen::Matrix2d;
+using Eigen::Vector2d;
 
 class RnBoxConstraintTests : public ::testing::Test
 {
@@ -32,8 +34,9 @@ protected:
     mRxStateSpace = std::make_shared<Rn>(2);
     mR2Distance = std::make_shared<R2Euclidean>(mR2StateSpace);
     mRxDistance = std::make_shared<RnEuclidean>(mRxStateSpace);
-    mRng = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
-        0);
+    mRng
+        = ::aikido::common::make_unique<RNGWrapper<std::default_random_engine>>(
+            0);
 
     mLowerLimits = Vector2d(-1., 1.);
     mUpperLimits = Vector2d(1., 2.);

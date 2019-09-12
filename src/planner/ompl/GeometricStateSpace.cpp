@@ -1,8 +1,9 @@
+#include "aikido/planner/ompl/GeometricStateSpace.hpp"
+
 #include "aikido/common/memory.hpp"
-#include <aikido/constraint/Sampleable.hpp>
-#include <aikido/planner/ompl/BackwardCompatibility.hpp>
-#include <aikido/planner/ompl/GeometricStateSpace.hpp>
-#include <aikido/planner/ompl/StateSampler.hpp>
+#include "aikido/constraint/Sampleable.hpp"
+#include "aikido/planner/ompl/BackwardCompatibility.hpp"
+#include "aikido/planner/ompl/StateSampler.hpp"
 
 namespace aikido {
 namespace planner {
@@ -273,6 +274,6 @@ double GeometricStateSpace::getMaxDistanceBetweenValidityChecks() const
   return mMaxDistanceBetweenValidityChecks;
 }
 
-} // ompl
-} // planner
-} // aikido
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

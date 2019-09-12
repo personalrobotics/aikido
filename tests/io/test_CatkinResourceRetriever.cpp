@@ -1,13 +1,15 @@
 #include <cstdlib>
+
 #include <gtest/gtest.h>
+
 #include <aikido/io/CatkinResourceRetriever.hpp>
 
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 
 using aikido::io::CatkinResourceRetriever;
-using dart::common::Uri;
 using dart::common::ResourcePtr;
+using dart::common::Uri;
 
 static constexpr auto WORKSPACE_PATH = STR(AIKIDO_TEST_WORKSPACE_PATH);
 
@@ -31,9 +33,9 @@ static testing::AssertionResult CompareResourceContents(
   const std::string content(
       std::begin(content_buffer), std::end(content_buffer));
   if (content != _expectedContent)
-    return testing::AssertionFailure() << "Got content \"" << content
-                                       << "\", expected \"" << _expectedContent
-                                       << "\".";
+    return testing::AssertionFailure()
+           << "Got content \"" << content << "\", expected \""
+           << _expectedContent << "\".";
 
   return testing::AssertionSuccess();
 }

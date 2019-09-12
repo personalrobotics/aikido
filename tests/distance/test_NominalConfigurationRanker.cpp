@@ -1,10 +1,12 @@
-#include "aikido/distance/NominalConfigurationRanker.hpp"
-
 #include <random>
+
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
+#include <aikido/distance/NominalConfigurationRanker.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+
 #include "eigen_tests.hpp"
 
 static constexpr double EPS = 1e-6;
@@ -12,11 +14,11 @@ static constexpr double EPS = 1e-6;
 using aikido::distance::NominalConfigurationRanker;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using dart::dynamics::Skeleton;
-using dart::dynamics::SkeletonPtr;
 using dart::dynamics::BodyNode;
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::RevoluteJoint;
+using dart::dynamics::Skeleton;
+using dart::dynamics::SkeletonPtr;
 
 static BodyNode::Properties create_BodyNodeProperties(const std::string& name)
 {

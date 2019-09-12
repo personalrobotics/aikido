@@ -1,6 +1,8 @@
 #include <tuple>
+
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
@@ -9,13 +11,14 @@
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
+
 #include "../constraint/MockConstraints.hpp"
 
-using std::shared_ptr;
-using std::make_shared;
-using aikido::trajectory::Interpolated;
 using aikido::planner::ConfigurationToConfiguration;
 using aikido::planner::SnapConfigurationToConfigurationPlanner;
+using aikido::trajectory::Interpolated;
+using std::make_shared;
+using std::shared_ptr;
 
 //==============================================================================
 class SnapPlannerTest : public ::testing::Test

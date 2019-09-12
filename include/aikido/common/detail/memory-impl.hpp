@@ -7,7 +7,7 @@ namespace aikido {
 namespace common {
 
 //==============================================================================
-template<typename T, typename... Args>
+template <typename T, typename... Args>
 ::std::unique_ptr<T> make_unique(Args&&... args)
 {
 #if __cplusplus < 201300

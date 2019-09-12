@@ -3,8 +3,10 @@
 
 #include <chrono>
 #include <unordered_map>
+
 #include <Eigen/Core>
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"

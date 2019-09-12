@@ -1,7 +1,8 @@
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/uniform/RnConstantSampler.hpp>
-#include <aikido/constraint/uniform/RnConstantSampler.hpp>
+
 #include "eigen_tests.hpp"
 
 using namespace aikido;
@@ -78,9 +79,8 @@ void testSampleGenerator(int dimension = N)
   auto stateSpace = std::make_shared<statespace::R<N>>(dimension);
   EXPECT_EQ(stateSpace->getDimension(), dimension);
 
-  auto sampler = dart::common::
-      make_aligned_shared<constraint::uniform::RConstantSampler<N>>(
-          stateSpace, value);
+  auto sampler = dart::common::make_aligned_shared<
+      constraint::uniform::RConstantSampler<N>>(stateSpace, value);
   EXPECT_EQ(sampler->getStateSpace(), stateSpace);
   EXPECT_TRUE(
       tests::CompareEigenMatrices(sampler->getConstantValue(), value, 1e-6));
@@ -97,9 +97,8 @@ void testSampleGenerator(int dimension = N)
     auto state = stateSpace->createState();
     EXPECT_TRUE(generator->sample(state));
 
-    EXPECT_TRUE(
-        tests::CompareEigenMatrices(
-            state.getValue(), sampler->getConstantValue(), 1e-6));
+    EXPECT_TRUE(tests::CompareEigenMatrices(
+        state.getValue(), sampler->getConstantValue(), 1e-6));
   }
 }
 

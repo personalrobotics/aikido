@@ -3,7 +3,8 @@
 
 #include <memory>
 #include <vector>
-#include "Testable.hpp"
+
+#include "aikido/constraint/Testable.hpp"
 
 namespace aikido {
 namespace constraint {

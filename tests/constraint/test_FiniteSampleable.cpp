@@ -1,15 +1,16 @@
 #include <Eigen/StdVector>
+#include <gtest/gtest.h>
+
 #include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
+
 #include "../eigen_tests.hpp"
 
-#include <gtest/gtest.h>
-
-using aikido::statespace::R1;
-using aikido::statespace::R2;
 using aikido::constraint::FiniteSampleable;
 using aikido::constraint::SampleGenerator;
+using aikido::statespace::R1;
+using aikido::statespace::R2;
 using State = aikido::statespace::StateSpace::State;
 
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2d)

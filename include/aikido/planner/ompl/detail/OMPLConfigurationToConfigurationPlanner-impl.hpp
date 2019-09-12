@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_OMPL_DETAIL_OMPLCONFIGURATIONTOCONFIGURATION_IMPL_HPP_
 
 #include <utility>
+
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
 #include "aikido/constraint/dart/FrameTestable.hpp"
@@ -20,7 +21,6 @@ namespace ompl {
 using aikido::constraint::dart::createProjectableBounds;
 using aikido::constraint::dart::createSampleableBounds;
 using aikido::constraint::dart::createTestableBounds;
-using aikido::constraint::dart::createProjectableBounds;
 using aikido::distance::createDistanceMetric;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 

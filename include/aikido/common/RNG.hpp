@@ -6,7 +6,9 @@
 #include <cstdint>
 #include <memory>
 #include <random>
+
 #include <Eigen/Geometry>
+
 #include "aikido/common/pointers.hpp"
 
 namespace aikido {
@@ -124,9 +126,10 @@ private:
 /// \param _engine random engine
 /// \param _distribution uniform distribution over the range [ 0, 1 ]
 /// \return sampled unit quaternion
-template <class Engine,
-          class Scalar,
-          class Quaternion = Eigen::Quaternion<Scalar>>
+template <
+    class Engine,
+    class Scalar,
+    class Quaternion = Eigen::Quaternion<Scalar>>
 Quaternion sampleQuaternion(
     Engine& _engine, std::uniform_real_distribution<Scalar>& _distribution);
 

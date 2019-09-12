@@ -1,11 +1,13 @@
 #include "aikido/robot/util.hpp"
 
 #include <algorithm>
+
 #include <dart/common/Console.hpp>
-#include "aikido/common/memory.hpp"
 #include <dart/common/Timer.hpp>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+
 #include "aikido/common/RNG.hpp"
+#include "aikido/common/memory.hpp"
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
@@ -20,6 +22,7 @@
 #include "aikido/planner/PlanningResult.hpp"
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/CRRTConnect.hpp"
+#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
@@ -29,37 +32,35 @@
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
-#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
-
 namespace aikido {
 namespace robot {
 namespace util {
 
 using common::cloneRNGFrom;
 using common::RNG;
-using constraint::dart::CollisionFreePtr;
-using constraint::dart::InverseKinematicsSampleable;
-using constraint::dart::TSR;
-using constraint::dart::TSRPtr;
 using constraint::TestablePtr;
+using constraint::dart::CollisionFreePtr;
 using constraint::dart::createProjectableBounds;
 using constraint::dart::createSampleableBounds;
 using constraint::dart::createTestableBounds;
-using distance::createDistanceMetric;
+using constraint::dart::InverseKinematicsSampleable;
+using constraint::dart::TSR;
+using constraint::dart::TSRPtr;
 using distance::ConstConfigurationRankerPtr;
+using distance::createDistanceMetric;
 using distance::NominalConfigurationRanker;
 using planner::ConfigurationToConfiguration;
 using planner::SnapConfigurationToConfigurationPlanner;
 using planner::ompl::OMPLConfigurationToConfigurationPlanner;
 using statespace::GeodesicInterpolator;
-using statespace::dart::MetaSkeletonStateSpacePtr;
+using statespace::StateSpace;
 using statespace::dart::MetaSkeletonStateSaver;
 using statespace::dart::MetaSkeletonStateSpace;
-using statespace::StateSpace;
-using trajectory::TrajectoryPtr;
+using statespace::dart::MetaSkeletonStateSpacePtr;
 using trajectory::Interpolated;
 using trajectory::InterpolatedPtr;
 using trajectory::SplinePtr;
+using trajectory::TrajectoryPtr;
 
 using dart::collision::FCLCollisionDetector;
 using dart::dynamics::BodyNodePtr;
@@ -80,9 +81,9 @@ trajectory::TrajectoryPtr planToConfiguration(
 {
   DART_UNUSED(timelimit);
 
-  using planner::ompl::planOMPL;
   using planner::ConfigurationToConfiguration;
   using planner::SnapConfigurationToConfigurationPlanner;
+  using planner::ompl::planOMPL;
 
   auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
   std::lock_guard<std::mutex> lock(robot->getMutex());
@@ -106,10 +107,9 @@ trajectory::TrajectoryPtr planToConfiguration(
   if (untimedTrajectory)
     return untimedTrajectory;
 
-  auto plannerOMPL = std::
-      make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
-                                                              RRTConnect>>(
-          space, rng);
+  auto plannerOMPL = std::make_shared<
+      OMPLConfigurationToConfigurationPlanner<::ompl::geometric::RRTConnect>>(
+      space, rng);
 
   untimedTrajectory = plannerOMPL->plan(problem, &pResult);
 
@@ -150,10 +150,9 @@ trajectory::TrajectoryPtr planToConfigurations(
     if (untimedTrajectory)
       return untimedTrajectory;
 
-    auto plannerOMPL = std::
-        make_shared<OMPLConfigurationToConfigurationPlanner<::ompl::geometric::
-                                                                RRTConnect>>(
-            space, rng);
+    auto plannerOMPL = std::make_shared<
+        OMPLConfigurationToConfigurationPlanner<::ompl::geometric::RRTConnect>>(
+        space, rng);
 
     untimedTrajectory = plannerOMPL->plan(problem, &pResult);
 
@@ -302,12 +301,12 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
     double timelimit,
     const CRRTPlannerParameters& crrtParameters)
 {
-  using aikido::constraint::Sampleable;
-  using aikido::constraint::dart::InverseKinematicsSampleable;
   using aikido::constraint::CyclicSampleable;
+  using aikido::constraint::NewtonsMethodProjectable;
+  using aikido::constraint::Sampleable;
   using aikido::constraint::dart::FrameDifferentiable;
   using aikido::constraint::dart::FrameTestable;
-  using aikido::constraint::NewtonsMethodProjectable;
+  using aikido::constraint::dart::InverseKinematicsSampleable;
   using aikido::planner::ompl::planCRRTConnect;
 
   std::size_t projectionMaxIteration = crrtParameters.projectionMaxIteration;

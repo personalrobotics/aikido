@@ -1,18 +1,18 @@
-#include <aikido/rviz/ShapeFrameMarker.hpp>
-
 #include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
-#include <aikido/rviz/ResourceServer.hpp>
-#include <aikido/rviz/shape_conversions.hpp>
 
+#include "aikido/rviz/ResourceServer.hpp"
+#include "aikido/rviz/ShapeFrameMarker.hpp"
+#include "aikido/rviz/shape_conversions.hpp"
+
+using dart::dynamics::CollisionAspect;
+using dart::dynamics::ConstShapePtr;
+using dart::dynamics::ShapeFrame;
+using dart::dynamics::VisualAspect;
 using interactive_markers::InteractiveMarkerServer;
 using visualization_msgs::InteractiveMarkerControl;
 using visualization_msgs::Marker;
-using dart::dynamics::CollisionAspect;
-using dart::dynamics::VisualAspect;
-using dart::dynamics::ShapeFrame;
-using dart::dynamics::ConstShapePtr;
 
 namespace aikido {
 namespace rviz {

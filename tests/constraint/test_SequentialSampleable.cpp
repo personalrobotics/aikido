@@ -1,21 +1,21 @@
-#include <aikido/constraint/SequentialSampleable.hpp>
-
 #include <Eigen/StdVector>
-#include <aikido/constraint/CyclicSampleable.hpp>
-#include <aikido/constraint/FiniteSampleable.hpp>
-#include <aikido/statespace/Rn.hpp>
-#include <aikido/statespace/StateSpace.hpp>
-#include "../eigen_tests.hpp"
-
 #include <gtest/gtest.h>
 
-using aikido::statespace::R1;
-using aikido::statespace::R2;
+#include <aikido/constraint/CyclicSampleable.hpp>
+#include <aikido/constraint/FiniteSampleable.hpp>
+#include <aikido/constraint/SequentialSampleable.hpp>
+#include <aikido/statespace/Rn.hpp>
+#include <aikido/statespace/StateSpace.hpp>
+
+#include "../eigen_tests.hpp"
+
+using aikido::constraint::ConstSampleablePtr;
 using aikido::constraint::CyclicSampleable;
 using aikido::constraint::FiniteSampleable;
-using aikido::constraint::ConstSampleablePtr;
-using aikido::constraint::SequentialSampleable;
 using aikido::constraint::SampleGenerator;
+using aikido::constraint::SequentialSampleable;
+using aikido::statespace::R1;
+using aikido::statespace::R2;
 using State = aikido::statespace::StateSpace::State;
 
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Vector2d)
@@ -116,9 +116,8 @@ TEST(SequentialSampleableTest, MultipleSampleGenerators)
 
   std::vector<ConstSampleablePtr> sampleables;
   sampleables.emplace_back(std::make_shared<const FiniteSampleable>(r1, s1));
-  sampleables.emplace_back(
-      std::make_shared<const CyclicSampleable>(
-          std::make_shared<FiniteSampleable>(r1, s2)));
+  sampleables.emplace_back(std::make_shared<const CyclicSampleable>(
+      std::make_shared<FiniteSampleable>(r1, s2)));
 
   SequentialSampleable constraint(r1, sampleables);
 

@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/planner/parabolic/ParabolicTimer.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -7,18 +8,18 @@
 #include <aikido/statespace/SO3.hpp>
 #include <aikido/trajectory/util.hpp>
 
-using Eigen::Vector2d;
-using Eigen::Vector3d;
-using aikido::trajectory::Interpolated;
+using aikido::planner::parabolic::computeParabolicTiming;
+using aikido::statespace::CartesianProduct;
+using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R1;
-using aikido::statespace::CartesianProduct;
 using aikido::statespace::SO2;
 using aikido::statespace::SO3;
 using aikido::statespace::StateSpacePtr;
-using aikido::statespace::ConstStateSpacePtr;
 using aikido::trajectory::convertToSpline;
-using aikido::planner::parabolic::computeParabolicTiming;
+using aikido::trajectory::Interpolated;
+using Eigen::Vector2d;
+using Eigen::Vector3d;
 
 class ParabolicTimerTests : public ::testing::Test
 {

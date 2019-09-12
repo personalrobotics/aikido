@@ -1,12 +1,13 @@
 #include <memory>
+
 #include "aikido/common/memory.hpp"
-#include "../../../common/metaprogramming.hpp"
-#include "../RnJoint.hpp"
-#include "../SE2Joint.hpp"
-#include "../SE3Joint.hpp"
-#include "../SO2Joint.hpp"
-#include "../SO3Joint.hpp"
-#include "../WeldJoint.hpp"
+#include "aikido/common/metaprogramming.hpp"
+#include "aikido/statespace/dart/RnJoint.hpp"
+#include "aikido/statespace/dart/SE2Joint.hpp"
+#include "aikido/statespace/dart/SE3Joint.hpp"
+#include "aikido/statespace/dart/SO2Joint.hpp"
+#include "aikido/statespace/dart/SO3Joint.hpp"
+#include "aikido/statespace/dart/WeldJoint.hpp"
 
 namespace aikido {
 namespace statespace {
@@ -95,18 +96,18 @@ struct createJointStateSpaceFor_impl<const ::dart::dynamics::WeldJoint>
 };
 
 //==============================================================================
-using ConstSupportedJoints
-    = common::type_list<const ::dart::dynamics::BallJoint,
-                        const ::dart::dynamics::FreeJoint,
-                        const ::dart::dynamics::PlanarJoint,
-                        const ::dart::dynamics::PrismaticJoint,
-                        const ::dart::dynamics::RevoluteJoint,
-                        const ::dart::dynamics::TranslationalJoint,
-                        const ::dart::dynamics::WeldJoint
-                        // TODO: Support ScrewJoint.
-                        // TODO: Support UniversalJoint.
-                        // TODO: Support EulerJoint.
-                        >;
+using ConstSupportedJoints = common::type_list<
+    const ::dart::dynamics::BallJoint,
+    const ::dart::dynamics::FreeJoint,
+    const ::dart::dynamics::PlanarJoint,
+    const ::dart::dynamics::PrismaticJoint,
+    const ::dart::dynamics::RevoluteJoint,
+    const ::dart::dynamics::TranslationalJoint,
+    const ::dart::dynamics::WeldJoint
+    // TODO: Support ScrewJoint.
+    // TODO: Support UniversalJoint.
+    // TODO: Support EulerJoint.
+    >;
 
 } // namespace detail
 

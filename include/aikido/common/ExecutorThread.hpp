@@ -66,6 +66,6 @@ private:
 } // namespace common
 } // namespace aikido
 
-#include <aikido/common/detail/ExecutorThread-impl.hpp>
+#include "aikido/common/detail/ExecutorThread-impl.hpp"
 
 #endif // AIKIDO_COMMON_EXECUTORTHREAD_HPP_

@@ -1,4 +1,5 @@
 #include "aikido/robot/ConcreteRobot.hpp"
+
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/util.hpp"
@@ -7,23 +8,23 @@
 namespace aikido {
 namespace robot {
 
+using constraint::ConstTestablePtr;
+using constraint::TestablePtr;
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::TSRPtr;
-using constraint::TestablePtr;
-using constraint::ConstTestablePtr;
 using planner::TrajectoryPostProcessor;
 using planner::kunzretimer::KunzRetimer;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
+using statespace::StateSpace;
+using statespace::StateSpacePtr;
+using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
-using statespace::dart::ConstMetaSkeletonStateSpacePtr;
-using statespace::StateSpacePtr;
-using statespace::StateSpace;
-using trajectory::TrajectoryPtr;
 using trajectory::Interpolated;
 using trajectory::InterpolatedPtr;
 using trajectory::Spline;
+using trajectory::TrajectoryPtr;
 using trajectory::UniqueSplinePtr;
 
 using dart::dynamics::BodyNodePtr;

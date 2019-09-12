@@ -1,18 +1,18 @@
-#include <aikido/rviz/shape_conversions.hpp>
-
 #include <Eigen/StdVector>
 #include <assimp/cexport.h>
 #include <boost/filesystem.hpp>
 #include <dart/dynamics/dynamics.hpp>
-#include <aikido/rviz/ResourceServer.hpp>
 
-using dart::dynamics::Shape;
+#include "aikido/rviz/ResourceServer.hpp"
+#include "aikido/rviz/shape_conversions.hpp"
+
 using dart::dynamics::BoxShape;
 using dart::dynamics::CylinderShape;
 using dart::dynamics::EllipsoidShape;
 using dart::dynamics::LineSegmentShape;
 using dart::dynamics::MeshShape;
 using dart::dynamics::PlaneShape;
+using dart::dynamics::Shape;
 using dart::dynamics::SoftMeshShape;
 using visualization_msgs::Marker;
 

@@ -1,9 +1,12 @@
+#include "aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp"
+
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
-#include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
+
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
@@ -50,8 +53,8 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
 bool MoveEndEffectorOffsetVectorField::evaluateCartesianVelocity(
     const Eigen::Isometry3d& pose, Eigen::Vector6d& cartesianVelocity) const
 {
-  using ::dart::math::logMap;
   using aikido::planner::vectorfield::computeGeodesicError;
+  using ::dart::math::logMap;
 
   Eigen::Vector6d desiredTwist = computeGeodesicTwist(pose, mStartPose);
   desiredTwist.tail<3>() = mDirection;

@@ -1,6 +1,8 @@
 #include <chrono>
+
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/control/InstantaneousTrajectoryExecutor.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/SO2.hpp>
@@ -8,19 +10,19 @@
 #include <aikido/trajectory/Interpolated.hpp>
 
 using aikido::control::InstantaneousTrajectoryExecutor;
+using aikido::statespace::GeodesicInterpolator;
+using aikido::statespace::Interpolator;
+using aikido::statespace::SO2;
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::MetaSkeletonStateSpacePtr;
-using aikido::statespace::Interpolator;
-using aikido::statespace::GeodesicInterpolator;
-using aikido::statespace::SO2;
-using aikido::trajectory::TrajectoryPtr;
 using aikido::trajectory::Interpolated;
-using ::dart::dynamics::Group;
-using ::dart::dynamics::Skeleton;
-using ::dart::dynamics::SkeletonPtr;
+using aikido::trajectory::TrajectoryPtr;
 using ::dart::dynamics::BodyNode;
 using ::dart::dynamics::BodyNodePtr;
+using ::dart::dynamics::Group;
 using ::dart::dynamics::RevoluteJoint;
+using ::dart::dynamics::Skeleton;
+using ::dart::dynamics::SkeletonPtr;
 
 const static std::chrono::milliseconds waitTime{0};
 

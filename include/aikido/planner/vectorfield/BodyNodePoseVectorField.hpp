@@ -2,8 +2,9 @@
 #define AIKIDO_PLANNER_VECTORFIELD_BODYNODEPOSEVECTORFIELD_HPP_
 
 #include <dart/dynamics/BodyNode.hpp>
-#include <aikido/planner/vectorfield/VectorField.hpp>
-#include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
+
+#include "aikido/planner/vectorfield/VectorField.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace planner {

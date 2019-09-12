@@ -8,7 +8,6 @@
 #include <vector>
 
 #include <Eigen/Dense>
-
 #include <dart/utils/utils.hpp>
 
 #include "aikido/common/string.hpp"
@@ -587,4 +586,4 @@ void transformElementNamesToLowerCases(tinyxml2::XMLDocument& doc)
 
 } // anonymous namespace
 } // namespace io
-} // namespace dart
+} // namespace aikido

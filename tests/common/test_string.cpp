@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/common/string.hpp>
 
 using namespace aikido;

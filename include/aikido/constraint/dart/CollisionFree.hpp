@@ -4,10 +4,12 @@
 #include <memory>
 #include <tuple>
 #include <vector>
+
 #include <dart/collision/CollisionDetector.hpp>
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/collision/CollisionGroup.hpp>
 #include <dart/collision/CollisionOption.hpp>
+
 #include "aikido/common/pointers.hpp"
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/dart/CollisionFreeOutcome.hpp"
@@ -90,8 +92,9 @@ private:
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   std::shared_ptr<::dart::collision::CollisionDetector> mCollisionDetector;
   ::dart::collision::CollisionOption mCollisionOptions;
-  std::vector<std::pair<std::shared_ptr<CollisionGroup>,
-                        std::shared_ptr<CollisionGroup>>>
+  std::vector<std::pair<
+      std::shared_ptr<CollisionGroup>,
+      std::shared_ptr<CollisionGroup>>>
       mGroupsToPairwiseCheck;
   std::vector<std::shared_ptr<CollisionGroup>> mGroupsToSelfCheck;
 };

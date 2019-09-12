@@ -1,8 +1,9 @@
-#include <aikido/planner/ompl/MotionValidator.hpp>
+#include "aikido/planner/ompl/MotionValidator.hpp"
 
 #include <ompl/base/SpaceInformation.h>
-#include <aikido/common/StepSequence.hpp>
-#include <aikido/common/VanDerCorput.hpp>
+
+#include "aikido/common/StepSequence.hpp"
+#include "aikido/common/VanDerCorput.hpp"
 
 namespace aikido {
 namespace planner {
@@ -89,6 +90,6 @@ bool MotionValidator::checkMotion(
 
   return valid;
 }
-}
-}
-}
+} // namespace ompl
+} // namespace planner
+} // namespace aikido

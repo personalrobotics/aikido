@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <memory>
 #include <vector>
+
 #include <Eigen/Core>
 #include <Eigen/QR>
 #include <Eigen/Sparse>
@@ -28,11 +29,12 @@ namespace common {
 /// \tparam _NumCoefficients number of polynomial coefficients, or \c Dynamic
 /// \tparam _NumOutputs number of outputs, or \c Dynamic
 /// \tparam _NumKnots number of knots, or \c Dynamic
-template <class _Scalar = double,
-          class _Index = int,
-          _Index _NumCoefficients = Eigen::Dynamic,
-          _Index _NumOutputs = Eigen::Dynamic,
-          _Index _NumKnots = Eigen::Dynamic>
+template <
+    class _Scalar = double,
+    class _Index = int,
+    _Index _NumCoefficients = Eigen::Dynamic,
+    _Index _NumOutputs = Eigen::Dynamic,
+    _Index _NumKnots = Eigen::Dynamic>
 class SplineND
 {
 public:
@@ -52,9 +54,8 @@ public:
             : Eigen::Dynamic;
 
   using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
-  using SolutionMatrix = Eigen::Matrix<Scalar,
-                                       NumOutputsAtCompileTime,
-                                       NumCoefficientsAtCompileTime>;
+  using SolutionMatrix = Eigen::
+      Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
   using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
   using SolutionMatrices
       = std::vector<SolutionMatrix, Eigen::aligned_allocator<SolutionMatrix> >;
@@ -73,8 +74,9 @@ public:
   /// \param _solution list of polynomial coefficients for each segment
   SplineND(
       const TimeVector& _times,
-      const std::vector<SolutionMatrix,
-                        Eigen::aligned_allocator<SolutionMatrix> >& _solution);
+      const std::vector<
+          SolutionMatrix,
+          Eigen::aligned_allocator<SolutionMatrix> >& _solution);
 
   // Default copy and move semantics.
   SplineND(SplineND&& _other) = default;
@@ -153,9 +155,10 @@ public:
 private:
   using CoefficientVector
       = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
-  using CoefficientMatrix = Eigen::Matrix<Scalar,
-                                          NumCoefficientsAtCompileTime,
-                                          NumCoefficientsAtCompileTime>;
+  using CoefficientMatrix = Eigen::Matrix<
+      Scalar,
+      NumCoefficientsAtCompileTime,
+      NumCoefficientsAtCompileTime>;
 
   TimeVector mTimes;
   SolutionMatrices mSolution;
@@ -179,11 +182,12 @@ public:
 /// \tparam _NumCoefficients number of polynomial coefficients, or \c Dynamic
 /// \tparam _NumOutputs number of outputs, or \c Dynamic
 /// \tparam _NumKnots number of knots, or \c Dynamic
-template <class _Scalar = double,
-          class _Index = int,
-          _Index _NumCoefficients = Eigen::Dynamic,
-          _Index _NumOutputs = Eigen::Dynamic,
-          _Index _NumKnots = Eigen::Dynamic>
+template <
+    class _Scalar = double,
+    class _Index = int,
+    _Index _NumCoefficients = Eigen::Dynamic,
+    _Index _NumOutputs = Eigen::Dynamic,
+    _Index _NumKnots = Eigen::Dynamic>
 class SplineProblem
 {
 public:
@@ -204,20 +208,19 @@ public:
 
   using TimeVector = Eigen::Matrix<Scalar, NumKnotsAtCompileTime, 1>;
   using OutputVector = Eigen::Matrix<Scalar, NumOutputsAtCompileTime, 1>;
-  using OutputMatrix = Eigen::Matrix<Scalar,
-                                     NumCoefficientsAtCompileTime,
-                                     NumOutputsAtCompileTime>;
+  using OutputMatrix = Eigen::
+      Matrix<Scalar, NumCoefficientsAtCompileTime, NumOutputsAtCompileTime>;
   using CoefficientVector
       = Eigen::Matrix<Scalar, NumCoefficientsAtCompileTime, 1>;
-  using CoefficientMatrix = Eigen::Matrix<Scalar,
-                                          NumCoefficientsAtCompileTime,
-                                          NumCoefficientsAtCompileTime>;
+  using CoefficientMatrix = Eigen::Matrix<
+      Scalar,
+      NumCoefficientsAtCompileTime,
+      NumCoefficientsAtCompileTime>;
   using ProblemMatrix = Eigen::SparseMatrix<Scalar, 0, Index>;
   using ProblemVector
       = Eigen::Matrix<Scalar, DimensionAtCompileTime, NumOutputsAtCompileTime>;
-  using SolutionMatrix = Eigen::Matrix<Scalar,
-                                       NumOutputsAtCompileTime,
-                                       NumCoefficientsAtCompileTime>;
+  using SolutionMatrix = Eigen::
+      Matrix<Scalar, NumOutputsAtCompileTime, NumCoefficientsAtCompileTime>;
   using Spline
       = SplineND<Scalar, Index, _NumCoefficients, _NumOutputs, _NumKnots>;
 
@@ -319,15 +322,15 @@ private:
   ProblemMatrix mA;
   ProblemVector mB;
 
-  std::vector<SolutionMatrix,
-              Eigen::aligned_allocator<SolutionMatrix> >
+  std::vector<
+      SolutionMatrix,
+      Eigen::aligned_allocator<SolutionMatrix> >
       mSolution; // length _NumSegments
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(
       CoefficientMatrix::NeedsToAlign || TimeVector::NeedsToAlign
-      || ProblemMatrix::NeedsToAlign
-      || ProblemVector::NeedsToAlign)
+      || ProblemMatrix::NeedsToAlign || ProblemVector::NeedsToAlign)
 };
 
 } // namespace common

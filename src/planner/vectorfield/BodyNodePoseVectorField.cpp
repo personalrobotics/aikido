@@ -1,6 +1,8 @@
-#include <aikido/common/StepSequence.hpp>
-#include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
-#include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
+#include "aikido/planner/vectorfield/BodyNodePoseVectorField.hpp"
+
+#include "aikido/common/StepSequence.hpp"
+#include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
+
 #include "detail/VectorFieldPlannerExceptions.hpp"
 
 namespace aikido {
@@ -42,10 +44,10 @@ bool BodyNodePoseVectorField::evaluateVelocity(
     const aikido::statespace::StateSpace::State* state,
     Eigen::VectorXd& qd) const
 {
+  using aikido::planner::vectorfield::computeJointVelocityFromTwist;
   using Eigen::Isometry3d;
   using Eigen::Vector3d;
   using Eigen::Vector6d;
-  using aikido::planner::vectorfield::computeJointVelocityFromTwist;
 
   Eigen::VectorXd position(mMetaSkeleton->getNumDofs());
   auto newState
@@ -81,8 +83,8 @@ VectorFieldPlannerStatus BodyNodePoseVectorField::evaluateStatus(
   using Eigen::Isometry3d;
 
   Eigen::VectorXd position(mMetaSkeleton->getNumDofs());
-  auto newState = static_cast<const aikido::statespace::dart::
-                                  MetaSkeletonStateSpace::State*>(state);
+  auto newState = static_cast<
+      const aikido::statespace::dart::MetaSkeletonStateSpace::State*>(state);
   mMetaSkeletonStateSpace->convertStateToPositions(newState, position);
   mMetaSkeleton->setPositions(position);
 

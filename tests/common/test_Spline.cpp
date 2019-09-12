@@ -1,6 +1,9 @@
 #include <cstdlib>
+
 #include <gtest/gtest.h>
+
 #include <aikido/common/Spline.hpp>
+
 #include "eigen_tests.hpp"
 
 using namespace aikido::tests;

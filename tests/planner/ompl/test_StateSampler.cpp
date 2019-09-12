@@ -1,6 +1,8 @@
 #include <boost/make_shared.hpp>
 #include <ompl/base/spaces/SO2StateSpace.h>
+
 #include <aikido/planner/ompl/StateSampler.hpp>
+
 #include "OMPLTestHelpers.hpp"
 
 using aikido::planner::ompl::GeometricStateSpace;
@@ -72,9 +74,8 @@ TEST_F(StateSamplerTest, SampleUniformValid)
   // Ensure we get two different states if we sample twice
   ssampler.sampleUniform(s1);
   ssampler.sampleUniform(s2);
-  EXPECT_FALSE(
-      getTranslationalState(stateSpace, s1)
-          .isApprox(getTranslationalState(stateSpace, s2)));
+  EXPECT_FALSE(getTranslationalState(stateSpace, s1)
+                   .isApprox(getTranslationalState(stateSpace, s2)));
   gSpace->freeState(s1);
   gSpace->freeState(s2);
 }
