@@ -193,13 +193,22 @@ void InteractiveMarkerViewer::update()
   {
     // Skeleton still exists in the World, do nothing.
     if (mWorld && mWorld->hasSkeleton(it->first))
+    {
       ++it;
-    // Skeleton not in the world, but a marker, update.
+    }
+    // Skeleton not in the world, but a marker, update with lock on skeleton.
     else if (it->first)
-      it->second->update();
+    {
+      std::unique_lock<std::mutex> skeleton_lock(
+          it->first->getMutex(), std::try_to_lock);
+      if (skeleton_lock.owns_lock())
+        it->second->update();
+    }
     // Skeleton does not exist anymore, remove from markers.
     else
+    {
       it = mSkeletonMarkers.erase(it);
+    }
   }
 
   for (const FrameMarkerPtr& marker : mFrameMarkers)
