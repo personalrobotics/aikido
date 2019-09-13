@@ -28,6 +28,7 @@ check_cxx_source_compiles(
 set(sources
   CatkinResourceRetriever.cpp
   KinBodyParser.cpp
+  Planner.cpp
   trajectory.cpp
   yaml.cpp
   util.cpp
