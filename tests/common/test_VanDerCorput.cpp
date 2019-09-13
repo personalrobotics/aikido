@@ -99,16 +99,13 @@ TEST(VanDerCorput, FirstNineIteratorValuesWithEndpoints)
   EXPECT_DOUBLE_EQ(7. / 8, *itr);
 }
 
-TEST(VanDerCorput, ScaleProperlyOverSpan)
+TEST(VanDerCorput, ScaleProperlyOverSpanWithResolution)
 {
-  VanDerCorput vdc{2};
-  EXPECT_DOUBLE_EQ(2.0 / 2, vdc[0].first);
-  EXPECT_DOUBLE_EQ(2.0 / 4, vdc[1].first);
-  EXPECT_DOUBLE_EQ(6.0 / 4, vdc[2].first);
-  EXPECT_DOUBLE_EQ(2.0 / 8, vdc[3].first);
-  EXPECT_DOUBLE_EQ(10. / 8, vdc[4].first);
-  EXPECT_DOUBLE_EQ(6.0 / 8, vdc[5].first);
-  EXPECT_DOUBLE_EQ(14. / 8, vdc[6].first);
+  VanDerCorput vdc{2, false, false, 0.5};
+  EXPECT_EQ(vdc.getLength(), 3);
+  EXPECT_DOUBLE_EQ(1.0, vdc[0].first);
+  EXPECT_DOUBLE_EQ(0.5, vdc[1].first);
+  EXPECT_DOUBLE_EQ(1.5, vdc[2].first);
 }
 
 TEST(VanDerCorput, ScaleProperlyOverSpanWithEndpoints)

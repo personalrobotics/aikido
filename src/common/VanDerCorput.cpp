@@ -164,7 +164,7 @@ void VanDerCorput::const_iterator::increment()
   {
     ++mN;
     mCurr = (*mSeq)[mN];
-    if (mCurr.second <= mSeq->mMinResolution)
+    if (mCurr.second*mSeq->mSpan <= mSeq->mMinResolution)
     {
       mFinalIter = true;
     }
