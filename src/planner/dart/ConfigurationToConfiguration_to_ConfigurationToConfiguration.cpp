@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
 
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;

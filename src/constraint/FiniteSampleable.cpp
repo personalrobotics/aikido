@@ -1,4 +1,4 @@
-#include <aikido/constraint/FiniteSampleable.hpp>
+#include "aikido/constraint/FiniteSampleable.hpp"
 
 #include "aikido/common/memory.hpp"
 

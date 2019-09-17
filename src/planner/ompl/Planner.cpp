@@ -1,12 +1,13 @@
-#include <aikido/common/memory.hpp>
-#include <aikido/constraint/TestableIntersection.hpp>
-#include <aikido/planner/ompl/CRRT.hpp>
-#include <aikido/planner/ompl/CRRTConnect.hpp>
-#include <aikido/planner/ompl/GeometricStateSpace.hpp>
-#include <aikido/planner/ompl/MotionValidator.hpp>
-#include <aikido/planner/ompl/Planner.hpp>
+#include "aikido/planner/ompl/Planner.hpp"
 
 #include <dart/dart.hpp>
+
+#include "aikido/common/memory.hpp"
+#include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/planner/ompl/CRRT.hpp"
+#include "aikido/planner/ompl/CRRTConnect.hpp"
+#include "aikido/planner/ompl/GeometricStateSpace.hpp"
+#include "aikido/planner/ompl/MotionValidator.hpp"
 
 namespace aikido {
 namespace planner {

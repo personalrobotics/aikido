@@ -1,4 +1,4 @@
-#include <aikido/distance/defaults.hpp>
+#include "aikido/distance/defaults.hpp"
 
 namespace aikido {
 namespace distance {

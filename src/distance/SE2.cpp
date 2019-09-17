@@ -1,5 +1,6 @@
+#include "aikido/distance/SE2.hpp"
+
 #include <boost/math/constants/constants.hpp>
-#include <aikido/distance/SE2.hpp>
 
 namespace aikido {
 namespace distance {

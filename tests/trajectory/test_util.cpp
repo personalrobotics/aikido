@@ -1,12 +1,13 @@
 #include <tuple>
+
 #include <dart/dart.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/statespace/CartesianProduct.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-
 #include <aikido/trajectory/Interpolated.hpp>
 #include <aikido/trajectory/util.hpp>
 

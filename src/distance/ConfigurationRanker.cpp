@@ -1,6 +1,6 @@
-#include "aikido/common/memory.hpp"
-
 #include "aikido/distance/ConfigurationRanker.hpp"
+
+#include "aikido/common/memory.hpp"
 
 namespace aikido {
 namespace distance {

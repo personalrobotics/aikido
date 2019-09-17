@@ -1,4 +1,4 @@
-#include <aikido/distance/CartesianProductWeighted.hpp>
+#include "aikido/distance/CartesianProductWeighted.hpp"
 
 namespace aikido {
 namespace distance {

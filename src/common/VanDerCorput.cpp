@@ -1,4 +1,4 @@
-#include <aikido/common/VanDerCorput.hpp>
+#include "aikido/common/VanDerCorput.hpp"
 
 #include <algorithm>
 #include <cassert>

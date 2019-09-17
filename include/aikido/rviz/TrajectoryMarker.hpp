@@ -4,6 +4,7 @@
 #include <dart/dynamics/Frame.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
+
 #include "aikido/common/pointers.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 

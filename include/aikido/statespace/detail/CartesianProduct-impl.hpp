@@ -1,6 +1,6 @@
-#include "aikido/statespace/CartesianProduct.hpp"
-
 #include <sstream>
+
+#include "aikido/statespace/CartesianProduct.hpp"
 
 namespace aikido {
 namespace statespace {

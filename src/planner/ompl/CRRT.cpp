@@ -1,8 +1,11 @@
+#include "aikido/planner/ompl/CRRT.hpp"
+
 #include <limits>
+
 #include <ompl/base/goals/GoalSampleableRegion.h>
 #include <ompl/tools/config/SelfConfig.h>
-#include <aikido/planner/ompl/CRRT.hpp>
-#include <aikido/planner/ompl/GeometricStateSpace.hpp>
+
+#include "aikido/planner/ompl/GeometricStateSpace.hpp"
 
 namespace aikido {
 namespace planner {

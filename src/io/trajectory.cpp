@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+
 #include <boost/program_options.hpp>
+
 #include "aikido/common/Spline.hpp"
 #include "aikido/io/detail/yaml_extension.hpp"
 #include "aikido/io/yaml.hpp"
@@ -12,8 +14,8 @@
 
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::StateSpacePtr;
-using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr;
+using aikido::statespace::dart::MetaSkeletonStateSpace;
 using aikido::trajectory::Spline;
 using aikido::trajectory::UniqueSplinePtr;
 

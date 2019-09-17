@@ -1,7 +1,7 @@
+#include <gtest/gtest.h>
+
 #include <aikido/distance/SE2Weighted.hpp>
 #include <aikido/statespace/SE2.hpp>
-
-#include <gtest/gtest.h>
 
 using namespace aikido::distance;
 using namespace aikido::statespace;

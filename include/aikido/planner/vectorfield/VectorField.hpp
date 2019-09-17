@@ -1,10 +1,10 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_VECTORFIELD_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_VECTORFIELD_HPP_
 
-#include <aikido/constraint/Testable.hpp>
-#include <aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp>
-#include <aikido/statespace/StateSpace.hpp>
-#include <aikido/trajectory/Trajectory.hpp>
+#include "aikido/constraint/Testable.hpp"
+#include "aikido/planner/vectorfield/VectorFieldPlannerStatus.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace planner {

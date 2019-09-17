@@ -2,6 +2,7 @@
 #define AIKIDO_CONTROL_TRAJECTORYRESULT_HPP_
 
 #include <memory>
+
 #include "aikido/common/pointers.hpp"
 
 namespace aikido {

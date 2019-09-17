@@ -1,3 +1,3 @@
-#include "trajectory/Interpolated.hpp"
-#include "trajectory/Spline.hpp"
-#include "trajectory/Trajectory.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
+#include "aikido/trajectory/Spline.hpp"
+#include "aikido/trajectory/Trajectory.hpp"

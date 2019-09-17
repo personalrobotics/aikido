@@ -1,5 +1,7 @@
 #include "aikido/constraint/uniform/SE2BoxConstraint.hpp"
+
 #include <stdexcept>
+
 #include "aikido/constraint/uniform/SO2UniformSampler.hpp"
 #include "aikido/statespace/SO2.hpp"
 

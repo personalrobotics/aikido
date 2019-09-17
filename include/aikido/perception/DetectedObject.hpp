@@ -2,7 +2,9 @@
 #define AIKIDO_PERCEPTION_DETECTEDOBJECT_HPP_
 
 #include <string>
+
 #include <dart/dart.hpp>
+
 #include "aikido/io/yaml.hpp"
 
 namespace aikido {

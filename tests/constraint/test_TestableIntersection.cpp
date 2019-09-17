@@ -1,8 +1,11 @@
 #include <stdexcept>
+
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
+
 #include "MockConstraints.hpp"
 
 using aikido::constraint::Testable;

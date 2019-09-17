@@ -2,9 +2,11 @@
 
 #include <cassert>
 #include <set>
+
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/memory.hpp"
 #include "aikido/trajectory/Interpolated.hpp"
+
 #include "DynamicPath.h"
 #include "ParabolicUtil.hpp"
 

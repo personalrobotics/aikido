@@ -1,6 +1,8 @@
 #include <dart/utils/utils.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/io/KinBodyParser.hpp>
+
 #include "eigen_tests.hpp"
 
 #define STR_EXPAND(tok) #tok

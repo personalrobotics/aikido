@@ -4,10 +4,12 @@
 #include <chrono>
 #include <future>
 #include <mutex>
+
 #include <actionlib/client/action_client.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <ros/callback_queue.h>
 #include <ros/ros.h>
+
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 

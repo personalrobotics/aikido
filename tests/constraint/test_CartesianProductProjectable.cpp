@@ -1,9 +1,11 @@
 #include <dart/common/Memory.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/CartesianProductProjectable.hpp>
 #include <aikido/constraint/Projectable.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/statespace/Rn.hpp>
+
 #include "../eigen_tests.hpp"
 
 using aikido::constraint::CartesianProductProjectable;

@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
 
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"

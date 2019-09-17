@@ -3,8 +3,9 @@
 
 #include <ompl/datastructures/NearestNeighbors.h>
 #include <ompl/geometric/planners/PlannerIncludes.h>
-#include <aikido/planner/ompl/CRRT.hpp>
-#include "../../constraint/Projectable.hpp"
+
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/planner/ompl/CRRT.hpp"
 
 namespace aikido {
 namespace planner {
