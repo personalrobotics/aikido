@@ -129,6 +129,7 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
   configurationRanker->rankConfigurations(configurations);
 
+  Eigen::VectorXd posprint(7);
   for (std::size_t i = 0; i < configurations.size(); ++i)
   {
     // Create ConfigurationToConfiguration Problem.
@@ -142,7 +143,11 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
     auto traj = mDelegate->plan(delegateProblem, result);
     if (traj)
+    {
+	    mMetaSkeletonStateSpace->convertStateToPositions(configurations[i], posprint);
+	    std::cout << posprint.transpose() << std::endl;
       return traj;
+    }
   }
 
   return nullptr;
