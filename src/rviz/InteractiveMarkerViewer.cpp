@@ -203,6 +203,7 @@ void InteractiveMarkerViewer::update()
           it->first->getMutex(), std::try_to_lock);
       if (skeleton_lock.owns_lock())
         it->second->update();
+        ++it;
     }
     // Skeleton does not exist anymore, remove from markers.
     else
