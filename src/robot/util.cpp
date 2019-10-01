@@ -264,13 +264,8 @@ trajectory::TrajectoryPtr planToTSR(
 
     auto traj = snapPlanner->plan(problem, &pResult);
 
-    Eigen::VectorXd posprint(7);
     if (traj)
-    {
-	space->convertStateToPositions(configurations[i], posprint);
-	    std::cout << posprint.transpose() << std::endl;
       return traj;
-    }
   }
 
   // Start the timer

@@ -331,8 +331,6 @@ ConcreteRobot::getTrajectoryPostProcessor(
     double feasibilityApproxTolerance) const
 {
   Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  for (int i = 0; i < velocityLimits.size(); ++i)
-	  velocityLimits(i) *= 0.8;
   Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
 
   return std::make_shared<KunzRetimer>(
