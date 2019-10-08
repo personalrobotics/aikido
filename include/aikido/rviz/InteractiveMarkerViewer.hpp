@@ -28,8 +28,8 @@ public:
   /// Creates an InteractiveMarkerViewer that reflects skeletons in a World.
   /// \param[in] topicNamespace ROS topic to publish marker updates to
   /// \param[in] frameId Base frame name
-  /// \param[in] env World to update the viewer with. Default is nullptr if 
-  /// there is no underlying world attached to the markers. If there is an 
+  /// \param[in] env World to update the viewer with. Default is nullptr if
+  /// there is no underlying world attached to the markers. If there is an
   /// associated world, the viewer also updates skeletons the world contains.
   InteractiveMarkerViewer(
       const std::string& topicNamespace,
