@@ -1,8 +1,9 @@
+#include "aikido/rviz/InteractiveMarkerViewer.hpp"
+
 #include <dart/dart.hpp>
 
 #include "aikido/common/memory.hpp"
 #include "aikido/rviz/FrameMarker.hpp"
-#include "aikido/rviz/InteractiveMarkerViewer.hpp"
 #include "aikido/rviz/SkeletonMarker.hpp"
 #include "aikido/rviz/TrajectoryMarker.hpp"
 
@@ -202,8 +203,10 @@ void InteractiveMarkerViewer::update()
       std::unique_lock<std::mutex> skeleton_lock(
           it->first->getMutex(), std::try_to_lock);
       if (skeleton_lock.owns_lock())
+      {
         it->second->update();
-        ++it;
+      }
+      ++it;
     }
     // Skeleton does not exist anymore, remove from markers.
     else
