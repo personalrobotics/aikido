@@ -9,6 +9,7 @@
   * Cleaned up doxygen errors: [#357](https://github.com/personalrobotics/aikido/pull/357)
   * Fixed bug in compiling with Boost 1.58 on Kinetic + Xenial: [#490](https://github.com/personalrobotics/aikido/pull/490)
   * Fixed bug in Interpolated::addWaypoint(): [#483](https://github.com/personalrobotics/aikido/pull/483)
+  * Fixed bug in VanDerCorput sequence generator in handling non-unit Span: [#552](https://github.com/personalrobotics/aikido/pull/552)
 
 * Distance
 
