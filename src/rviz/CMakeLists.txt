@@ -34,7 +34,6 @@ set(sources
   shape_conversions.cpp
   TrajectoryMarker.cpp
   TSRMarker.cpp
-  WorldInteractiveMarkerViewer.cpp
 )
 
 add_library("${PROJECT_NAME}_rviz" SHARED ${sources})
