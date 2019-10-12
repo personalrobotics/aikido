@@ -75,17 +75,17 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
     std::chrono::duration<double> timelimit,
     planner::Planner::Result* result = nullptr);
 
-/// Plan to a trajectory that moves the end-effector by a given twist(angular velocity 
-/// and linear velocity) and the duration of the twist.
+/// Plan to a trajectory that moves the end-effector by a given twist(angular
+/// velocity and linear velocity) and the duration of the twist.
 ///
 /// \param[in] stateSpace MetaSkeleton state space.
 /// \param[in] startState Start state of the planning.
 /// \param[in] metaskeleton MetaSkeleton to plan with
 /// \param[in] bn Body node of the end-effector.
 /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
-/// \param[in] twistSeq Twist(first 3 elements: angular velocity; last 3 elements: linear velocity).
-/// \param[in] durationSeq  How long to excute the twist.
-/// \param[in] positionTolerance How a planned trajectory is allowed to
+/// \param[in] twistSeq Twist(first 3 elements: angular velocity; last 3
+/// elements: linear velocity). \param[in] durationSeq  How long to excute the
+/// twist. \param[in] positionTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
 /// distance.
 /// \param[in] angularTolerance How a planned trajectory is allowed to deviate

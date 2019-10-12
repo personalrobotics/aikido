@@ -1,8 +1,8 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORTWISTVECTORFIELD_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORTWISTVECTORFIELD_HPP_
 
-#include <aikido/planner/vectorfield/BodyNodePoseVectorField.hpp>
-#include <aikido/trajectory/Interpolated.hpp>
+#include "aikido/planner/vectorfield/BodyNodePoseVectorField.hpp"
+#include "aikido/trajectory/Interpolated.hpp"
 
 namespace aikido {
 namespace planner {
