@@ -45,12 +45,12 @@ pair<double, double> VanDerCorput::operator[](int n) const
     if (n == 0)
     {
       val_res.first = 0.0;
-      val_res.second = mSpan;
+      val_res.second = 1.0;
     }
     else if (n == 1)
     {
       val_res.first = 1.0;
-      val_res.second = mSpan;
+      val_res.second = 1.0;
     }
     else
     {
@@ -60,12 +60,12 @@ pair<double, double> VanDerCorput::operator[](int n) const
   else if (mIncludeStartpoint && n == 0)
   {
     val_res.first = 0.0;
-    val_res.second = mSpan;
+    val_res.second = 1.0;
   }
   else if (mIncludeEndpoint && n == 0)
   {
     val_res.first = 1.0;
-    val_res.second = mSpan;
+    val_res.second = 1.0;
   }
   else
   {
@@ -80,6 +80,7 @@ pair<double, double> VanDerCorput::operator[](int n) const
   }
 
   val_res.first *= mSpan;
+  val_res.second *= mSpan;
   return val_res;
 }
 
