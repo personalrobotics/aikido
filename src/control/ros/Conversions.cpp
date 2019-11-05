@@ -411,9 +411,8 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
       {
         // Unspecified joints will be added to the end of the vector
         unspecifiedMetaSkeletonJoints.emplace_back(metaSkeletonIndex);
-        rosJointToMetaSkeletonJoint.emplace_back(
-            std::make_pair(
-                rosJointToMetaSkeletonJoint.size(), metaSkeletonIndex));
+        rosJointToMetaSkeletonJoint.emplace_back(std::make_pair(
+            rosJointToMetaSkeletonJoint.size(), metaSkeletonIndex));
       }
     }
   }
