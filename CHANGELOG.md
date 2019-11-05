@@ -78,11 +78,13 @@
 
   * Added Robot, Manipulator, Hand interfaces, and ConcreteRobot, ConcreteManipulator classes: [#325](https://github.com/personalrobotics/aikido/pull/325), [#392](https://github.com/personalrobotics/aikido/pull/392)
   * Added Kunz timer to Robot class: [#505](https://github.com/personalrobotics/aikido/pull/505)
+  * Made ConcreteRobot limit functions public: [#556](https://github.com/personalrobotics/aikido/pull/556)
 
 * RViz
 
   * Fixed bug of not joining Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
   * Fixed bug of not passing full file path to RViz when MeshShape is used: [#518](https://github.com/personalrobotics/aikido/pull/518)
+  * Merged WorldInteractiveMarkerViewer into InteractiveMarkerViewer, removing the former: [#520](https://github.com/personalrobotics/aikido/pull/520)
 
 * IO
 

@@ -247,20 +247,6 @@ void ConcreteRobot::step(const std::chrono::system_clock::time_point& timepoint)
   mTrajectoryExecutor->step(timepoint);
 }
 
-//==============================================================================
-Eigen::VectorXd ConcreteRobot::getVelocityLimits(
-    const MetaSkeleton& metaSkeleton) const
-{
-  return getSymmetricVelocityLimits(metaSkeleton, asymmetryTolerance);
-}
-
-//==============================================================================
-Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
-    const MetaSkeleton& metaSkeleton) const
-{
-  return getSymmetricAccelerationLimits(metaSkeleton, asymmetryTolerance);
-}
-
 // ==============================================================================
 CollisionFreePtr ConcreteRobot::getSelfCollisionConstraint(
     const ConstMetaSkeletonStateSpacePtr& space,
@@ -492,6 +478,20 @@ void ConcreteRobot::setCRRTPlannerParameters(
     const util::CRRTPlannerParameters& crrtParameters)
 {
   mCRRTParameters = crrtParameters;
+}
+
+//==============================================================================
+Eigen::VectorXd ConcreteRobot::getVelocityLimits(
+    const MetaSkeleton& metaSkeleton) const
+{
+  return getSymmetricVelocityLimits(metaSkeleton, asymmetryTolerance);
+}
+
+//==============================================================================
+Eigen::VectorXd ConcreteRobot::getAccelerationLimits(
+    const MetaSkeleton& metaSkeleton) const
+{
+  return getSymmetricAccelerationLimits(metaSkeleton, asymmetryTolerance);
 }
 
 //==============================================================================
