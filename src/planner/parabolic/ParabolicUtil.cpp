@@ -175,7 +175,11 @@ std::unique_ptr<ParabolicRamp::DynamicPath> convertToDynamicPath(
     outputPath->SetMilestones(milestones);
   }
   if (!outputPath->IsValid())
-    throw std::runtime_error("Converted DynamicPath is not valid");
+  {
+    std::cout << "0 ramps present" << std::endl;
+    return nullptr;
+    // throw std::runtime_error("Converted DynamicPath is not valid");
+  }
   return outputPath;
 }
 

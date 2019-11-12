@@ -59,6 +59,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration)
 {
+  std::cout << "Input trajectory " << _inputTrajectory.getNumWaypoints() << std::endl;
   const auto stateSpace = _inputTrajectory.getStateSpace();
   const auto dimension = stateSpace->getDimension();
 
@@ -84,7 +85,8 @@ std::unique_ptr<aikido::trajectory::Spline> computeParabolicTiming(
   double startTime = _inputTrajectory.getStartTime();
   auto dynamicPath = detail::convertToDynamicPath(
       _inputTrajectory, _maxVelocity, _maxAcceleration, false);
-
+  if (!dynamicPath)
+    return nullptr;
   auto outputTrajectory
       = detail::convertToSpline(*dynamicPath, startTime, stateSpace);
   return outputTrajectory;

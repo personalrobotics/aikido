@@ -31,6 +31,10 @@ std::unique_ptr<aikido::trajectory::Spline> doShortcut(
   auto dynamicPath = detail::convertToDynamicPath(
       _inputTrajectory, _maxVelocity, _maxAcceleration);
 
+  if (!dynamicPath)
+  {
+    return nullptr;
+  }
   detail::doShortcut(
       *dynamicPath,
       _feasibilityCheck,
@@ -61,6 +65,10 @@ std::unique_ptr<trajectory::Spline> doBlend(
   auto dynamicPath = detail::convertToDynamicPath(
       _inputTrajectory, _maxVelocity, _maxAcceleration);
 
+  if (!dynamicPath)
+  {
+    return nullptr;
+  }
   detail::doBlend(
       *dynamicPath,
       _feasibilityCheck,
@@ -93,6 +101,10 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
   auto dynamicPath = detail::convertToDynamicPath(
       _inputTrajectory, _maxVelocity, _maxAcceleration);
 
+  if (!dynamicPath)
+  {
+    return nullptr;
+  }
   detail::doShortcut(
       *dynamicPath,
       _feasibilityCheck,
@@ -149,6 +161,10 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
   auto timedTrajectory = computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
 
+  if (!timedTrajectory)
+  {
+    return timedTrajectory;
+  }
   auto shortcutOrBlendTrajectory
       = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
   if (shortcutOrBlendTrajectory)
@@ -166,6 +182,11 @@ std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
   // Get timed trajectory for arm
   auto timedTrajectory = computeParabolicTiming(
       _inputTraj, mVelocityLimits, mAccelerationLimits);
+
+  if (!timedTrajectory)
+  {
+    return timedTrajectory;
+  }
 
   auto shortcutOrBlendTrajectory
       = handleShortcutOrBlend(*timedTrajectory, _rng, _collisionTestable);
