@@ -251,20 +251,26 @@ public:
   void setCRRTPlannerParameters(
       const util::CRRTPlannerParameters& crrtParameters);
 
+  /// Computes velocity limits from the MetaSkeleton. These should be
+  /// interpreted as absolute in both the positive and negative directions.
+  /// \param[in] metaSkeleton MetaSkeleton to compute limits for.
+  /// \return Symmetric velocity limits.
+  Eigen::VectorXd getVelocityLimits(
+      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
+
+  /// Computes acceleration limits from the MetaSkeleton. These should be
+  /// interpreted as absolute in both the positive and negative directions.
+  /// \param[in] metaSkeleton MetaSkeleton to compute limits for.
+  /// \return Symmetric acceleration limits.
+  Eigen::VectorXd getAccelerationLimits(
+      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
+
 private:
   // Named Configurations are read from a YAML file
   using ConfigurationMap
       = std::unordered_map<std::string, const Eigen::VectorXd>;
 
   std::unique_ptr<aikido::common::RNG> cloneRNG();
-
-  /// Compute velocity limits from the MetaSkeleton
-  Eigen::VectorXd getVelocityLimits(
-      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
-
-  /// Compute acceleration limits from the MetaSkeleton
-  Eigen::VectorXd getAccelerationLimits(
-      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
 
   /// If this robot belongs to another (Composite)Robot,
   /// mRootRobot is the topmost robot containing this robot.

@@ -1,3 +1,5 @@
+#include "aikido/rviz/ResourceServer.hpp"
+
 #include <fstream>
 
 #include <assimp/cexport.h>
@@ -6,8 +8,6 @@
 #include <netinet/in.h>
 #include <ros/network.h>
 #include <sys/socket.h>
-
-#include "aikido/rviz/ResourceServer.hpp"
 
 namespace aikido {
 namespace rviz {

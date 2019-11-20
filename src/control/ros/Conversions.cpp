@@ -1,6 +1,5 @@
 #include "aikido/control/ros/Conversions.hpp"
 
-#include <iostream>
 #include <sstream>
 #include <unordered_set>
 
@@ -412,9 +411,8 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
       {
         // Unspecified joints will be added to the end of the vector
         unspecifiedMetaSkeletonJoints.emplace_back(metaSkeletonIndex);
-        rosJointToMetaSkeletonJoint.emplace_back(
-            std::make_pair(
-                rosJointToMetaSkeletonJoint.size(), metaSkeletonIndex));
+        rosJointToMetaSkeletonJoint.emplace_back(std::make_pair(
+            rosJointToMetaSkeletonJoint.size(), metaSkeletonIndex));
       }
     }
   }
@@ -511,15 +509,6 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     compoundSpace->getInverse(currState, invCurrState);
     compoundSpace->compose(nextState, invCurrState, diffState);
     compoundSpace->logMap(diffState, diffPosition);
-
-    if (diffPosition.maxCoeff() > 6 || diffPosition.minCoeff() < -6)
-    {
-      std::cout << "Current Position: " << currPosition << std::endl;
-      std::cout << "Next Position: " << nextPosition << std::endl;
-      std::cout << "Diff Position: " << diffPosition << std::endl;
-      std::cout << "Current Velocity" << currVelocity << std::endl;
-      std::cout << "Next Velocity" << nextVelocity << std::endl << std::endl;
-    }
 
     // Compute spline coefficients for this polynomial segment.
     const auto nextTimeFromStart = waypoints[iWaypoint].time_from_start.toSec();
