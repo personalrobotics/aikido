@@ -358,6 +358,18 @@ CRRT::Motion* CRRT::constrainedExtend(
       }
     }
 
+    // NOTE: (sniyaz) This check makes sure the resolution of the path on the
+    // constraint manifold and the resolution used for interpolation (*before*
+    // projection) do not differ wildly. This needs to be added to do *true*
+    // CBiRRT.
+    double manifoldResolution = si_->distance(xstate, cmotion->state);
+    if (manifoldResolution > 2 * mMaxStepsize)
+    {
+      // The resolution on the manifold is violted, so treat the projection as
+      // if it failed. This emulates the original CBiRRT paper.
+      break;
+    }
+
     if (si_->checkMotion(cmotion->state, xstate))
     {
       // Add the motion to the tree
