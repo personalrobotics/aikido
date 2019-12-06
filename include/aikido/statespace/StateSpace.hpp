@@ -173,7 +173,7 @@ protected:
   /// It is unsafe to call this, since it is a non-virtual destructor.  Having
   /// any virtual function in this class, including this destructor, adds
   /// sizeof(pointer) overhead for a vtable.
-  ~State() = default;
+  virtual ~State() = default;
 };
 
 } // namespace statespace
