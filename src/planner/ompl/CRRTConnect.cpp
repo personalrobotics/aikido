@@ -126,30 +126,10 @@ double CRRTConnect::getConnectionRadius() const
 {
   checkValidity();
 
-  ::ompl::base::GoalSampleableRegion* goal
-      = dynamic_cast<::ompl::base::GoalSampleableRegion*>(
-          pdef_->getGoal().get());
-
-  if (!goal)
-  {
-    return ::ompl::base::PlannerStatus::UNRECOGNIZED_GOAL_TYPE;
-  }
-
-  while (const ::ompl::base::State* st = pis_.nextStart())
-  {
-    Motion* motion = new Motion(si_);
-    si_->copyState(motion->state, st);
-    mStartTree->add(motion);
-  }
-
-  if (mStartTree->size() == 0)
+  // HACK: (sniyaz) start and goal should have been set manually.
+  if (mStartTree->size() == 0 || mGoalTree->size() == 0)
   {
     return ::ompl::base::PlannerStatus::INVALID_START;
-  }
-
-  if (!goal->couldSample())
-  {
-    return ::ompl::base::PlannerStatus::INVALID_GOAL;
   }
 
   if (!mSampler)
@@ -171,23 +151,6 @@ double CRRTConnect::getConnectionRadius() const
     TreeData& otherTree = startTree ? mGoalTree : mStartTree;
     startTree = !startTree;
 
-    if (mGoalTree->size() == 0
-        || pis_.getSampledGoalsCount() < mGoalTree->size() / 2)
-    {
-      while (_ptc == false)
-      {
-        const ::ompl::base::State* st = pis_.nextGoal(_ptc);
-        if (si_->isValid(st))
-        {
-          Motion* motion = new Motion(si_);
-          si_->copyState(motion->state, st);
-          mGoalTree->add(motion);
-        }
-        if (mGoalTree->size() > 0)
-          break;
-      }
-    }
-
     // Sample a random state
     mSampler->sampleUniform(rstate);
     if (!si_->isValid(rstate))
@@ -204,7 +167,8 @@ double CRRTConnect::getConnectionRadius() const
         nmotion,
         rmotion->state,
         xstate,
-        goal,
+        // HACK: Not used.
+        /*goal*/ NULL,
         true,
         bestdist,
         foundgoal);
@@ -223,7 +187,8 @@ double CRRTConnect::getConnectionRadius() const
         nmotion,
         lastmotion->state,
         xstate,
-        goal,
+        // HACK: Not used.
+        /*goal*/ NULL,
         true,
         bestdist,
         foundgoal);
@@ -261,14 +226,6 @@ double CRRTConnect::getConnectionRadius() const
       {
         mpath2.push_back(solution);
         solution = solution->parent;
-      }
-
-      // Double check that the start and goal pair are valid
-      if (mpath1.size() > 0 && mpath2.size() > 0)
-      {
-        if (!goal->isStartGoalPairValid(
-                mpath1.front()->state, mpath2.back()->state))
-          continue;
       }
 
       auto path = ompl_make_shared<::ompl::geometric::PathGeometric>(si_);
