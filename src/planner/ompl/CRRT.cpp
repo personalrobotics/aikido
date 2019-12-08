@@ -379,20 +379,21 @@ CRRT::Motion* CRRT::constrainedExtend(
       tree->add(motion);
 
       cmotion = motion;
-      double newdist = 0.0;
-      bool satisfied = goal->isSatisfied(motion->state, &newdist);
-      if (satisfied)
-      {
-        dist = newdist;
-        bestmotion = motion;
-        foundgoal = true;
-        break;
-      }
-      if (newdist < dist)
-      {
-        dist = newdist;
-        bestmotion = motion;
-      }
+      // NOTE: (sniyaz) We don't need this.
+      // double newdist = 0.0;
+      // bool satisfied = goal->isSatisfied(motion->state, &newdist);
+      // if (satisfied)
+      // {
+      //   dist = newdist;
+      //   bestmotion = motion;
+      //   foundgoal = true;
+      //   break;
+      // }
+      // if (newdist < dist)
+      // {
+      //   dist = newdist;
+      //   bestmotion = motion;
+      // }
       if (returnlast)
       {
         // Always make the "bestmotion" the current motion
