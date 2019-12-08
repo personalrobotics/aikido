@@ -29,6 +29,12 @@ public:
   /// \param[out] _data Data about the current run of the motion planner
   void getPlannerData(::ompl::base::PlannerData& _data) const override;
 
+  // NOTE: (sniyaz): Added so we can manually add in start states to the tree.
+  void addStartStates(std::vector<::ompl::base::State*> states);
+
+  // NOTE: (sniyaz): Added so we can manually add in goal states to the tree.
+  void addGoalStates(std::vector<::ompl::base::State*> states);
+
   /// Function that can solve the motion planning problem. This function can be
   /// called multiple times on the same problem, without calling clear() in
   /// between. This allows the planner to continue work for more time on an

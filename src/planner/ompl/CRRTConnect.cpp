@@ -91,6 +91,30 @@ void CRRTConnect::setConnectionRadius(double radius)
 }
 
 //==============================================================================
+void CRRTConnect::addStartStates(
+  std::vector<::ompl::base::State*> states)
+{
+  for (::ompl::base::State* curStartState : states)
+  {
+    Motion* motion = new Motion(si_);
+    si_->copyState(motion->state, curStartState);
+    mStartTree->add(motion);
+  }
+}
+
+//==============================================================================
+void CRRTConnect::addGoalStates(
+  std::vector<::ompl::base::State*> states)
+{
+  for (::ompl::base::State* curGoalState : states)
+  {
+    Motion* motion = new Motion(si_);
+    si_->copyState(motion->state, curGoalState);
+    mGoalTree->add(motion);
+  }
+}
+
+//==============================================================================
 double CRRTConnect::getConnectionRadius() const
 {
   return mConnectionRadius;
