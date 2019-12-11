@@ -100,6 +100,10 @@ void CRRTConnect::addStartStates(
     si_->copyState(motion->state, curStartState);
     mStartTree->add(motion);
   }
+
+  std::cout << "" << std::endl;
+  std::cout << "[INFO] Added " << mStartTree->size() << " start states!"
+    << std::endl;
 }
 
 //==============================================================================
@@ -112,6 +116,10 @@ void CRRTConnect::addGoalStates(
     si_->copyState(motion->state, curGoalState);
     mGoalTree->add(motion);
   }
+
+  std::cout << "" << std::endl;
+  std::cout << "[INFO] Added " << mGoalTree->size() << " goal states!"
+    << std::endl;
 }
 
 //==============================================================================
@@ -124,7 +132,8 @@ double CRRTConnect::getConnectionRadius() const
 ::ompl::base::PlannerStatus CRRTConnect::solve(
     const ::ompl::base::PlannerTerminationCondition& _ptc)
 {
-  checkValidity();
+  // NOTE: Not needed since we set start/goal trees manually.
+  // checkValidity();
 
   // HACK: (sniyaz) start and goal should have been set manually.
   if (mStartTree->size() == 0 || mGoalTree->size() == 0)
