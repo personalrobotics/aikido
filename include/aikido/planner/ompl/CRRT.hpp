@@ -116,7 +116,6 @@ public:
   /// called before solving.
   void setup() override;
 
-protected:
   /// Representation of a node in the tree. Contains the state at the node and a
   /// pointer to the parent node.
   class Motion
