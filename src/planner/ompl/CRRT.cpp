@@ -318,13 +318,21 @@ CRRT::Motion* CRRT::constrainedExtend(
     ::ompl::base::Goal* goal,
     bool returnlast,
     double& dist,
-    bool& foundgoal)
+    bool& foundgoal,
+    std::vector<::ompl::base::State*>* extendedPath)
 {
 
   // Set up the current parent motion
   Motion* cmotion = nmotion;
   dist = std::numeric_limits<double>::infinity();
   Motion* bestmotion = nmotion;
+
+  // NOTE: (sniyaz): This should only happen when this call is being used for
+  // shortcutting, and we need to return the entire path out (with endpoints).
+  if (extendedPath != nullptr)
+  {
+    extendedPath->push_back(nmotion->state);
+  }
 
   // Compute the current and previous distance to the goal state
   double prevDistToTarget = std::numeric_limits<double>::infinity();
@@ -372,11 +380,18 @@ CRRT::Motion* CRRT::constrainedExtend(
 
     if (si_->checkMotion(cmotion->state, xstate))
     {
-      // Add the motion to the tree
       Motion* motion = new Motion(si_);
       si_->copyState(motion->state, xstate);
-      motion->parent = cmotion;
-      tree->add(motion);
+
+      if (extendedPath != nullptr)
+      {
+        // We're using this method for shortcutting.
+        extendedPath->push_back(motion->state);
+      } else {
+        // Otherwise, add the motion to the tree
+        motion->parent = cmotion;
+        tree->add(motion);
+      }
 
       cmotion = motion;
       // NOTE: (sniyaz) We don't need this.

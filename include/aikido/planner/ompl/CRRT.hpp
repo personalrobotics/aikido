@@ -184,7 +184,9 @@ protected:
       ::ompl::base::Goal* goal,
       bool returnlast,
       double& dist,
-      bool& foundgoal);
+      bool& foundgoal,
+      // NOTE (sniyaz): Added for shortcutting in T-RO code.
+      std::vector<::ompl::base::State*>* extendedPath = nullptr);
 
   /// State sampler
   ::ompl::base::StateSamplerPtr mSampler;
