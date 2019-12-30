@@ -85,7 +85,7 @@ void InteractiveMarkerViewer::updateSkeletonMarkers()
   {
     // If there is no underlying world and the skeleton exists,
     // update the corresponding marker.
-    if (!mWorld && it->first) 
+    if (!mWorld && it->first)
     {
       std::unique_lock<std::mutex> skeleton_lock(
           it->first->getMutex(), std::try_to_lock);
