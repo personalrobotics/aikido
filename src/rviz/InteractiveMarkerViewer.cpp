@@ -62,31 +62,29 @@ void InteractiveMarkerViewer::updateSkeletonMarkers()
     for (std::size_t i = 0; i < mWorld->getNumSkeletons(); ++i)
     {
       const dart::dynamics::SkeletonPtr skeleton = mWorld->getSkeleton(i);
-
       if (skeleton)
       {
-        // Either a new SkeletonMarker or a previously-inserted SkeletonMarker
-        auto result = mSkeletonMarkers.emplace(
+        // Adds skeleton if previously not in the world.
+        mSkeletonMarkers.emplace(
             skeleton,
             std::make_shared<SkeletonMarker>(
                 nullptr, &mMarkerServer, skeleton, mFrameId));
-
-        std::unique_lock<std::mutex> skeleton_lock(
-            skeleton->getMutex(), std::try_to_lock);
-        if (skeleton_lock.owns_lock())
-          result.first->second->update();
       }
     }
   }
 
-  // Clear removed skeletons
+  // Update existing skeletons, and delete erased skeletons.
   auto it = std::begin(mSkeletonMarkers);
   while (it != std::end(mSkeletonMarkers))
   {
-    // If there is no underlying world and the skeleton exists,
-    // update the corresponding marker.
-    if (!mWorld && it->first)
+    // If the skeleton is either a nullptr or no longer exists in an associated world, delete.
+    if (!it->first || mWorld && !mWorld->hasSkeleton(it->first))
     {
+      it = mSkeletonMarkers.erase(it);
+    }
+    else 
+    {
+      // In any other case, since the skeleton exists, update it, increment iterator.
       std::unique_lock<std::mutex> skeleton_lock(
           it->first->getMutex(), std::try_to_lock);
       if (skeleton_lock.owns_lock())
@@ -94,18 +92,6 @@ void InteractiveMarkerViewer::updateSkeletonMarkers()
         it->second->update();
       }
       ++it;
-    }
-    // If the world exists and contains the skeleton, continue,
-    // since we updated it in the previous block.
-    else if (mWorld && mWorld->hasSkeleton(it->first))
-    {
-      ++it;
-    }
-    // If either the skeleton does not exist (nullptr) or if the world
-    // does not contain it, remove this iterator's contents from the map.
-    else
-    {
-      it = mSkeletonMarkers.erase(it);
     }
   }
 }
@@ -124,7 +110,7 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrameMarker(
 //==============================================================================
 void InteractiveMarkerViewer::updateFrameMarkers()
 {
-  for (const FrameMarkerPtr& marker : mFrameMarkers)
+  for (const auto& marker : mFrameMarkers)
     marker->update();
 }
 
