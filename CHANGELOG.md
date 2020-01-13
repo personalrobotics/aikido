@@ -85,6 +85,7 @@
   * Fixed bug of not joining Viewer threads when stopping auto-update: [#463](https://github.com/personalrobotics/aikido/pull/463)
   * Fixed bug of not passing full file path to RViz when MeshShape is used: [#518](https://github.com/personalrobotics/aikido/pull/518)
   * Merged WorldInteractiveMarkerViewer into InteractiveMarkerViewer, removing the former: [#520](https://github.com/personalrobotics/aikido/pull/520)
+  * Fixed bug of not removing SkeletonMarkers of skeletons removed from the associated World: [#560](https://github.com/personalrobotics/aikido/pull/560)
 
 * IO
 
