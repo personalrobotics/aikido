@@ -14,6 +14,7 @@ using dart::dynamics::MeshShape;
 using dart::dynamics::PlaneShape;
 using dart::dynamics::Shape;
 using dart::dynamics::SoftMeshShape;
+using dart::dynamics::VoxelGridShape;
 using visualization_msgs::Marker;
 
 namespace aikido {
@@ -293,6 +294,67 @@ bool convertShape(
 }
 
 //==============================================================================
+bool convertShape(
+    const VoxelGridShape& shape,
+    Marker* marker,
+    ResourceServer* /*resourceManager*/)
+{
+  marker->type = Marker::CUBE_LIST;
+  marker->pose.orientation.w = 1;
+
+  auto tree = shape.getOctree();
+  auto resolution = tree->getResolution();
+  auto numLeafNodes = tree->getNumLeafNodes();
+
+  marker->points.clear();
+  marker->colors.clear();
+
+  if(numLeafNodes == 0)
+    return true;
+
+  marker->points.reserve(numLeafNodes);
+  for(auto it = tree->begin_leafs(), end=tree->end_leafs(); it != end; ++it)
+  {
+    if(it->getOccupancy() > 0.5)
+    {
+      auto coordinate = it.getCoordinate();
+      auto size = it.getSize();
+      auto cubesPerSide = size/resolution;
+
+      geometry_msgs::Point point;
+      std_msgs::ColorRGBA color;
+      
+      marker->scale.x = resolution;
+      marker->scale.y = resolution;
+      marker->scale.z = resolution;
+
+      color.r = (1 - it->getOccupancy());
+      color.g = (it->getOccupancy());
+      color.b = 0;
+      color.a = 1;
+      
+      for(size_t i = 1; i <= cubesPerSide; i++)
+      {
+        point.x = (coordinate.x() - size/2.0) + float(i)*resolution/2.0;
+        for(size_t j = 1; j <= cubesPerSide; j++)
+        {
+          point.y = (coordinate.y() - size/2.0) + float(j)*resolution/2;
+          for(size_t k = 1; k <= cubesPerSide; k++)
+          {
+            point.z = (coordinate.z() - size/2.0) + float(k)*resolution/2.0;
+            marker->points.push_back(point);
+            marker->colors.push_back(color);
+          }
+        }
+      }
+    }
+  }
+
+  return true; 
+}
+
+
+//==============================================================================
 bool convertShape(const Shape& shape, Marker* marker, ResourceServer* rm)
 {
   if (shape.is<BoxShape>())
@@ -316,6 +378,9 @@ bool convertShape(const Shape& shape, Marker* marker, ResourceServer* rm)
 
   else if (shape.is<SoftMeshShape>())
     return convertShape(dynamic_cast<const SoftMeshShape&>(shape), marker, rm);
+
+  else if(shape.is<VoxelGridShape>())
+    return convertShape(dynamic_cast<const VoxelGridShape&>(shape), marker, rm);
 
   else
     return false;

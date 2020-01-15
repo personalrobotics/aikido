@@ -8,6 +8,7 @@
 
 #include <dart/dynamics/dynamics.hpp>
 #include <ros/ros.h>
+#include <tf2_ros/transform_listener.h>
 
 namespace aikido {
 namespace perception {
@@ -22,45 +23,30 @@ public:
   /// \param[in] pointCloudTopic The topic name.
   /// \param[in] voxelGridShape Voxel grid to update.
   VoxelGridPerceptionModule(
-      const ros::NodeHandle& nodeHandle,
-      const std::string& pointCloudTopic,
-      std::shared_ptr<dart::dynamics::VoxelGridShape> voxelGridShape = nullptr);
+    const ros::NodeHandle& nodeHandle,
+    const std::string& pointCloudTopic,
+    const std::shared_ptr<tf2_ros::Buffer> transformBuffer,
+    const double resolution,
+    const std::string& worldFrame = std::string("base_link"),
+    const std::string& voxelSkeletonName = std::string("voxel_skeleton"));
 
   /// Destructor
   virtual ~VoxelGridPerceptionModule() = default;
 
-  /// Returns DART VoxelGridShape.
-  std::shared_ptr<dart::dynamics::VoxelGridShape> getVoxelGridShape();
+  /// Returns DART Skeleton for Voxel.
+  std::shared_ptr<dart::dynamics::Skeleton> getVoxelGridSkeleton() const;
 
   /// Returns const DART VoxelGridShape.
   std::shared_ptr<const dart::dynamics::VoxelGridShape> getVoxelGridShape()
       const;
 
-  /// Receives ROS msg and updates the voxel grid with the received ROS msg.
+  /// Receives ROS msg, looks up transfrom and updates the voxel grid with 
+  /// the received ROS msg.
   ///
-  /// \param[in] sensorOrigin Origin of sensor relative to frame.
-  /// \param[in] inCoordinatesOf Reference frame, determines transform to be
-  /// applied to point cloud and sensor origin.
   /// \param[in] timeout The duration up to which to wait for the point cloud.
   /// \return False if no points observed, or if no voxel grid is specified.
   /// True otherwise.
-  bool update(
-      const Eigen::Vector3d& sensorOrigin,
-      const Eigen::Isometry3d& inCoordinatesOf,
-      const ros::Duration& timeout);
-
-  /// Receives ROS msg and updates the voxel grid with the received ROS msg.
-  ///
-  /// \param[in] sensorOrigin Origin of sensor relative to frame.
-  /// \param[in] inCoordinatesOf Reference frame, determines transform to be
-  /// applied to point cloud and sensor origin.
-  /// \param[in] timeout The duration up to which to wait for the point cloud.
-  /// \return False if no points observed, or if no voxel grid is specified.
-  /// True otherwise.
-  bool update(
-      const Eigen::Vector3d& sensorOrigin,
-      const dart::dynamics::Frame& inCoordinatesOf,
-      const ros::Duration& timeout);
+  bool update(const ros::Duration& timeout);
 
 private:
   /// ROS node handle
@@ -74,6 +60,15 @@ private:
 
   /// Cache data to store point cloud data.
   octomap::Pointcloud mOctomapPointCloud;
+
+  /// Name of the static frame to be used as a reference
+  std::string mWorldFrame;
+
+  /// Skeleton containing the Voxel Shape
+  std::shared_ptr<dart::dynamics::Skeleton> mVoxelSkeleton;
+
+  /// Pointer to the transform buffer used for finding the pose of the camera
+  std::shared_ptr<tf2_ros::Buffer> mTFBuffer;
 };
 
 } // namespace perception

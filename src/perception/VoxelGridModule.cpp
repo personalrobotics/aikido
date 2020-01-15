@@ -5,6 +5,7 @@
 #include <octomap_ros/conversions.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 namespace aikido {
 namespace perception {
@@ -13,19 +14,31 @@ namespace perception {
 VoxelGridPerceptionModule::VoxelGridPerceptionModule(
     const ros::NodeHandle& nodeHandle,
     const std::string& pointCloudTopic,
-    std::shared_ptr<dart::dynamics::VoxelGridShape> voxelGridShape)
+    const std::shared_ptr<tf2_ros::Buffer> transformBuffer,
+    const double resolution,
+    const std::string& worldFrame,
+    const std::string& voxelSkeletonName)
   : mNodeHandle(nodeHandle)
   , mPointCloudTopic(pointCloudTopic)
-  , mVoxelGridShape(std::move(voxelGridShape))
+  , mVoxelGridShape(std::make_shared<dart::dynamics::VoxelGridShape>(resolution))
+  , mWorldFrame(worldFrame)
+  , mVoxelSkeleton(dart::dynamics::Skeleton::create(voxelSkeletonName))
+  , mTFBuffer(transformBuffer)
 {
-  // Do nothing
+  using namespace dart::dynamics;
+
+  FreeJoint::Properties properties;
+  properties.mName = "Base_Joint";
+  BodyNodePtr bn = mVoxelSkeleton->createJointAndBodyNodePair<FreeJoint>(nullptr, properties,
+            BodyNode::AspectProperties("Base")).second;
+  bn->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(mVoxelGridShape);
+
 }
 
 //==============================================================================
-std::shared_ptr<dart::dynamics::VoxelGridShape>
-VoxelGridPerceptionModule::getVoxelGridShape()
+dart::dynamics::SkeletonPtr VoxelGridPerceptionModule::getVoxelGridSkeleton() const
 {
-  return mVoxelGridShape;
+  return mVoxelSkeleton;
 }
 
 //==============================================================================
@@ -37,16 +50,8 @@ VoxelGridPerceptionModule::getVoxelGridShape() const
 
 //==============================================================================
 bool VoxelGridPerceptionModule::update(
-    const Eigen::Vector3d& sensorOrigin,
-    const Eigen::Isometry3d& inCoordinatesOf,
     const ros::Duration& timeout)
 {
-  if (!mVoxelGridShape)
-  {
-    dtwarn << "[PointCloud] No DART VoxelGridShape is specified to update.";
-    return false;
-  }
-
   const auto pointCloud2Message
       = ros::topic::waitForMessage<sensor_msgs::PointCloud2>(
           mPointCloudTopic, mNodeHandle, timeout);
@@ -58,6 +63,35 @@ bool VoxelGridPerceptionModule::update(
     return false;
   }
 
+  Eigen::Isometry3d worldToCameraTransform;
+
+  try
+  {
+    auto worldToCameraTF = mTFBuffer->lookupTransform(mWorldFrame, pointCloud2Message->header.frame_id, ros::Time(0));
+    
+    geometry_msgs::PoseStamped worldToCameraPose;
+    worldToCameraPose.pose.position.x    = 0;
+    worldToCameraPose.pose.position.y    = 0;
+    worldToCameraPose.pose.position.z    = 0;
+    worldToCameraPose.pose.orientation.x = 0;
+    worldToCameraPose.pose.orientation.y = 0;
+    worldToCameraPose.pose.orientation.z = 0;
+    worldToCameraPose.pose.orientation.w = 1;
+
+    tf2::doTransform(worldToCameraPose, worldToCameraPose, worldToCameraTF);
+    worldToCameraTransform = Eigen::Translation3d(worldToCameraPose.pose.position.x, worldToCameraPose.pose.position.y,
+                                                  worldToCameraPose.pose.position.z)
+                            *Eigen::Quaterniond(worldToCameraPose.pose.orientation.w, worldToCameraPose.pose.orientation.x,
+                                                worldToCameraPose.pose.orientation.y, worldToCameraPose.pose.orientation.z);
+
+  }
+  catch (tf2::LookupException)
+  {
+    dtwarn << "[PointCloud] Could not find Transform from Static Reference Frame [" << mWorldFrame << "] to point cloud frame ["
+           << pointCloud2Message->header.frame_id << "] \n" ;
+    return false;
+  }
+
   // Need to clear the cache becuase octomap::pointCloud2ToOctomap() appends
   // data.
   mOctomapPointCloud.clear();
@@ -65,18 +99,9 @@ bool VoxelGridPerceptionModule::update(
   octomap::pointCloud2ToOctomap(*pointCloud2Message, mOctomapPointCloud);
 
   mVoxelGridShape->updateOccupancy(
-      mOctomapPointCloud, sensorOrigin, inCoordinatesOf);
+      mOctomapPointCloud, worldToCameraTransform.translation(), worldToCameraTransform);
 
   return true;
-}
-
-//==============================================================================
-bool VoxelGridPerceptionModule::update(
-    const Eigen::Vector3d& sensorOrigin,
-    const dart::dynamics::Frame& inCoordinatesOf,
-    const ros::Duration& timeout)
-{
-  return update(sensorOrigin, inCoordinatesOf.getWorldTransform(), timeout);
 }
 
 } // namespace perception
