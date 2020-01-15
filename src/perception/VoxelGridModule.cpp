@@ -85,7 +85,7 @@ bool VoxelGridPerceptionModule::update(
                                                 worldToCameraPose.pose.orientation.y, worldToCameraPose.pose.orientation.z);
 
   }
-  catch (tf2::LookupException)
+  catch (tf2::TransformException)
   {
     dtwarn << "[PointCloud] Could not find Transform from Static Reference Frame [" << mWorldFrame << "] to point cloud frame ["
            << pointCloud2Message->header.frame_id << "] \n" ;

@@ -315,7 +315,7 @@ bool convertShape(
   marker->points.reserve(numLeafNodes);
   for(auto it = tree->begin_leafs(), end=tree->end_leafs(); it != end; ++it)
   {
-    if(it->getOccupancy() > 0.5)
+    if(it->getOccupancy() > tree->getOccupancyThres())
     {
       auto coordinate = it.getCoordinate();
       auto size = it.getSize();

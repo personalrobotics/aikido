@@ -27,7 +27,7 @@ public:
     const std::string& pointCloudTopic,
     const tf2_ros::Buffer& transformBuffer,
     const double resolution,
-    const std::string& worldFrame = std::string("base_link"),
+    const std::string& worldFrame = std::string("map"),
     const std::string& voxelSkeletonName = std::string("voxel_skeleton"));
 
   /// Destructor
