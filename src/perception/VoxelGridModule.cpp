@@ -14,7 +14,7 @@ namespace perception {
 VoxelGridPerceptionModule::VoxelGridPerceptionModule(
     const ros::NodeHandle& nodeHandle,
     const std::string& pointCloudTopic,
-    const std::shared_ptr<tf2_ros::Buffer> transformBuffer,
+    const tf2_ros::Buffer& transformBuffer,
     const double resolution,
     const std::string& worldFrame,
     const std::string& voxelSkeletonName)
@@ -67,7 +67,7 @@ bool VoxelGridPerceptionModule::update(
 
   try
   {
-    auto worldToCameraTF = mTFBuffer->lookupTransform(mWorldFrame, pointCloud2Message->header.frame_id, ros::Time(0));
+    auto worldToCameraTF = mTFBuffer.lookupTransform(mWorldFrame, pointCloud2Message->header.frame_id, ros::Time(0));
     
     geometry_msgs::PoseStamped worldToCameraPose;
     worldToCameraPose.pose.position.x    = 0;

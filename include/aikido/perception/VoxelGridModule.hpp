@@ -25,7 +25,7 @@ public:
   VoxelGridPerceptionModule(
     const ros::NodeHandle& nodeHandle,
     const std::string& pointCloudTopic,
-    const std::shared_ptr<tf2_ros::Buffer> transformBuffer,
+    const tf2_ros::Buffer& transformBuffer,
     const double resolution,
     const std::string& worldFrame = std::string("base_link"),
     const std::string& voxelSkeletonName = std::string("voxel_skeleton"));
@@ -67,8 +67,8 @@ private:
   /// Skeleton containing the Voxel Shape
   std::shared_ptr<dart::dynamics::Skeleton> mVoxelSkeleton;
 
-  /// Pointer to the transform buffer used for finding the pose of the camera
-  std::shared_ptr<tf2_ros::Buffer> mTFBuffer;
+  /// Refernce to the transform buffer used for finding the pose of the camera
+  const tf2_ros::Buffer& mTFBuffer;
 };
 
 } // namespace perception
