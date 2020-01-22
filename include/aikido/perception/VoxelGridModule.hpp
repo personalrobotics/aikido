@@ -10,6 +10,8 @@
 #include <ros/ros.h>
 #include <tf2_ros/transform_listener.h>
 
+#include <aikido/planner/World.hpp>
+
 namespace aikido {
 namespace perception {
 
@@ -26,6 +28,7 @@ public:
     const ros::NodeHandle& nodeHandle,
     const std::string& pointCloudTopic,
     const tf2_ros::Buffer& transformBuffer,
+    const std::shared_ptr<aikido::planner::World> world,
     const double resolution,
     const std::string& worldFrame = std::string("map"),
     const std::string& voxelSkeletonName = std::string("voxel_skeleton"));
@@ -69,6 +72,9 @@ private:
 
   /// Refernce to the transform buffer used for finding the pose of the camera
   const tf2_ros::Buffer& mTFBuffer;
+
+  /// World containing objects to be substracted
+  std::shared_ptr<aikido::planner::World> mWorld;
 };
 
 } // namespace perception

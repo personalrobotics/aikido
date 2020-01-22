@@ -29,6 +29,10 @@ aikido_check_package(tf "aikido::perception" "tf")
 find_package(octomap_ros QUIET MODULE)
 aikido_check_package(octomap_ros "aikido::perception" "octomap_ros")
 
+find_package(pcl_conversions QUIET)
+find_package(PCL REQUIRED)
+aikido_check_package(PCL "aikido::perception" "PCL")
+
 if(NOT DART_HAS_VOXELGRIDSHAPE)
     message(WARNING "The installed version of DART ${DART_VERSION} is "
       "missing dart::dynamics::VoxelGridShape, which is because DART built "
@@ -62,6 +66,8 @@ target_include_directories("${PROJECT_NAME}_perception" SYSTEM
   PRIVATE
     ${visualization_msgs_INCLUDE_DIRS}
     ${octomap_ros_INCLUDE_DIRS}
+    ${PCL_INCLUDE_DIRS}
+    ${pcl_conversions_INCLUDE_DIRS}
 )
 target_link_libraries("${PROJECT_NAME}_perception"
   PUBLIC
@@ -74,6 +80,8 @@ target_link_libraries("${PROJECT_NAME}_perception"
   PRIVATE
     ${visualization_msgs_LIBRARIES}
     ${octomap_ros_LIBRARIES}
+    ${PCL_LIBRARIES}
+    ${pcl_conversions_LIBRARIES}
 )
 target_compile_options("${PROJECT_NAME}_perception"
   PUBLIC ${AIKIDO_CXX_STANDARD_FLAGS}
