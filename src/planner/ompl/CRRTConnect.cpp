@@ -134,6 +134,11 @@ double CRRTConnect::getConnectionRadius() const
 {
   // NOTE: Not needed since we set start/goal trees manually.
   // checkValidity();
+  std::cout << "" << std::endl;
+  std::cout << "mMaxDistance: " << mMaxDistance << std::endl;
+  std::cout << "mMaxStepsize: " << mMaxStepsize << std::endl;
+  std::cout << "mMinStepsize: " << mMinStepsize << std::endl;
+  std::cout << "mConnectionRadius: " << mConnectionRadius << std::endl;
 
   // HACK: (sniyaz) start and goal should have been set manually.
   if (mStartTree->size() == 0 || mGoalTree->size() == 0)
