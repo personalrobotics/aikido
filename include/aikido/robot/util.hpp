@@ -249,6 +249,19 @@ bool getGoalAndConstraintTSRForEndEffectorOffset(
     double positionTolerance = 1e-3,
     double angularTolerance = 1e-3);
 
+/// New method here
+trajectory::TrajectoryPtr planToEndEffectorPose(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const constraint::TestablePtr& collisionTestable,
+    const Eigen::Isometry3d& goalPose,
+    double distance,
+    double timelimit,
+    double poseErrorTolerance = 1e-3,
+    double conversionRatioInGeodesicDistance = 1e-3,
+    const VectorFieldPlannerParameters& vfParameters = VectorFieldPlannerParameters());
+
 /// Get a pose at a point looking at another point.
 /// \param[in] positionFrom Position to look from
 /// \param[in] positionTo Position to look to

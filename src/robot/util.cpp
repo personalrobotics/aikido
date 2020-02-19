@@ -506,6 +506,42 @@ InterpolatedPtr planToEndEffectorOffsetByCRRT(
 
   return untimedTrajectory;
 }
+
+//==============================================================================
+trajectory::TrajectoryPtr planToEndEffectorPose(
+    const MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const TestablePtr& collisionTestable,
+    const Eigen::Isometry3d& goalPose,
+    double distance,
+    double timelimit,
+    double poseErrorTolerance,
+    double conversionRatioInGeodesicDistance,
+    const VectorFieldPlannerParameters& vfParameters)
+{
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
+
+  auto traj = planner::vectorfield::planToEndEffectorPose(
+      space,
+      metaSkeleton,
+      bodyNode,
+      collisionTestable,
+      goalPose,
+      poseErrorTolerance, // don't know what this is
+      conversionRatioInGeodesicDistance, // don't know what this is
+      vfParameters.initialStepSize,
+      vfParameters.jointLimitTolerance,
+      vfParameters.constraintCheckResolution,
+      std::chrono::duration<double>(timelimit));
+  
+  if (traj)
+   return std::move(traj);
+
+  return nullptr;
+}
+
 //==============================================================================
 std::unordered_map<std::string, const Eigen::VectorXd>
 parseYAMLToNamedConfigurations(const YAML::Node& node)
