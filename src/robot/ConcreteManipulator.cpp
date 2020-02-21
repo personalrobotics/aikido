@@ -152,6 +152,34 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
 }
 
 //==============================================================================
+trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorPose(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const constraint::dart::CollisionFreePtr& collisionFree,
+    const Eigen::Isometry3d& goalPose,
+    double distance,
+    double timelimit,
+    double poseErrorTolerance)
+{
+  auto collision
+      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
+  auto trajectory = util::planToEndEffectorPose(
+      space,
+      metaSkeleton,
+      bodyNode,
+      collision,
+      goalPose,
+      distance,
+      timelimit,
+      poseErrorTolerance,
+      1, // hard code the value here?
+      mVectorFieldParameters);
+
+  return trajectory;
+}
+
+//==============================================================================
 trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     statespace::dart::MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,

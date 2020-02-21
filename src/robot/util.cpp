@@ -516,7 +516,7 @@ trajectory::TrajectoryPtr planToEndEffectorPose(
     const Eigen::Isometry3d& goalPose,
     double distance,
     double timelimit,
-    double poseErrorTolerance,
+    double poseErrorTolerance, // same as angularTolerance from planToEEOffset()
     double conversionRatioInGeodesicDistance,
     const VectorFieldPlannerParameters& vfParameters)
 {
@@ -529,8 +529,8 @@ trajectory::TrajectoryPtr planToEndEffectorPose(
       bodyNode,
       collisionTestable,
       goalPose,
-      poseErrorTolerance, // don't know what this is
-      conversionRatioInGeodesicDistance, // don't know what this is
+      poseErrorTolerance, 
+      conversionRatioInGeodesicDistance, // default 1
       vfParameters.initialStepSize,
       vfParameters.jointLimitTolerance,
       vfParameters.constraintCheckResolution,

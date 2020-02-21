@@ -259,7 +259,7 @@ trajectory::TrajectoryPtr planToEndEffectorPose(
     double distance,
     double timelimit,
     double poseErrorTolerance = 1e-3,
-    double conversionRatioInGeodesicDistance = 1e-3,
+    double conversionRatioInGeodesicDistance = 1,
     const VectorFieldPlannerParameters& vfParameters = VectorFieldPlannerParameters());
 
 /// Get a pose at a point looking at another point.
