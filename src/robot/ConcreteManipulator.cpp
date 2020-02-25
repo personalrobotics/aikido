@@ -1,10 +1,21 @@
 #include "aikido/robot/ConcreteManipulator.hpp"
 
+#include "aikido/constraint/dart/TSR.hpp"
+#include "aikido/planner/dart/ConfigurationToTSRwithTrajectoryConstraint.hpp"
+#include "aikido/planner/dart/CRRTConfigurationToTSRwithTrajectoryConstraintPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToTSRPlanner.hpp"
 #include "aikido/planner/dart/util.hpp"
+#include "aikido/planner/vectorfield/VectorFieldPlanner.hpp"
 #include "aikido/robot/util.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 namespace aikido {
 namespace robot {
+
+using planner::dart::ConfigurationToTSRwithTrajectoryConstraint;
+using planner::dart::CRRTConfigurationToTSRwithTrajectoryConstraintPlanner;
+using statespace::dart::MetaSkeletonStateSaver;
+using constraint::dart::TSR;
 
 //==============================================================================
 ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)
@@ -132,23 +143,106 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     double positionTolerance,
     double angularTolerance)
 {
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
 
-  auto collision
+  auto collisionTestable
       = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
-  auto trajectory = util::planToEndEffectorOffset(
+
+  auto startState = space->createState();
+  space->getState(metaSkeleton.get(), startState);
+
+  auto minDistance
+      = std::max(0.0, distance - mVectorFieldParameters.negativeDistanceTolerance);
+  auto maxDistance = distance + mVectorFieldParameters.positiveDistanceTolerance;
+
+  auto traj = planner::vectorfield::planToEndEffectorOffset(
+      space,
+      *startState,
+      metaSkeleton,
+      body,
+      collisionTestable,
+      direction,
+      minDistance,
+      maxDistance,
+      positionTolerance,
+      angularTolerance,
+      mVectorFieldParameters.initialStepSize,
+      mVectorFieldParameters.jointLimitTolerance,
+      mVectorFieldParameters.constraintCheckResolution,
+      std::chrono::duration<double>(timelimit));
+
+  if (traj)
+    return std::move(traj);
+
+  return planToEndEffectorOffsetByCRRT(
       space,
       metaSkeleton,
       body,
+      collisionTestable,
       direction,
-      collision,
       distance,
       timelimit,
       positionTolerance,
       angularTolerance,
-      mVectorFieldParameters,
       mCRRTParameters);
+}
 
-  return trajectory;
+//==============================================================================
+trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffsetByCRRT(
+    const statespace::dart::MetaSkeletonStateSpacePtr& space,
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const dart::dynamics::BodyNodePtr& bodyNode,
+    const constraint::TestablePtr& collisionTestable,
+    const Eigen::Vector3d& direction,
+    double distance,
+    double timelimit,
+    double positionTolerance,
+    double angularTolerance,
+    const util::CRRTPlannerParameters& crrtParameters)
+{
+  // if direction vector is a zero vector
+  if (direction.norm() == 0.0)
+  {
+    throw std::runtime_error("Direction vector is a zero vector");
+  }
+
+  // normalize direction vector
+  Eigen::Vector3d directionCopy = direction;
+  directionCopy.normalize();
+
+  if (distance < 0.0)
+  {
+    distance = -distance;
+    directionCopy = -directionCopy;
+  }
+
+  auto goalTsr = std::make_shared<TSR>();
+  auto constraintTsr = std::make_shared<TSR>();
+  bool success = util::getGoalAndConstraintTSRForEndEffectorOffset(
+      bodyNode,
+      directionCopy,
+      distance,
+      goalTsr,
+      constraintTsr,
+      positionTolerance,
+      angularTolerance);
+
+  if (!success)
+    throw std::runtime_error("failed in creating TSR");
+
+  // Create problem
+  auto problem = ConfigurationToTSRwithTrajectoryConstraint(
+    space, metaSkeleton,
+    bodyNode, goalTsr, constraintTsr, collisionTestable);
+
+  // Create planner
+  auto planner = std::make_shared<CRRTConfigurationToTSRwithTrajectoryConstraintPlanner>(
+    space, metaSkeleton, timelimit, crrtParameters);
+
+  CRRTConfigurationToTSRwithTrajectoryConstraintPlanner::Result pResult;
+
+  return planner->plan(problem, &pResult);
 }
 
 //==============================================================================
@@ -162,9 +256,6 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     double positionTolerance,
     double angularTolerance)
 {
-  auto collision
-      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
-
   Eigen::Vector3d direction
       = planner::dart::util::getEndEffectorDirection(body);
 
@@ -174,18 +265,16 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     direction = direction * -1;
   }
 
-  auto trajectory = util::planToEndEffectorOffset(
+  auto trajectory = planToEndEffectorOffset(
       space,
       metaSkeleton,
       body,
+      collisionFree,
       direction,
-      collision,
       distance,
       timelimit,
       positionTolerance,
-      angularTolerance,
-      mVectorFieldParameters,
-      mCRRTParameters);
+      angularTolerance);
 
   return trajectory;
 }
