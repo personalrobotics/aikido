@@ -10,7 +10,7 @@
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/distance/defaults.hpp"
-#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
+#include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
@@ -87,9 +87,9 @@ CRRTConfigurationToTSRwithTrajectoryConstraintPlanner::plan(
       throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
   }
 
-  const auto bodyNode = problem.getEndEffectorBodyNode();
-  const auto goalTsr = problem.getGoalTSR();
-  const auto constraintTsr = problem.getConstraintTSR();
+  auto bodyNode = problem.getEndEffectorBodyNode();
+  auto goalTsr = problem.getGoalTSR();
+  auto constraintTsr = problem.getConstraintTSR();
 
   // Create an IK solver with metaSkeleton dofs
   auto ik = InverseKinematics::create(const_cast<BodyNode*>(bodyNode.get()));

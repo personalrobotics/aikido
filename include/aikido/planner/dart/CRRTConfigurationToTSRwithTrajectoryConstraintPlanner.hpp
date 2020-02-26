@@ -36,8 +36,8 @@ public:
       robot::util::CRRTPlannerParameters crrtParameters);
 
   /// \copydoc SingleProblemPlanner::plan()
-  trajectory::TrajectoryPtr plan(
-      const SolvableProblem& problem, Result* result = nullptr);
+  virtual trajectory::TrajectoryPtr plan(
+      const SolvableProblem& problem, Result* result = nullptr) final;
 
 protected:
   const robot::util::CRRTPlannerParameters mCRRTParameters;
