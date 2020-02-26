@@ -78,7 +78,7 @@ void InteractiveMarkerViewer::updateSkeletonMarkers()
   while (it != std::end(mSkeletonMarkers))
   {
     // If the skeleton is either a nullptr or no longer exists in an associated world, delete.
-    if (!it->first || mWorld && !mWorld->hasSkeleton(it->first))
+    if (!it->first || (mWorld && !mWorld->hasSkeleton(it->first)))
     {
       it = mSkeletonMarkers.erase(it);
     }
