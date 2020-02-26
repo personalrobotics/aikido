@@ -20,7 +20,7 @@ public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in
   // SingleProblemPlanner. Note that plan() of the base class takes Problem
   // while the virtual function defined in this class takes SolvableProblem,
-  // which is simply ConfigurationToTSR.
+  // which is simply ConfigurationToTSRwithTrajectoryConstraint.
   using SingleProblemPlanner::plan;
 
   /// Constructor
@@ -37,7 +37,7 @@ public:
 
   /// \copydoc SingleProblemPlanner::plan()
   trajectory::TrajectoryPtr plan(
-      const SolvableProblem& problem, Result* result = nullptr) override;
+      const SolvableProblem& problem, Result* result = nullptr);
 
 protected:
   const robot::util::CRRTPlannerParameters mCRRTParameters;
