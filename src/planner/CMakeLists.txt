@@ -8,6 +8,7 @@ set(sources
   PlanningResult.cpp
   Problem.cpp
   RankedMetaPlanner.cpp
+  SequenceConfigurationToConfigurationMetaPlanner.cpp
   SnapConfigurationToConfigurationPlanner.cpp
   SnapPlanner.cpp
   SequenceMetaPlanner.cpp
