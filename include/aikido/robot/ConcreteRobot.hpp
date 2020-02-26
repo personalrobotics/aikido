@@ -159,7 +159,7 @@ public:
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
-  /// TODO: Replace this with Problem interface.
+  /// TODO: Replace this with Problem interface, add Ranker.
   /// Plan the robot to a set of configurations. Restores the robot to its
   /// initial configuration after planning.
   /// \param[in] stateSpace The StateSpace for the metaskeleton
@@ -175,7 +175,7 @@ public:
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
-  /// TODO: Replace this with Problem interface.
+  /// TODO: Replace this with Problem interface, add Ranker.
   /// Plan the robot to a set of configurations. Restores the robot to its
   /// initial configuration after planning.
   /// \param[in] stateSpace The StateSpace for the metaskeleton

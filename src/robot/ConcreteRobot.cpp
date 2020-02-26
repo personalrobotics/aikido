@@ -10,8 +10,14 @@
 #include "aikido/distance/NominalConfigurationRanker.hpp"
 #include "aikido/distance/defaults.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
+#include "aikido/planner/SequenceMetaPlanner.hpp"
+#include "aikido/planner/SequenceConfigurationToConfigurationMetaPlanner.hpp"
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToTSRPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
+#include "aikido/planner/dart/ConfigurationToTSRwithTrajectoryConstraint.hpp"
+#include "aikido/planner/dart/CRRTConfigurationToTSRwithTrajectoryConstraintPlanner.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
@@ -22,7 +28,7 @@ namespace aikido {
 namespace robot {
 
 using constraint::ConstTestablePtr;
-using  constraint::CyclicSampleable;
+using constraint::CyclicSampleable;
 
 using constraint::TestablePtr;
 using constraint::dart::CollisionFreePtr;
@@ -38,12 +44,22 @@ using constraint::Sampleable;
 using distance::ConstConfigurationRankerPtr;
 using distance::createDistanceMetric;
 using distance::NominalConfigurationRanker;
-using planner::TrajectoryPostProcessor;
+
 using planner::kunzretimer::KunzRetimer;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
 using planner::ConfigurationToConfiguration;
+using planner::ConfigurationToConfigurationPlanner;
+using planner::PlannerPtr;
+using planner::SequenceMetaPlanner;
+using planner::SequenceConfigurationToConfigurationMetaPlanner;
 using planner::SnapConfigurationToConfigurationPlanner;
+using planner::TrajectoryPostProcessor;
+using planner::dart::ConfigurationToTSR;
+using planner::dart::ConfigurationToTSRPlanner;
+using planner::dart::ConfigurationToTSRwithTrajectoryConstraint;
+using planner::dart::CRRTConfigurationToTSRwithTrajectoryConstraintPlanner;
+using planner::dart::ConfigurationToConfiguration_to_ConfigurationToTSR;
 using planner::ompl::planCRRTConnect;
 using planner::ompl::planOMPL;
 using planner::ompl::OMPLConfigurationToConfigurationPlanner;
@@ -380,7 +396,6 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
 {
   DART_UNUSED(timelimit);
 
-
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
@@ -389,29 +404,27 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
   auto saver = MetaSkeletonStateSaver(metaSkeleton);
   DART_UNUSED(saver);
 
-  // First test with Snap Planner
-  SnapConfigurationToConfigurationPlanner::Result pResult;
+  ConfigurationToConfigurationPlanner::Result pResult;
   TrajectoryPtr untimedTrajectory;
 
   auto startState = stateSpace->getScopedStateFromMetaSkeleton(metaSkeleton.get());
 
   auto problem = ConfigurationToConfiguration(
       stateSpace, startState, goalState, collisionConstraint);
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-      stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
-  untimedTrajectory = planner->plan(problem, &pResult);
 
-  // Return if the trajectory is non-empty
-  if (untimedTrajectory)
-    return untimedTrajectory;
-
-  auto plannerOMPL = std::make_shared<
+  // Create a sequence meta planner
+  std::vector<PlannerPtr> planners;
+  // Add snap planner
+  planners.emplace_back(std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace)));
+  // Add OMPL planner
+  planners.push_back(std::make_shared<
       OMPLConfigurationToConfigurationPlanner<::ompl::geometric::RRTConnect>>(
-      stateSpace, cloneRNG().get());
+      stateSpace, cloneRNG().get()));
 
-  untimedTrajectory = plannerOMPL->plan(problem, &pResult);
-
-  return untimedTrajectory;
+  auto planner = std::make_shared<SequenceMetaPlanner>(
+    stateSpace, planners);
+  return planner->plan(problem, &pResult);
 }
 
 //==============================================================================
@@ -437,36 +450,10 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
     const CollisionFreePtr& collisionFree,
     double timelimit)
 {
-  using planner::ompl::planOMPL;
-  DART_UNUSED(timelimit);
-
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
-  // Save the current state of the space
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
-
-  auto startState = stateSpace->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-  SnapConfigurationToConfigurationPlanner::Result pResult;
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-      stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
-
   for (const auto& goalState : goalStates)
   {
-    // First test with Snap Planner
-    auto problem = ConfigurationToConfiguration(
-        stateSpace, startState, goalState, collisionFree);
-    TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
-
-    // Return if the trajectory is non-empty
-    if (untimedTrajectory)
-      return untimedTrajectory;
-
-    auto plannerOMPL = std::make_shared<
-        OMPLConfigurationToConfigurationPlanner<::ompl::geometric::RRTConnect>>(
-        stateSpace, cloneRNG().get());
-
-    untimedTrajectory = plannerOMPL->plan(problem, &pResult);
+    auto untimedTrajectory = planToConfiguration(stateSpace,
+      metaSkeleton, goalState, collisionFree, timelimit);
 
     if (untimedTrajectory)
       return untimedTrajectory;
@@ -510,118 +497,28 @@ TrajectoryPtr ConcreteRobot::planToTSR(
 {
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
-  // Create an IK solver with metaSkeleton dofs.
-  auto ik = InverseKinematics::create(bn);
 
-  // TODO: DART may be updated to check for single skeleton
-  if (metaSkeleton->getNumDofs() == 0)
-    throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
+  auto problem = ConfigurationToTSR(stateSpace, metaSkeleton, bn, maxNumTrials, tsr, collisionFree);
 
-  auto skeleton = metaSkeleton->getDof(0)->getSkeleton();
-  for (size_t i = 1; i < metaSkeleton->getNumDofs(); ++i)
-  {
-    if (metaSkeleton->getDof(i)->getSkeleton() != skeleton)
-      throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
-  }
+  // Create a sequence meta planner
+  std::vector<PlannerPtr> planners;
+  // Add snap planner
+  planners.emplace_back(std::make_shared<SnapConfigurationToConfigurationPlanner>(
+      stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace)));
+  // Add OMPL planner
+  planners.push_back(std::make_shared<
+      OMPLConfigurationToConfigurationPlanner<::ompl::geometric::RRTConnect>>(
+      stateSpace, cloneRNG().get()));
 
-  ik->setDofs(metaSkeleton->getDofs());
+  auto sequencePlanner = std::make_shared<SequenceConfigurationToConfigurationMetaPlanner>(
+    stateSpace, planners);
 
-  // Convert TSR constraint into IK constraint
-  InverseKinematicsSampleable ikSampleable(
-      stateSpace,
-      metaSkeleton,
-      tsr,
-      createSampleableBounds(stateSpace, cloneRNG()),
-      ik,
-      static_cast<int>(maxNumTrials));
+  auto planner = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
+    sequencePlanner, metaSkeleton, ranker);
 
-  auto generator = ikSampleable.createSampleGenerator();
+  ConfigurationToTSRPlanner::Result pResult;
 
-  // Goal state
-  auto goalState = stateSpace->createState();
-
-  auto startState = stateSpace->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-
-  // TODO: Change this to timelimit once we use a fail-fast planner
-  double timelimitPerSample = timelimit / maxNumTrials;
-
-  // Save the current state of the stateSpace
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
-
-  // HACK: try lots of snap plans first
-  static const std::size_t maxSnapSamples{100};
-  std::size_t snapSamples = 0;
-
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  SnapConfigurationToConfigurationPlanner::Result pResult;
-  auto snapPlanner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-      stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
-
-  std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
-
-  // Use a ranker
-  ConstConfigurationRankerPtr configurationRanker(ranker);
-  if (!ranker)
-  {
-    auto nominalState = stateSpace->createState();
-    stateSpace->copyState(startState, nominalState);
-    configurationRanker = std::make_shared<const NominalConfigurationRanker>(
-        stateSpace, metaSkeleton, nominalState);
-  }
-
-  while (snapSamples < maxSnapSamples && generator->canSample())
-  {
-    // Sample from TSR
-    std::lock_guard<std::mutex> lock(robot->getMutex());
-    bool sampled = generator->sample(goalState);
-
-    // Increment even if it's not a valid sample since this loop
-    // has to terminate even if none are valid.
-    ++snapSamples;
-
-    if (!sampled)
-      continue;
-
-    configurations.emplace_back(goalState.clone());
-  }
-
-  if (configurations.empty())
-    return nullptr;
-
-  configurationRanker->rankConfigurations(configurations);
-
-  // Try snap planner first
-  for (std::size_t i = 0; i < configurations.size(); ++i)
-  {
-    auto problem = ConfigurationToConfiguration(
-        stateSpace, startState, configurations[i], collisionConstraint);
-
-    auto traj = snapPlanner->plan(problem, &pResult);
-
-    if (traj)
-      return traj;
-  }
-
-  // Start the timer
-  dart::common::Timer timer;
-  timer.start();
-  for (std::size_t i = 0; i < configurations.size(); ++i)
-  {
-    auto problem = ConfigurationToConfiguration(
-        stateSpace, startState, configurations[i], collisionConstraint);
-
-    auto traj = planToConfiguration(
-        stateSpace,
-        metaSkeleton,
-        goalState,
-        collisionFree,
-        std::min(timelimitPerSample, timelimit - timer.getElapsedTime()));
-
-    if (traj)
-      return traj;
-  }
-  return nullptr;
+  return planner->plan(problem, &pResult);
 }
 
 //==============================================================================
@@ -637,90 +534,15 @@ TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
-  std::size_t projectionMaxIteration = mCRRTParameters.projectionMaxIteration;
-  double projectionTolerance = mCRRTParameters.projectionTolerance;
+  auto problem = ConfigurationToTSRwithTrajectoryConstraint(stateSpace, metaSkeleton,
+    bodyNode, goalTsr, constraintTsr, collisionFree);
 
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
+  auto planner = std::make_shared<CRRTConfigurationToTSRwithTrajectoryConstraintPlanner>(
+    stateSpace, metaSkeleton, timelimit, mCRRTParameters);
 
-  // Save the current state of the stateSpace
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
+  CRRTConfigurationToTSRwithTrajectoryConstraintPlanner::Result pResult;
 
-  // Create seed constraint
-  std::shared_ptr<Sampleable> seedConstraint
-      = createSampleableBounds(stateSpace, mCRRTParameters.rng->clone());
-
-  // TODO: DART may be updated to check for single skeleton
-  if (metaSkeleton->getNumDofs() == 0)
-    throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
-
-  auto skeleton = metaSkeleton->getDof(0)->getSkeleton();
-  for (size_t i = 1; i < metaSkeleton->getNumDofs(); ++i)
-  {
-    if (metaSkeleton->getDof(i)->getSkeleton() != skeleton)
-      throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
-  }
-
-  // Create an IK solver with metaSkeleton dofs
-  auto ik = InverseKinematics::create(bodyNode);
-
-  ik->setDofs(metaSkeleton->getDofs());
-
-  // create goal sampleable
-  auto goalSampleable = std::make_shared<InverseKinematicsSampleable>(
-      stateSpace,
-      metaSkeleton,
-      std::make_shared<CyclicSampleable>(goalTsr),
-      seedConstraint,
-      ik,
-      mCRRTParameters.maxNumTrials);
-
-  // create goal testable
-  auto goalTestable = std::make_shared<FrameTestable>(
-      stateSpace, metaSkeleton, bodyNode.get(), goalTsr);
-
-  // create constraint sampleable
-  auto constraintSampleable = std::make_shared<InverseKinematicsSampleable>(
-      stateSpace,
-      metaSkeleton,
-      constraintTsr,
-      seedConstraint,
-      ik,
-      mCRRTParameters.maxNumTrials);
-
-  // create constraint projectable
-  auto frameDiff = std::make_shared<FrameDifferentiable>(
-      stateSpace, metaSkeleton, bodyNode.get(), constraintTsr);
-
-  std::vector<double> projectionToleranceVec(
-      frameDiff->getConstraintDimension(), projectionTolerance);
-  auto constraintProjectable = std::make_shared<NewtonsMethodProjectable>(
-      frameDiff, projectionToleranceVec, projectionMaxIteration);
-
-  // Current state
-  auto startState = stateSpace->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-
-  // Call planner
-  auto traj = planCRRTConnect(
-      startState,
-      goalTestable,
-      goalSampleable,
-      constraintProjectable,
-      stateSpace,
-      std::make_shared<GeodesicInterpolator>(stateSpace),
-      createDistanceMetric(stateSpace),
-      constraintSampleable,
-      collisionConstraint,
-      createTestableBounds(stateSpace),
-      createProjectableBounds(stateSpace),
-      timelimit,
-      mCRRTParameters.maxExtensionDistance,
-      mCRRTParameters.maxDistanceBtwProjections,
-      mCRRTParameters.minStepSize,
-      mCRRTParameters.minTreeConnectionDistance);
-
-  return traj;
+  return planner->plan(problem, &pResult);
 }
 
 //==============================================================================
