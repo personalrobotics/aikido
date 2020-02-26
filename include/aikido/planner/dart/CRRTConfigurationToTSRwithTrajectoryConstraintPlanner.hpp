@@ -3,9 +3,9 @@
 
 #include "aikido/planner/dart/ConfigurationToTSRPlanner.hpp"
 #include "aikido/planner/dart/ConfigurationToTSRwithTrajectoryConstraint.hpp"
+#include "aikido/robot/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
-#include "aikido/robot/util.hpp"
 
 namespace aikido {
 namespace planner {
