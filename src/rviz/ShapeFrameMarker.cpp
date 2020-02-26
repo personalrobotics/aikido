@@ -1,9 +1,10 @@
+#include "aikido/rviz/ShapeFrameMarker.hpp"
+
 #include <dart/dynamics/dynamics.hpp>
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/InteractiveMarker.h>
 
 #include "aikido/rviz/ResourceServer.hpp"
-#include "aikido/rviz/ShapeFrameMarker.hpp"
 #include "aikido/rviz/shape_conversions.hpp"
 
 using dart::dynamics::CollisionAspect;
