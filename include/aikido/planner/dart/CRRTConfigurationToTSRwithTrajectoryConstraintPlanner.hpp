@@ -29,20 +29,15 @@ public:
   /// \param[in] metaSkeleton MetaSkeleton to use for planning.
   /// \param[in] timelimit Timelimit for planning.
   /// \param[in] crrtParameters CRRT planner parameters.
-  /// \param[in] configurationRanker Ranker for goalTSR.
   CRRTConfigurationToTSRwithTrajectoryConstraintPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
       double timelimit,
       robot::util::CRRTPlannerParameters crrtParameters);
 
-  /// Solves \c problem returning the result to \c result.
-  ///
-  /// \param[in] problem Planning problem to be solved by the planner.
-  /// \param[out] result Result of planning procedure.
+  /// \copydoc SingleProblemPlanner::plan()
   trajectory::TrajectoryPtr plan(
-      const SolvableProblem& problem, Result* result = nullptr);
-  // Note: SolvableProblem is defined in SingleProblemPlanner.
+      const SolvableProblem& problem, Result* result = nullptr) override;
 
 protected:
   const robot::util::CRRTPlannerParameters mCRRTParameters;
