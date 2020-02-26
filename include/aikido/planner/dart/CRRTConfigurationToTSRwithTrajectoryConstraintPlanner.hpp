@@ -3,9 +3,9 @@
 
 #include "aikido/planner/dart/ConfigurationToTSRPlanner.hpp"
 #include "aikido/planner/dart/ConfigurationToTSRwithTrajectoryConstraint.hpp"
+#include "aikido/robot/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
-#include "aikido/robot/util.hpp"
 
 namespace aikido {
 namespace planner {
@@ -20,7 +20,7 @@ public:
   // Expose the implementation of Planner::plan(const Problem&, Result*) in
   // SingleProblemPlanner. Note that plan() of the base class takes Problem
   // while the virtual function defined in this class takes SolvableProblem,
-  // which is simply ConfigurationToTSR.
+  // which is simply ConfigurationToTSRwithTrajectoryConstraint.
   using SingleProblemPlanner::plan;
 
   /// Constructor
@@ -29,20 +29,15 @@ public:
   /// \param[in] metaSkeleton MetaSkeleton to use for planning.
   /// \param[in] timelimit Timelimit for planning.
   /// \param[in] crrtParameters CRRT planner parameters.
-  /// \param[in] configurationRanker Ranker for goalTSR.
   CRRTConfigurationToTSRwithTrajectoryConstraintPlanner(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
       double timelimit,
       robot::util::CRRTPlannerParameters crrtParameters);
 
-  /// Solves \c problem returning the result to \c result.
-  ///
-  /// \param[in] problem Planning problem to be solved by the planner.
-  /// \param[out] result Result of planning procedure.
-  trajectory::TrajectoryPtr plan(
-      const SolvableProblem& problem, Result* result = nullptr);
-  // Note: SolvableProblem is defined in SingleProblemPlanner.
+  /// \copydoc SingleProblemPlanner::plan()
+  virtual trajectory::TrajectoryPtr plan(
+      const SolvableProblem& problem, Result* result = nullptr) final;
 
 protected:
   const robot::util::CRRTPlannerParameters mCRRTParameters;

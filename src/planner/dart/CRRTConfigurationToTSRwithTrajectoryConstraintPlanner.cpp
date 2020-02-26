@@ -3,52 +3,53 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
 
 #include "aikido/constraint.hpp"
-#include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/CyclicSampleable.hpp"
 #include "aikido/constraint/FiniteSampleable.hpp"
 #include "aikido/constraint/NewtonsMethodProjectable.hpp"
+#include "aikido/constraint/Testable.hpp"
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/distance/defaults.hpp"
-#include "aikido/planner/ompl/OMPLConfigurationToConfigurationPlanner.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
+#include "aikido/planner/ompl/Planner.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace planner {
 namespace dart {
 
 using constraint::CyclicSampleable;
+using constraint::NewtonsMethodProjectable;
 using constraint::Sampleable;
-using constraint::dart::createSampleableBounds;
-using constraint::dart::FrameDifferentiable;
-using constraint::dart::InverseKinematicsSampleable;
-using constraint::dart::createTestableBounds;
+using constraint::Testable;
 using constraint::dart::createProjectableBounds;
+using constraint::dart::createSampleableBounds;
+using constraint::dart::createTestableBounds;
 using constraint::dart::FrameDifferentiable;
 using constraint::dart::FrameTestable;
+using constraint::dart::InverseKinematicsSampleable;
 using constraint::dart::TSR;
-using constraint::Testable;
-using constraint::NewtonsMethodProjectable;
 using distance::createDistanceMetric;
-using statespace::dart::MetaSkeletonStateSpace;
-using statespace::dart::MetaSkeletonStateSaver;
-using statespace::GeodesicInterpolator;
 using planner::ompl::planCRRTConnect;
+using statespace::GeodesicInterpolator;
+using statespace::dart::MetaSkeletonStateSaver;
+using statespace::dart::MetaSkeletonStateSpace;
 
-using ::dart::dynamics::InverseKinematics;
 using ::dart::dynamics::BodyNode;
+using ::dart::dynamics::InverseKinematics;
 
 //==============================================================================
 CRRTConfigurationToTSRwithTrajectoryConstraintPlanner::
     CRRTConfigurationToTSRwithTrajectoryConstraintPlanner(
-      statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-      ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
-      double timelimit,
-      robot::util::CRRTPlannerParameters crrtParameters)
-  : dart::SingleProblemPlanner<CRRTConfigurationToTSRwithTrajectoryConstraintPlanner, ConfigurationToTSRwithTrajectoryConstraint>(
+        statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+        ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+        double timelimit,
+        robot::util::CRRTPlannerParameters crrtParameters)
+  : dart::SingleProblemPlanner<
+        CRRTConfigurationToTSRwithTrajectoryConstraintPlanner,
+        ConfigurationToTSRwithTrajectoryConstraint>(
         std::move(stateSpace), std::move(metaSkeleton))
   , mCRRTParameters(std::move(crrtParameters))
   , mTimelimit(timelimit)
@@ -57,8 +58,9 @@ CRRTConfigurationToTSRwithTrajectoryConstraintPlanner::
 }
 
 //==============================================================================
-trajectory::TrajectoryPtr CRRTConfigurationToTSRwithTrajectoryConstraintPlanner::plan(
-    const SolvableProblem& problem, Result* result)
+trajectory::TrajectoryPtr
+CRRTConfigurationToTSRwithTrajectoryConstraintPlanner::plan(
+    const SolvableProblem& problem, Result* /*result*/)
 {
   std::size_t projectionMaxIteration = mCRRTParameters.projectionMaxIteration;
   double projectionTolerance = mCRRTParameters.projectionTolerance;
@@ -71,8 +73,8 @@ trajectory::TrajectoryPtr CRRTConfigurationToTSRwithTrajectoryConstraintPlanner:
   DART_UNUSED(saver);
 
   // Create seed constraint
-  std::shared_ptr<Sampleable> seedConstraint
-      = createSampleableBounds(mMetaSkeletonStateSpace, mCRRTParameters.rng->clone());
+  std::shared_ptr<Sampleable> seedConstraint = createSampleableBounds(
+      mMetaSkeletonStateSpace, mCRRTParameters.rng->clone());
 
   // TODO: DART may be updated to check for single skeleton
   if (mMetaSkeleton->getNumDofs() == 0)
@@ -85,9 +87,9 @@ trajectory::TrajectoryPtr CRRTConfigurationToTSRwithTrajectoryConstraintPlanner:
       throw std::invalid_argument("MetaSkeleton has more than 1 skeleton.");
   }
 
-  const auto bodyNode = problem.getEndEffectorBodyNode();
-  const auto goalTsr = problem.getGoalTSR();
-  const auto constraintTsr = problem.getConstraintTSR();
+  auto bodyNode = problem.getEndEffectorBodyNode();
+  auto goalTsr = problem.getGoalTSR();
+  auto constraintTsr = problem.getConstraintTSR();
 
   // Create an IK solver with metaSkeleton dofs
   auto ik = InverseKinematics::create(const_cast<BodyNode*>(bodyNode.get()));
@@ -106,7 +108,8 @@ trajectory::TrajectoryPtr CRRTConfigurationToTSRwithTrajectoryConstraintPlanner:
   // create goal testable
   auto goalTestable = std::make_shared<FrameTestable>(
       std::const_pointer_cast<MetaSkeletonStateSpace>(mMetaSkeletonStateSpace),
-      mMetaSkeleton, bodyNode.get(),
+      mMetaSkeleton,
+      bodyNode.get(),
       std::const_pointer_cast<TSR>(goalTsr));
 
   // create constraint sampleable
@@ -131,7 +134,8 @@ trajectory::TrajectoryPtr CRRTConfigurationToTSRwithTrajectoryConstraintPlanner:
       frameDiff, projectionToleranceVec, projectionMaxIteration);
 
   // Current state
-  auto startState = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get());
+  auto startState = mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
+      mMetaSkeleton.get());
 
   // Call planner
   auto traj = planCRRTConnect(
