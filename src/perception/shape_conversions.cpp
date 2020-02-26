@@ -1,6 +1,6 @@
-#include <dart/common/Console.hpp>
-
 #include "aikido/perception/shape_conversions.hpp"
+
+#include <dart/common/Console.hpp>
 
 namespace aikido {
 namespace perception {
