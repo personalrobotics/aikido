@@ -12,7 +12,7 @@ SequenceConfigurationToConfigurationMetaPlanner::
   : SequenceMetaPlanner(stateSpace, std::move(planners))
   , ConfigurationToConfigurationPlanner(stateSpace, std::move(rng))
 {
-  for (auto planner : mPlanners)
+  for (const auto& planner : mPlanners)
   {
     auto castedPlanner
         = std::dynamic_pointer_cast<ConfigurationToConfigurationPlannerPtr>(
