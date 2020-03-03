@@ -27,8 +27,6 @@ public:
       common::RNG* rng = nullptr);
 
   // Documentation inherited.
-  // trajectory::TrajectoryPtr plan(
-  //     const Problem& problem, Result* result = nullptr) override;
   trajectory::TrajectoryPtr plan(
       const SolvableProblem& problem, Result* result = nullptr) override;
 };
