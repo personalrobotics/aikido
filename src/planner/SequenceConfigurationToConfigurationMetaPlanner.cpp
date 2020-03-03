@@ -24,7 +24,7 @@ SequenceConfigurationToConfigurationMetaPlanner::
   }
 }
 
-// //==============================================================================
+//==============================================================================
 trajectory::TrajectoryPtr SequenceConfigurationToConfigurationMetaPlanner::plan(
     const SolvableProblem& problem, Result* result)
 {
