@@ -9,9 +9,9 @@ set(sources
   Problem.cpp
   RankedMetaPlanner.cpp
   SequenceConfigurationToConfigurationMetaPlanner.cpp
+  SequenceMetaPlanner.cpp
   SnapConfigurationToConfigurationPlanner.cpp
   SnapPlanner.cpp
-  SequenceMetaPlanner.cpp
   World.cpp
   WorldStateSaver.cpp
 )
