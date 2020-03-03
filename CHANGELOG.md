@@ -58,7 +58,7 @@
   * Updated findTimeOfClosestStateTrajectory to use StateSpace Distance Metric: [#543](https://github.com/personalrobotics/aikido/pull/543)
 
 * Planner
-
+  * Make planner_dart component and build all DART planners as planner_dart component: [#567](https://github.com/personalrobotics/aikido/pull/567)
   * Make all DART planners take MetaSkeleton, and add adapter for turning planners into DART planners: [#437](https://github.com/personalrobotics/aikido/pull/437)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VFP: [#303](https://github.com/personalrobotics/aikido/pull/303)

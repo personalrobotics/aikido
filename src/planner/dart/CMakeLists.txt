@@ -16,15 +16,15 @@ endif()
 set(sources
   ConfigurationToConfiguration.cpp
   ConfigurationToConfigurationPlanner.cpp
+  ConfigurationToConfiguration_to_ConfigurationToConfiguration.cpp
+  ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
   ConfigurationToEndEffectorOffset.cpp
   ConfigurationToEndEffectorPose.cpp
-  ConfigurationToTSR.cpp
   ConfigurationToEndEffectorOffsetPlanner.cpp
+  ConfigurationToTSR.cpp
   ConfigurationToTSRPlanner.cpp
   ConfigurationToTSRwithTrajectoryConstraint.cpp
   CRRTConfigurationToTSRwithTrajectoryConstraintPlanner.cpp
-  ConfigurationToConfiguration_to_ConfigurationToConfiguration.cpp
-  ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
   util.cpp
 )
 

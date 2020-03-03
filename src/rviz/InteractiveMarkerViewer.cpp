@@ -77,14 +77,16 @@ void InteractiveMarkerViewer::updateSkeletonMarkers()
   auto it = std::begin(mSkeletonMarkers);
   while (it != std::end(mSkeletonMarkers))
   {
-    // If the skeleton is either a nullptr or no longer exists in an associated world, delete.
+    // If the skeleton is either a nullptr or no longer exists in an associated
+    // world, delete.
     if (!it->first || (mWorld && !mWorld->hasSkeleton(it->first)))
     {
       it = mSkeletonMarkers.erase(it);
     }
-    else 
+    else
     {
-      // In any other case, since the skeleton exists, update it, increment iterator.
+      // In any other case, since the skeleton exists, update it, increment
+      // iterator.
       std::unique_lock<std::mutex> skeleton_lock(
           it->first->getMutex(), std::try_to_lock);
       if (skeleton_lock.owns_lock())
