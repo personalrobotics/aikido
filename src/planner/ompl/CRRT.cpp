@@ -331,7 +331,7 @@ CRRT::Motion* CRRT::constrainedExtend(
   // shortcutting, and we need to return the entire path out (with endpoints).
   if (extendedPath != nullptr)
   {
-    extendedPath->push_back(nmotion->state);
+    extendedPath->push_back(si_->cloneState(nmotion->state));
   }
 
   // Compute the current and previous distance to the goal state
@@ -343,7 +343,7 @@ CRRT::Motion* CRRT::constrainedExtend(
   while (ptc == false)
   {
 
-    if (distToTarget == 0 || distToTarget - prevDistToTarget >= -mMinStepsize)
+    if (distToTarget < std::numeric_limits<double>::epsilon() || distToTarget - prevDistToTarget >= -mMinStepsize)
     {
       // reached target or not making progress
       break;
