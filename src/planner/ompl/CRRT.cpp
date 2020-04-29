@@ -342,8 +342,7 @@ CRRT::Motion* CRRT::constrainedExtend(
   foundgoal = false;
   while (ptc == false)
   {
-
-    if (distToTarget < std::numeric_limits<double>::epsilon() || distToTarget - prevDistToTarget >= -mMinStepsize)
+    if (si_->equalStates(cmotion->state, gstate) || distToTarget - prevDistToTarget >= -mMinStepsize)
     {
       // reached target or not making progress
       break;
