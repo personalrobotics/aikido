@@ -370,6 +370,10 @@ void MetaSkeletonStateSpace::setState(
 {
   Eigen::VectorXd positions;
   convertStateToPositions(_state, positions);
+
+  auto metaskeletonMutex = _metaskeleton->getLockableReference();
+  std::lock_guard<::dart::common::LockableReference> lock(*metaskeletonMutex);
+
   _metaskeleton->setPositions(positions);
 }
 
