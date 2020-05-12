@@ -329,9 +329,11 @@ CRRT::Motion* CRRT::constrainedExtend(
 
   // NOTE: (sniyaz): This should only happen when this call is being used for
   // shortcutting, and we need to return the entire path out (with endpoints).
-  if (extendedPath != nullptr)
+  bool doingShortcut = (extendedPath != nullptr);
+  std::vector<Motion*> extendedPathMotions;
+  if (doingShortcut)
   {
-    extendedPath->push_back(si_->cloneState(nmotion->state));
+    extendedPathMotions.push_back(nmotion);
   }
 
   // Compute the current and previous distance to the goal state
@@ -382,10 +384,10 @@ CRRT::Motion* CRRT::constrainedExtend(
       Motion* motion = new Motion(si_);
       si_->copyState(motion->state, xstate);
 
-      if (extendedPath != nullptr)
+      if (doingShortcut)
       {
         // We're using this method for shortcutting.
-        extendedPath->push_back(motion->state);
+        extendedPathMotions.push_back(motion);
       } else {
         // Otherwise, add the motion to the tree
         motion->parent = cmotion;
@@ -421,6 +423,22 @@ CRRT::Motion* CRRT::constrainedExtend(
     }
     prevDistToTarget = distToTarget;
     distToTarget = si_->distance(cmotion->state, gstate);
+  }
+
+  // NOTE: If shortcutting, set the output `extendedPath` and free the motions.
+  if (doingShortcut)
+  {
+    for (int i = 0; i < extendedPathMotions.size(); i++)
+    {
+      Motion* curMotion = extendedPathMotions.at(i);
+      extendedPath->push_back(si_->cloneState(curMotion->state));
+
+      si_->freeState(curMotion->state);
+      delete curMotion;
+    }
+
+    // No `bestMotion` should be returned since it's been freed.
+    return nullptr;
   }
 
   return bestmotion;
