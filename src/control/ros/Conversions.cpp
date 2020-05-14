@@ -373,7 +373,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
               << properties.getType() << " with " << properties.getNumDofs()
               << " DOFs.";
       throw std::invalid_argument{message.str()};
-    } 
+    }
     else if (!r1Joint)
     {
       subspaces.emplace_back(std::make_shared<aikido::statespace::SO2>());
