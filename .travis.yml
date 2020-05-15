@@ -37,8 +37,8 @@ matrix:
 
     - os: linux
       env:
-        - BUILD_NAME=DISCO_CMAKE_RELEASE
-        - DOCKER_FILE="ubuntu-disco"
+        - BUILD_NAME=FOCAL_CMAKE_RELEASE
+        - DOCKER_FILE="ubuntu-focal"
         - BUILD_TYPE=Release
         - USE_CATKIN=OFF
       services: docker
