@@ -1,7 +1,5 @@
 dist: bionic
 
-sudo: required
-
 group: travis_lts
 
 language: generic
@@ -147,7 +145,6 @@ after_failure:
 deploy:
   github-token: $GITHUB_TOKEN
   provider: pages
-  skip-cleanup: true
   local-dir: gh-pages
   keep-history: false
   verbose: true
