@@ -14,8 +14,5 @@ if [ $BUILD_AIKIDOPY = ON ]; then
 else
   cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTREAT_WARNINGS_AS_ERRORS=ON ..
   make -j4 tests
-  if hash valgrind 2>/dev/null; then
-    valgrind ./tests/common/test_string
-  fi
   make test
 fi
