@@ -47,7 +47,7 @@ public:
   std::size_t getNumGoalStates() const;
 
   /// Returns goal states.
-  const GoalStates& getGoalStates() const;
+  const GoalStates getGoalStates() const;
 
 protected:
   /// Start state.

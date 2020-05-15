@@ -47,7 +47,7 @@ std::size_t ConfigurationToConfigurations::getNumGoalStates() const
 }
 
 //==============================================================================
-const ConfigurationToConfigurations::GoalStates&
+const ConfigurationToConfigurations::GoalStates
 ConfigurationToConfigurations::getGoalStates() const
 {
   std::vector<const statespace::StateSpace::State*> pointerStates;
