@@ -48,7 +48,7 @@ if [ "$BUILD_AIKIDOPY" = "ON" ]; then
     make -j4
     $SUDO make install
     cd ../..
-  elif [ $(lsb_release -sc) = "cosmic" ] || [ $(lsb_release -sc) = "disco" ] || [ $(lsb_release -sc) = "focal" ]; then
+  elif [ $(lsb_release -sc) = "focal" ]; then
     $SUDO apt-get -y install pybind11-dev python3 libpython3-dev python3-pytest \
       python3-distutils
   else
