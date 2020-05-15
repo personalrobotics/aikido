@@ -15,5 +15,7 @@ else
   cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTREAT_WARNINGS_AS_ERRORS=ON ..
   make -j4 tests
   make test
-  valgrind ./tests/common/test_string
+  if hash valgrind 2>/dev/null; then
+    valgrind ./tests/common/test_string
+  fi
 fi
