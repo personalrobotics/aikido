@@ -47,15 +47,13 @@ std::size_t ConfigurationToConfigurations::getNumGoalStates() const
 }
 
 //==============================================================================
-const ConfigurationToConfigurations::GoalStates
+ConfigurationToConfigurations::GoalStates
 ConfigurationToConfigurations::getGoalStates() const
 {
   std::vector<const statespace::StateSpace::State*> pointerStates;
-  for (size_t idx = 0; idx < mGoalStates.size(); idx++)
-  {
-    pointerStates.push_back(mGoalStates.at(idx).getState());
+  for (const auto& goal : mGoalStates) {
+    pointerStates.push_back(goal.getState());
   }
-
   return pointerStates;
 }
 
