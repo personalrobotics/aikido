@@ -51,7 +51,7 @@ public:
 
 protected:
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  statespace::StateSpace::ScopedState mStartState;
 
   /// Goal States.
   const GoalStates mGoalStates;
