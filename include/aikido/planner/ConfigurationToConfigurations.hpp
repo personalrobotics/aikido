@@ -18,7 +18,7 @@ namespace planner {
 class ConfigurationToConfigurations : public Problem
 {
 public:
-  using GoalStates = std::unordered_set<const statespace::StateSpace::State*>;
+  using GoalStates = std::vector<const statespace::StateSpace::State*>;
 
   /// Constructor.
   ///
@@ -54,7 +54,7 @@ protected:
   statespace::StateSpace::ScopedState mStartState;
 
   /// Goal States.
-  const GoalStates mGoalStates;
+  std::vector<statespace::StateSpace::ScopedState> mGoalStates;
 };
 
 } // namespace planner
