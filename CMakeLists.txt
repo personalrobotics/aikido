@@ -95,7 +95,7 @@ find_package(DART 6.6.2 REQUIRED
 # Check if DART is built with octomap so that it supports VoxelGridShape
 include(CheckCXXSourceCompiles)
 set(CMAKE_REQUIRED_DEFINITIONS "")
-set(CMAKE_REQUIRED_FLAGS "-std=c++11")
+set(CMAKE_REQUIRED_FLAGS "-std=c++14")
 set(CMAKE_REQUIRED_INCLUDES ${DART_INCLUDE_DIRS})
 set(CMAKE_REQUIRED_LIBRARIES ${DART_LIBRARIES})
 check_cxx_source_compiles(
