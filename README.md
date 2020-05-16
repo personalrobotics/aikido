@@ -49,7 +49,7 @@ $ brew install aikido
 
 AIKIDO depends on [CMake], [Boost], [DART] \(version 6.3 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), tinyxml2, pr-control-msgs, libmicrohttpd, and the
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
-make heavy use of C++11 and require a modern compiler.
+make heavy use of C++14 and require a modern compiler.
 
 ### On Ubuntu Trusty using CMake
 

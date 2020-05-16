@@ -10,6 +10,7 @@
   * Fixed bug in compiling with Boost 1.58 on Kinetic + Xenial: [#490](https://github.com/personalrobotics/aikido/pull/490)
   * Fixed bug in Interpolated::addWaypoint(): [#483](https://github.com/personalrobotics/aikido/pull/483)
   * Fixed bug in VanDerCorput sequence generator to handle non-unit span: [#552](https://github.com/personalrobotics/aikido/pull/552)
+  * Updated to C++14 Standard: [#570](https://github.com/personalrobotics/aikido/pull/570)
 
 * Distance
 
