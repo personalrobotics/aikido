@@ -16,7 +16,7 @@ ConfigurationToConfigurations::ConfigurationToConfigurations(
 {
   for (const statespace::StateSpace::State* goal : goalStates)
   {
-      mGoalStates.push_back(stateSpace->cloneState(goal));
+    mGoalStates.push_back(stateSpace->cloneState(goal));
   }
 }
 
@@ -51,7 +51,8 @@ ConfigurationToConfigurations::GoalStates
 ConfigurationToConfigurations::getGoalStates() const
 {
   std::vector<const statespace::StateSpace::State*> pointerStates;
-  for (const auto& goal : mGoalStates) {
+  for (const auto& goal : mGoalStates)
+  {
     pointerStates.push_back(goal.getState());
   }
   return pointerStates;
