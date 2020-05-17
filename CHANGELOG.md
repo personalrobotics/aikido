@@ -60,6 +60,7 @@
 
 * Planner
 
+  * Check that all planning problems only hold ScopedStates: [#569](https://github.com/personalrobotics/aikido/pull/569)
   * Make all DART planners take MetaSkeleton, and add adapter for turning planners into DART planners: [#437](https://github.com/personalrobotics/aikido/pull/437)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VFP: [#303](https://github.com/personalrobotics/aikido/pull/303)
