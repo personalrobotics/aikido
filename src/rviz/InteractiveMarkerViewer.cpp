@@ -54,6 +54,51 @@ SkeletonMarkerPtr InteractiveMarkerViewer::addSkeletonMarker(
 }
 
 //==============================================================================
+void InteractiveMarkerViewer::updateSkeletonMarkers()
+{
+  // Update SkeletonMarkers from the world.
+  if (mWorld)
+  {
+    for (std::size_t i = 0; i < mWorld->getNumSkeletons(); ++i)
+    {
+      const dart::dynamics::SkeletonPtr skeleton = mWorld->getSkeleton(i);
+      if (skeleton)
+      {
+        // Adds skeleton if previously not in the world.
+        mSkeletonMarkers.emplace(
+            skeleton,
+            std::make_shared<SkeletonMarker>(
+                nullptr, &mMarkerServer, skeleton, mFrameId));
+      }
+    }
+  }
+
+  // Update existing skeletons, and delete erased skeletons.
+  auto it = std::begin(mSkeletonMarkers);
+  while (it != std::end(mSkeletonMarkers))
+  {
+    // If the skeleton is either a nullptr or no longer exists in an associated
+    // world, delete.
+    if (!it->first || (mWorld && !mWorld->hasSkeleton(it->first)))
+    {
+      it = mSkeletonMarkers.erase(it);
+    }
+    else
+    {
+      // In any other case, since the skeleton exists, update it, increment
+      // iterator.
+      std::unique_lock<std::mutex> skeleton_lock(
+          it->first->getMutex(), std::try_to_lock);
+      if (skeleton_lock.owns_lock())
+      {
+        it->second->update();
+      }
+      ++it;
+    }
+  }
+}
+
+//==============================================================================
 FrameMarkerPtr InteractiveMarkerViewer::addFrameMarker(
     dart::dynamics::Frame* frame, double length, double thickness, double alpha)
 {
@@ -62,6 +107,13 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrameMarker(
       &mMarkerServer, frame, mFrameId, length, thickness, alpha);
   mFrameMarkers.insert(marker);
   return marker;
+}
+
+//==============================================================================
+void InteractiveMarkerViewer::updateFrameMarkers()
+{
+  for (const auto& marker : mFrameMarkers)
+    marker->update();
 }
 
 //==============================================================================
@@ -135,6 +187,13 @@ TrajectoryMarkerPtr InteractiveMarkerViewer::addTrajectoryMarker(
 }
 
 //==============================================================================
+void InteractiveMarkerViewer::updateTrajectoryMarkers()
+{
+  for (const auto& marker : mTrajectoryMarkers)
+    marker->update();
+}
+
+//==============================================================================
 void InteractiveMarkerViewer::setAutoUpdate(bool flag)
 {
   mUpdating.store(flag, std::memory_order_release);
@@ -165,61 +224,14 @@ void InteractiveMarkerViewer::update()
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
-  if (mWorld)
-  {
-    // Update SkeletonMarkers from the world.
-    for (std::size_t i = 0; i < mWorld->getNumSkeletons(); ++i)
-    {
-      const dart::dynamics::SkeletonPtr skeleton = mWorld->getSkeleton(i);
+  // Update skeleton markers.
+  updateSkeletonMarkers();
 
-      if (skeleton)
-      {
-        // Either a new SkeletonMarker or a previously-inserted SkeletonMarker
-        auto result = mSkeletonMarkers.emplace(
-            skeleton,
-            std::make_shared<SkeletonMarker>(
-                nullptr, &mMarkerServer, skeleton, mFrameId));
+  // Update frame markers.
+  updateFrameMarkers();
 
-        std::unique_lock<std::mutex> skeleton_lock(
-            skeleton->getMutex(), std::try_to_lock);
-        if (skeleton_lock.owns_lock())
-          result.first->second->update();
-      }
-    }
-  }
-
-  // Clear removed skeletons
-  auto it = std::begin(mSkeletonMarkers);
-  while (it != std::end(mSkeletonMarkers))
-  {
-    // Skeleton still exists in the World, do nothing.
-    if (mWorld && mWorld->hasSkeleton(it->first))
-    {
-      ++it;
-    }
-    // Skeleton not in the world, but a marker, update with lock on skeleton.
-    else if (it->first)
-    {
-      std::unique_lock<std::mutex> skeleton_lock(
-          it->first->getMutex(), std::try_to_lock);
-      if (skeleton_lock.owns_lock())
-      {
-        it->second->update();
-      }
-      ++it;
-    }
-    // Skeleton does not exist anymore, remove from markers.
-    else
-    {
-      it = mSkeletonMarkers.erase(it);
-    }
-  }
-
-  for (const FrameMarkerPtr& marker : mFrameMarkers)
-    marker->update();
-
-  for (const auto& marker : mTrajectoryMarkers)
-    marker->update();
+  // Update trajectory markers.
+  updateTrajectoryMarkers();
 
   // Apply changes anytime a marker has been modified.
   mMarkerServer.applyChanges();
