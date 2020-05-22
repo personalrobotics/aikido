@@ -356,6 +356,8 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   }
 
   // Check that all joints are R1Joint or SO2Joint state spaces.
+  // Add subspaces for spline trajectory creation.
+  std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
   for (std::size_t i = 0; i < numControlledJoints; ++i)
   {
     auto jointSpace = space->getJointSpace(i);
@@ -371,6 +373,14 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
               << properties.getType() << " with " << properties.getNumDofs()
               << " DOFs.";
       throw std::invalid_argument{message.str()};
+    }
+    else if (!r1Joint)
+    {
+      subspaces.emplace_back(std::make_shared<aikido::statespace::SO2>());
+    }
+    else
+    {
+      subspaces.emplace_back(std::make_shared<aikido::statespace::R1>());
     }
   }
 
@@ -455,17 +465,16 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
 
   // Convert the ROS trajectory message to an Aikido spline.
   // Add a segment to the trajectory.
-  std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
-  for (std::size_t citer = 0; citer < space->getDimension(); ++citer)
-  {
-    subspaces.emplace_back(std::make_shared<aikido::statespace::R1>());
-  }
-
   auto compoundSpace
       = std::make_shared<const aikido::statespace::CartesianProduct>(subspaces);
   std::unique_ptr<SplineTrajectory> trajectory{
       new SplineTrajectory{compoundSpace}};
   auto currState = compoundSpace->createState();
+
+  // Temporary States
+  auto nextState = compoundSpace->createState();
+  auto invCurrState = compoundSpace->createState();
+  auto diffState = compoundSpace->createState();
 
   const auto& waypoints = jointTrajectory.points;
   for (std::size_t iWaypoint = 1; iWaypoint < waypoints.size(); ++iWaypoint)
@@ -487,6 +496,15 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
         unspecifiedMetaSkeletonJoints,
         startPositions);
 
+    // Calculate diffVec for Spline conversion
+    Eigen::VectorXd diffPosition;
+    compoundSpace->expMap(currPosition, currState);
+    compoundSpace->expMap(nextPosition, nextState);
+
+    compoundSpace->getInverse(currState, invCurrState);
+    compoundSpace->compose(nextState, invCurrState, diffState);
+    compoundSpace->logMap(diffState, diffPosition);
+
     // Compute spline coefficients for this polynomial segment.
     const auto nextTimeFromStart = waypoints[iWaypoint].time_from_start.toSec();
     const auto segmentDuration = nextTimeFromStart - currTimeFromStart;
@@ -496,12 +514,11 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
         currVelocity,
         currAcceleration,
         segmentDuration,
-        nextPosition - currPosition,
+        diffPosition,
         nextVelocity,
         nextAcceleration,
         numCoefficients);
 
-    compoundSpace->expMap(currPosition, currState);
     trajectory->addSegment(segmentCoefficients, segmentDuration, currState);
 
     // Advance to the next segment.
