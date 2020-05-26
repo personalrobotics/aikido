@@ -1,0 +1,5 @@
+usr/include/aikido/version.hpp
+usr/share/aikido/package.xml
+usr/lib/aikido/cmake/aikidoConfig.cmake
+usr/lib/aikido/cmake/aikidoConfigVersion.cmake
+
