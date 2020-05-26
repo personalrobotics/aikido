@@ -1,6 +1,0 @@
-usr/include/aikido/statespace.hpp
-usr/include/aikido/statespace/*
-usr/lib/aikido/cmake/aikido_statespaceComponent.cmake
-usr/lib/aikido/cmake/aikido_statespaceTargets.cmake
-usr/lib/aikido/cmake/aikido_statespaceTargets-*.cmake
-

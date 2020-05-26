@@ -1,5 +1,0 @@
-usr/include/aikido/common.hpp
-usr/include/aikido/common/*
-usr/lib/aikido/cmake/aikido_commonComponent.cmake
-usr/lib/aikido/cmake/aikido_commonTargets*.cmake
-usr/lib/aikido/cmake/aikido_commonTargets-*.cmake

@@ -1,5 +1,0 @@
-usr/include/aikido/rviz/*
-usr/lib/aikido/cmake/aikido_rvizComponent.cmake
-usr/lib/aikido/cmake/aikido_rvizTargets.cmake
-usr/lib/aikido/cmake/aikido_rvizTargets-*.cmake
-

@@ -1,6 +1,0 @@
-usr/include/aikido/distance.hpp
-usr/include/aikido/distance/*
-usr/lib/aikido/cmake/aikido_distanceComponent.cmake
-usr/lib/aikido/cmake/aikido_distanceTargets.cmake
-usr/lib/aikido/cmake/aikido_distanceTargets-*.cmake
-

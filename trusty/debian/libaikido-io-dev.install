@@ -1,5 +1,0 @@
-usr/include/aikido/io.hpp
-usr/include/aikido/io/*
-usr/lib/aikido/cmake/aikido_ioComponent.cmake
-usr/lib/aikido/cmake/aikido_ioTargets*.cmake
-usr/lib/aikido/cmake/aikido_ioTargets-*.cmake
