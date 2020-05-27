@@ -28,6 +28,7 @@ check_cxx_source_compiles(
 set(sources
   CatkinResourceRetriever.cpp
   KinBodyParser.cpp
+  PlannerFromFile.cpp
   trajectory.cpp
   yaml.cpp
   util.cpp
@@ -39,6 +40,7 @@ target_include_directories("${PROJECT_NAME}_io" SYSTEM
     ${Boost_INCLUDE_DIRS}
     ${DART_INCLUDE_DIRS}
     ${YAMLCPP_INCLUDE_DIRS}
+    ${OMPL_INCLUDE_DIRS}
   PRIVATE
     ${TinyXML2_INCLUDE_DIRS}
 )
@@ -49,6 +51,7 @@ target_link_libraries("${PROJECT_NAME}_io"
     ${Boost_FILESYSTEM_LIBRARY}
     ${DART_LIBRARIES}
     ${YAMLCPP_LIBRARIES}
+    ${OMPL_LIBRARIES}
   PRIVATE
     ${TinyXML2_LIBRARIES}
 )
@@ -69,6 +72,6 @@ endif()
 
 add_component(${PROJECT_NAME} io)
 add_component_targets(${PROJECT_NAME} io "${PROJECT_NAME}_io")
-add_component_dependencies(${PROJECT_NAME} io common trajectory)
+add_component_dependencies(${PROJECT_NAME} io common trajectory planner)
 
 clang_format_add_sources(${sources})
