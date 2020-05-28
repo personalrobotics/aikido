@@ -17,7 +17,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
   # Adding -fext-numeric-literals based on
   # https://svn.boost.org/trac10/ticket/9240.
-  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11 -fext-numeric-literals)
+  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++14 -fext-numeric-literals)
 
   add_compile_options(-Wall -Wextra -Wpedantic)
   if(TREAT_WARNINGS_AS_ERRORS)
@@ -34,7 +34,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     )
   endif()
 
-  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
+  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++14)
 
   add_compile_options(-Wall -Wextra -Wpedantic)
   if(TREAT_WARNINGS_AS_ERRORS)
@@ -51,7 +51,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
     )
   endif()
 
-  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++11)
+  set(AIKIDO_CXX_STANDARD_FLAGS -std=c++14)
 
   add_compile_options(-Wall -Wextra -Wpedantic)
   if(TREAT_WARNINGS_AS_ERRORS)
@@ -66,7 +66,7 @@ elseif(MSVC)
    endif()
 
    # We don't need to specify an additional definition to enable build with
-   # C++11 (e.g., -std=c++11) since Visual Studio enables it by default when
+   # C++11 (e.g., -std=c++14) since Visual Studio enables it by default when
    # available.
 
   add_compile_options(/Wall)

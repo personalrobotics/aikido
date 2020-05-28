@@ -356,6 +356,8 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
   }
 
   // Check that all joints are R1Joint or SO2Joint state spaces.
+  // Add subspaces for spline trajectory creation.
+  std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
   for (std::size_t i = 0; i < numControlledJoints; ++i)
   {
     auto jointSpace = space->getJointSpace(i);
@@ -371,6 +373,14 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
               << properties.getType() << " with " << properties.getNumDofs()
               << " DOFs.";
       throw std::invalid_argument{message.str()};
+    }
+    else if (!r1Joint)
+    {
+      subspaces.emplace_back(std::make_shared<aikido::statespace::SO2>());
+    }
+    else
+    {
+      subspaces.emplace_back(std::make_shared<aikido::statespace::R1>());
     }
   }
 
@@ -455,21 +465,6 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
 
   // Convert the ROS trajectory message to an Aikido spline.
   // Add a segment to the trajectory.
-  std::vector<aikido::statespace::ConstStateSpacePtr> subspaces;
-  for (std::size_t citer = 0; citer < space->getDimension(); ++citer)
-  {
-    auto jointSpace = space->getJointSpace(citer);
-    auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
-    if (!r1Joint)
-    {
-      subspaces.emplace_back(std::make_shared<aikido::statespace::SO2>());
-    }
-    else
-    {
-      subspaces.emplace_back(std::make_shared<aikido::statespace::R1>());
-    }
-  }
-
   auto compoundSpace
       = std::make_shared<const aikido::statespace::CartesianProduct>(subspaces);
   std::unique_ptr<SplineTrajectory> trajectory{
