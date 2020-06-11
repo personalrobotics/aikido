@@ -96,7 +96,6 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
   if (integrator->getCacheIndex() <= 1)
   {
     // no enough waypoints cached to make a trajectory output.
-    dtwarn << "No segment cached." << std::endl;
     if (result)
     {
       result->setMessage("No segment cached.");
@@ -124,7 +123,6 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
             lastEvaluationTime,
             true))
     {
-      dtwarn << "Constraint violated." << std::endl;
       result->setMessage("Constraint violated.");
       return nullptr;
     }
