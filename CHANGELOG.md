@@ -1,6 +1,8 @@
 ## Aikido 0 (prerelease)
 
-### 0.3.0 (201X-XX-XX)
+### 0.4.0 (2020-XX-XX)
+
+### 0.3.0 (2020-05-22)
 
 * Common
 
@@ -57,6 +59,7 @@
   * Fixed toR1JointTrajectory to copy Waypoints with their time information: [#510](https://github.com/personalrobotics/aikido/pull/510)
   * Removed incorrect Spline to Interpolated conversions: [#511](https://github.com/personalrobotics/aikido/pull/511)
   * Updated findTimeOfClosestStateTrajectory to use StateSpace Distance Metric: [#543](https://github.com/personalrobotics/aikido/pull/543)
+  * Add SO2 handling in spline conversions: [#546](https://github.com/personalrobotics/aikido/pull/546)
 
 * Planner
 

@@ -55,7 +55,7 @@ std::string DetectedObject::getName() const
 }
 
 //==============================================================================
-YAML::Node DetectedObject::getYamlNode()
+YAML::Node DetectedObject::getYamlNode() const
 {
   return mYamlNode;
 }
