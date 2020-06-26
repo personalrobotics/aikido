@@ -17,6 +17,7 @@
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/robot/Robot.hpp"
+#include "aikido/robot/RobotParams.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
@@ -125,6 +126,16 @@ public:
       int blendIterations,
       double feasibilityCheckResolution,
       double feasibilityApproxTolerance) const;
+
+  // Get a postprocessor that respects velocity and acceleration limits, as well
+  // as the passed constraint. However, unlike the above, the specific
+  // postprocessor returned is controlled by `postProcessorParams`.
+  /// \param[in] metaSkeleton The MetaSkeleton whose limits must be respected.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getTrajectoryPostProcessor(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const PostProcessorParams& postProcessorParams) const;
 
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its

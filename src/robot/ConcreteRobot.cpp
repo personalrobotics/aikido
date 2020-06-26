@@ -332,6 +332,41 @@ ConcreteRobot::getTrajectoryPostProcessor(
 }
 
 //==============================================================================
+std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+ConcreteRobot::getTrajectoryPostProcessor(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const PostProcessorParams& postProcessorParams) const
+{
+  // TODO (sniyaz):Should we  delete `smoothPath`, `retimePath`, and
+  // `retimePathWithKunz` in a subsequent PR?
+  switch (postProcessorParams.mPostProcessorType)
+  {
+    case PostProcessorType::HAUSER:
+      return std::make_shared<ParabolicSmoother>(
+          getVelocityLimits(*metaSkeleton),
+          getAccelerationLimits(*metaSkeleton),
+          postProcessorParams.mHauserParams.mEnableShortcut,
+          postProcessorParams.mHauserParams.mEnableBlend,
+          postProcessorParams.mHauserParams.mShortcutTimelimit,
+          postProcessorParams.mHauserParams.mBlendRadius,
+          postProcessorParams.mHauserParams.mBlendIterations,
+          postProcessorParams.mHauserParams.mFeasibilityCheckResolution,
+          postProcessorParams.mHauserParams.mFeasibilityApproxTolerance);
+    case PostProcessorType::KUNZ:
+      return std::make_shared<KunzRetimer>(
+          getVelocityLimits(*metaSkeleton),
+          getAccelerationLimits(*metaSkeleton),
+          postProcessorParams.mKunzParams.mMaxDeviation,
+          postProcessorParams.mKunzParams.mTimeStep);
+    default:
+      // TODO (sniyaz): Can this be made a compile-time check instead?
+      std::stringstream message;
+      message << "PostProcessor type not recognized in `postProcessorParams`!";
+      throw std::runtime_error(message.str());
+  }
+}
+
+//==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfiguration(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
