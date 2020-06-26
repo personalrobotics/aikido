@@ -137,6 +137,19 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const PostProcessorParams& postProcessorParams) const;
 
+  /// Returns a post-processed trajectory that can be executed by the robot, but
+  /// allows the user to control the exact params used.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] path Geometric path to execute.
+  /// \param[in] constraint Must be satisfied after postprocessing. Typically
+  /// collision constraint is passed.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  aikido::trajectory::UniqueSplinePtr postProcessPath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
+      const constraint::TestablePtr& constraint,
+      const PostProcessorParams& postProcessorParams);
+
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its
   /// initial configuration after planning.

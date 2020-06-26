@@ -339,6 +339,7 @@ ConcreteRobot::getTrajectoryPostProcessor(
 {
   // TODO (sniyaz):Should we  delete `smoothPath`, `retimePath`, and
   // `retimePathWithKunz` in a subsequent PR?
+  // TODO: (sniyaz): Include custom limits in params.
   switch (postProcessorParams.mPostProcessorType)
   {
     case PostProcessorType::HAUSER:
@@ -364,6 +365,28 @@ ConcreteRobot::getTrajectoryPostProcessor(
       message << "PostProcessor type not recognized in `postProcessorParams`!";
       throw std::runtime_error(message.str());
   }
+}
+
+//==============================================================================
+UniqueSplinePtr ConcreteRobot::postProcessPath(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const aikido::trajectory::Trajectory* path,
+    const constraint::TestablePtr& constraint,
+    const PostProcessorParams& postProcessorParams)
+{
+  auto postProcessor
+      = getTrajectoryPostProcessor(metaSkeleton, postProcessorParams);
+
+  auto interpolated = dynamic_cast<const Interpolated*>(path);
+  if (interpolated)
+    return postProcessor->postprocess(
+        *interpolated, *(cloneRNG().get()), constraint);
+
+  auto spline = dynamic_cast<const Spline*>(path);
+  if (spline)
+    return postProcessor->postprocess(*spline, *(cloneRNG().get()), constraint);
+
+  throw std::invalid_argument("Path should be either Spline or Interpolated.");
 }
 
 //==============================================================================
