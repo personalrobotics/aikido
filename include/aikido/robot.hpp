@@ -4,4 +4,5 @@
 #include "aikido/robot/Hand.hpp"
 #include "aikido/robot/Manipulator.hpp"
 #include "aikido/robot/Robot.hpp"
+#include "aikido/robot/RobotParams.hpp"
 #include "aikido/robot/util.hpp"
