@@ -207,7 +207,7 @@ double CRRTConnect::getConnectionRadius() const
     Motion* startMotion = startTree ? newmotion : lastmotion;
     Motion* goalMotion = startTree ? lastmotion : newmotion;
 
-    // NOTE: (sniyaz): Also check that the conenction motion is collision-free.
+    // NOTE: (sniyaz): Also check that the connection motion is collision-free.
     bool validConnection
       = si_->checkMotion(startMotion->state, goalMotion->state);
 

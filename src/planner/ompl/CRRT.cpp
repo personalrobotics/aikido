@@ -7,6 +7,10 @@
 
 #include "aikido/planner/ompl/GeometricStateSpace.hpp"
 
+// Used to check resolution of the path on the constraint manifold *after*
+// projection.
+constexpr double kLambda = 2.0;
+
 namespace aikido {
 namespace planner {
 namespace ompl {
@@ -346,9 +350,9 @@ CRRT::Motion* CRRT::constrainedExtend(
     // projection) do not differ wildly.
     // TODO: Should we expose the factor to scale `mMaxStepsize` by?
     double manifoldResolution = si_->distance(xstate, cmotion->state);
-    if (manifoldResolution > 2.0 * mMaxStepsize)
+    if (manifoldResolution > kLambda * mMaxStepsize)
     {
-      // The resolution on the manifold is violted, so treat the projection as
+      // The resolution on the manifold is violated, so treat the projection as
       // if it failed. This emulates the original CBiRRT paper correctly.
       break;
     }
