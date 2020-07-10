@@ -16,7 +16,9 @@ enum class PostProcessorType
   KUNZ
 };
 
-/// Trajectory postprocessing parameters.
+/// Trajectory postprocessing parameters. This struct can be used with the
+/// `ConcreteRobot` class, and let's the user specify the exact processor and
+//  and parameters to use.
 struct PostProcessorParams
 {
   /// Convenience constructor for when using Hauser.
