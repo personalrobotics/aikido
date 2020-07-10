@@ -11,6 +11,14 @@ namespace aikido {
 namespace planner {
 namespace kunzretimer {
 
+/// Kunz postprocessor parameters used with the main `PostProcessorParams`
+/// struct.
+struct KunzParams
+{
+  double mMaxDeviation;
+  double mTimeStep;
+};
+
 /// Computes the time-optimal timing of a trajectory consisting of a sequence
 /// Geodesic interpolations between states under velocity and acceleration
 /// bounds. The output is a parabolic spline, encoded in cubic polynomials.

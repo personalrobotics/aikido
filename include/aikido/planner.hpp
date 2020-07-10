@@ -1,4 +1,5 @@
 #include "aikido/planner/PlanningResult.hpp"
+#include "aikido/planner/PostProcessorParams.hpp"
 #include "aikido/planner/SnapPlanner.hpp"
 #include "aikido/planner/TrajectoryPostProcessor.hpp"
 #include "aikido/planner/World.hpp"

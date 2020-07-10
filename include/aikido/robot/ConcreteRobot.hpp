@@ -14,10 +14,10 @@
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
+#include "aikido/planner/PostProcessorParams.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/robot/Robot.hpp"
-#include "aikido/robot/RobotParams.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
@@ -135,7 +135,7 @@ public:
   std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
   getTrajectoryPostProcessor(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const PostProcessorParams& postProcessorParams) const;
+      const aikido::planner::PostProcessorParams& postProcessorParams) const;
 
   /// Returns a post-processed trajectory that can be executed by the robot, but
   /// allows the user to control the exact params used.
@@ -148,7 +148,7 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint,
-      const PostProcessorParams& postProcessorParams);
+      const aikido::planner::PostProcessorParams& postProcessorParams);
 
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its

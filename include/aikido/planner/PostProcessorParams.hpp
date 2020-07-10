@@ -1,35 +1,19 @@
-#ifndef AIKIDO_ROBOT_ROBOTPARAMS_HPP_
-#define AIKIDO_ROBOT_ROBOTPARAMS_HPP_
+#ifndef AIKIDO_PLANNER_POSTPROCESSORPARAMS_HPP_
+#define AIKIDO_PLANNER_POSTPROCESSORPARAMS_HPP_
 
 #include <chrono>
 
+#include "aikido/planner/kunzretimer/KunzRetimer.hpp"
+#include "aikido/planner/parabolic/ParabolicSmoother.hpp"
+
 namespace aikido {
-namespace robot {
+namespace planner {
 
 /// Enum for which postprocessor is being used.
 enum class PostProcessorType
 {
   HAUSER,
   KUNZ
-};
-
-/// Hauser postprocessor parameters.
-struct HauserParams
-{
-  bool mEnableShortcut;
-  bool mEnableBlend;
-  double mShortcutTimelimit;
-  double mBlendRadius;
-  int mBlendIterations;
-  double mFeasibilityCheckResolution;
-  double mFeasibilityApproxTolerance;
-};
-
-/// Kunz postprocessor parameters.
-struct KunzParams
-{
-  double mMaxDeviation;
-  double mTimeStep;
 };
 
 /// Trajectory postprocessing parameters.
@@ -67,12 +51,12 @@ struct PostProcessorParams
   /// Which postprocessor is being used.
   PostProcessorType mPostProcessorType;
   /// Params used if `mPostProcessorType` indicates we are using Hauser.
-  HauserParams mHauserParams;
+  parabolic::HauserParams mHauserParams;
   /// Params used if `mPostProcessorType` indicates we are using Kunz.
-  KunzParams mKunzParams;
+  kunzretimer::KunzParams mKunzParams;
 };
 
-} // namespace robot
+} // namespace planner
 } // namespace aikido
 
-#endif // AIKIDO_ROBOT_ROBOTPARAMS_HPP_
+#endif // AIKIDO_PLANNER_POSTPROCESSORPARAMS_HPP_

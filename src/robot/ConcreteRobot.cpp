@@ -335,14 +335,14 @@ ConcreteRobot::getTrajectoryPostProcessor(
 std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
 ConcreteRobot::getTrajectoryPostProcessor(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const PostProcessorParams& postProcessorParams) const
+    const aikido::planner::PostProcessorParams& postProcessorParams) const
 {
   // TODO (sniyaz):Should we  delete `smoothPath`, `retimePath`, and
   // `retimePathWithKunz` in a subsequent PR?
   // TODO: (sniyaz): Include custom limits in params.
   switch (postProcessorParams.mPostProcessorType)
   {
-    case PostProcessorType::HAUSER:
+    case aikido::planner::PostProcessorType::HAUSER:
       return std::make_shared<ParabolicSmoother>(
           getVelocityLimits(*metaSkeleton),
           getAccelerationLimits(*metaSkeleton),
@@ -353,7 +353,7 @@ ConcreteRobot::getTrajectoryPostProcessor(
           postProcessorParams.mHauserParams.mBlendIterations,
           postProcessorParams.mHauserParams.mFeasibilityCheckResolution,
           postProcessorParams.mHauserParams.mFeasibilityApproxTolerance);
-    case PostProcessorType::KUNZ:
+    case aikido::planner::PostProcessorType::KUNZ:
       return std::make_shared<KunzRetimer>(
           getVelocityLimits(*metaSkeleton),
           getAccelerationLimits(*metaSkeleton),
@@ -372,7 +372,7 @@ UniqueSplinePtr ConcreteRobot::postProcessPath(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const aikido::trajectory::Trajectory* path,
     const constraint::TestablePtr& constraint,
-    const PostProcessorParams& postProcessorParams)
+    const aikido::planner::PostProcessorParams& postProcessorParams)
 {
   auto postProcessor
       = getTrajectoryPostProcessor(metaSkeleton, postProcessorParams);

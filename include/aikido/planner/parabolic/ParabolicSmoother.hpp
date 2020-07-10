@@ -17,6 +17,19 @@ constexpr int DEFAULT_BLEND_ITERATIONS = 4;
 constexpr double DEFAULT_CHECK_RESOLUTION = 1e-4;
 constexpr double DEFAULT_TOLERANCE = 1e-3;
 
+/// Hauser postprocessor parameters used with the main `PostProcessorParams`
+/// struct.
+struct HauserParams
+{
+  bool mEnableShortcut;
+  bool mEnableBlend;
+  double mShortcutTimelimit;
+  double mBlendRadius;
+  int mBlendIterations;
+  double mFeasibilityCheckResolution;
+  double mFeasibilityApproxTolerance;
+};
+
 /// Shortcut waypoints in a trajectory using parabolic splines.
 ///
 /// This function smooths `_inputTrajectory' by iteratively sampling
