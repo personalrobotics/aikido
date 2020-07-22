@@ -53,9 +53,9 @@ struct PostProcessorParams
   /// Which postprocessor is being used.
   PostProcessorType mPostProcessorType;
   /// Params used if `mPostProcessorType` indicates we are using Hauser.
-  parabolic::HauserParams mHauserParams;
+  parabolic::Params mHauserParams;
   /// Params used if `mPostProcessorType` indicates we are using Kunz.
-  kunzretimer::KunzParams mKunzParams;
+  kunzretimer::Params mKunzParams;
 };
 
 } // namespace planner

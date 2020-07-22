@@ -13,10 +13,10 @@ namespace kunzretimer {
 
 /// Kunz postprocessor parameters used with the main `PostProcessorParams`
 /// struct.
-struct KunzParams
+struct Params
 {
-  double mMaxDeviation;
-  double mTimeStep;
+  double mMaxDeviation = 1e-2;
+  double mTimeStep = 0.1;
 };
 
 /// Computes the time-optimal timing of a trajectory consisting of a sequence

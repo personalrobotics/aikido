@@ -19,15 +19,15 @@ constexpr double DEFAULT_TOLERANCE = 1e-3;
 
 /// Hauser postprocessor parameters used with the main `PostProcessorParams`
 /// struct.
-struct HauserParams
+struct Params
 {
-  bool mEnableShortcut;
-  bool mEnableBlend;
-  double mShortcutTimelimit;
-  double mBlendRadius;
-  int mBlendIterations;
-  double mFeasibilityCheckResolution;
-  double mFeasibilityApproxTolerance;
+  bool mEnableShortcut = true;
+  bool mEnableBlend = true;
+  double mShortcutTimelimit = DEFAULT_TIMELIMT;
+  double mBlendRadius = DEFAULT_BLEND_RADIUS;
+  int mBlendIterations = DEFAULT_BLEND_ITERATIONS;
+  double mFeasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION;
+  double mFeasibilityApproxTolerance = DEFAULT_TOLERANCE;
 };
 
 /// Shortcut waypoints in a trajectory using parabolic splines.
