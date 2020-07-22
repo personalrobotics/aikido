@@ -17,19 +17,6 @@ constexpr int DEFAULT_BLEND_ITERATIONS = 4;
 constexpr double DEFAULT_CHECK_RESOLUTION = 1e-4;
 constexpr double DEFAULT_TOLERANCE = 1e-3;
 
-/// Hauser postprocessor parameters used with the main `PostProcessorParams`
-/// struct.
-struct Params
-{
-  bool mEnableShortcut = true;
-  bool mEnableBlend = true;
-  double mShortcutTimelimit = DEFAULT_TIMELIMT;
-  double mBlendRadius = DEFAULT_BLEND_RADIUS;
-  int mBlendIterations = DEFAULT_BLEND_ITERATIONS;
-  double mFeasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION;
-  double mFeasibilityApproxTolerance = DEFAULT_TOLERANCE;
-};
-
 /// Shortcut waypoints in a trajectory using parabolic splines.
 ///
 /// This function smooths `_inputTrajectory' by iteratively sampling
@@ -147,6 +134,19 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
 class ParabolicSmoother : public aikido::planner::TrajectoryPostProcessor
 {
 public:
+  /// Hauser postprocessor parameters used with the main `PostProcessorParams`
+  /// struct.
+  struct Params
+  {
+    bool mEnableShortcut = true;
+    bool mEnableBlend = true;
+    double mShortcutTimelimit = DEFAULT_TIMELIMT;
+    double mBlendRadius = DEFAULT_BLEND_RADIUS;
+    int mBlendIterations = DEFAULT_BLEND_ITERATIONS;
+    double mFeasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION;
+    double mFeasibilityApproxTolerance = DEFAULT_TOLERANCE;
+  };
+
   /// \param _velocityLimits Maximum velocity for each dimension.
   /// \param _accelerationLimits Maximum acceleration for each dimension.
   /// \param _enableShortcut Whether shortcutting is used in smoothing.

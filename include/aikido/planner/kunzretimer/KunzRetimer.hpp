@@ -11,14 +11,6 @@ namespace aikido {
 namespace planner {
 namespace kunzretimer {
 
-/// Kunz postprocessor parameters used with the main `PostProcessorParams`
-/// struct.
-struct Params
-{
-  double mMaxDeviation = 1e-2;
-  double mTimeStep = 0.1;
-};
-
 /// Computes the time-optimal timing of a trajectory consisting of a sequence
 /// Geodesic interpolations between states under velocity and acceleration
 /// bounds. The output is a parabolic spline, encoded in cubic polynomials.
@@ -52,6 +44,14 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 class KunzRetimer : public aikido::planner::TrajectoryPostProcessor
 {
 public:
+  /// Kunz postprocessor parameters used with the main `PostProcessorParams`
+  /// struct.
+  struct Params
+  {
+    double mMaxDeviation = 1e-2;
+    double mTimeStep = 0.1;
+  };
+
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.
   /// \param[in] maxDeviation Maximum deviation in circular blending
