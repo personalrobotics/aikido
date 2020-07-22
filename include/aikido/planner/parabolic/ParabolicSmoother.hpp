@@ -175,6 +175,14 @@ public:
       double _feasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION,
       double _feasibilityApproxTolerance = DEFAULT_TOLERANCE);
 
+  /// \param _velocityLimits Maximum velocity for each dimension.
+  /// \param _accelerationLimits Maximum acceleration for each dimension.
+  /// \param _params Postprocessor parameters.
+  ParabolicSmoother(
+      const Eigen::VectorXd& _velocityLimits,
+      const Eigen::VectorXd& _accelerationLimits,
+      const Params& _params);
+
   /// Performs parabolic smoothing on an input trajectory.
   /// \param _inputTraj The untimed trajectory for the arm to process.
   /// \param _rng Random number generator.

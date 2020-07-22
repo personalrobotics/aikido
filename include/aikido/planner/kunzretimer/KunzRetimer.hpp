@@ -62,6 +62,14 @@ public:
       double maxDeviation,
       double timeStep);
 
+  /// \param[in] velocityLimits Maximum velocity for each dimension.
+  /// \param[in] accelerationLimits Maximum acceleration for each dimension.
+  /// \param[in] params Postprocessor parameters.
+  KunzRetimer(
+      const Eigen::VectorXd& velocityLimits,
+      const Eigen::VectorXd& accelerationLimits,
+      const Params& params);
+
   /// Performs parabolic retiming on an input trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess
   std::unique_ptr<aikido::trajectory::Spline> postprocess(
