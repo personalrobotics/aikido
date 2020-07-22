@@ -133,11 +133,12 @@ public:
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.
   /// \param[in] postProcessorParams Postprocessor parameters.
+  template <typename T>
   std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
   getTrajectoryPostProcessor(
       const Eigen::VectorXd& velocityLimits,
       const Eigen::VectorXd& accelerationLimits,
-      const aikido::planner::PostProcessorParams& postProcessorParams) const;
+      const aikido::planner::PostProcessorParams<T>& postProcessorParams) const;
 
   /// Returns a post-processed trajectory that can be executed by the robot, but
   /// allows the user to control the exact params used.
@@ -146,11 +147,12 @@ public:
   /// \param[in] constraint Must be satisfied after postprocessing. Typically
   /// collision constraint is passed.
   /// \param[in] postProcessorParams Postprocessor parameters.
+  template <typename T>
   aikido::trajectory::UniqueSplinePtr postProcessPath(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint,
-      const aikido::planner::PostProcessorParams& postProcessorParams);
+      const aikido::planner::PostProcessorParams<T>& postProcessorParams);
 
   /// Returns a post-processed trajectory that can be executed by the robot, but
   /// allows the user to control the exact params a limits used.
@@ -160,12 +162,13 @@ public:
   /// \param[in] constraint Must be satisfied after postprocessing. Typically
   /// collision constraint is passed.
   /// \param[in] postProcessorParams Postprocessor parameters.
+  template <typename T>
   aikido::trajectory::UniqueSplinePtr postProcessPath(
       const Eigen::VectorXd& velocityLimits,
       const Eigen::VectorXd& accelerationLimits,
       const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint,
-      const aikido::planner::PostProcessorParams& postProcessorParams);
+      const aikido::planner::PostProcessorParams<T>& postProcessorParams);
 
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its
@@ -350,5 +353,7 @@ private:
 
 } // namespace robot
 } // namespace aikido
+
+#include "detail/ConcreteRobot-impl.hpp"
 
 #endif // AIKIDO_ROBOT_CONCRETEROBOT_HPP_

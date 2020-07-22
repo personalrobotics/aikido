@@ -26,7 +26,10 @@ public:
     // Do nothing.
   }
 
-  typename T::Params getParams(){return mParams;};
+  typename T::Params getParams()
+  {
+    return mParams;
+  };
 
 private:
   typename T::Params mParams;
