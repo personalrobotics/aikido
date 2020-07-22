@@ -10,7 +10,7 @@ ConcreteRobot::getTrajectoryPostProcessor(
     const aikido::planner::PostProcessorParams<T>& postProcessorParams) const
 {
   return std::make_shared<T>(
-      velocityLimits, accelerationLimits, postProcessorParams);
+      velocityLimits, accelerationLimits, postProcessorParams.getParams());
 }
 
 //==============================================================================
