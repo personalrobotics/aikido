@@ -36,7 +36,10 @@ aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
   if (spline)
     return postProcessor->postprocess(*spline, *(cloneRNG().get()), constraint);
 
-  throw std::invalid_argument("Path should be either Spline or Interpolated.");
+  std::cerr
+      << "[postProcessPath]: Path should be either Spline or Interpolated."
+      << std::endl;
+  return nullptr;
 }
 
 //==============================================================================
@@ -61,7 +64,10 @@ aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
   if (spline)
     return postProcessor->postprocess(*spline, *(cloneRNG().get()), constraint);
 
-  throw std::invalid_argument("Path should be either Spline or Interpolated.");
+  std::cerr
+      << "[postProcessPath]: Path should be either Spline or Interpolated."
+      << std::endl;
+  return nullptr;
 }
 
 } // namespace robot
