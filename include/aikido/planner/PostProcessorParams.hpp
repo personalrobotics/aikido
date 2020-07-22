@@ -9,53 +9,27 @@
 namespace aikido {
 namespace planner {
 
-/// Enum for which postprocessor is being used.
-enum class PostProcessorType
-{
-  HAUSER,
-  KUNZ
-};
-
 /// Trajectory postprocessing parameters. This struct can be used with the
 /// `ConcreteRobot` class, and let's the user specify the exact processor and
 //  and parameters to use.
+template <typename T>
 struct PostProcessorParams
 {
-  /// Convenience constructor for when using Hauser.
-  PostProcessorParams(
-      bool enableShortcut = true,
-      bool enableBlend = true,
-      double shortcutTimelimit = 0.6,
-      double blendRadius = 0.4,
-      int blendIterations = 1,
-      double feasibilityCheckResolution = 1e-3,
-      double feasibilityApproxTolerance = 1e-3)
-    : mPostProcessorType(PostProcessorType::HAUSER)
-    , mHauserParams{enableShortcut,
-                    enableBlend,
-                    shortcutTimelimit,
-                    blendRadius,
-                    blendIterations,
-                    feasibilityCheckResolution,
-                    feasibilityApproxTolerance}
+  static_assert(
+      std::is_base_of<aikido::planner::TrajectoryPostProcessor, T>::value,
+      "T must derive from aikido::planner::TrajectoryPostProcessor");
+
+public:
+  /// Constructor.
+  PostProcessorParams(typename T::Params params = T::Params()) : mParams(params)
   {
     // Do nothing.
   }
 
-  /// Convenience constructor for when using Kunz.
-  PostProcessorParams(double maxDeviation = 0.1, double timeStep = 0.01)
-    : mPostProcessorType(PostProcessorType::KUNZ)
-    , mKunzParams{maxDeviation, timeStep}
-  {
-    // Do nothing.
-  }
+  typename T::Params getParams(){return mParams;};
 
-  /// Which postprocessor is being used.
-  PostProcessorType mPostProcessorType;
-  /// Params used if `mPostProcessorType` indicates we are using Hauser.
-  parabolic::Params mHauserParams;
-  /// Params used if `mPostProcessorType` indicates we are using Kunz.
-  kunzretimer::Params mKunzParams;
+private:
+  typename T::Params mParams;
 };
 
 } // namespace planner
