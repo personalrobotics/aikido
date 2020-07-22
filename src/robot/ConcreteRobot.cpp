@@ -393,6 +393,29 @@ UniqueSplinePtr ConcreteRobot::postProcessPath(
 }
 
 //==============================================================================
+UniqueSplinePtr ConcreteRobot::postProcessPath(
+    const Eigen::VectorXd& velocityLimits,
+    const Eigen::VectorXd& accelerationLimits,
+    const aikido::trajectory::Trajectory* path,
+    const constraint::TestablePtr& constraint,
+    const aikido::planner::PostProcessorParams& postProcessorParams)
+{
+  auto postProcessor = getTrajectoryPostProcessor(
+      velocityLimits, accelerationLimits, postProcessorParams);
+
+  auto interpolated = dynamic_cast<const Interpolated*>(path);
+  if (interpolated)
+    return postProcessor->postprocess(
+        *interpolated, *(cloneRNG().get()), constraint);
+
+  auto spline = dynamic_cast<const Spline*>(path);
+  if (spline)
+    return postProcessor->postprocess(*spline, *(cloneRNG().get()), constraint);
+
+  throw std::invalid_argument("Path should be either Spline or Interpolated.");
+}
+
+//==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfiguration(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,

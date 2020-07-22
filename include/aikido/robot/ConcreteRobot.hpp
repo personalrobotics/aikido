@@ -152,6 +152,21 @@ public:
       const constraint::TestablePtr& constraint,
       const aikido::planner::PostProcessorParams& postProcessorParams);
 
+  /// Returns a post-processed trajectory that can be executed by the robot, but
+  /// allows the user to control the exact params a limits used.
+  /// \param[in] velocityLimits Maximum velocity for each dimension.
+  /// \param[in] accelerationLimits Maximum acceleration for each dimension.
+  /// \param[in] path Geometric path to execute.
+  /// \param[in] constraint Must be satisfied after postprocessing. Typically
+  /// collision constraint is passed.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  aikido::trajectory::UniqueSplinePtr postProcessPath(
+      const Eigen::VectorXd& velocityLimits,
+      const Eigen::VectorXd& accelerationLimits,
+      const aikido::trajectory::Trajectory* path,
+      const constraint::TestablePtr& constraint,
+      const aikido::planner::PostProcessorParams& postProcessorParams);
+
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its
   /// initial configuration after planning.
