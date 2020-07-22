@@ -375,11 +375,10 @@ UniqueSplinePtr ConcreteRobot::postProcessPath(
     const constraint::TestablePtr& constraint,
     const aikido::planner::PostProcessorParams& postProcessorParams)
 {
-  auto postProcessor
-      = getTrajectoryPostProcessor(
-        getVelocityLimits(*metaSkeleton),
-        getAccelerationLimits(*metaSkeleton),
-        postProcessorParams);
+  auto postProcessor = getTrajectoryPostProcessor(
+      getVelocityLimits(*metaSkeleton),
+      getAccelerationLimits(*metaSkeleton),
+      postProcessorParams);
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)
