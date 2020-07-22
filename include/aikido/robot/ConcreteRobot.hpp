@@ -130,11 +130,13 @@ public:
   // Get a postprocessor that respects velocity and acceleration limits, as well
   // as the passed constraint. However, unlike the above, the specific
   // postprocessor returned is controlled by `postProcessorParams`.
-  /// \param[in] metaSkeleton The MetaSkeleton whose limits must be respected.
+  /// \param[in] velocityLimits Maximum velocity for each dimension.
+  /// \param[in] accelerationLimits Maximum acceleration for each dimension.
   /// \param[in] postProcessorParams Postprocessor parameters.
   std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
   getTrajectoryPostProcessor(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const Eigen::VectorXd& velocityLimits,
+      const Eigen::VectorXd& accelerationLimits,
       const aikido::planner::PostProcessorParams& postProcessorParams) const;
 
   /// Returns a post-processed trajectory that can be executed by the robot, but

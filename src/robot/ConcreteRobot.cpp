@@ -334,7 +334,8 @@ ConcreteRobot::getTrajectoryPostProcessor(
 //==============================================================================
 std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
 ConcreteRobot::getTrajectoryPostProcessor(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const Eigen::VectorXd& velocityLimits,
+    const Eigen::VectorXd& accelerationLimits,
     const aikido::planner::PostProcessorParams& postProcessorParams) const
 {
   // TODO (sniyaz):Should we  delete `smoothPath`, `retimePath`, and
@@ -344,8 +345,8 @@ ConcreteRobot::getTrajectoryPostProcessor(
   {
     case aikido::planner::PostProcessorType::HAUSER:
       return std::make_shared<ParabolicSmoother>(
-          getVelocityLimits(*metaSkeleton),
-          getAccelerationLimits(*metaSkeleton),
+          velocityLimits,
+          accelerationLimits,
           postProcessorParams.mHauserParams.mEnableShortcut,
           postProcessorParams.mHauserParams.mEnableBlend,
           postProcessorParams.mHauserParams.mShortcutTimelimit,
@@ -355,8 +356,8 @@ ConcreteRobot::getTrajectoryPostProcessor(
           postProcessorParams.mHauserParams.mFeasibilityApproxTolerance);
     case aikido::planner::PostProcessorType::KUNZ:
       return std::make_shared<KunzRetimer>(
-          getVelocityLimits(*metaSkeleton),
-          getAccelerationLimits(*metaSkeleton),
+          velocityLimits,
+          accelerationLimits,
           postProcessorParams.mKunzParams.mMaxDeviation,
           postProcessorParams.mKunzParams.mTimeStep);
     default:
@@ -375,7 +376,10 @@ UniqueSplinePtr ConcreteRobot::postProcessPath(
     const aikido::planner::PostProcessorParams& postProcessorParams)
 {
   auto postProcessor
-      = getTrajectoryPostProcessor(metaSkeleton, postProcessorParams);
+      = getTrajectoryPostProcessor(
+        getVelocityLimits(*metaSkeleton),
+        getAccelerationLimits(*metaSkeleton),
+        postProcessorParams);
 
   auto interpolated = dynamic_cast<const Interpolated*>(path);
   if (interpolated)
