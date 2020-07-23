@@ -26,7 +26,7 @@ public:
     // Do nothing.
   }
 
-  typename T::Params getParams()
+  typename T::Params getParams() const
   {
     return mParams;
   };
