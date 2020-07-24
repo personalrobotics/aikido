@@ -2,6 +2,10 @@
 
 ### 0.4.0 (2020-XX-XX)
 
+* Planner
+
+  * Moved post-processor params into AIKIDO: [#579](https://github.com/personalrobotics/aikido/pull/579)
+
 ### 0.3.0 (2020-05-22)
 
 * Common
