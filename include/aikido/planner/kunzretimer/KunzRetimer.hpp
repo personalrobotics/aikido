@@ -11,6 +11,9 @@ namespace aikido {
 namespace planner {
 namespace kunzretimer {
 
+constexpr double DEFAULT_MAX_DEVIATION = 1e-2;
+constexpr double DEFAULT_TIME_STEP = 0.1;
+
 /// Computes the time-optimal timing of a trajectory consisting of a sequence
 /// Geodesic interpolations between states under velocity and acceleration
 /// bounds. The output is a parabolic spline, encoded in cubic polynomials.
@@ -36,8 +39,8 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
-    double maxDeviation = 1e-2,
-    double timeStep = 0.1);
+    double maxDeviation = DEFAULT_MAX_DEVIATION,
+    double timeStep = DEFAULT_TIME_STEP);
 
 /// Class for performing time-optimal trajectory retiming following subject to
 /// velocity and acceleration limits.
@@ -48,19 +51,22 @@ public:
   /// struct.
   struct Params
   {
-    double mMaxDeviation = 1e-2;
-    double mTimeStep = 0.1;
+    /// Maximum deviation in circular blending (in configuration space).
+    double mMaxDeviation = DEFAULT_MAX_DEVIATION;
+    /// Time step in following the path (in seconds).
+    double mTimeStep = DEFAULT_TIME_STEP;
   };
 
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.
-  /// \param[in] maxDeviation Maximum deviation in circular blending
-  /// \param[in] timeStep Time step in following the path
+  /// \param[in] maxDeviation Maximum deviation in circular blending (in
+  /// configuration space).
+  /// \param[in] timeStep Time step in following the path (in seconds).
   KunzRetimer(
       const Eigen::VectorXd& velocityLimits,
       const Eigen::VectorXd& accelerationLimits,
-      double maxDeviation,
-      double timeStep);
+      double maxDeviation = DEFAULT_MAX_DEVIATION,
+      double timeStep = DEFAULT_TIME_STEP);
 
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.

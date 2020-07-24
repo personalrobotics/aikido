@@ -11,7 +11,7 @@ namespace aikido {
 namespace planner {
 namespace parabolic {
 
-constexpr double DEFAULT_TIMELIMT = 3.0;
+constexpr double DEFAULT_TIMELIMIT = 3.0;
 constexpr double DEFAULT_BLEND_RADIUS = 0.5;
 constexpr int DEFAULT_BLEND_ITERATIONS = 4;
 constexpr double DEFAULT_CHECK_RESOLUTION = 1e-4;
@@ -50,7 +50,7 @@ std::unique_ptr<trajectory::Spline> doShortcut(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
     aikido::common::RNG& _rng,
-    double _timelimit = DEFAULT_TIMELIMT,
+    double _timelimit = DEFAULT_TIMELIMIT,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
     double _tolerance = DEFAULT_TOLERANCE);
 
@@ -124,7 +124,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
     aikido::common::RNG& _rng,
-    double _timelimit = DEFAULT_TIMELIMT,
+    double _timelimit = DEFAULT_TIMELIMIT,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
@@ -140,7 +140,7 @@ public:
   {
     bool mEnableShortcut = true;
     bool mEnableBlend = true;
-    double mShortcutTimelimit = DEFAULT_TIMELIMT;
+    double mShortcutTimelimit = DEFAULT_TIMELIMIT;
     double mBlendRadius = DEFAULT_BLEND_RADIUS;
     int mBlendIterations = DEFAULT_BLEND_ITERATIONS;
     double mFeasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION;
@@ -169,7 +169,7 @@ public:
       const Eigen::VectorXd& _accelerationLimits,
       bool _enableShortcut = true,
       bool _enableBlend = true,
-      double _shortcutTimelimit = DEFAULT_TIMELIMT,
+      double _shortcutTimelimit = DEFAULT_TIMELIMIT,
       double _blendRadius = DEFAULT_BLEND_RADIUS,
       int _blendIterations = DEFAULT_BLEND_ITERATIONS,
       double _feasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION,
