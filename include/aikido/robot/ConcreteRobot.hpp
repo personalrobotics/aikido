@@ -14,7 +14,6 @@
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
-#include "aikido/planner/PostProcessorParams.hpp"
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/robot/Robot.hpp"
@@ -137,7 +136,7 @@ public:
   getTrajectoryPostProcessor(
       const Eigen::VectorXd& velocityLimits,
       const Eigen::VectorXd& accelerationLimits,
-      const aikido::planner::PostProcessorParams<T>& postProcessorParams) const;
+      const typename T::Params& postProcessorParams) const;
 
   /// Returns a post-processed trajectory that can be executed by the robot.
   /// \param[in] metaSkeleton Metaskeleton of the path.
@@ -150,7 +149,7 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint,
-      const aikido::planner::PostProcessorParams<T>& postProcessorParams);
+      const typename T::Params& postProcessorParams);
 
   /// Returns a post-processed trajectory that can be executed by the robot.
   /// \param[in] velocityLimits Maximum velocity for each dimension.
@@ -165,7 +164,7 @@ public:
       const Eigen::VectorXd& accelerationLimits,
       const aikido::trajectory::Trajectory* path,
       const constraint::TestablePtr& constraint,
-      const aikido::planner::PostProcessorParams<T>& postProcessorParams);
+      const typename T::Params& postProcessorParams);
 
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its

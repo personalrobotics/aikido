@@ -7,10 +7,14 @@ std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
 ConcreteRobot::getTrajectoryPostProcessor(
     const Eigen::VectorXd& velocityLimits,
     const Eigen::VectorXd& accelerationLimits,
-    const aikido::planner::PostProcessorParams<T>& postProcessorParams) const
+    const typename T::Params& postProcessorParams) const
 {
+  static_assert(
+      std::is_base_of<aikido::planner::TrajectoryPostProcessor, T>::value,
+      "T must derive from aikido::planner::TrajectoryPostProcessor");
+
   return std::make_shared<T>(
-      velocityLimits, accelerationLimits, postProcessorParams.getParams());
+      velocityLimits, accelerationLimits, postProcessorParams);
 }
 
 //==============================================================================
@@ -19,7 +23,7 @@ aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const aikido::trajectory::Trajectory* path,
     const constraint::TestablePtr& constraint,
-    const aikido::planner::PostProcessorParams<T>& postProcessorParams)
+    const typename T::Params& postProcessorParams)
 {
   return postProcessPath(
       getVelocityLimits(*metaSkeleton),
@@ -36,7 +40,7 @@ aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
     const Eigen::VectorXd& accelerationLimits,
     const aikido::trajectory::Trajectory* path,
     const constraint::TestablePtr& constraint,
-    const aikido::planner::PostProcessorParams<T>& postProcessorParams)
+    const typename T::Params& postProcessorParams)
 {
   auto postProcessor = getTrajectoryPostProcessor(
       velocityLimits, accelerationLimits, postProcessorParams);
