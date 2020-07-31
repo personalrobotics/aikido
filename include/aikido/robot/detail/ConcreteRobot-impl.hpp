@@ -5,6 +5,19 @@ namespace robot {
 template <typename PostProcessor>
 std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
 ConcreteRobot::getTrajectoryPostProcessor(
+    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    const typename PostProcessor::Params& postProcessorParams) const
+{
+  return getTrajectoryPostProcessor(
+      getVelocityLimits(*metaSkeleton),
+      getAccelerationLimits(*metaSkeleton),
+      postProcessorParams);
+}
+
+//==============================================================================
+template <typename PostProcessor>
+std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+ConcreteRobot::getTrajectoryPostProcessor(
     const Eigen::VectorXd& velocityLimits,
     const Eigen::VectorXd& accelerationLimits,
     const typename PostProcessor::Params& postProcessorParams) const

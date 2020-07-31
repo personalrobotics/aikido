@@ -128,6 +128,17 @@ public:
 
   /// Get a postprocessor that respects velocity and acceleration limits. The
   /// specific postprocessor returned is controlled by `postProcessorParams`.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getTrajectoryPostProcessor(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const typename PostProcessor::Params& postProcessorParams) const;
+
+  /// Get a postprocessor that respects velocity and acceleration limits. The
+  /// specific postprocessor returned is controlled by `postProcessorParams`.
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.
   /// \param[in] postProcessorParams Postprocessor parameters.
