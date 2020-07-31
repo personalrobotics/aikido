@@ -47,8 +47,7 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
 class KunzRetimer : public aikido::planner::TrajectoryPostProcessor
 {
 public:
-  /// Kunz postprocessor parameters used with the main `PostProcessorParams`
-  /// struct.
+  /// Kunz postprocessor parameters.
   struct Params
   {
     /// Maximum deviation in circular blending (in configuration space).

@@ -134,8 +134,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
 class ParabolicSmoother : public aikido::planner::TrajectoryPostProcessor
 {
 public:
-  /// Hauser postprocessor parameters used with the main `PostProcessorParams`
-  /// struct.
+  /// Hauser postprocessor parameters.
   struct Params
   {
     bool mEnableShortcut = true;
