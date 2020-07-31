@@ -21,25 +21,12 @@ aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
     const constraint::TestablePtr& constraint,
     const aikido::planner::PostProcessorParams<T>& postProcessorParams)
 {
-  auto postProcessor = getTrajectoryPostProcessor(
+  return postProcessPath(
       getVelocityLimits(*metaSkeleton),
       getAccelerationLimits(*metaSkeleton),
+      path,
+      constraint,
       postProcessorParams);
-
-  auto interpolated
-      = dynamic_cast<const aikido::trajectory::Interpolated*>(path);
-  if (interpolated)
-    return postProcessor->postprocess(
-        *interpolated, *(cloneRNG().get()), constraint);
-
-  auto spline = dynamic_cast<const aikido::trajectory::Spline*>(path);
-  if (spline)
-    return postProcessor->postprocess(*spline, *(cloneRNG().get()), constraint);
-
-  std::cerr
-      << "[postProcessPath]: Path should be either Spline or Interpolated."
-      << std::endl;
-  return nullptr;
 }
 
 //==============================================================================
