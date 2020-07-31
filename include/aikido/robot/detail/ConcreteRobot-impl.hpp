@@ -2,28 +2,30 @@ namespace aikido {
 namespace robot {
 
 //==============================================================================
-template <typename T>
+template <typename PostProcessor>
 std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
 ConcreteRobot::getTrajectoryPostProcessor(
     const Eigen::VectorXd& velocityLimits,
     const Eigen::VectorXd& accelerationLimits,
-    const typename T::Params& postProcessorParams) const
+    const typename PostProcessor::Params& postProcessorParams) const
 {
   static_assert(
-      std::is_base_of<aikido::planner::TrajectoryPostProcessor, T>::value,
-      "T must derive from aikido::planner::TrajectoryPostProcessor");
+      std::is_base_of<aikido::planner::TrajectoryPostProcessor, PostProcessor>::
+          value,
+      "PostProcessor must derive from "
+      "aikido::planner::TrajectoryPostProcessor");
 
-  return std::make_shared<T>(
+  return std::make_shared<PostProcessor>(
       velocityLimits, accelerationLimits, postProcessorParams);
 }
 
 //==============================================================================
-template <typename T>
+template <typename PostProcessor>
 aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const aikido::trajectory::Trajectory* path,
     const constraint::TestablePtr& constraint,
-    const typename T::Params& postProcessorParams)
+    const typename PostProcessor::Params& postProcessorParams)
 {
   return postProcessPath(
       getVelocityLimits(*metaSkeleton),
@@ -34,13 +36,13 @@ aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
 }
 
 //==============================================================================
-template <typename T>
+template <typename PostProcessor>
 aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
     const Eigen::VectorXd& velocityLimits,
     const Eigen::VectorXd& accelerationLimits,
     const aikido::trajectory::Trajectory* path,
     const constraint::TestablePtr& constraint,
-    const typename T::Params& postProcessorParams)
+    const typename PostProcessor::Params& postProcessorParams)
 {
   auto postProcessor = getTrajectoryPostProcessor(
       velocityLimits, accelerationLimits, postProcessorParams);
