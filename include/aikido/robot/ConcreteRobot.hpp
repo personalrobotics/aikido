@@ -127,9 +127,8 @@ public:
       double feasibilityCheckResolution,
       double feasibilityApproxTolerance) const;
 
-  // Get a postprocessor that respects velocity and acceleration limits, as well
-  // as the passed constraint. However, unlike the above, the specific
-  // postprocessor returned is controlled by `postProcessorParams`.
+  /// Get a postprocessor that respects velocity and acceleration limits. The
+  /// specific postprocessor returned is controlled by `postProcessorParams`.
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.
   /// \param[in] postProcessorParams Postprocessor parameters.
@@ -140,8 +139,7 @@ public:
       const Eigen::VectorXd& accelerationLimits,
       const aikido::planner::PostProcessorParams<T>& postProcessorParams) const;
 
-  /// Returns a post-processed trajectory that can be executed by the robot, but
-  /// allows the user to control the exact params used.
+  /// Returns a post-processed trajectory that can be executed by the robot.
   /// \param[in] metaSkeleton Metaskeleton of the path.
   /// \param[in] path Geometric path to execute.
   /// \param[in] constraint Must be satisfied after postprocessing. Typically
@@ -154,8 +152,7 @@ public:
       const constraint::TestablePtr& constraint,
       const aikido::planner::PostProcessorParams<T>& postProcessorParams);
 
-  /// Returns a post-processed trajectory that can be executed by the robot, but
-  /// allows the user to control the exact params a limits used.
+  /// Returns a post-processed trajectory that can be executed by the robot.
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.
   /// \param[in] path Geometric path to execute.
