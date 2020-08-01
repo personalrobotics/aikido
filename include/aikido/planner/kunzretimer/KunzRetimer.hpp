@@ -50,10 +50,19 @@ public:
   /// Kunz postprocessor parameters.
   struct Params
   {
-    /// Maximum deviation in circular blending (in configuration space).
-    double mMaxDeviation = DEFAULT_MAX_DEVIATION;
-    /// Time step in following the path (in seconds).
-    double mTimeStep = DEFAULT_TIME_STEP;
+    /// \param[in] _maxDeviation Maximum deviation in circular blending (in
+    /// configuration space).
+    /// \param[in] _timeStep Time step in following the path (in seconds).
+    Params(
+        double _maxDeviation = DEFAULT_MAX_DEVIATION,
+        double _timeStep = DEFAULT_TIME_STEP)
+      : mMaxDeviation(_maxDeviation), mTimeStep(_timeStep)
+    {
+      // Do nothing.
+    }
+
+    double mMaxDeviation;
+    double mTimeStep;
   };
 
   /// \param[in] velocityLimits Maximum velocity for each dimension.

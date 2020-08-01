@@ -137,13 +137,47 @@ public:
   /// Hauser postprocessor parameters.
   struct Params
   {
-    bool mEnableShortcut = true;
-    bool mEnableBlend = true;
-    double mShortcutTimelimit = DEFAULT_TIMELIMIT;
-    double mBlendRadius = DEFAULT_BLEND_RADIUS;
-    int mBlendIterations = DEFAULT_BLEND_ITERATIONS;
-    double mFeasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION;
-    double mFeasibilityApproxTolerance = DEFAULT_TOLERANCE;
+    /// \param _enableShortcut Whether shortcutting is used in smoothing.
+    /// \param _enableBlend Whether blending is used in smoothing.
+    /// \param _shortcutTimelimit Timelimit for shortcutting. It is ineffective
+    /// when _enableShortcut is false.
+    /// \param _blendRadius Blend radius for blending. It is ineffective
+    /// when _enableBlend is false.
+    /// \param _blendIterations Blend iterations for blending. It is
+    /// ineffective when _enableBlend is false.
+    /// \param _feasibilityCheckResolution The resolution in discretizing
+    /// a segment in checking the feasibility of the segment.
+    /// \param _feasibilityApproxTolerance This tolerance is used in a
+    /// piecewise linear discretization that deviates no more than
+    /// \c _feasibilityApproxTolerance from the parabolic ramp along any
+    /// axis, and then checks for configuration and segment feasibility along
+    /// that piecewise linear path.
+    Params(
+        bool _enableShortcut = true,
+        bool _enableBlend = true,
+        double _shortcutTimelimit = DEFAULT_TIMELIMIT,
+        double _blendRadius = DEFAULT_BLEND_RADIUS,
+        int _blendIterations = DEFAULT_BLEND_ITERATIONS,
+        double _feasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION,
+        double _feasibilityApproxTolerance = DEFAULT_TOLERANCE)
+      : mEnableShortcut(_enableShortcut)
+      , mEnableBlend(_enableBlend)
+      , mShortcutTimelimit(_shortcutTimelimit)
+      , mBlendRadius(_blendRadius)
+      , mBlendIterations(_blendIterations)
+      , mFeasibilityCheckResolution(_feasibilityCheckResolution)
+      , mFeasibilityApproxTolerance(_feasibilityApproxTolerance)
+    {
+      // Do nothing.
+    }
+
+    bool mEnableShortcut;
+    bool mEnableBlend;
+    double mShortcutTimelimit;
+    double mBlendRadius;
+    int mBlendIterations;
+    double mFeasibilityCheckResolution;
+    double mFeasibilityApproxTolerance;
   };
 
   /// \param _velocityLimits Maximum velocity for each dimension.
