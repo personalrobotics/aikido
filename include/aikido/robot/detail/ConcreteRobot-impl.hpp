@@ -8,7 +8,7 @@ ConcreteRobot::getTrajectoryPostProcessor(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const typename PostProcessor::Params& postProcessorParams) const
 {
-  return getTrajectoryPostProcessor(
+  return getTrajectoryPostProcessor<PostProcessor>(
       getVelocityLimits(*metaSkeleton),
       getAccelerationLimits(*metaSkeleton),
       postProcessorParams);
@@ -40,7 +40,7 @@ aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
     const constraint::TestablePtr& constraint,
     const typename PostProcessor::Params& postProcessorParams)
 {
-  return postProcessPath(
+  return postProcessPath<PostProcessor>(
       getVelocityLimits(*metaSkeleton),
       getAccelerationLimits(*metaSkeleton),
       path,
@@ -57,7 +57,7 @@ aikido::trajectory::UniqueSplinePtr ConcreteRobot::postProcessPath(
     const constraint::TestablePtr& constraint,
     const typename PostProcessor::Params& postProcessorParams)
 {
-  auto postProcessor = getTrajectoryPostProcessor(
+  auto postProcessor = getTrajectoryPostProcessor<PostProcessor>(
       velocityLimits, accelerationLimits, postProcessorParams);
 
   auto interpolated
