@@ -126,6 +126,60 @@ public:
       double feasibilityCheckResolution,
       double feasibilityApproxTolerance) const;
 
+  /// Get a postprocessor that respects velocity and acceleration limits. The
+  /// specific postprocessor returned is controlled by `postProcessorParams`.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getTrajectoryPostProcessor(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const typename PostProcessor::Params& postProcessorParams) const;
+
+  /// Get a postprocessor that respects velocity and acceleration limits. The
+  /// specific postprocessor returned is controlled by `postProcessorParams`.
+  /// \param[in] velocityLimits Maximum velocity for each dimension.
+  /// \param[in] accelerationLimits Maximum acceleration for each dimension.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getTrajectoryPostProcessor(
+      const Eigen::VectorXd& velocityLimits,
+      const Eigen::VectorXd& accelerationLimits,
+      const typename PostProcessor::Params& postProcessorParams) const;
+
+  /// Returns a post-processed trajectory that can be executed by the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] path Geometric path to execute.
+  /// \param[in] constraint Must be satisfied after postprocessing. Typically
+  /// collision constraint is passed.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
+  aikido::trajectory::UniqueSplinePtr postProcessPath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
+      const constraint::TestablePtr& constraint,
+      const typename PostProcessor::Params& postProcessorParams);
+
+  /// Returns a post-processed trajectory that can be executed by the robot.
+  /// \param[in] velocityLimits Maximum velocity for each dimension.
+  /// \param[in] accelerationLimits Maximum acceleration for each dimension.
+  /// \param[in] path Geometric path to execute.
+  /// \param[in] constraint Must be satisfied after postprocessing. Typically
+  /// collision constraint is passed.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
+  aikido::trajectory::UniqueSplinePtr postProcessPath(
+      const Eigen::VectorXd& velocityLimits,
+      const Eigen::VectorXd& accelerationLimits,
+      const aikido::trajectory::Trajectory* path,
+      const constraint::TestablePtr& constraint,
+      const typename PostProcessor::Params& postProcessorParams);
+
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its
   /// initial configuration after planning.
@@ -309,5 +363,7 @@ private:
 
 } // namespace robot
 } // namespace aikido
+
+#include "detail/ConcreteRobot-impl.hpp"
 
 #endif // AIKIDO_ROBOT_CONCRETEROBOT_HPP_

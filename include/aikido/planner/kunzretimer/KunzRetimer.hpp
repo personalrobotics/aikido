@@ -11,6 +11,9 @@ namespace aikido {
 namespace planner {
 namespace kunzretimer {
 
+constexpr double DEFAULT_MAX_DEVIATION = 1e-2;
+constexpr double DEFAULT_TIME_STEP = 0.1;
+
 /// Computes the time-optimal timing of a trajectory consisting of a sequence
 /// Geodesic interpolations between states under velocity and acceleration
 /// bounds. The output is a parabolic spline, encoded in cubic polynomials.
@@ -36,23 +39,50 @@ std::unique_ptr<aikido::trajectory::Spline> computeKunzTiming(
     const aikido::trajectory::Interpolated& inputTrajectory,
     const Eigen::VectorXd& maxVelocity,
     const Eigen::VectorXd& maxAcceleration,
-    double maxDeviation = 1e-2,
-    double timeStep = 0.1);
+    double maxDeviation = DEFAULT_MAX_DEVIATION,
+    double timeStep = DEFAULT_TIME_STEP);
 
 /// Class for performing time-optimal trajectory retiming following subject to
 /// velocity and acceleration limits.
 class KunzRetimer : public aikido::planner::TrajectoryPostProcessor
 {
 public:
+  /// Kunz postprocessor parameters.
+  struct Params
+  {
+    /// \param[in] _maxDeviation Maximum deviation in circular blending (in
+    /// configuration space).
+    /// \param[in] _timeStep Time step in following the path (in seconds).
+    Params(
+        double _maxDeviation = DEFAULT_MAX_DEVIATION,
+        double _timeStep = DEFAULT_TIME_STEP)
+      : mMaxDeviation(_maxDeviation), mTimeStep(_timeStep)
+    {
+      // Do nothing.
+    }
+
+    double mMaxDeviation;
+    double mTimeStep;
+  };
+
   /// \param[in] velocityLimits Maximum velocity for each dimension.
   /// \param[in] accelerationLimits Maximum acceleration for each dimension.
-  /// \param[in] maxDeviation Maximum deviation in circular blending
-  /// \param[in] timeStep Time step in following the path
+  /// \param[in] maxDeviation Maximum deviation in circular blending (in
+  /// configuration space).
+  /// \param[in] timeStep Time step in following the path (in seconds).
   KunzRetimer(
       const Eigen::VectorXd& velocityLimits,
       const Eigen::VectorXd& accelerationLimits,
-      double maxDeviation,
-      double timeStep);
+      double maxDeviation = DEFAULT_MAX_DEVIATION,
+      double timeStep = DEFAULT_TIME_STEP);
+
+  /// \param[in] velocityLimits Maximum velocity for each dimension.
+  /// \param[in] accelerationLimits Maximum acceleration for each dimension.
+  /// \param[in] params Postprocessor parameters.
+  KunzRetimer(
+      const Eigen::VectorXd& velocityLimits,
+      const Eigen::VectorXd& accelerationLimits,
+      const Params& params);
 
   /// Performs parabolic retiming on an input trajectory.
   /// \copydoc TrajectoryPostProcessor::postprocess

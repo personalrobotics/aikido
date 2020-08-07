@@ -161,6 +161,19 @@ KunzRetimer::KunzRetimer(
 }
 
 //==============================================================================
+KunzRetimer::KunzRetimer(
+    const Eigen::VectorXd& velocityLimits,
+    const Eigen::VectorXd& accelerationLimits,
+    const Params& params)
+  : mVelocityLimits{velocityLimits}
+  , mAccelerationLimits{accelerationLimits}
+  , mMaxDeviation(params.mMaxDeviation)
+  , mTimeStep(params.mTimeStep)
+{
+  // Do nothing
+}
+
+//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> KunzRetimer::postprocess(
     const aikido::trajectory::Interpolated& inputTraj,
     const aikido::common::RNG& /*rng*/,
