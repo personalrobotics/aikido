@@ -54,24 +54,6 @@ public:
   virtual ~ConcreteRobot() = default;
 
   // Documentation inherited.
-  virtual aikido::trajectory::UniqueSplinePtr smoothPath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      const constraint::TestablePtr& constraint) override;
-
-  // Documentation inherited.
-  virtual aikido::trajectory::UniqueSplinePtr retimePath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path) override;
-
-  // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline> retimePathWithKunz(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      double maxDeviation,
-      double timestep) override;
-
-  // Documentation inherited.
   virtual std::future<void> executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) const override;
 
@@ -111,20 +93,6 @@ public:
       const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const override;
-
-  // Get a smoothing post postprocessor that respects velocity and acceleration
-  // limits, as well as the passed constraint.
-  /// \param[in] metaSkeleton The MetaSkeleton whose limits must be respected.
-  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
-  getTrajectoryPostProcessor(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      bool enableShortcut,
-      bool enableBlend,
-      double shortcutTimelimit,
-      double blendRadius,
-      int blendIterations,
-      double feasibilityCheckResolution,
-      double feasibilityApproxTolerance) const;
 
   /// Get a postprocessor that respects velocity and acceleration limits. The
   /// specific postprocessor returned is controlled by `postProcessorParams`.
