@@ -1,6 +1,13 @@
 ## Aikido 0 (prerelease)
 
-### 0.4.0 (2020-XX-XX)
+### 0.5.0 (2020-XX-XX)
+
+### 0.4.0 (2020-08-27)
+
+* Planner
+
+  * Defined post-processor parameter structs in AIKIDO: [#579](https://github.com/personalrobotics/aikido/pull/579)
+  * Deleted old post-processor interface: [#581](https://github.com/personalrobotics/aikido/pull/581)
 
 ### 0.3.0 (2020-05-22)
 

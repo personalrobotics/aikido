@@ -20,34 +20,6 @@ ConstHandPtr ConcreteManipulator::getHand() const
 }
 
 //==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::smoothPath(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    const constraint::TestablePtr& constraint)
-{
-  return mRobot->smoothPath(metaSkeleton, path, constraint);
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::retimePath(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path)
-{
-  return mRobot->retimePath(metaSkeleton, path);
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline>
-ConcreteManipulator::retimePathWithKunz(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    double maxDeviation,
-    double timestep)
-{
-  return mRobot->retimePathWithKunz(metaSkeleton, path, maxDeviation, timestep);
-}
-
-//==============================================================================
 std::future<void> ConcreteManipulator::executeTrajectory(
     const trajectory::TrajectoryPtr& trajectory) const
 {

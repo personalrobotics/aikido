@@ -140,6 +140,24 @@ ParabolicSmoother::ParabolicSmoother(
 }
 
 //==============================================================================
+ParabolicSmoother::ParabolicSmoother(
+    const Eigen::VectorXd& _velocityLimits,
+    const Eigen::VectorXd& _accelerationLimits,
+    const Params& _params)
+  : mFeasibilityCheckResolution{_params.mFeasibilityCheckResolution}
+  , mFeasibilityApproxTolerance{_params.mFeasibilityApproxTolerance}
+  , mVelocityLimits{_velocityLimits}
+  , mAccelerationLimits{_accelerationLimits}
+  , mEnableShortcut{_params.mEnableShortcut}
+  , mEnableBlend{_params.mEnableBlend}
+  , mShortcutTimelimit{_params.mShortcutTimelimit}
+  , mBlendRadius{_params.mBlendRadius}
+  , mBlendIterations{_params.mBlendIterations}
+{
+  // Do nothing
+}
+
+//==============================================================================
 std::unique_ptr<aikido::trajectory::Spline> ParabolicSmoother::postprocess(
     const aikido::trajectory::Interpolated& _inputTraj,
     const aikido::common::RNG& _rng,
