@@ -121,73 +121,6 @@ ConcreteRobot::ConcreteRobot(
 }
 
 //==============================================================================
-UniqueSplinePtr ConcreteRobot::smoothPath(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    const constraint::TestablePtr& constraint)
-{
-  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto smoother
-      = std::make_shared<ParabolicSmoother>(velocityLimits, accelerationLimits);
-
-  auto interpolated = dynamic_cast<const Interpolated*>(path);
-  if (interpolated)
-    return smoother->postprocess(
-        *interpolated, *(cloneRNG().get()), constraint);
-
-  auto spline = dynamic_cast<const Spline*>(path);
-  if (spline)
-    return smoother->postprocess(*spline, *(cloneRNG().get()), constraint);
-
-  throw std::invalid_argument("Path should be either Spline or Interpolated.");
-}
-
-//==============================================================================
-UniqueSplinePtr ConcreteRobot::retimePath(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path)
-{
-  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto retimer
-      = std::make_shared<ParabolicTimer>(velocityLimits, accelerationLimits);
-
-  auto interpolated = dynamic_cast<const Interpolated*>(path);
-  if (interpolated)
-    return retimer->postprocess(*interpolated, *(cloneRNG().get()));
-
-  auto spline = dynamic_cast<const Spline*>(path);
-  if (spline)
-    return retimer->postprocess(*spline, *(cloneRNG().get()));
-
-  throw std::invalid_argument("Path should be either Spline or Interpolated.");
-}
-
-//==============================================================================
-UniqueSplinePtr ConcreteRobot::retimePathWithKunz(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    double maxDeviation,
-    double timestep)
-{
-  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto retimer = std::make_shared<KunzRetimer>(
-      velocityLimits, accelerationLimits, maxDeviation, timestep);
-
-  auto interpolated = dynamic_cast<const Interpolated*>(path);
-  if (interpolated)
-    return retimer->postprocess(*interpolated, *(cloneRNG().get()));
-
-  auto spline = dynamic_cast<const Spline*>(path);
-  if (spline)
-    return retimer->postprocess(*spline, *(cloneRNG().get()));
-
-  throw std::invalid_argument("Path should be either Spline or Interpolated.");
-}
-
-//==============================================================================
 std::future<void> ConcreteRobot::executeTrajectory(
     const TrajectoryPtr& trajectory) const
 {
@@ -302,33 +235,6 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
   }
 
   return std::make_shared<TestableIntersection>(space, constraints);
-}
-
-//==============================================================================
-std::shared_ptr<TrajectoryPostProcessor>
-ConcreteRobot::getTrajectoryPostProcessor(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    bool enableShortcut,
-    bool enableBlend,
-    double shortcutTimelimit,
-    double blendRadius,
-    int blendIterations,
-    double feasibilityCheckResolution,
-    double feasibilityApproxTolerance) const
-{
-  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-
-  return std::make_shared<ParabolicSmoother>(
-      velocityLimits,
-      accelerationLimits,
-      enableShortcut,
-      enableBlend,
-      shortcutTimelimit,
-      blendRadius,
-      blendIterations,
-      feasibilityCheckResolution,
-      feasibilityApproxTolerance);
 }
 
 //==============================================================================
