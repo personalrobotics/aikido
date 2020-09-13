@@ -4,7 +4,7 @@
 
 * Planner
 
-  * Fixed bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
+  * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
 
 ### 0.4.0 (2020-08-27)
 
