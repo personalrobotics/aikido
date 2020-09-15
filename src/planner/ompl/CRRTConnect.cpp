@@ -87,6 +87,18 @@ void CRRTConnect::clear()
 //==============================================================================
 void CRRTConnect::setConnectionRadius(double radius)
 {
+  if (radius > si_->getStateValidityCheckingResolution())
+  {
+    radius = si_->getStateValidityCheckingResolution();
+
+    ::ompl::msg::log(
+        __FILE__,
+        __LINE__,
+        ::ompl::msg::LOG_WARN,
+        "Passed connection radius was too large. Clamped to: %f \n",
+        radius);
+  }
+
   mConnectionRadius = radius;
 }
 
@@ -207,12 +219,8 @@ double CRRTConnect::getConnectionRadius() const
     Motion* startMotion = startTree ? newmotion : lastmotion;
     Motion* goalMotion = startTree ? lastmotion : newmotion;
 
-    // NOTE: (sniyaz): Also ensure that the connection motion is collision-free.
-    bool validConnection
-        = si_->checkMotion(startMotion->state, goalMotion->state);
-
     double treedist = si_->distance(newmotion->state, lastmotion->state);
-    if (validConnection && treedist <= mConnectionRadius)
+    if (treedist <= mConnectionRadius)
     {
       if (treedist < 1e-6)
       {
