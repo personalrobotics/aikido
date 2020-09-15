@@ -27,7 +27,7 @@ CRRT::CRRT(
   , mMaxDistance(0.1)
   , mLastGoalMotion(nullptr)
   , mCons(nullptr)
-  , mMaxStepsize(0.1)
+  , mProjectionResolution(0.1)
   , mMinStepsize(1e-4)
 {
 
@@ -147,13 +147,13 @@ void CRRT::setPathConstraint(constraint::ProjectablePtr _projectable)
 //==============================================================================
 void CRRT::setProjectionResolution(double _resolution)
 {
-  mMaxStepsize = _resolution;
+  mProjectionResolution = _resolution;
 }
 
 //==============================================================================
 double CRRT::getProjectionResolution() const
 {
-  return mMaxStepsize;
+  return mProjectionResolution;
 }
 
 //==============================================================================
@@ -348,7 +348,7 @@ CRRT::Motion* CRRT::constrainedExtend(
 
     // Take a step towards the goal state
     double stepLength
-        = std::min(mMaxDistance, std::min(mMaxStepsize, distToTarget));
+        = std::min(mMaxDistance, std::min(mProjectionResolution, distToTarget));
     si_->getStateSpace()->interpolate(
         cmotion->state, gstate, stepLength / distToTarget, xstate);
 
@@ -366,9 +366,9 @@ CRRT::Motion* CRRT::constrainedExtend(
     // NOTE: (sniyaz) This check makes sure the resolution of the path on the
     // constraint manifold and the resolution used for interpolation (*before*
     // projection) do not differ wildly.
-    // TODO: Should we expose the factor to scale `mMaxStepsize` by?
+    // TODO: Should we expose the factor to scale `mProjectionResolution` by?
     double manifoldResolution = si_->distance(xstate, cmotion->state);
-    if (manifoldResolution > kLambda * mMaxStepsize)
+    if (manifoldResolution > kLambda * mProjectionResolution)
     {
       // The resolution on the manifold is violated, so treat the projection as
       // if it failed. This emulates the original CBiRRT paper correctly.

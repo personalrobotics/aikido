@@ -207,7 +207,7 @@ protected:
   constraint::ProjectablePtr mCons;
 
   /// The maximum length of a step before projecting
-  double mMaxStepsize;
+  double mProjectionResolution;
 
   /// The minumum step size along the constraint. Used to determine
   /// when projection is no longer making progress during an extension.
