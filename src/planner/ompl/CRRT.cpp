@@ -24,7 +24,7 @@ CRRT::CRRT(
   , mLastGoalMotion(nullptr)
   , mCons(nullptr)
   , mProjectionResolution(0.1)
-  , mManifoldResolutionSlackFactor(2.0)
+  , mFinalResolutionSlackFactor(2.0)
   , mMinStepsize(1e-4)
 {
 
@@ -50,10 +50,10 @@ CRRT::CRRT(
       &CRRT::getProjectionResolution,
       "0.:1.:10000.");
   Planner::declareParam<double>(
-      "manifold_resolution_slack_factor",
+      "final_resolution_slack_factor",
       this,
-      &CRRT::setManifoldResolutionSlackFactor,
-      &CRRT::getManifoldResolutionSlackFactor,
+      &CRRT::setFinalResolutionSlackFactor,
+      &CRRT::getFinalResolutionSlackFactor,
       "0.:1.:10000.");
   Planner::declareParam<double>(
       "min_step",
@@ -160,15 +160,15 @@ double CRRT::getProjectionResolution() const
 }
 
 //==============================================================================
-void CRRT::setManifoldResolutionSlackFactor(double _slackFactor)
+void CRRT::setFinalResolutionSlackFactor(double _slackFactor)
 {
-  mManifoldResolutionSlackFactor = _slackFactor;
+  mFinalResolutionSlackFactor = _slackFactor;
 }
 
 //==============================================================================
-double CRRT::getManifoldResolutionSlackFactor() const
+double CRRT::getFinalResolutionSlackFactor() const
 {
-  return mManifoldResolutionSlackFactor;
+  return mFinalResolutionSlackFactor;
 }
 
 //==============================================================================
@@ -385,7 +385,7 @@ CRRT::Motion* CRRT::constrainedExtend(
     // lie within a scalar multiple of `mProjectionResolution`.
     double manifoldResolution = si_->distance(xstate, cmotion->state);
     if (manifoldResolution
-        > mManifoldResolutionSlackFactor * mProjectionResolution)
+        > mFinalResolutionSlackFactor * mProjectionResolution)
     {
       break;
     }
