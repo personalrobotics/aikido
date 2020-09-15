@@ -7,10 +7,6 @@
 
 #include "aikido/planner/ompl/GeometricStateSpace.hpp"
 
-// Used to check resolution of the path on the constraint manifold *after*
-// projection.
-constexpr double kLambda = 2.0;
-
 namespace aikido {
 namespace planner {
 namespace ompl {
@@ -28,6 +24,7 @@ CRRT::CRRT(
   , mLastGoalMotion(nullptr)
   , mCons(nullptr)
   , mProjectionResolution(0.1)
+  , mManifoldResolutionSlackFactor(2.0)
   , mMinStepsize(1e-4)
 {
 
@@ -51,6 +48,12 @@ CRRT::CRRT(
       this,
       &CRRT::setProjectionResolution,
       &CRRT::getProjectionResolution,
+      "0.:1.:10000.");
+  Planner::declareParam<double>(
+      "manifold_resolution_slack_factor",
+      this,
+      &CRRT::setManifoldResolutionSlackFactor,
+      &CRRT::getManifoldResolutionSlackFactor,
       "0.:1.:10000.");
   Planner::declareParam<double>(
       "min_step",
@@ -154,6 +157,18 @@ void CRRT::setProjectionResolution(double _resolution)
 double CRRT::getProjectionResolution() const
 {
   return mProjectionResolution;
+}
+
+//==============================================================================
+void CRRT::setManifoldResolutionSlackFactor(double _slackFactor)
+{
+  mManifoldResolutionSlackFactor = _slackFactor;
+}
+
+//==============================================================================
+double CRRT::getManifoldResolutionSlackFactor() const
+{
+  return mManifoldResolutionSlackFactor;
 }
 
 //==============================================================================
@@ -365,13 +380,13 @@ CRRT::Motion* CRRT::constrainedExtend(
 
     // NOTE: (sniyaz) This check makes sure the resolution of the path on the
     // constraint manifold and the resolution used for interpolation (*before*
-    // projection) do not differ wildly.
-    // TODO: Should we expose the factor to scale `mProjectionResolution` by?
+    // projection) do not differ wildly. In other words, after projection
+    // the distance between the nearest-neighbor and the projected state should
+    // lie within a scalar multiple of `mProjectionResolution`.
     double manifoldResolution = si_->distance(xstate, cmotion->state);
-    if (manifoldResolution > kLambda * mProjectionResolution)
+    if (manifoldResolution
+        > mManifoldResolutionSlackFactor * mProjectionResolution)
     {
-      // The resolution on the manifold is violated, so treat the projection as
-      // if it failed. This emulates the original CBiRRT paper correctly.
       break;
     }
 

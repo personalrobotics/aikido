@@ -95,6 +95,20 @@ public:
   /// larger than this distance.
   double getProjectionResolution() const;
 
+  /// Set the slack factor for the resolution of the final path *after*
+  /// projection. During tree extension, any projection that would cause the
+  /// final resolution of the path to exceed this factor times
+  /// `mProjectionResolution` is rejected.
+  /// \param _slackFactor The slack factor enforced for the resolution of the
+  /// final path.
+  void setManifoldResolutionSlackFactor(double _slackFactor);
+
+  /// Get the slack factor for the resolution of the final path *after*
+  /// projection. During tree extension, any projection that would cause the
+  /// final resolution of the path to exceed this factor times
+  /// `mProjectionResolution` is rejected.
+  double getManifoldResolutionSlackFactor() const;
+
   /// Set the minimum distance between two states for them to be considered
   /// "equivalent". This is used during extension to determine if a projection
   /// is near enough the previous projection to say progress is no longer being
@@ -208,6 +222,11 @@ protected:
 
   /// The maximum length of a step before projecting
   double mProjectionResolution;
+
+  /// We multiply this with `mProjectionResolution` to get the maximum length of
+  /// a step *after* projecting: in other words, the resolution of the final
+  /// path on the constraint manifold.
+  double mManifoldResolutionSlackFactor;
 
   /// The minumum step size along the constraint. Used to determine
   /// when projection is no longer making progress during an extension.
