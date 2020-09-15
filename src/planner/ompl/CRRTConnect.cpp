@@ -209,7 +209,7 @@ double CRRTConnect::getConnectionRadius() const
 
     // NOTE: (sniyaz): Also ensure that the connection motion is collision-free.
     bool validConnection
-      = si_->checkMotion(startMotion->state, goalMotion->state);
+        = si_->checkMotion(startMotion->state, goalMotion->state);
 
     double treedist = si_->distance(newmotion->state, lastmotion->state);
     if (validConnection && treedist <= mConnectionRadius)
