@@ -24,7 +24,7 @@ CRRT::CRRT(
   , mLastGoalMotion(nullptr)
   , mCons(nullptr)
   , mMaxStepsize(0.1)
-  , mFinalResolutionSlackFactor(2.0)
+  , mMaxProjectedStepsizeSlackFactor(2.0)
   , mMinStepsize(1e-4)
 {
 
@@ -50,10 +50,10 @@ CRRT::CRRT(
       &CRRT::getProjectionResolution,
       "0.:1.:10000.");
   Planner::declareParam<double>(
-      "final_resolution_slack_factor",
+      "max_projected_stepsize_slack_factor",
       this,
-      &CRRT::setFinalResolutionSlackFactor,
-      &CRRT::getFinalResolutionSlackFactor,
+      &CRRT::setMaxProjectedStepsizeSlackFactor,
+      &CRRT::getMaxProjectedStepsizeSlackFactor,
       "0.:1.:10000.");
   Planner::declareParam<double>(
       "min_step",
@@ -160,15 +160,15 @@ double CRRT::getProjectionResolution() const
 }
 
 //==============================================================================
-void CRRT::setFinalResolutionSlackFactor(double _slackFactor)
+void CRRT::setMaxProjectedStepsizeSlackFactor(double _slackFactor)
 {
-  mFinalResolutionSlackFactor = _slackFactor;
+  mMaxProjectedStepsizeSlackFactor = _slackFactor;
 }
 
 //==============================================================================
-double CRRT::getFinalResolutionSlackFactor() const
+double CRRT::getMaxProjectedStepsizeSlackFactor() const
 {
-  return mFinalResolutionSlackFactor;
+  return mMaxProjectedStepsizeSlackFactor;
 }
 
 //==============================================================================
@@ -384,7 +384,7 @@ CRRT::Motion* CRRT::constrainedExtend(
     // the distance between the nearest-neighbor and the projected state should
     // lie within a scalar multiple of `mMaxStepsize`.
     double manifoldResolution = si_->distance(xstate, cmotion->state);
-    if (manifoldResolution > mFinalResolutionSlackFactor * mMaxStepsize)
+    if (manifoldResolution > mMaxProjectedStepsizeSlackFactor * mMaxStepsize)
     {
       break;
     }
