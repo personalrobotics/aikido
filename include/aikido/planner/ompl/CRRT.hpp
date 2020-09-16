@@ -98,7 +98,7 @@ public:
   /// Set the slack factor for the resolution of the final path *after*
   /// projection. During tree extension, any projection that would cause the
   /// final resolution of the path to exceed this factor times
-  /// `mProjectionResolution` is rejected.
+  /// `mMaxStepsize` is rejected.
   /// \param _slackFactor The slack factor enforced for the resolution of the
   /// final path.
   void setFinalResolutionSlackFactor(double _slackFactor);
@@ -106,7 +106,7 @@ public:
   /// Get the slack factor for the resolution of the final path *after*
   /// projection. During tree extension, any projection that would cause the
   /// final resolution of the path to exceed this factor times
-  /// `mProjectionResolution` is rejected.
+  /// `mMaxStepsize` is rejected.
   double getFinalResolutionSlackFactor() const;
 
   /// Set the minimum distance between two states for them to be considered
@@ -221,11 +221,11 @@ protected:
   constraint::ProjectablePtr mCons;
 
   /// The maximum length of a step before projecting
-  double mProjectionResolution;
+  double mMaxStepsize;
 
-  /// We multiply this with `mProjectionResolution` to get the maximum length of
-  /// a step *after* projecting: in other words, the resolution of the final
-  /// path on the constraint manifold.
+  /// We multiply this with `mMaxStepsize` to get the maximum length of a step
+  /// *after* projecting: in other words, the resolution of the final path on
+  /// the constraint manifold.
   double mFinalResolutionSlackFactor;
 
   /// The minumum step size along the constraint. Used to determine

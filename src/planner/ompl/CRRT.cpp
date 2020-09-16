@@ -23,7 +23,7 @@ CRRT::CRRT(
   , mMaxDistance(0.1)
   , mLastGoalMotion(nullptr)
   , mCons(nullptr)
-  , mProjectionResolution(0.1)
+  , mMaxStepsize(0.1)
   , mFinalResolutionSlackFactor(2.0)
   , mMinStepsize(1e-4)
 {
@@ -150,13 +150,13 @@ void CRRT::setPathConstraint(constraint::ProjectablePtr _projectable)
 //==============================================================================
 void CRRT::setProjectionResolution(double _resolution)
 {
-  mProjectionResolution = _resolution;
+  mMaxStepsize = _resolution;
 }
 
 //==============================================================================
 double CRRT::getProjectionResolution() const
 {
-  return mProjectionResolution;
+  return mMaxStepsize;
 }
 
 //==============================================================================
@@ -363,7 +363,7 @@ CRRT::Motion* CRRT::constrainedExtend(
 
     // Take a step towards the goal state
     double stepLength
-        = std::min(mMaxDistance, std::min(mProjectionResolution, distToTarget));
+        = std::min(mMaxDistance, std::min(mMaxStepsize, distToTarget));
     si_->getStateSpace()->interpolate(
         cmotion->state, gstate, stepLength / distToTarget, xstate);
 
@@ -382,10 +382,9 @@ CRRT::Motion* CRRT::constrainedExtend(
     // constraint manifold and the resolution used for interpolation (*before*
     // projection) do not differ wildly. In other words, after projection
     // the distance between the nearest-neighbor and the projected state should
-    // lie within a scalar multiple of `mProjectionResolution`.
+    // lie within a scalar multiple of `mMaxStepsize`.
     double manifoldResolution = si_->distance(xstate, cmotion->state);
-    if (manifoldResolution
-        > mFinalResolutionSlackFactor * mProjectionResolution)
+    if (manifoldResolution > mFinalResolutionSlackFactor * mMaxStepsize)
     {
       break;
     }
