@@ -378,11 +378,11 @@ CRRT::Motion* CRRT::constrainedExtend(
       }
     }
 
-    // NOTE: (sniyaz) This check makes sure the resolution of the path on the
-    // constraint manifold and the resolution used for interpolation (*before*
-    // projection) do not differ wildly. In other words, after projection
-    // the distance between the nearest-neighbor and the projected state should
-    // lie within a scalar multiple of `mMaxStepsize`.
+    // NOTE: This check makes sure the resolution of the path on the constraint
+    // manifold and the resolution used for interpolation (*before* projection)
+    // do not differ wildly. In other words, after projection the distance
+    // between the nearest-neighbor and the projected state should lie within a
+    // scalar multiple of `mMaxStepsize`.
     double manifoldResolution = si_->distance(xstate, cmotion->state);
     if (manifoldResolution > mMaxProjectedStepsizeSlackFactor * mMaxStepsize)
     {
