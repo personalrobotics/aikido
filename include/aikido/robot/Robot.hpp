@@ -56,6 +56,7 @@ public:
   virtual ~Robot() = default;
 
   /// \return Name of this robot.
+  // TODO(avk): Functions like this do not need to be virtual.
   virtual std::string getName() const;
 
   /// \return [const] MetaSkeleton of this robot.

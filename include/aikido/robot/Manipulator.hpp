@@ -14,13 +14,39 @@ AIKIDO_DECLARE_POINTERS(Manipulator)
 class Manipulator : public Robot
 {
 public:
+  /// Constructor.
+  /// \param[in] name Name of the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the robot.
+  /// \param[in] hand Hand associated with this manipulator.
+  /// \param[in] rng Random number generator.
+  /// \param[in] trajectoryExecutor Trajectory executor for the metaSkeleton.
+  /// \param[in] collisionDetector Collision detector.
+  /// \param[in] selfCollisionFilter Collision filter for self collision.
+  Manipulator(
+      const std::string& name,
+      dart::dynamics::MetaSkeletonPtr metaSkeleton,
+      HandPtr hand,
+      aikido::common::UniqueRNGPtr rng,
+      aikido::control::TrajectoryExecutorPtr trajectoryExecutor,
+      dart::collision::CollisionDetectorPtr collisionDetector,
+      std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
+          selfCollisionFilter);
+
+  /// Destructor.
   virtual ~Manipulator() = default;
 
   /// Returns the [const] hand.
-  virtual ConstHandPtr getHand() const = 0;
+  ConstHandPtr getHand() const;
 
   /// Returns the hand.
   HandPtr getHand();
+
+  // Documentation inherited.
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
+
+private:
+  /// Hand of this manipulator.
+  HandPtr mHand;
 };
 
 } // namespace robot

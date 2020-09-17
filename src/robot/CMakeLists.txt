@@ -11,12 +11,12 @@ set(CMAKE_REQUIRED_FLAGS "")
 # Libraries
 #
 set(sources
-  ConcreteRobot.cpp
-  ConcreteManipulator.cpp
+#  ConcreteRobot.cpp
+#  ConcreteManipulator.cpp
   GrabMetadata.cpp
   Manipulator.cpp
   Robot.cpp
-  util.cpp
+#  util.cpp
 )
 
 add_library("${PROJECT_NAME}_robot" SHARED ${sources})
