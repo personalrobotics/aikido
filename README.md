@@ -1,4 +1,5 @@
-# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.org/personalrobotics/aikido.svg?branch=master)](https://travis-ci.org/personalrobotics/aikido) [![codecov](https://codecov.io/gh/personalrobotics/aikido/branch/master/graph/badge.svg)](https://codecov.io/gh/personalrobotics/aikido) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d2da97f57904c96a01a5993cbbc4f51)](https://www.codacy.com/app/personalrobotics/aikido?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=personalrobotics/aikido&amp;utm_campaign=Badge_Grade)
+# AIKIDO - AI for KIDO [![Build Status](https://travis-ci.org/personalrobotics/aikido.svg?branch=master)](https://travis-ci.org/personalrobotics/aikido) [![codecov](https://codecov.io/gh/personalrobotics/aikido/branch/master/graph/badge.svg)](https://codecov.io/gh/personalrobotics/aikido) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d2da97f57904c96a01a5993cbbc4f51)](https://www.codacy.com/app/personalrobotics/aikido?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=personalrobotics/aikido&amp;utm_campaign=Badge_Grade)[![DOI](https://zenodo.org/badge/34424077.svg)](https://zenodo.org/badge/latestdoi/34424077)
+
 
 > :warning: **Warning:** AIKIDO is under heavy development. These instructions are
 > primarily for reference by the developers.
@@ -49,7 +50,7 @@ $ brew install aikido
 
 AIKIDO depends on [CMake], [Boost], [DART] \(version 6.3 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), tinyxml2, pr-control-msgs, libmicrohttpd, and the
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
-make heavy use of C++11 and require a modern compiler.
+make heavy use of C++14 and require a modern compiler.
 
 ### On Ubuntu Trusty using CMake
 

@@ -46,6 +46,19 @@ protected:
     waypoint2.time_from_start = ros::Duration{1.};
     waypoint2.positions.assign({2.});
 
+    // Create a two-waypoint SO2-wrapped trajectory for mSkeleton.
+    mTwoWaypointMessageWrap = trajectory_msgs::JointTrajectory{};
+    mTwoWaypointMessageWrap.joint_names.emplace_back(jointProperties.mName);
+    mTwoWaypointMessageWrap.points.resize(2);
+
+    auto& waypoint1wrap = mTwoWaypointMessageWrap.points[0];
+    waypoint1wrap.time_from_start = ros::Duration{0.};
+    waypoint1wrap.positions.assign({3});
+
+    auto& waypoint2wrap = mTwoWaypointMessageWrap.points[1];
+    waypoint2wrap.time_from_start = ros::Duration{1.};
+    waypoint2wrap.positions.assign({-3});
+
     // 2-Joint skeleton
     mSkeleton2Joints = dart::dynamics::Skeleton::create("2JointSkeleton");
 
@@ -89,6 +102,7 @@ protected:
   SkeletonPtr mSkeleton;
   std::shared_ptr<MetaSkeletonStateSpace> mStateSpace;
   trajectory_msgs::JointTrajectory mTwoWaypointMessage;
+  trajectory_msgs::JointTrajectory mTwoWaypointMessageWrap;
 
   SkeletonPtr mSkeleton2Joints;
   std::shared_ptr<MetaSkeletonStateSpace> mStateSpace2Joints;
@@ -178,6 +192,48 @@ TEST_F(ConvertJointTrajectoryTests, LinearTrajectory)
 
   trajectory->evaluateDerivative(0.5, 1, values);
   EXPECT_EIGEN_EQUAL(make_vector(1.), values, kTolerance);
+
+  trajectory->evaluateDerivative(0.5, 2, values);
+  EXPECT_EIGEN_EQUAL(make_vector(0.), values, kTolerance);
+}
+
+TEST_F(ConvertJointTrajectoryTests, LinearWrapTrajectory)
+{
+  const auto linearTwoWaypointMessage = mTwoWaypointMessageWrap;
+  const auto trajectory
+      = toSplineJointTrajectory(mStateSpace, linearTwoWaypointMessage);
+
+  ASSERT_TRUE(!!trajectory);
+  ASSERT_DOUBLE_EQ(0., trajectory->getStartTime());
+  ASSERT_DOUBLE_EQ(1., trajectory->getEndTime());
+  EXPECT_DOUBLE_EQ(1., trajectory->getDuration());
+  EXPECT_EQ(1, trajectory->getNumSegments());
+  EXPECT_EQ(1, trajectory->getNumDerivatives());
+
+  auto state = mStateSpace->createState();
+  Eigen::VectorXd values;
+
+  double pose = 3.0 + (M_PI - 3.0) / 2.0;
+  double length = (M_PI - 3.0) * 2.0;
+
+  trajectory->evaluate(0., state);
+  mStateSpace->convertStateToPositions(state, values);
+  EXPECT_EIGEN_EQUAL(make_vector(3.), values, kTolerance);
+
+  trajectory->evaluate(0.25, state);
+  mStateSpace->convertStateToPositions(state, values);
+  EXPECT_EIGEN_EQUAL(make_vector(pose), values, kTolerance);
+
+  trajectory->evaluate(0.75, state);
+  mStateSpace->convertStateToPositions(state, values);
+  EXPECT_EIGEN_EQUAL(make_vector(-pose), values, kTolerance);
+
+  trajectory->evaluate(1., state);
+  mStateSpace->convertStateToPositions(state, values);
+  EXPECT_EIGEN_EQUAL(make_vector(-3.), values, kTolerance);
+
+  trajectory->evaluateDerivative(0.5, 1, values);
+  EXPECT_EIGEN_EQUAL(make_vector(length), values, kTolerance);
 
   trajectory->evaluateDerivative(0.5, 2, values);
   EXPECT_EIGEN_EQUAL(make_vector(0.), values, kTolerance);

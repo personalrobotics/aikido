@@ -3,7 +3,7 @@ brew 'dartsim'
 brew 'eigen'
 brew 'libmicrohttpd'
 brew 'ompl'
-brew 'tinyxml2'
+brew 'tinyxml'
 brew 'yaml-cpp'
 
 # Install dartsim dependencies explicitly because, for some unknown reasons,

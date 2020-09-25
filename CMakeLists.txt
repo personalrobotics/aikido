@@ -20,7 +20,7 @@ project(aikido)
 
 # If you change the version, please update the <version> tag in package.xml.
 set(AIKIDO_MAJOR_VERSION "0")
-set(AIKIDO_MINOR_VERSION "3")
+set(AIKIDO_MINOR_VERSION "4")
 set(AIKIDO_PATCH_VERSION "0")
 set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
 
@@ -95,7 +95,7 @@ find_package(DART 6.6.2 REQUIRED
 # Check if DART is built with octomap so that it supports VoxelGridShape
 include(CheckCXXSourceCompiles)
 set(CMAKE_REQUIRED_DEFINITIONS "")
-set(CMAKE_REQUIRED_FLAGS "-std=c++11")
+set(CMAKE_REQUIRED_FLAGS "-std=c++14")
 set(CMAKE_REQUIRED_INCLUDES ${DART_INCLUDE_DIRS})
 set(CMAKE_REQUIRED_LIBRARIES ${DART_LIBRARIES})
 check_cxx_source_compiles(

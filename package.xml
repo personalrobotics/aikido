@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>aikido</name>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <description>description</description>
   <maintainer email="bhou@cs.uw.edu">Brian Hou</maintainer>
   <maintainer email="gilwoo@cs.uw.edu">Gilwoo Lee</maintainer>

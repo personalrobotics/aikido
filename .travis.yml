@@ -1,6 +1,5 @@
+os: linux
 dist: bionic
-
-sudo: required
 
 group: travis_lts
 
@@ -15,7 +14,7 @@ cache:
   directories:
     - /usr/local/Cellar
 
-matrix:
+jobs:
   fast_finish: true
   include:
     - os: linux
@@ -37,8 +36,8 @@ matrix:
 
     - os: linux
       env:
-        - BUILD_NAME=DISCO_CMAKE_RELEASE
-        - DOCKER_FILE="ubuntu-disco"
+        - BUILD_NAME=FOCAL_CMAKE_RELEASE
+        - DOCKER_FILE="ubuntu-focal"
         - BUILD_TYPE=Release
         - USE_CATKIN=OFF
       services: docker
@@ -63,7 +62,7 @@ matrix:
       services: docker
 
     - os: osx
-      osx_image: xcode11
+      osx_image: xcode12u
       compiler: clang
       env:
         - BUILD_NAME=XCODE11_CMAKE_RELEASE
@@ -100,7 +99,7 @@ matrix:
       services: docker
 
     - os: osx
-      osx_image: xcode11
+      osx_image: xcode12u
       compiler: clang
       env:
         - BUILD_NAME=XCODE11_CMAKE_RELEASE
@@ -145,11 +144,11 @@ after_failure:
     fi
 
 deploy:
-  github-token: $GITHUB_TOKEN
+  strategy: git
+  token: $GITHUB_TOKEN
   provider: pages
-  skip-cleanup: true
-  local-dir: gh-pages
-  keep-history: false
+  local_dir: gh-pages
+  keep_history: false
   verbose: true
   on:
     branch: master

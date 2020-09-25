@@ -1,6 +1,20 @@
 ## Aikido 0 (prerelease)
 
-### 0.3.0 (201X-XX-XX)
+### 0.5.0 (2020-XX-XX)
+
+* Planner
+
+  * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
+  * Make planner_dart component and build all DART planners as planner_dart component: [#567](https://github.com/personalrobotics/aikido/pull/567)
+
+### 0.4.0 (2020-08-27)
+
+* Planner
+
+  * Defined post-processor parameter structs in AIKIDO: [#579](https://github.com/personalrobotics/aikido/pull/579)
+  * Deleted old post-processor interface: [#581](https://github.com/personalrobotics/aikido/pull/581)
+
+### 0.3.0 (2020-05-22)
 
 * Common
 
@@ -10,6 +24,7 @@
   * Fixed bug in compiling with Boost 1.58 on Kinetic + Xenial: [#490](https://github.com/personalrobotics/aikido/pull/490)
   * Fixed bug in Interpolated::addWaypoint(): [#483](https://github.com/personalrobotics/aikido/pull/483)
   * Fixed bug in VanDerCorput sequence generator to handle non-unit span: [#552](https://github.com/personalrobotics/aikido/pull/552)
+  * Updated to C++14 Standard: [#570](https://github.com/personalrobotics/aikido/pull/570)
 
 * Distance
 
@@ -56,9 +71,11 @@
   * Fixed toR1JointTrajectory to copy Waypoints with their time information: [#510](https://github.com/personalrobotics/aikido/pull/510)
   * Removed incorrect Spline to Interpolated conversions: [#511](https://github.com/personalrobotics/aikido/pull/511)
   * Updated findTimeOfClosestStateTrajectory to use StateSpace Distance Metric: [#543](https://github.com/personalrobotics/aikido/pull/543)
+  * Add SO2 handling in spline conversions: [#546](https://github.com/personalrobotics/aikido/pull/546)
 
 * Planner
-  * Make planner_dart component and build all DART planners as planner_dart component: [#567](https://github.com/personalrobotics/aikido/pull/567)
+
+  * Check that all planning problems only hold ScopedStates: [#569](https://github.com/personalrobotics/aikido/pull/569)
   * Make all DART planners take MetaSkeleton, and add adapter for turning planners into DART planners: [#437](https://github.com/personalrobotics/aikido/pull/437)
   * Added parabolic timing for linear spline [#302](https://github.com/personalrobotics/aikido/pull/302), [#324](https://github.com/personalrobotics/aikido/pull/324)
   * Fixed step sequence iteration in VFP: [#303](https://github.com/personalrobotics/aikido/pull/303)
