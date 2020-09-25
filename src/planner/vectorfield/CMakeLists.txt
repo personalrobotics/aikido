@@ -1,3 +1,7 @@
+if(NOT TARGET ${PROJECT_NAME}_planner_dart)
+  return()
+endif()
+
 set(sources
   VectorFieldPlanner.cpp
   VectorField.cpp
