@@ -1,9 +1,12 @@
 #include "aikido/robot/ConcreteRobot.hpp"
 
 #include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/util.hpp"
+#include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 namespace aikido {
 namespace robot {
@@ -12,13 +15,17 @@ using constraint::ConstTestablePtr;
 using constraint::TestablePtr;
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::TSRPtr;
+using planner::ConfigurationToConfiguration;
+using planner::SnapConfigurationToConfigurationPlanner;
 using planner::TrajectoryPostProcessor;
 using planner::kunzretimer::KunzRetimer;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
+using statespace::GeodesicInterpolator;
 using statespace::StateSpace;
 using statespace::StateSpacePtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
+using statespace::dart::MetaSkeletonStateSaver;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using trajectory::Interpolated;
@@ -245,16 +252,27 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     const CollisionFreePtr& collisionFree,
     double timelimit)
 {
+  DART_UNUSED(timelimit);
+
+  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
+  // Save the current state of the space
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
+
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
 
-  return util::planToConfiguration(
-      stateSpace,
-      metaSkeleton,
-      goalState,
-      collisionConstraint,
-      cloneRNG().get(),
-      timelimit);
+  auto snapConfigToConfigPlanner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+          stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
+
+  auto startState
+      = stateSpace->getScopedStateFromMetaSkeleton(metaSkeleton.get());
+  auto problem = ConfigurationToConfiguration(
+      stateSpace, startState, goalState, collisionFree);
+
+  return snapConfigToConfigPlanner->plan(problem);
 }
 
 //==============================================================================
