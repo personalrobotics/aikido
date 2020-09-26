@@ -17,6 +17,7 @@ set(sources
   Manipulator.cpp
   Robot.cpp
   util.cpp
+  GenericRobot.cpp
 )
 
 add_library("${PROJECT_NAME}_robot" SHARED ${sources})
