@@ -11,8 +11,10 @@
 
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
+#include "aikido/planner/Planner.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
+#include <aikido/statespace/StateSpace.hpp>
 
 namespace aikido {
 namespace robot {
@@ -73,6 +75,17 @@ public:
   {
     mRootRobot = root;
   }
+
+  statespace::StateSpace::State* getCurrentState() const
+  {
+    return mStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get());
+  }
+
+  // TODO(avk): Need to introduce a termination condition class.
+  trajectory::TrajectoryPtr planToConfiguration(
+      const planner::PlannerPtr& planner,
+      const statespace::StateSpace::State* goalState,
+      const constraint::TestablePtr& testableConstraint) const;
 
   std::string mName;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;

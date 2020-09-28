@@ -4,7 +4,9 @@
 #include <srdfdom/model.h>
 #include <urdf/model.h>
 
+#include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
 #include <aikido/io/CatkinResourceRetriever.hpp>
+#include <aikido/planner/ConfigurationToConfiguration.hpp>
 
 namespace aikido {
 namespace robot {
@@ -60,12 +62,20 @@ GenericRobot::GenericRobot(
   : mName(name)
 {
   mMetaSkeleton = skeleton;
+  mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
+      mMetaSkeleton.get());
+  // TODO(avk): Do we want to allow SRDF equivalence after construction?
 }
 
 //==============================================================================
 std::future<void> GenericRobot::executeTrajectory(
     const trajectory::TrajectoryPtr& trajectory) const
 {
+  if (!mTrajectoryExecutor)
+  {
+    // TODO(avk): Should I try with the parent robot?
+    throw std::invalid_argument("Executor is null!");
+  }
   return mTrajectoryExecutor->execute(trajectory);
 }
 
@@ -122,6 +132,21 @@ std::shared_ptr<GenericRobot> GenericRobot::registerChildRobot(
   child->setRootRobot(root);
   mChildren[name] = child;
   return child;
+}
+
+//=============================================================================
+trajectory::TrajectoryPtr GenericRobot::planToConfiguration(
+    const planner::PlannerPtr& planner,
+    const statespace::StateSpace::State* goalState,
+    const constraint::TestablePtr& testableConstraint) const
+{
+  // Create the problem.
+  // TODO(avk): Get current state needs to be added.
+  auto problem = planner::ConfigurationToConfiguration(
+      mStateSpace, getCurrentState(), goalState, testableConstraint);
+
+  // Solve the problem with the provided planner.
+  return planner->plan(problem);
 }
 
 //=============================================================================
