@@ -117,9 +117,9 @@ std::shared_ptr<GenericRobot> GenericRobot::registerChildRobot(
     // TODO(avk): Defaulting to Manipulator again.
     child = std::make_shared<GenericManipulator>(metaSkeleton, name);
   }
-  // TODO(avk): Instead pass shared pointer to this.
-  // const auto& root = mRootRobot ? mRootRobot : this;
-  child->setRootRobot(nullptr);
+  // Update the root robot.
+  const auto& root = mRootRobot ? mRootRobot : this;
+  child->setRootRobot(root);
   mChildren[name] = child;
   return child;
 }

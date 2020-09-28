@@ -32,7 +32,6 @@ enum class RobotType
 /// Robot interface for defining basic behaviors of a robot.
 /// A concrete implementation of robot should support a collection
 /// of planning methods.
-/// TODO(avk): Derive from enable_shared_from_this<GenericRobot>.
 class GenericRobot
 {
 public:
@@ -70,7 +69,7 @@ public:
     return RobotType::GenericRobot;
   }
 
-  void setRootRobot(std::shared_ptr<GenericRobot> root)
+  void setRootRobot(GenericRobot* root)
   {
     mRootRobot = root;
   }
@@ -79,7 +78,9 @@ public:
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
   std::shared_ptr<control::TrajectoryExecutor> mTrajectoryExecutor;
-  std::shared_ptr<GenericRobot> mRootRobot{nullptr};
+
+  // TODO(avk): This about when this will get deleted.
+  GenericRobot* mRootRobot{nullptr};
   std::unordered_map<std::string, std::shared_ptr<GenericRobot>> mChildren;
 };
 
