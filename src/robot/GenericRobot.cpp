@@ -1,5 +1,6 @@
 #include "aikido/robot/GenericRobot.hpp"
 
+#include <dart/collision/fcl/FCLCollisionDetector.hpp>
 #include <srdfdom/model.h>
 #include <urdf/model.h>
 

@@ -11,7 +11,6 @@
 
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
-#include "aikido/robot/Hand.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -19,6 +18,8 @@ namespace aikido {
 namespace robot {
 
 AIKIDO_DECLARE_POINTERS(GenericRobot)
+AIKIDO_DECLARE_POINTERS(GenericManipulator)
+AIKIDO_DECLARE_POINTERS(GenericGripper)
 
 enum class RobotType
 {
