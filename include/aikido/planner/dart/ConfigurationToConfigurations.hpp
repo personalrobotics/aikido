@@ -25,7 +25,7 @@ public:
   /// current state of when called.
   /// \param[in] goalStates Goal states.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
-  ConfigurationToConfiguration(
+  ConfigurationToConfigurations(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       const GoalStates& goalStates,
@@ -38,7 +38,7 @@ public:
   /// \param[in] startState Start state to plan from.
   /// \param[in] goalStates Goal states.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
-  ConfigurationToConfiguration(
+  ConfigurationToConfigurations(
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
       const GoalStates& goalStates,
