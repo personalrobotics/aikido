@@ -15,13 +15,13 @@ namespace dart {
 class ConfigurationToConfigurations : public Problem
 {
 public:
-  using GoalStates = std::vector<const statespace::StateSpace::State*>;
+  using GoalStates = std::vector<const statespace::dart::MetaSkeletonStateSpace::State*>;
 
   /// Constructor. Note that this constructor takes the start state from the
   /// current state of the passed MetaSkeleton.
   ///
   /// \param[in] stateSpace State space.
-  /// param[in] metaSkeleton MetaSkeleton that getStartState will return the
+  /// \param[in] metaSkeleton MetaSkeleton that getStartState will return the
   /// current state of when called.
   /// \param[in] goalStates Goal states.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
