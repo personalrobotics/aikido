@@ -16,6 +16,8 @@ set(sources
   WorldStateSaver.cpp
   dart/ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfigurationPlanner.cpp
+  dart/ConfigurationToConfigurations.cpp
+  dart/ConfigurationToConfigurationsPlanner.cpp
   dart/ConfigurationToEndEffectorOffset.cpp
   dart/ConfigurationToEndEffectorPose.cpp
   dart/ConfigurationToTSR.cpp
