@@ -6,6 +6,8 @@
 #include <unordered_map>
 
 #include <Eigen/Core>
+#include <dart/collision/CollisionDetector.hpp>
+#include <dart/collision/CollisionFilter.hpp>
 #include <dart/dynamics/dynamics.hpp>
 #include <dart/utils/urdf/DartLoader.hpp>
 
@@ -51,13 +53,15 @@ public:
 
   virtual void step(const std::chrono::system_clock::time_point& timepoint);
 
+  // TODO(avk): If I use mSpace and mSkeleton, the whole robot moves around
+  // during planning.
   constraint::dart::CollisionFreePtr getSelfCollisionConstraint(
-      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const;
+      statespace::dart::MetaSkeletonStateSpacePtr space,
+      dart::dynamics::MetaSkeletonPtr skeleton) const;
 
   constraint::TestablePtr getFullCollisionConstraint(
-      const statespace::dart::ConstMetaSkeletonStateSpacePtr& space,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      statespace::dart::MetaSkeletonStateSpacePtr space,
+      dart::dynamics::MetaSkeletonPtr skeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const;
 
   // Register child robots. Dispatching via factory.
@@ -95,6 +99,11 @@ public:
   // TODO(avk): This about when this will get deleted.
   GenericRobot* mRootRobot{nullptr};
   std::unordered_map<std::string, std::shared_ptr<GenericRobot>> mChildren;
+
+  // Collision objects.
+  dart::collision::CollisionDetectorPtr mCollisionDetector;
+  std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
+      mSelfCollisionFilter;
 };
 
 // Example Manipulator class to handle hands.

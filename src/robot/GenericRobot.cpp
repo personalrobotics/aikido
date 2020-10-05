@@ -4,6 +4,7 @@
 #include <srdfdom/model.h>
 #include <urdf/model.h>
 
+#include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
 #include <aikido/io/CatkinResourceRetriever.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
@@ -20,22 +21,19 @@ GenericRobot::GenericRobot(
     const dart::common::Uri& srdf,
     const std::string& name)
   : mName(name)
+  , mCollisionDetector(dart::collision::FCLCollisionDetector::create())
+  , mSelfCollisionFilter(
+        std::make_shared<dart::collision::BodyNodeCollisionFilter>())
 {
   // Read the URDF.
   const dart::common::ResourceRetrieverPtr& retriever
-      = std::make_shared<aikido::io::CatkinResourceRetriever>();
+      = std::make_shared<io::CatkinResourceRetriever>();
   dart::utils::DartLoader urdfLoader;
   mMetaSkeleton = urdfLoader.parseSkeleton(urdf, retriever);
   if (!mMetaSkeleton)
   {
     throw std::runtime_error("Unable to load the robot from URDF.");
   }
-
-  // Instantiate collision objects to disable allowed self-collisions.
-  auto collisionDetector = dart::collision::FCLCollisionDetector::create();
-  auto collideWith = collisionDetector->createCollisionGroupAsSharedPtr();
-  auto selfCollisionFilter
-      = std::make_shared<dart::collision::BodyNodeCollisionFilter>();
 
   // TODO: Avoid loading the URDF this second time. See PR63 [libherb].
   urdf::Model urdfModel;
@@ -50,7 +48,7 @@ GenericRobot::GenericRobot(
   {
     auto body0 = mMetaSkeleton->getBodyNode(disabledPair.link1_);
     auto body1 = mMetaSkeleton->getBodyNode(disabledPair.link2_);
-    selfCollisionFilter->addBodyNodePairToBlackList(body0, body1);
+    mSelfCollisionFilter->addBodyNodePairToBlackList(body0, body1);
   }
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
       mMetaSkeleton.get());
@@ -90,19 +88,56 @@ void GenericRobot::step(const std::chrono::system_clock::time_point& timepoint)
 
 // ==============================================================================
 CollisionFreePtr GenericRobot::getSelfCollisionConstraint(
-    const ConstMetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton) const
+    statespace::dart::MetaSkeletonStateSpacePtr space,
+    dart::dynamics::MetaSkeletonPtr skeleton) const
 {
-  return nullptr;
+  if (mRootRobot)
+  {
+    return mRootRobot->getSelfCollisionConstraint(space, skeleton);
+  }
+
+  // TODO(avk): Do I really need this post SRDF?
+  // TODO(avk): Can we move this to the constructor?
+  // TODO(avk): Why disable adjacent body check?
+  auto rootSkeleton = mMetaSkeleton->getBodyNode(0)->getSkeleton();
+  rootSkeleton->enableSelfCollisionCheck();
+  rootSkeleton->disableAdjacentBodyCheck();
+
+  // TODO: Switch to PRIMITIVE once this is fixed in DART.
+  // mCollisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
+  auto collisionOption
+      = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
+  auto collisionFreeConstraint
+      = std::make_shared<constraint::dart::CollisionFree>(
+          space, skeleton, mCollisionDetector, collisionOption);
+  collisionFreeConstraint->addSelfCheck(
+      mCollisionDetector->createCollisionGroupAsSharedPtr(mMetaSkeleton.get()));
+  return collisionFreeConstraint;
 }
 
 //=============================================================================
 constraint::TestablePtr GenericRobot::getFullCollisionConstraint(
-    const ConstMetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    statespace::dart::MetaSkeletonStateSpacePtr space,
+    dart::dynamics::MetaSkeletonPtr skeleton,
     const CollisionFreePtr& collisionFree) const
 {
-  return nullptr;
+  if (mRootRobot)
+  {
+    return mRootRobot->getFullCollisionConstraint(
+        space, skeleton, collisionFree);
+  }
+
+  auto selfCollisionFree = getSelfCollisionConstraint(space, skeleton);
+  if (!collisionFree)
+  {
+    return selfCollisionFree;
+  }
+
+  // Make testable constraints for collision check.
+  std::vector<constraint::ConstTestablePtr> constraints{
+      selfCollisionFree, collisionFree};
+  return std::make_shared<constraint::TestableIntersection>(
+      mStateSpace, constraints);
 }
 
 //=============================================================================
