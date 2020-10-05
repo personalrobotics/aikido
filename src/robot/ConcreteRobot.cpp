@@ -1,9 +1,14 @@
 #include "aikido/robot/ConcreteRobot.hpp"
 
 #include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/util.hpp"
+#include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 namespace aikido {
 namespace robot {
@@ -12,13 +17,19 @@ using constraint::ConstTestablePtr;
 using constraint::TestablePtr;
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::TSRPtr;
+using planner::SnapConfigurationToConfigurationPlanner;
 using planner::TrajectoryPostProcessor;
+using planner::dart::ConfigurationToConfiguration;
+using planner::dart::
+    ConfigurationToConfiguration_to_ConfigurationToConfiguration;
 using planner::kunzretimer::KunzRetimer;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
+using statespace::GeodesicInterpolator;
 using statespace::StateSpace;
 using statespace::StateSpacePtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
+using statespace::dart::MetaSkeletonStateSaver;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using trajectory::Interpolated;
@@ -245,16 +256,31 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     const CollisionFreePtr& collisionFree,
     double timelimit)
 {
-  auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+  DART_UNUSED(timelimit);
 
-  return util::planToConfiguration(
-      stateSpace,
-      metaSkeleton,
-      goalState,
-      collisionConstraint,
-      cloneRNG().get(),
-      timelimit);
+  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
+  // Save the current state of the space.
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
+
+  auto snapConfigToConfigPlanner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+          stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
+
+  // Convert to DART planner.
+  auto dartSnapConfigToConfigPlanner = std::make_shared<
+      ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
+      snapConfigToConfigPlanner, metaSkeleton);
+
+  // Create planning problem.
+  auto castedGoalState
+      = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(
+          goalState);
+  auto problem = ConfigurationToConfiguration(
+      stateSpace, metaSkeleton, castedGoalState, collisionFree);
+
+  return dartSnapConfigToConfigPlanner->plan(problem, /*result*/ nullptr);
 }
 
 //==============================================================================
