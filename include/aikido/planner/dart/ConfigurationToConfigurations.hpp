@@ -15,7 +15,8 @@ namespace dart {
 class ConfigurationToConfigurations : public Problem
 {
 public:
-  using GoalStates = std::vector<const statespace::dart::MetaSkeletonStateSpace::State*>;
+  using GoalStates
+      = std::vector<const statespace::dart::MetaSkeletonStateSpace::State*>;
 
   /// Constructor. Note that this constructor takes the start state from the
   /// current state of the passed MetaSkeleton.
@@ -71,7 +72,8 @@ protected:
   statespace::dart::MetaSkeletonStateSpace::ScopedState mStartState;
 
   /// Goal States.
-  std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState> mGoalStates;
+  std::vector<statespace::dart::MetaSkeletonStateSpace::ScopedState>
+      mGoalStates;
 };
 
 } // namespace dart

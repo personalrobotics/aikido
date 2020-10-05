@@ -24,7 +24,8 @@ ConfigurationToConfiguration_to_ConfigurationToConfigurations::
         distance::ConstConfigurationRankerPtr configurationRanker)
   : PlannerAdapter<
         planner::ConfigurationToConfigurationPlanner,
-        ConfigurationToConfigurationsPlanner>(std::move(planner), std::move(metaSkeleton))
+        ConfigurationToConfigurationsPlanner>(
+        std::move(planner), std::move(metaSkeleton))
 {
   mConfigurationRanker = std::move(configurationRanker);
 }

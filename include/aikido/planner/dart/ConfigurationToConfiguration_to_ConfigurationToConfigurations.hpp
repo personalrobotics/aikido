@@ -22,8 +22,9 @@ public:
   /// \param[in] planner Non-DART ConfigurationToConfigurationPlanner planner to
   /// convert.
   /// \param[in] metaSkeleton MetaSkeleton for adapted planner to operate on.
-  /// \param[in] configurationRanker Ranker to rank the sampled configurations. If nullptr,
-  /// NominalConfigurationRanker is used with the current metaSkeleton pose.
+  /// \param[in] configurationRanker Ranker to rank the sampled configurations.
+  /// If nullptr, NominalConfigurationRanker is used with the current
+  /// metaSkeleton pose.
   ConfigurationToConfiguration_to_ConfigurationToConfigurations(
       std::shared_ptr<aikido::planner::ConfigurationToConfigurationPlanner>
           planner,
@@ -32,7 +33,8 @@ public:
 
   // Documentation inherited.
   virtual trajectory::TrajectoryPtr plan(
-      const ConfigurationToConfigurations& problem, Planner::Result* result) override;
+      const ConfigurationToConfigurations& problem,
+      Planner::Result* result) override;
 };
 
 } // namespace dart

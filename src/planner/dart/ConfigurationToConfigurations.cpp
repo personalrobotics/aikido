@@ -73,7 +73,8 @@ std::size_t ConfigurationToConfigurations::getNumGoalStates() const
 ConfigurationToConfigurations::GoalStates
 ConfigurationToConfigurations::getGoalStates() const
 {
-  std::vector<const statespace::dart::MetaSkeletonStateSpace::State*> pointerStates;
+  std::vector<const statespace::dart::MetaSkeletonStateSpace::State*>
+      pointerStates;
   for (const auto& goal : mGoalStates)
   {
     pointerStates.push_back(goal.getState());
