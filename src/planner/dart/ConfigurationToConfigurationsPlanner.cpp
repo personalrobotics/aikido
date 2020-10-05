@@ -7,11 +7,13 @@ namespace dart {
 //==============================================================================
 ConfigurationToConfigurationsPlanner::ConfigurationToConfigurationsPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
-    ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
+    ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
+    distance::ConstConfigurationRankerPtr configurationRanker)
   : dart::SingleProblemPlanner<
         ConfigurationToConfigurationsPlanner,
         ConfigurationToConfigurations>(
         std::move(stateSpace), std::move(metaSkeleton))
+  , mConfigurationRanker(std::move(configurationRanker))
 {
   // Do nothing
 }

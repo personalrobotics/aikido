@@ -10,7 +10,7 @@ namespace planner {
 namespace dart {
 
 /// Converts a non-DART ConfigurationToConfiguration planner into a DART
-/// ConfigurationToTSR planner.
+/// ConfigurationToConfigurations planner.
 class ConfigurationToConfiguration_to_ConfigurationToConfigurations
   : public PlannerAdapter<
         aikido::planner::ConfigurationToConfigurationPlanner,
@@ -24,7 +24,7 @@ public:
   /// \param[in] metaSkeleton MetaSkeleton for adapted planner to operate on.
   /// \param[in] configurationRanker Ranker to rank the sampled configurations. If nullptr,
   /// NominalConfigurationRanker is used with the current metaSkeleton pose.
-  ConfigurationToConfiguration_to_ConfigurationToTSR(
+  ConfigurationToConfiguration_to_ConfigurationToConfigurations(
       std::shared_ptr<aikido::planner::ConfigurationToConfigurationPlanner>
           planner,
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
@@ -32,7 +32,7 @@ public:
 
   // Documentation inherited.
   virtual trajectory::TrajectoryPtr plan(
-      const ConfigurationToTSR& problem, Planner::Result* result) override;
+      const ConfigurationToConfigurations& problem, Planner::Result* result) override;
 };
 
 } // namespace dart
