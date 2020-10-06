@@ -4,14 +4,12 @@
 #include "aikido/planner/dart/util.hpp"
 #include "aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp"
 #include "aikido/robot/util.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 namespace aikido {
 namespace robot {
 
 using planner::dart::ConfigurationToEndEffectorOffset;
 using planner::vectorfield::VectorFieldConfigurationToEndEffectorOffsetPlanner;
-using statespace::dart::MetaSkeletonStateSaver;
 
 //==============================================================================
 ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)

@@ -11,7 +11,6 @@
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
-#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 namespace aikido {
 namespace robot {
@@ -37,7 +36,6 @@ using statespace::GeodesicInterpolator;
 using statespace::StateSpace;
 using statespace::StateSpacePtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
-using statespace::dart::MetaSkeletonStateSaver;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
 using trajectory::Interpolated;
