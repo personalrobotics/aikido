@@ -431,13 +431,6 @@ TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
       mStateSpace, mMetaSkeleton, goalState, collisionFree, timelimit);
 }
 
-//=============================================================================
-void ConcreteRobot::setCRRTPlannerParameters(
-    const util::CRRTPlannerParameters& crrtParameters)
-{
-  mCRRTParameters = crrtParameters;
-}
-
 //==============================================================================
 Eigen::VectorXd ConcreteRobot::getVelocityLimits(
     const MetaSkeleton& metaSkeleton) const

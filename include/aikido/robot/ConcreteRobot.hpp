@@ -246,12 +246,6 @@ public:
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
-  /// TODO: This should be revisited once we have Planner API.
-  /// Sets CRRTPlanner parameters.
-  /// \param[in] crrtParameters CRRT planner parameters
-  void setCRRTPlannerParameters(
-      const util::CRRTPlannerParameters& crrtParameters);
-
   /// Computes velocity limits from the MetaSkeleton. These should be
   /// interpreted as absolute in both the positive and negative directions.
   /// \param[in] metaSkeleton MetaSkeleton to compute limits for.
@@ -304,8 +298,6 @@ private:
   ::dart::collision::CollisionDetectorPtr mCollisionDetector;
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
-
-  util::CRRTPlannerParameters mCRRTParameters;
 };
 
 } // namespace robot

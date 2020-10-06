@@ -177,12 +177,5 @@ void ConcreteManipulator::setVectorFieldPlannerParameters(
   mVectorFieldParameters = vfParameters;
 }
 
-//=============================================================================
-void ConcreteManipulator::setCRRTPlannerParameters(
-    const util::CRRTPlannerParameters& crrtParameters)
-{
-  mCRRTParameters = crrtParameters;
-}
-
 } // namespace robot
 } // namespace aikido
