@@ -90,31 +90,6 @@ struct CRRTPlannerParameters
   double projectionTolerance;
 };
 
-/// Plan to a desired end-effector offset with fixed orientation using CRRT.
-/// \param[in] space StateSpace for the metaskeleton
-/// \param[in] metaSkeleton Metaskeleton to plan with
-/// \param[in] bodyNode Bodynode for the end-effector
-/// \param[in] direction Direction unit vector in the world frame
-/// \param[in] collisionTestable Collision constraint to check. Self-collision
-/// is checked by default.
-/// \param[in] distance Distance distance to move, in meters
-/// \param[in] timelimit Timelimit for planning
-/// \param[in] positionTolerance Tolerance in position
-/// \param[in] angularTolerance Tolerance in angle
-/// \param[in] crrtParameters CRRTPlanner parameters
-/// \return Output trajectory
-trajectory::InterpolatedPtr planToEndEffectorOffsetByCRRT(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bodyNode,
-    const constraint::TestablePtr& collisionTestable,
-    const Eigen::Vector3d& direction,
-    double distance,
-    double timelimit,
-    double positionTolerance = 1e-3,
-    double angularTolerance = 1e-3,
-    const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
-
 /// Parses YAML node for named configurtaions
 /// \param[in] node YAML node containing named configurations
 /// \return Unordered map of (name, configuration) pairs.
