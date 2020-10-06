@@ -111,10 +111,6 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     double positionTolerance,
     double angularTolerance)
 {
-  // Save the current state of the space.
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
-
   // NOTE: We plan using VFP.
   auto vfpPlanner
       = std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(

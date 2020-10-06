@@ -266,12 +266,6 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
 {
   DART_UNUSED(timelimit);
 
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
-  // Save the current state of the space.
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
-
   auto snapConfigToConfigPlanner
       = std::make_shared<SnapConfigurationToConfigurationPlanner>(
           stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
@@ -318,12 +312,6 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
     double timelimit)
 {
   DART_UNUSED(timelimit);
-
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
-  // Save the current state of the space.
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
 
   auto snapConfigToConfigPlanner
       = std::make_shared<SnapConfigurationToConfigurationPlanner>(
@@ -388,12 +376,6 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const distance::ConstConfigurationRankerPtr& ranker)
 {
   DART_UNUSED(timelimit);
-
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
-  // Save the current state of the space.
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
 
   auto snapConfigToConfigPlanner
       = std::make_shared<SnapConfigurationToConfigurationPlanner>(
