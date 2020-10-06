@@ -93,30 +93,6 @@ struct CRRTPlannerParameters
   double projectionTolerance;
 };
 
-/// Plan the configuration of the metakeleton such that
-/// the specified bodynode is set to a sample in TSR
-/// \param[in] space The StateSpace for the metaskeleton.
-/// \param[in] metaSkeleton MetaSkeleton to plan with.
-/// \param[in] bodyNode Bodynode whose frame for which TSR is constructed.
-/// \param[in] tsr TSR to plan to.
-/// \param[in] collisionTestable Testable constraint to check for collision.
-/// \param[in] rng Random number generator
-/// \param[in] timelimit Max time (seconds) to spend per planning to each IK
-/// \param[in] maxNumTrials Number of retries before failure.
-/// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
-/// NominalConfigurationRanker is used with the current metaSkeleton pose.
-/// \return Trajectory to a sample in TSR, or nullptr if planning fails.
-trajectory::TrajectoryPtr planToTSR(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bodyNode,
-    const constraint::dart::TSRPtr& tsr,
-    const constraint::TestablePtr& collisionTestable,
-    common::RNG* rng,
-    double timelimit,
-    std::size_t maxNumTrials,
-    const distance::ConstConfigurationRankerPtr& ranker = nullptr);
-
 /// Returns a Trajectory that moves the configuration of the metakeleton such
 /// that the specified bodynode is set to a sample in a goal TSR and
 /// the trajectory is constrained to a constraint TSR

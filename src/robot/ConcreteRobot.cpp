@@ -5,6 +5,7 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfigurations.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
 #include "aikido/planner/dart/ConfigurationToConfigurations.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/util.hpp"
@@ -26,7 +27,9 @@ using planner::dart::
     ConfigurationToConfiguration_to_ConfigurationToConfiguration;
 using planner::dart::
     ConfigurationToConfiguration_to_ConfigurationToConfigurations;
+using planner::dart::ConfigurationToConfiguration_to_ConfigurationToTSR;
 using planner::dart::ConfigurationToConfigurations;
+using planner::dart::ConfigurationToTSR;
 using planner::kunzretimer::KunzRetimer;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
@@ -384,19 +387,31 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     std::size_t maxNumTrials,
     const distance::ConstConfigurationRankerPtr& ranker)
 {
+  DART_UNUSED(timelimit);
+
+  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
+  // Save the current state of the space.
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
+
+  auto snapConfigToConfigPlanner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+          stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
+
+  // Convert to DART TSR planner.
+  auto tsrPlanner
+      = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
+          snapConfigToConfigPlanner, metaSkeleton, ranker);
+
+  // Create planning problem.
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+  auto problem = ConfigurationToTSR(
+      stateSpace, metaSkeleton, bn, maxNumTrials, tsr, collisionConstraint);
 
-  return util::planToTSR(
-      stateSpace,
-      metaSkeleton,
-      bn,
-      tsr,
-      collisionConstraint,
-      cloneRNG().get(),
-      timelimit,
-      maxNumTrials,
-      ranker);
+  // Plan.
+  return tsrPlanner->plan(problem, /*result*/ nullptr);
 }
 
 //==============================================================================
