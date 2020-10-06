@@ -4,6 +4,8 @@
 #include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfigurations.hpp"
+#include "aikido/planner/dart/ConfigurationToConfigurations.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
@@ -22,6 +24,9 @@ using planner::TrajectoryPostProcessor;
 using planner::dart::ConfigurationToConfiguration;
 using planner::dart::
     ConfigurationToConfiguration_to_ConfigurationToConfiguration;
+using planner::dart::
+    ConfigurationToConfiguration_to_ConfigurationToConfigurations;
+using planner::dart::ConfigurationToConfigurations;
 using planner::kunzretimer::KunzRetimer;
 using planner::parabolic::ParabolicSmoother;
 using planner::parabolic::ParabolicTimer;
@@ -306,13 +311,37 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
     const CollisionFreePtr& collisionFree,
     double timelimit)
 {
-  return util::planToConfigurations(
-      stateSpace,
-      metaSkeleton,
-      goalStates,
-      collisionFree,
-      cloneRNG().get(),
-      timelimit);
+  DART_UNUSED(timelimit);
+
+  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
+  // Save the current state of the space.
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
+
+  auto snapConfigToConfigPlanner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+          stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
+
+  // Convert to DART multi-configuration planner.
+  auto multiConfigPlanner = std::make_shared<
+      ConfigurationToConfiguration_to_ConfigurationToConfigurations>(
+      snapConfigToConfigPlanner, metaSkeleton);
+
+  // Create planning problem.
+  std::vector<const statespace::dart::MetaSkeletonStateSpace::State*>
+      castedGoalStates;
+  for (const auto curGoalState : goalStates)
+  {
+    auto curCastedState
+        = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(
+            curGoalState);
+    castedGoalStates.push_back(curCastedState);
+  }
+  auto problem = ConfigurationToConfigurations(
+      stateSpace, metaSkeleton, castedGoalStates, collisionFree);
+
+  return multiConfigPlanner->plan(problem, /*result*/ nullptr);
 }
 
 //==============================================================================

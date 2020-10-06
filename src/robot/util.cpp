@@ -117,53 +117,6 @@ trajectory::TrajectoryPtr planToConfiguration(
 }
 
 //==============================================================================
-trajectory::TrajectoryPtr planToConfigurations(
-    const MetaSkeletonStateSpacePtr& space,
-    const MetaSkeletonPtr& metaSkeleton,
-    const std::vector<StateSpace::State*>& goalStates,
-    const TestablePtr& collisionTestable,
-    RNG* rng,
-    double timelimit)
-{
-  using planner::ompl::planOMPL;
-  DART_UNUSED(timelimit);
-
-  auto robot = metaSkeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
-  // Save the current state of the space
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
-
-  auto startState = space->getScopedStateFromMetaSkeleton(metaSkeleton.get());
-  SnapConfigurationToConfigurationPlanner::Result pResult;
-  auto planner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
-      space, std::make_shared<GeodesicInterpolator>(space));
-
-  for (const auto& goalState : goalStates)
-  {
-    // First test with Snap Planner
-    auto problem = ConfigurationToConfiguration(
-        space, startState, goalState, collisionTestable);
-    TrajectoryPtr untimedTrajectory = planner->plan(problem, &pResult);
-
-    // Return if the trajectory is non-empty
-    if (untimedTrajectory)
-      return untimedTrajectory;
-
-    auto plannerOMPL = std::make_shared<
-        OMPLConfigurationToConfigurationPlanner<::ompl::geometric::RRTConnect>>(
-        space, rng);
-
-    untimedTrajectory = plannerOMPL->plan(problem, &pResult);
-
-    if (untimedTrajectory)
-      return untimedTrajectory;
-  }
-
-  return nullptr;
-}
-
-//==============================================================================
 trajectory::TrajectoryPtr planToTSR(
     const MetaSkeletonStateSpacePtr& space,
     const MetaSkeletonPtr& metaSkeleton,

@@ -93,22 +93,6 @@ struct CRRTPlannerParameters
   double projectionTolerance;
 };
 
-/// Plan the robot to a set of configurations.
-/// Restores the robot to its initial configuration after planning.
-/// \param[in] space The StateSpace for the metaskeleton
-/// \param[in] metaSkeleton MetaSkeleton to plan with.
-/// \param[in] goalStates Goal states
-/// \param[in] collisionTestable Testable constraint to check for collision.
-/// \param[in] rng Random number generator
-/// \param[in] timelimit Max time to spend per planning to each IK
-trajectory::TrajectoryPtr planToConfigurations(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const std::vector<statespace::StateSpace::State*>& goalStates,
-    const constraint::TestablePtr& collisionTestable,
-    common::RNG* rng,
-    double timelimit);
-
 /// Plan the configuration of the metakeleton such that
 /// the specified bodynode is set to a sample in TSR
 /// \param[in] space The StateSpace for the metaskeleton.
