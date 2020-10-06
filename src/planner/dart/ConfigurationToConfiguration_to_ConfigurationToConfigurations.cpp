@@ -24,7 +24,7 @@ ConfigurationToConfiguration_to_ConfigurationToConfigurations::
         distance::ConstConfigurationRankerPtr configurationRanker)
   : PlannerAdapter<
         planner::ConfigurationToConfigurationPlanner,
-        ConfigurationToConfigurationsPlanner>(
+        planner::dart::ConfigurationToConfigurationsPlanner>(
         std::move(planner), std::move(metaSkeleton))
 {
   mConfigurationRanker = std::move(configurationRanker);
@@ -40,22 +40,18 @@ ConfigurationToConfiguration_to_ConfigurationToConfigurations::plan(
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 
-  // Get the start state from the MetaSkeleton, since this is a DART planner.
-  auto startState = mMetaSkeletonStateSpace->createState();
-  mMetaSkeletonStateSpace->getState(mMetaSkeleton.get(), startState);
-
   // Use a ranker
   ConstConfigurationRankerPtr configurationRanker(mConfigurationRanker);
   if (!configurationRanker)
   {
     auto nominalState = mMetaSkeletonStateSpace->createState();
-    mMetaSkeletonStateSpace->copyState(startState, nominalState);
+    mMetaSkeletonStateSpace->copyState(problem.startState, nominalState);
     configurationRanker = std::make_shared<const NominalConfigurationRanker>(
         mMetaSkeletonStateSpace, mMetaSkeleton, nominalState);
   }
 
   std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
-  for (const auto& goal : problem.getGoalStates())
+  for (const auto goal : problem.getGoalStates())
     configurations.push_back(mMetaSkeletonStateSpace->cloneState(goal));
   if (configurations.empty())
     return nullptr;
@@ -68,7 +64,7 @@ ConfigurationToConfiguration_to_ConfigurationToConfigurations::plan(
     // problem stores a *cloned* scoped state of the passed state.
     auto delegateProblem = ConfigurationToConfiguration(
         mMetaSkeletonStateSpace,
-        startState,
+        problem.startState,
         configurations[i],
         problem.getConstraint());
 
