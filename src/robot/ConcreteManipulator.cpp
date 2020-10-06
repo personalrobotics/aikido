@@ -1,10 +1,17 @@
 #include "aikido/robot/ConcreteManipulator.hpp"
 
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/dart/util.hpp"
+#include "aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp"
 #include "aikido/robot/util.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 namespace aikido {
 namespace robot {
+
+using planner::dart::ConfigurationToEndEffectorOffset;
+using planner::vectorfield::VectorFieldConfigurationToEndEffectorOffsetPlanner;
+using statespace::dart::MetaSkeletonStateSaver;
 
 //==============================================================================
 ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)
@@ -104,23 +111,31 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     double positionTolerance,
     double angularTolerance)
 {
+  // Save the current state of the space.
+  auto saver = MetaSkeletonStateSaver(metaSkeleton);
+  DART_UNUSED(saver);
 
-  auto collision
+  // NOTE: We plan using VFP.
+  auto vfpPlanner
+      = std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
+          space,
+          metaSkeleton,
+          mVectorFieldParameters.distanceTolerance,
+          positionTolerance,
+          angularTolerance,
+          mVectorFieldParameters.initialStepSize,
+          mVectorFieldParameters.jointLimitTolerance,
+          mVectorFieldParameters.constraintCheckResolution,
+          std::chrono::duration<double>(timelimit));
+
+  // Create planning problem.
+  auto collisionConstraint
       = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
-  auto trajectory = util::planToEndEffectorOffset(
-      space,
-      metaSkeleton,
-      body,
-      direction,
-      collision,
-      distance,
-      timelimit,
-      positionTolerance,
-      angularTolerance,
-      mVectorFieldParameters,
-      mCRRTParameters);
+  auto problem = ConfigurationToEndEffectorOffset(
+      space, metaSkeleton, body, direction, distance, collisionConstraint);
 
-  return trajectory;
+  // Plan.
+  return vfpPlanner->plan(problem);
 }
 
 //==============================================================================
@@ -134,9 +149,6 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     double positionTolerance,
     double angularTolerance)
 {
-  auto collision
-      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
-
   Eigen::Vector3d direction
       = planner::dart::util::getEndEffectorDirection(body);
 
@@ -146,20 +158,16 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     direction = direction * -1;
   }
 
-  auto trajectory = util::planToEndEffectorOffset(
+  return planToEndEffectorOffset(
       space,
       metaSkeleton,
       body,
+      collisionFree,
       direction,
-      collision,
       distance,
       timelimit,
       positionTolerance,
-      angularTolerance,
-      mVectorFieldParameters,
-      mCRRTParameters);
-
-  return trajectory;
+      angularTolerance);
 }
 
 //==============================================================================

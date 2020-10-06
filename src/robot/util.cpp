@@ -176,62 +176,6 @@ InterpolatedPtr planToTSRwithTrajectoryConstraint(
 }
 
 //==============================================================================
-trajectory::TrajectoryPtr planToEndEffectorOffset(
-    const MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bodyNode,
-    const Eigen::Vector3d& direction,
-    const TestablePtr& collisionTestable,
-    double distance,
-    double timelimit,
-    double positionTolerance,
-    double angularTolerance,
-    const VectorFieldPlannerParameters& vfParameters,
-    const CRRTPlannerParameters& crrtParameters)
-{
-  auto saver = MetaSkeletonStateSaver(metaSkeleton);
-  DART_UNUSED(saver);
-
-  auto startState = space->createState();
-  space->getState(metaSkeleton.get(), startState);
-
-  auto minDistance
-      = std::max(0.0, distance - vfParameters.negativeDistanceTolerance);
-  auto maxDistance = distance + vfParameters.positiveDistanceTolerance;
-
-  auto traj = planner::vectorfield::planToEndEffectorOffset(
-      space,
-      *startState,
-      metaSkeleton,
-      bodyNode,
-      collisionTestable,
-      direction,
-      minDistance,
-      maxDistance,
-      positionTolerance,
-      angularTolerance,
-      vfParameters.initialStepSize,
-      vfParameters.jointLimitTolerance,
-      vfParameters.constraintCheckResolution,
-      std::chrono::duration<double>(timelimit));
-
-  if (traj)
-    return std::move(traj);
-
-  return planToEndEffectorOffsetByCRRT(
-      space,
-      metaSkeleton,
-      bodyNode,
-      collisionTestable,
-      direction,
-      distance,
-      timelimit,
-      positionTolerance,
-      angularTolerance,
-      crrtParameters);
-}
-
-//==============================================================================
 InterpolatedPtr planToEndEffectorOffsetByCRRT(
     const MetaSkeletonStateSpacePtr& space,
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,

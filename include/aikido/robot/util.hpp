@@ -29,8 +29,7 @@ struct VectorFieldPlannerParameters
   VectorFieldPlannerParameters() = default;
   VectorFieldPlannerParameters(
       double linearVelocity,
-      double negativeDistanceTolerance,
-      double positiveDistanceTolerance,
+      double distanceTolerance,
       double initialStepSize,
       double jointLimitTolerance,
       double constraintCheckResolution,
@@ -38,8 +37,7 @@ struct VectorFieldPlannerParameters
       double angularGain = 0.2,
       double timestep = 0.1)
     : linearVelocity(linearVelocity)
-    , negativeDistanceTolerance(negativeDistanceTolerance)
-    , positiveDistanceTolerance(positiveDistanceTolerance)
+    , distanceTolerance(distanceTolerance)
     , initialStepSize(initialStepSize)
     , jointLimitTolerance(jointLimitTolerance)
     , constraintCheckResolution(constraintCheckResolution)
@@ -50,8 +48,7 @@ struct VectorFieldPlannerParameters
       };
 
   double linearVelocity;
-  double negativeDistanceTolerance;
-  double positiveDistanceTolerance;
+  double distanceTolerance;
   double initialStepSize;
   double jointLimitTolerance;
   double constraintCheckResolution;
@@ -92,34 +89,6 @@ struct CRRTPlannerParameters
   std::size_t projectionMaxIteration;
   double projectionTolerance;
 };
-
-/// Plan to a desired end-effector offset with fixed orientation.
-/// \param[in] space StateSpace for the metaskeleton
-/// \param[in] metaSkeleton Metaskeleton to plan with
-/// \param[in] body Bodynode for the end-effector
-/// \param[in] direction Direction unit vector in the world frame
-/// \param[in] collisionTestable Collision constraint to check. Self-collision
-/// is checked by default.
-/// \param[in] distance Distance distance to move, in meters
-/// \param[in] timelimit Timelimit for planning
-/// \param[in] positionTolerance Tolerance in position
-/// \param[in] angularTolerance Tolerance in angle
-/// \param[in] vfParameters VectorFieldPlanenr parameters
-/// \param[in] crrtParameters CRRTPlanner parameters
-/// \return Output trajectory
-trajectory::TrajectoryPtr planToEndEffectorOffset(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& body,
-    const Eigen::Vector3d& direction,
-    const constraint::TestablePtr& collisionTestable,
-    double distance,
-    double timelimit,
-    double positionTolerance = 1e-3,
-    double angularTolerance = 1e-3,
-    const VectorFieldPlannerParameters& vfParameters
-    = VectorFieldPlannerParameters(),
-    const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
 
 /// Plan to a desired end-effector offset with fixed orientation using CRRT.
 /// \param[in] space StateSpace for the metaskeleton
