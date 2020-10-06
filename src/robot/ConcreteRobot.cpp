@@ -282,9 +282,12 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
   auto castedGoalState
       = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(
           goalState);
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
   auto problem = ConfigurationToConfiguration(
-      stateSpace, metaSkeleton, castedGoalState, collisionFree);
+      stateSpace, metaSkeleton, castedGoalState, collisionConstraint);
 
+  // Plan.
   return dartSnapConfigToConfigPlanner->plan(problem, /*result*/ nullptr);
 }
 
@@ -338,9 +341,13 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
             curGoalState);
     castedGoalStates.push_back(curCastedState);
   }
-  auto problem = ConfigurationToConfigurations(
-      stateSpace, metaSkeleton, castedGoalStates, collisionFree);
 
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+  auto problem = ConfigurationToConfigurations(
+      stateSpace, metaSkeleton, castedGoalStates, collisionConstraint);
+
+  // Plan.
   return multiConfigPlanner->plan(problem, /*result*/ nullptr);
 }
 
