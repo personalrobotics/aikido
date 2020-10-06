@@ -236,27 +236,6 @@ public:
       std::size_t maxNumTrials,
       const distance::ConstConfigurationRankerPtr& ranker = nullptr);
 
-  /// TODO: Replace this with Problem interface.
-  /// Returns a Trajectory that moves the configuration of the metakeleton such
-  /// that the specified bodynode is set to a sample in a goal TSR and
-  /// the trajectory is constrained to a constraint TSR
-  /// \param[in] stateSpace The StateSpace for the metaskeleton
-  /// \param[in] metaSkeleton The MetaSkeleton to plan with.
-  /// \param[in] bodyNode Bodynode whose frame is meant for TSR
-  /// \param[in] goalTsr The goal TSR to move to
-  /// \param[in] constraintTsr The constraint TSR for the trajectory
-  /// \param[in] collisionFree Collision constraint
-  /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
-  /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
-  aikido::trajectory::TrajectoryPtr planToTSRwithTrajectoryConstraint(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& bodyNode,
-      const aikido::constraint::dart::TSRPtr& goalTsr,
-      const aikido::constraint::dart::TSRPtr& constraintTsr,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
-
   /// Plans to a named configuration.
   /// \param[in] name Name of the configuration to plan to
   /// \param[in] collisionFree Collision constraint

@@ -93,29 +93,6 @@ struct CRRTPlannerParameters
   double projectionTolerance;
 };
 
-/// Returns a Trajectory that moves the configuration of the metakeleton such
-/// that the specified bodynode is set to a sample in a goal TSR and
-/// the trajectory is constrained to a constraint TSR
-/// Uses CRRTPlanner.
-/// \param[in] space The StateSpace for the metaskeleton
-/// \param[in] metaSkeleton MetaSkeleton to plan with.
-/// \param[in] bodyNode Bodynode whose frame is meant for TSR
-/// \param[in] goalTsr The goal TSR to move to
-/// \param[in] constraintTsr The constraint TSR for the trajectory
-/// \param[in] collisionTestable Testable constraint to check for collision.
-/// \param[in] timelimit Timelimit for planning
-/// \param[in] crrtParameters Parameters to use in planning.
-/// \return Trajectory to a sample in TSR, or nullptr if planning fails.
-trajectory::InterpolatedPtr planToTSRwithTrajectoryConstraint(
-    const statespace::dart::MetaSkeletonStateSpacePtr& space,
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const dart::dynamics::BodyNodePtr& bodyNode,
-    const constraint::dart::TSRPtr& goalTsr,
-    const constraint::dart::TSRPtr& constraintTsr,
-    const constraint::TestablePtr& collisionTestable,
-    double timelimit,
-    const CRRTPlannerParameters& crrtParameters = CRRTPlannerParameters());
-
 /// Plan to a desired end-effector offset with fixed orientation.
 /// \param[in] space StateSpace for the metaskeleton
 /// \param[in] metaSkeleton Metaskeleton to plan with

@@ -415,31 +415,6 @@ TrajectoryPtr ConcreteRobot::planToTSR(
 }
 
 //==============================================================================
-TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const BodyNodePtr& bodyNode,
-    const TSRPtr& goalTsr,
-    const TSRPtr& constraintTsr,
-    const CollisionFreePtr& collisionFree,
-    double timelimit)
-{
-  auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
-
-  // Uses CRRT.
-  return util::planToTSRwithTrajectoryConstraint(
-      stateSpace,
-      metaSkeleton,
-      bodyNode,
-      goalTsr,
-      constraintTsr,
-      collisionConstraint,
-      timelimit,
-      mCRRTParameters);
-}
-
-//==============================================================================
 TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
     const std::string& name,
     const CollisionFreePtr& collisionFree,
