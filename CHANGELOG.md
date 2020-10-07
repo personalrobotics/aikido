@@ -5,6 +5,7 @@
 * Planner
 
   * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
+  * Added ConfigurationToConfigurations planner adapter: [#587](https://github.com/personalrobotics/aikido/pull/587)
 
 ### 0.4.0 (2020-08-27)
 
