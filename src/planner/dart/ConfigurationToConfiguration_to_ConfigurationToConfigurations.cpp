@@ -40,12 +40,14 @@ ConfigurationToConfiguration_to_ConfigurationToConfigurations::plan(
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 
+  auto startState = problem.getStartState();
+
   // Use a ranker
   ConstConfigurationRankerPtr configurationRanker(mConfigurationRanker);
   if (!configurationRanker)
   {
     auto nominalState = mMetaSkeletonStateSpace->createState();
-    mMetaSkeletonStateSpace->copyState(problem.startState, nominalState);
+    mMetaSkeletonStateSpace->copyState(startState, nominalState);
     configurationRanker = std::make_shared<const NominalConfigurationRanker>(
         mMetaSkeletonStateSpace, mMetaSkeleton, nominalState);
   }
@@ -64,7 +66,7 @@ ConfigurationToConfiguration_to_ConfigurationToConfigurations::plan(
     // problem stores a *cloned* scoped state of the passed state.
     auto delegateProblem = ConfigurationToConfiguration(
         mMetaSkeletonStateSpace,
-        problem.startState,
+        startState,
         configurations[i],
         problem.getConstraint());
 
