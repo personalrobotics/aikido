@@ -13,8 +13,8 @@ namespace dart {
 /// ConfigurationToConfigurations planner.
 class ConfigurationToConfiguration_to_ConfigurationToConfigurations
   : public PlannerAdapter<
-        aikido::planner::ConfigurationToConfigurationPlanner,
-        ConfigurationToConfigurationsPlanner>
+        planner::ConfigurationToConfigurationPlanner,
+        planner::dart::ConfigurationToConfigurationsPlanner>
 {
 public:
   /// Constructor
