@@ -7,7 +7,6 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfigurations.hpp"
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
 #include "aikido/planner/dart/ConfigurationToConfigurations.hpp"
-#include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/robot/util.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
@@ -29,20 +28,13 @@ using planner::dart::
 using planner::dart::ConfigurationToConfiguration_to_ConfigurationToTSR;
 using planner::dart::ConfigurationToConfigurations;
 using planner::dart::ConfigurationToTSR;
-using planner::kunzretimer::KunzRetimer;
-using planner::parabolic::ParabolicSmoother;
-using planner::parabolic::ParabolicTimer;
 using statespace::GeodesicInterpolator;
 using statespace::StateSpace;
 using statespace::StateSpacePtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
-using trajectory::Interpolated;
-using trajectory::InterpolatedPtr;
-using trajectory::Spline;
 using trajectory::TrajectoryPtr;
-using trajectory::UniqueSplinePtr;
 
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::MetaSkeleton;

@@ -3,7 +3,6 @@
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/dart/util.hpp"
 #include "aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp"
-#include "aikido/robot/util.hpp"
 
 namespace aikido {
 namespace robot {
