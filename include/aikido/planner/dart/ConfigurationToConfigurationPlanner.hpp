@@ -32,6 +32,9 @@ public:
       ::dart::dynamics::MetaSkeletonPtr metaSkeleton);
 
   /// Solves \c problem returning the result to \c result.
+  /// NOTE: Because this is a DART planner, this method must both 1) lock the
+  /// MetaSkeleton during planning and 2) reset the MetaSkeleton state after
+  /// planning.
   ///
   /// \param[in] problem Planning problem to be solved by the planner.
   /// \param[out] result Result of planning procedure.

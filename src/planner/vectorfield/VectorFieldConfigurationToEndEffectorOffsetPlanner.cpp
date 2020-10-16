@@ -64,6 +64,8 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
   }
 
   // Just call the core VFP function.
+  // NOTE: This both locks the metaskeleton while planning and restores its
+  // state after planning.
   return planToEndEffectorOffset(
       getMetaSkeletonStateSpace(),
       *problem.getStartState(),

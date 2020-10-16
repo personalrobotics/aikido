@@ -37,6 +37,11 @@ ConfigurationToConfiguration_to_ConfigurationToConfigurations::plan(
 {
   // TODO: Check equality between state space of this planner and given problem.
 
+  // NOTE: Make sure we lock the metaskeleton used to plan and return it to
+  // correct state after.
+  auto metaskeletonMutex = mMetaSkeleton->getLockableReference();
+  std::lock_guard<::dart::common::LockableReference> lock(*metaskeletonMutex);
+  // Save the current state of the space.
   auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
   DART_UNUSED(saver);
 
