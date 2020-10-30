@@ -46,6 +46,14 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 {
   // TODO: Check equality between state space of this planner and given problem.
 
+  // NOTE: Make sure we lock the metaskeleton used to plan and return it to
+  // correct state after.
+  auto metaskeletonMutex = mMetaSkeleton->getLockableReference();
+  std::lock_guard<::dart::common::LockableReference> lock(*metaskeletonMutex);
+  // Save the current state of the space.
+  auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
+  DART_UNUSED(saver);
+
   // TODO: DART may be updated to check for single skeleton
   if (mMetaSkeleton->getNumDofs() == 0)
     throw std::invalid_argument("MetaSkeleton has 0 degrees of freedom.");
@@ -85,9 +93,6 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       problem.getMaxSamples());
   auto generator = ikSampleable.createSampleGenerator();
 
-  auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
-  DART_UNUSED(saver);
-
   auto robot = mMetaSkeleton->getBodyNode(0)->getSkeleton();
 
   std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
@@ -111,7 +116,6 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   while (samples < maxSamples && generator->canSample())
   {
     // Sample from TSR
-    std::lock_guard<std::mutex> lock(robot->getMutex());
     bool sampled = generator->sample(goalState);
 
     // Increment even if it's not a valid sample since this loop
