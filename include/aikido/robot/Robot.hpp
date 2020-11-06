@@ -1,7 +1,6 @@
 #ifndef AIKIDO_ROBOT_ROBOT_HPP_
 #define AIKIDO_ROBOT_ROBOT_HPP_
 
-// TODO(avk): How many of these headers are actually needed?
 #include <chrono>
 #include <string>
 #include <unordered_map>
@@ -15,9 +14,9 @@
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/planner/Planner.hpp"
+#include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
-#include <aikido/statespace/StateSpace.hpp>
 
 namespace aikido {
 namespace robot {
@@ -86,7 +85,7 @@ public:
       dart::dynamics::MetaSkeletonPtr skeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const;
 
-  // TODO(avk): Template this function.
+  // TODO(avk): Template this function necessary?
   // Since this is only templated function, might want to make this a
   // convenience function outside of the class.
   ///
@@ -98,7 +97,7 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const std::string& name);
 
-  // TODO(avk): Get type of the robot.
+  // TODO(avk): Get type of the robot necessary? Maybe.
   // TODO(avk): Set root or parent?
   void setRootRobot(Robot* root)
   {
@@ -118,14 +117,16 @@ public:
       const statespace::StateSpace::State* goalState,
       const constraint::TestablePtr& testableConstraint) const;
 
-private:
+  // TODO(avk): Make private after testing via libherb.
   std::string mName;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
   std::shared_ptr<control::TrajectoryExecutor> mTrajectoryExecutor;
 
-  // TODO(avk): This about when this will get deleted.
+  // TODO(avk): Think about when this will get deleted.
   Robot* mRootRobot{nullptr};
+  // TODO(avk): Better way to store subrobots instead of names?
+  // TODO(avk): Also change the name.
   std::unordered_map<std::string, std::shared_ptr<Robot>> mChildren;
 
   // Collision objects.
