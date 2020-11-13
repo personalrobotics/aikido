@@ -6,7 +6,6 @@
 
 #include <aikido/constraint/TestableIntersection.hpp>
 #include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
-#include <aikido/io/CatkinResourceRetriever.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
 
 namespace aikido {
@@ -16,29 +15,29 @@ namespace robot {
 Robot::Robot(
     const dart::common::Uri& urdf,
     const dart::common::Uri& srdf,
-    const std::string name)
+    const std::string name,
+    const dart::common::ResourceRetrieverPtr& retriever)
   : mName(name)
   , mCollisionDetector(dart::collision::FCLCollisionDetector::create())
   , mSelfCollisionFilter(
         std::make_shared<dart::collision::BodyNodeCollisionFilter>())
+  , mResourceRetriever(retriever)
 {
   // Read the URDF.
-  const dart::common::ResourceRetrieverPtr& retriever
-      = std::make_shared<io::CatkinResourceRetriever>();
   dart::utils::DartLoader urdfLoader;
-  mMetaSkeleton = urdfLoader.parseSkeleton(urdf, retriever);
+  mMetaSkeleton = urdfLoader.parseSkeleton(urdf, mResourceRetriever);
   if (!mMetaSkeleton)
   {
     throw std::runtime_error("Unable to load the robot from URDF.");
   }
 
-  // TODO: Avoid loading the URDF this second time. See PR63 [libherb].
+  // Read the SRDF.
   urdf::Model urdfModel;
-  std::string urdfAsString = retriever->readAll(urdf);
+  std::string urdfAsString = mResourceRetriever->readAll(urdf);
   urdfModel.initString(urdfAsString);
 
   srdf::Model srdfModel;
-  std::string srdfAsString = retriever->readAll(srdf);
+  std::string srdfAsString = mResourceRetriever->readAll(srdf);
   srdfModel.initString(urdfModel, srdfAsString);
   auto disabledCollisions = srdfModel.getDisabledCollisionPairs();
   for (auto disabledPair : disabledCollisions)
@@ -53,8 +52,10 @@ Robot::Robot(
 
 //==============================================================================
 Robot::Robot(
-    const dart::dynamics::MetaSkeletonPtr& skeleton, const std::string& name)
-  : mName(name)
+    const dart::dynamics::MetaSkeletonPtr& skeleton,
+    const std::string name,
+    const dart::common::ResourceRetrieverPtr& retriever)
+  : mName(name), mResourceRetriever(retriever)
 {
   mMetaSkeleton = skeleton;
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
@@ -88,6 +89,7 @@ constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint(
     statespace::dart::MetaSkeletonStateSpacePtr space,
     dart::dynamics::MetaSkeletonPtr skeleton) const
 {
+  // If this is the root root, return self collision constraint.
   if (mRootRobot)
   {
     return mRootRobot->getSelfCollisionConstraint(space, skeleton);
@@ -100,11 +102,11 @@ constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint(
   rootSkeleton->enableSelfCollisionCheck();
   rootSkeleton->disableAdjacentBodyCheck();
 
-  // TODO: Switch to PRIMITIVE once this is fixed in DART.
-  // mCollisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
-  // TODO(avk): Create an issue for the above TODO.
+  // Create collision option with self-collision filter from SRDF.
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
+
+  // Create the constraint and return.
   auto collisionFreeConstraint
       = std::make_shared<constraint::dart::CollisionFree>(
           space, skeleton, mCollisionDetector, collisionOption);
@@ -119,12 +121,14 @@ constraint::TestablePtr Robot::getFullCollisionConstraint(
     dart::dynamics::MetaSkeletonPtr skeleton,
     const constraint::dart::CollisionFreePtr& collisionFree) const
 {
+  // If this is the root robot, return full collision constraint.
   if (mRootRobot)
   {
     return mRootRobot->getFullCollisionConstraint(
         space, skeleton, collisionFree);
   }
 
+  // Get the robot's self collision constraint.
   auto selfCollisionFree = getSelfCollisionConstraint(space, skeleton);
   if (!collisionFree)
   {
@@ -143,14 +147,13 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const std::string& name)
 {
-  // TODO(avk): Possibly not needed to check for child name?
   if (mChildren.find(name) != mChildren.end())
   {
     throw std::invalid_argument("Child is already present");
   }
 
-  // This code needs to be templated anyway.
-  std::shared_ptr<Robot> child;
+  // Create a child robot.
+  auto child = std::make_shared<Robot>(metaSkeleton, name, mResourceRetriever);
   const auto& root = mRootRobot ? mRootRobot : this;
   child->setRootRobot(root);
   mChildren[name] = child;
@@ -164,8 +167,6 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
     const constraint::TestablePtr& testableConstraint) const
 {
   // Create the problem.
-  // TODO(avk): Get current state needs to be added.
-  // TODO(avk): Planner and Problem share information, not mutually exclusive.
   auto problem = planner::ConfigurationToConfiguration(
       mStateSpace, getCurrentState(), goalState, testableConstraint);
 
@@ -175,3 +176,8 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
 
 } // namespace robot
 } // namespace aikido
+
+// TODO(avk): Why do planner and problem store similar information?
+// TODO(avk): Why does planToConfiguration need to take current robot state?
+// TODO: Switch to PRIMITIVE once this is fixed in DART.
+// mCollisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);

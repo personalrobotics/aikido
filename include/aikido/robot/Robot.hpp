@@ -17,6 +17,7 @@
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
+#include <aikido/io/CatkinResourceRetriever.hpp>
 
 namespace aikido {
 namespace robot {
@@ -29,17 +30,17 @@ AIKIDO_DECLARE_POINTERS(Robot)
 class Robot
 {
 public:
-  ///
   /// Construct a new Robot object.
-  ///
   /// \param[in] urdf The path to the robot's URDF.
   /// \param[in] srdf The path to the robot's SRDF.
   /// \param[in] name The name of the robot.
-  // TODO(avk): Default resource retriever and executor to nullptr.
+  /// \param[in] retriever Retriever to access resources (urdf/srdf).
   Robot(
       const dart::common::Uri& urdf,
       const dart::common::Uri& srdf,
-      const std::string name = "robot");
+      const std::string name = "robot",
+      const dart::common::ResourceRetrieverPtr& retriever
+      = std::make_shared<aikido::io::CatkinResourceRetriever>());
 
   ///
   /// Construct a new Robot object.
@@ -48,7 +49,9 @@ public:
   /// \param[in] name The name of the robot.
   Robot(
       const dart::dynamics::MetaSkeletonPtr& skeleton,
-      const std::string& name = "robot");
+      const std::string name = "robot",
+      const dart::common::ResourceRetrieverPtr& retriever
+      = std::make_shared<aikido::io::CatkinResourceRetriever>());
 
   /// Destructor.
   virtual ~Robot() = default;
@@ -85,20 +88,16 @@ public:
       dart::dynamics::MetaSkeletonPtr skeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const;
 
-  // TODO(avk): Template this function necessary?
-  // Since this is only templated function, might want to make this a
-  // convenience function outside of the class.
-  ///
   /// Registers a subset of the joints of the skeleton as a new robot.
   ///
   /// \param[in] metaSkeleton The metaskeleton corresponding to the subrobot.
   /// \param[in] name Name of the subrobot.
+  /// \param[in] This needs to have default trajectory executor?
   virtual std::shared_ptr<Robot> registerSubRobot(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const std::string& name);
 
-  // TODO(avk): Get type of the robot necessary? Maybe.
-  // TODO(avk): Set root or parent?
+  // Sets the root robot.
   void setRootRobot(Robot* root)
   {
     mRootRobot = root;
@@ -111,7 +110,6 @@ public:
     return mStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get());
   }
 
-  // TODO(avk): Need to introduce a termination condition class.
   trajectory::TrajectoryPtr planToConfiguration(
       const planner::PlannerPtr& planner,
       const statespace::StateSpace::State* goalState,
@@ -133,6 +131,9 @@ public:
   dart::collision::CollisionDetectorPtr mCollisionDetector;
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
+
+  // Resource retriever.
+  const dart::common::ResourceRetrieverPtr& mResourceRetriever;
 };
 
 } // namespace robot
