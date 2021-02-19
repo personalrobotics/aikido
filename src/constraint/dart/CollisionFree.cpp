@@ -45,6 +45,8 @@ bool CollisionFree::isSatisfied(
     collisionFreeOutcome->clear();
   }
 
+  auto robot = mMetaSkeleton->getBodyNode(0)->getSkeleton();
+  std::lock_guard<std::mutex> lock(robot->getMutex());
   auto skelStatePtr = static_cast<
       const aikido::statespace::dart::MetaSkeletonStateSpace::State*>(_state);
   mMetaSkeletonStateSpace->setState(mMetaSkeleton.get(), skelStatePtr);
