@@ -124,8 +124,7 @@ public:
   // TODO(avk): Think about when this will get deleted.
   Robot* mRootRobot{nullptr};
   // TODO(avk): Better way to store subrobots instead of names?
-  // TODO(avk): Also change the name.
-  std::unordered_map<std::string, std::shared_ptr<Robot>> mChildren;
+  std::unordered_map<std::string, std::shared_ptr<Robot>> mSubRobots;
 
   // Collision objects.
   dart::collision::CollisionDetectorPtr mCollisionDetector;

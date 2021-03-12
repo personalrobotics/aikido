@@ -147,17 +147,19 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const std::string& name)
 {
-  if (mChildren.find(name) != mChildren.end())
+  if (mSubRobots.find(name) != mSubRobots.end())
   {
     throw std::invalid_argument("Child is already present");
   }
 
   // Create a child robot.
-  auto child = std::make_shared<Robot>(metaSkeleton, name, mResourceRetriever);
+  auto subRobot
+      = std::make_shared<Robot>(metaSkeleton, name, mResourceRetriever);
   const auto& root = mRootRobot ? mRootRobot : this;
-  child->setRootRobot(root);
-  mChildren[name] = child;
-  return child;
+  subRobot->setRootRobot(root);
+  subRobot->mTrajectoryExecutor = mTrajectoryExecutor;
+  mSubRobots[name] = subRobot;
+  return subRobot;
 }
 
 //=============================================================================
