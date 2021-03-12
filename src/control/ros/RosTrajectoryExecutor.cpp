@@ -178,7 +178,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
       if (!terminalMessage.empty())
         message << " (" << terminalMessage << ")";
 
-      //mPromise->set_exception(std::make_exception_ptr(
+      // mPromise->set_exception(std::make_exception_ptr(
       //    RosTrajectoryExecutionException(message.str(), terminalState)));
 
       isSuccessful = false;
@@ -204,11 +204,14 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
       isSuccessful = false;
     }
 
-    if (isSuccessful) {
+    if (isSuccessful)
+    {
       mPromise->set_value();
-    } else {
+    }
+    else
+    {
       mPromise->set_exception(std::make_exception_ptr(
-        RosTrajectoryExecutionException(message.str(), errorCode)));
+          RosTrajectoryExecutionException(message.str(), errorCode)));
     }
 
     mInProgress = false;
