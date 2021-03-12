@@ -2,6 +2,10 @@
 
 ### 0.5.0 (2020-XX-XX)
 
+* Control
+
+  * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
+
 * Planner
 
   * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
