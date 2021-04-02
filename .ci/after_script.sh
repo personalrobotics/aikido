@@ -4,6 +4,6 @@ set -ex
 
 cd "${HOME}/workspace"
 
-if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+if [ "${OS_NAME}" != "macos-latest" ]; then
   ./scripts/view-all-results.sh test_results
 fi
