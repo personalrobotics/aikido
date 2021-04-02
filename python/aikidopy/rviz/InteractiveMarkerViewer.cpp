@@ -8,11 +8,11 @@ namespace py = pybind11;
 namespace aikido {
 namespace python {
 
-void WorldInteractiveMarkerViewer(py::module& m)
+void InteractiveMarkerViewer(py::module& m)
 {
-    py::class_<aikido::rviz::WorldInteractiveMarkerViewer, std::shared_ptr<aikido::rviz::WorldInteractiveMarkerViewer>>(m, "WorldInteractiveMarkerViewer")
+    py::class_<aikido::rviz::InteractiveMarkerViewer, std::shared_ptr<aikido::rviz::InteractiveMarkerViewer>>(m, "InteractiveMarkerViewer")
       .def("addTSRMarker",
-        [](aikido::rviz::WorldInteractiveMarkerViewer* self,
+        [](aikido::rviz::InteractiveMarkerViewer* self,
           std::shared_ptr<aikido::constraint::dart::TSR> tsr)
         -> aikido::rviz::TSRMarkerPtr
         {
