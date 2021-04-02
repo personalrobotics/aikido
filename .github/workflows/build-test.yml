@@ -31,17 +31,17 @@ jobs:
             aikidopy: OFF
             build: XCODE11_CMAKE_RELEASE
             config: ""
-          # Bionic Catkin
-          - os: ubuntu-18.04
-            catkin: ON
-            aikidopy: OFF
-            build: BIONIC_CATKIN_FULL_RELEASE
-            config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
           # Bionic CMake
           - os: ubuntu-18.04
             catkin: OFF
             aikidopy: OFF
             build: BIONIC_CMAKE_RELEASE
+            config: ""
+          # Bionic CMake Aikidopy
+          - os: ubuntu-18.04
+            catkin: OFF
+            aikidopy: ON
+            build: BIONIC_CMAKE_RELEASE_AIKIDOPY
             config: ""
           # Focal CMake
           - os: ubuntu-20.04
@@ -49,18 +49,18 @@ jobs:
             aikidopy: OFF
             build: FOCAL_CMAKE_RELEASE
             config: ""
-          # Bionic Catkin Aikidopy
-          - os: ubuntu-18.04
+          # Focal Catkin
+          - os: ubuntu-20.04
+            catkin: ON
+            aikidopy: OFF
+            build: FOCAL_CATKIN_FULL_RELEASE
+            config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+          # Focal Catkin Aikidopy
+          - os: ubuntu-20.04
             catkin: ON
             aikidopy: ON
-            build: BIONIC_CATKIN_FULL_RELEASE_AIKIDOPY
+            build: FOCAL_CATKIN_FULL_RELEASE_AIKIDOPY
             config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DBUILD_AIKIDOPY=ON"
-          # Bionic CMake Aikidopy
-          - os: ubuntu-18.04
-            catkin: OFF
-            aikidopy: ON
-            build: BIONIC_CMAKE_RELEASE_AIKIDOPY
-            config: ""
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.build }}
     env:
