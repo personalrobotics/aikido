@@ -71,6 +71,7 @@ jobs:
       OS_NAME: ${{ matrix.os }}
       DISTRIBUTION: "https://raw.githubusercontent.com/personalrobotics/pr-rosinstalls/master/repositories.yml"
       REPOSITORY: aikido
+      SUDO: sudo
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
