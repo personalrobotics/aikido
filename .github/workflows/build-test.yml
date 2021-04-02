@@ -69,6 +69,8 @@ jobs:
       BUILD_AIKIDOPY: ${{ matrix.aikidopy }}
       BUILD_TYPE: Release
       OS_NAME: ${{ matrix.os }}
+      DISTRIBUTION: "https://raw.githubusercontent.com/personalrobotics/pr-rosinstalls/master/repositories.yml"
+      REPOSITORY: aikido
     steps:
       - name: Check out repository
         uses: actions/checkout@v2

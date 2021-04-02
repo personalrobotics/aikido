@@ -29,6 +29,8 @@ jobs:
       CATKIN_CONFIG_OPTIONS: ${{ matrix.config }}
       BUILD_AIKIDOPY: ${{ matrix.aikidopy }}
       BUILD_TYPE: Release
+      DISTRIBUTION: "https://raw.githubusercontent.com/personalrobotics/pr-rosinstalls/master/repositories.yml"
+      REPOSITORY: aikido
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
