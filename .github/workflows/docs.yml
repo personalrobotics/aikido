@@ -29,7 +29,7 @@ jobs:
       CATKIN_CONFIG_OPTIONS: ${{ matrix.config }}
       BUILD_AIKIDOPY: ${{ matrix.aikidopy }}
       BUILD_TYPE: Release
-      DISTRIBUTION: "https://raw.githubusercontent.com/personalrobotics/pr-rosinstalls/egordon-git-ext/repositories.yml"
+      DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
       REPOSITORY: aikido
       SUDO: sudo
     steps:
