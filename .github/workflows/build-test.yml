@@ -1,0 +1,170 @@
+name: build-test
+
+on: 
+  push:
+    # Pushes / merges to master
+    branches:
+      - master
+  pull_request:
+    # On creation and updating of PR
+    types: [opened, reopened, edited]
+    # Only those targeting master branch
+    branches:
+      - master
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  bionic_catkin:
+    name: bionic_catkin
+    env:
+      USE_CATKIN: ON
+      BUILD_TYPE: Release
+      CATKIN_CONFIG_OPTIONS: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+      BUILD_NAME: BIONIC_CATKIN_FULL_RELEASE
+  bionic_cmake:
+    name: bionic_cmake
+    env:
+      USE_CATKIN: OFF
+      BUILD_TYPE: Release
+      BUILD_NAME: BIONIC_CMAKE_RELEASE
+  focal_cmake:
+    name: focal_cmake
+    env:
+      USE_CATKIN: OFF
+      BUILD_TYPE: Release
+      BUILD_NAME: FOCAL_CMAKE_RELEASE
+  bionic_aikidopy:
+    name: bionic_aikidopy
+    env:
+      USE_CATKIN: ON
+      BUILD_TYPE: Release
+      BUILD_NAME: BIONIC_CATKIN_FULL_RELEASE_AIKIDOPY
+      CATKIN_CONFIG_OPTIONS: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DBUILD_AIKIDOPY=ON"
+      BUILD_AIKIDOPY: ON
+  osx:
+    name: osx
+    env:
+      USE_CATKIN: OFF
+      BUILD_TYPE: Release
+      BUILD_NAME: XCODE11_CMAKE_RELEASE
+  docs:
+    name: docs
+    env:
+      USE_CATKIN: ON
+      BUILD_TYPE: Release
+      BUILD_NAME: DOCS
+
+jobs:
+  fast_finish: true
+  include:
+    - os: linux
+      env:
+        - BUILD_NAME=BIONIC_CATKIN_FULL_RELEASE
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+        - USE_CATKIN=ON
+      services: docker
+
+    - os: linux
+      env:
+        - BUILD_NAME=BIONIC_CMAKE_RELEASE
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - USE_CATKIN=OFF
+      services: docker
+
+    - os: linux
+      env:
+        - BUILD_NAME=FOCAL_CMAKE_RELEASE
+        - DOCKER_FILE="ubuntu-focal"
+        - BUILD_TYPE=Release
+        - USE_CATKIN=OFF
+      services: docker
+
+    - os: linux
+      env:
+        - BUILD_NAME=BIONIC_CATKIN_FULL_RELEASE_AIKIDOPY
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - CATKIN_CONFIG_OPTIONS="-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DBUILD_AIKIDOPY=ON"
+        - USE_CATKIN=ON
+        - BUILD_AIKIDOPY=ON
+      services: docker
+
+    - os: linux
+      env:
+        - BUILD_NAME=BIONIC_CMAKE_RELEASE_AIKIDOPY
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - USE_CATKIN=OFF
+        - BUILD_AIKIDOPY=ON
+      services: docker
+
+    - os: osx
+      osx_image: xcode12
+      compiler: clang
+      env:
+        - BUILD_NAME=XCODE11_CMAKE_RELEASE
+        - BUILD_TYPE=Release
+        - USE_CATKIN=OFF
+
+    - os: linux
+      compiler: gcc
+      env:
+        - BUILD_NAME=DOCS
+        - DOCKER_FILE="ubuntu-bionic"
+        - BUILD_TYPE=Release
+        - USE_CATKIN=ON
+      services: docker
+
+before_install:
+  - if [ -n "$DOCKER_FILE" ]; then
+      docker build -t "$DOCKER_FILE" -f ".ci/docker/$DOCKER_FILE" .;
+      docker run -itd -v $TRAVIS_BUILD_DIR:$TRAVIS_BUILD_DIR --env-file .ci/docker/env.list --name aikido-docker "$DOCKER_FILE";
+      docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/before_install.sh";
+    else
+      '.ci/before_install.sh';
+    fi
+
+install:
+  - if [ -n "$DOCKER_FILE" ]; then
+      docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/install.sh";
+    else
+      '.ci/install.sh';
+    fi
+
+script:
+  - if [ -n "$DOCKER_FILE" ]; then
+      docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/script.sh";
+    else
+      '.ci/script.sh';
+    fi
+
+after_script:
+  - if [ -n "$DOCKER_FILE" ]; then
+      docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/after_script.sh";
+    else
+      '.ci/after_script.sh';
+    fi
+
+after_failure:
+  - if [ -n "$DOCKER_FILE" ]; then
+      docker exec aikido-docker /bin/sh -c "cd $TRAVIS_BUILD_DIR && ./.ci/after_failure.sh";
+    else
+      '.ci/after_failure.sh';
+    fi
+
+deploy:
+  strategy: git
+  token: $GITHUB_TOKEN
+  provider: pages
+  local_dir: gh-pages
+  keep_history: false
+  verbose: true
+  on:
+    branch: master
+    condition: $BUILD_NAME == DOCS && $TRAVIS_EVENT_TYPE != cron
