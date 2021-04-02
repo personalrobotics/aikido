@@ -7,7 +7,7 @@ on:
       - master
   # On creation and updating of PR
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [opened, reopened, synchronize]
     # Only those targeting master branch
     branches:
       - master
