@@ -37,17 +37,17 @@ jobs:
             aikidopy: OFF
             build: BIONIC_CMAKE_RELEASE
             config: ""
-          # Bionic CMake Aikidopy
-          - os: ubuntu-18.04
-            catkin: OFF
-            aikidopy: ON
-            build: BIONIC_CMAKE_RELEASE_AIKIDOPY
-            config: ""
           # Focal CMake
           - os: ubuntu-20.04
             catkin: OFF
             aikidopy: OFF
             build: FOCAL_CMAKE_RELEASE
+            config: ""
+          # Focal CMake Aikidopy
+          - os: ubuntu-20.04
+            catkin: OFF
+            aikidopy: ON
+            build: FOCAL_CMAKE_RELEASE_AIKIDOPY
             config: ""
           # Focal Catkin
           - os: ubuntu-20.04
