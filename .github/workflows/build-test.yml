@@ -82,8 +82,7 @@ jobs:
         run: .ci/install.sh
       - name: Script
         run: .ci/script.sh
-      - name: After script
-        run: .ci/after_script.sh
+      # Report on failed tests
       - name: After failure
         if: ${{ failure() }}
         run: .ci/after_failure.sh
