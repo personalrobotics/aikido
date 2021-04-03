@@ -26,7 +26,7 @@ jobs:
       matrix:
         include:
           # OSX Build
-          - os: macos-latest
+          - os: macos-11.0
             catkin: OFF
             aikidopy: OFF
             build: XCODE11_CMAKE_RELEASE
