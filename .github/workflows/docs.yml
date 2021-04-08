@@ -33,6 +33,7 @@ jobs:
       DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
       REPOSITORY: aikido
       SUDO: sudo
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
