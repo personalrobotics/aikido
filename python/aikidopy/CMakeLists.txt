@@ -88,8 +88,14 @@ set_target_properties(aikidopy
     DEBUG_POSTFIX ""
 )
 
+execute_process(COMMAND ${PYTHON_EXECUTABLE} -c
+  "from distutils.sysconfig import get_python_lib;\
+  print(get_python_lib(plat_specific=True, prefix=''))"
+  OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 install(TARGETS aikidopy
-  LIBRARY DESTINATION "${PYTHON_INSTALL_DIR}"
+  LIBRARY DESTINATION "${PYTHON_SITE_PACKAGES}"
 )
 
 clang_format_add_sources(${aikidopy_headers} ${aikidopy_sources})
