@@ -54,13 +54,13 @@ jobs:
             catkin: ON
             aikidopy: OFF
             build: FOCAL_CATKIN_FULL_RELEASE
-            config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+            config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DCMAKE_INSTALL_PREFIX=/opt/ros/noetic"
           # Focal Catkin Aikidopy
           - os: ubuntu-20.04
             catkin: ON
             aikidopy: ON
             build: FOCAL_CATKIN_FULL_RELEASE_AIKIDOPY
-            config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DBUILD_AIKIDOPY=ON"
+            config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DBUILD_AIKIDOPY=ON -DCMAKE_INSTALL_PREFIX=/opt/ros/noetic"
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.build }}
     env:
