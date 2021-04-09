@@ -5,12 +5,6 @@ if(NOT AIKIDOPY_PYTHON_VERSION)
 endif()
 
 find_package(PythonInterp ${AIKIDOPY_PYTHON_VERSION} REQUIRED)
-execute_process(COMMAND ${PYTHON_EXECUTABLE} -c
-  "from distutils.sysconfig import get_python_lib;\
-  print(get_python_lib(plat_specific=True, prefix=''))"
-  OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
 if(NOT PythonInterp_FOUND)
   message(STATUS "BUILD_PYTHON is ON, but failed to find PythonInterp. "
     "Disabling aikidopy."
@@ -95,7 +89,7 @@ set_target_properties(aikidopy
 )
 
 install(TARGETS aikidopy
-  LIBRARY DESTINATION "${PYTHON_SITE_PACKAGES}"
+  LIBRARY DESTINATION "${PYTHON_INSTALL_DIR}"
 )
 
 clang_format_add_sources(${aikidopy_headers} ${aikidopy_sources})
