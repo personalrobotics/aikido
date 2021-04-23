@@ -2,12 +2,12 @@
 
 set -ex
 
-if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+if [ "${OS_NAME}" = "macos-latest" ]; then
+  . "${GITHUB_WORKSPACE}/.ci/install_macos.sh"
+else
   if [ "${USE_CATKIN}" = "ON" ]; then
-    . "${TRAVIS_BUILD_DIR}/.ci/install_linux_catkin.sh"
+    . "${GITHUB_WORKSPACE}/.ci/install_linux_catkin.sh"
   else
-    . "${TRAVIS_BUILD_DIR}/.ci/install_linux_cmake.sh"
+    . "${GITHUB_WORKSPACE}/.ci/install_linux_cmake.sh"
   fi
-elif [ "${TRAVIS_OS_NAME}" = "osx"   ]; then
-  . "${TRAVIS_BUILD_DIR}/.ci/install_macos.sh"
 fi
