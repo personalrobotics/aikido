@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
           # Docs
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             catkin: ON
             aikidopy: OFF
             build: DOCS
