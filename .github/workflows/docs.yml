@@ -1,0 +1,48 @@
+name: docs
+
+on: 
+  # Pushes / merges to master
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          # Docs
+          - os: ubuntu-20.04
+            catkin: ON
+            aikidopy: OFF
+            build: DOCS
+            config: ""
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.build }}
+    env:
+      USE_CATKIN: ${{ matrix.catkin }}
+      BUILD_NAME: ${{ matrix.build }}
+      CATKIN_CONFIG_OPTIONS: ${{ matrix.config }}
+      BUILD_AIKIDOPY: ${{ matrix.aikidopy }}
+      BUILD_TYPE: Release
+      DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
+      REPOSITORY: aikido
+      SUDO: sudo
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Before install
+        run: .ci/before_install.sh
+      - name: Install
+        run: .ci/install.sh
+      - name: Script
+        run: .ci/script.sh
+      - name: After failure
+        if: ${{ failure() }}
+        run: .ci/after_failure.sh
