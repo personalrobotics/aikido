@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
           # Docs
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             catkin: ON
             aikidopy: OFF
             build: DOCS
@@ -43,8 +43,6 @@ jobs:
         run: .ci/install.sh
       - name: Script
         run: .ci/script.sh
-      - name: After script
-        run: .ci/after_script.sh
       - name: After failure
         if: ${{ failure() }}
         run: .ci/after_failure.sh
