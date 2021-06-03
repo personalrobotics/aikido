@@ -7,7 +7,6 @@
 #include "aikido/control/TrajectoryRunningException.hpp"
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/RosJointStateClient.hpp"
-#include "aikido/control/ros/RosPositionCommandExecutor.hpp"
 #include "aikido/control/ros/RosTrajectoryExecutionException.hpp"
 #include "aikido/control/ros/RosTrajectoryExecutor.hpp"
 #include "aikido/control/ros/util.hpp"
