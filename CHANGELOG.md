@@ -2,6 +2,10 @@
 
 ### 0.5.0 (2021-XX-XX)
 
+* RViz
+
+  * Propogate removal of WorldInteractiveMarkerViewer to Aikidopy: [#599](https://github.com/personalrobotics/aikido/pull/599)
+
 * Planner
 
   * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
