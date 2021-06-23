@@ -8,14 +8,14 @@ namespace aikido {
 namespace python {
 
 void TSRMarker(py::module& sm);
-void WorldInteractiveMarkerViewer(py::module& sm);
+void InteractiveMarkerViewer(py::module& sm);
 
 void aikidopy_rviz(py::module& m)
 {
   auto sm = m.def_submodule("rviz");
 
   TSRMarker(sm);
-  WorldInteractiveMarkerViewer(sm);
+  InteractiveMarkerViewer(sm);
 }
 
 } // namespace python
