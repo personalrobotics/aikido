@@ -56,9 +56,11 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
     const std::string& serverName,
     double waypointTimestep,
     double goalTimeTolerance,
+    std::vector<std::string> jointNames,
     const std::chrono::milliseconds& connectionTimeout,
     const std::chrono::milliseconds& connectionPollingPeriod)
-  : mNode{std::move(node)}
+  : TrajectoryExecutor(jointNames)
+  , mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mWaypointTimestep{waypointTimestep}
@@ -107,7 +109,9 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
 
-  // TODO: No check's happening here. Check if that's correct.
+  // TODO(egordon): check joints in traj against this->getJoints()
+
+  // TODO: No check's happening here. Is that correct?
   mValidatedTrajectories.emplace(traj);
 }
 //==============================================================================

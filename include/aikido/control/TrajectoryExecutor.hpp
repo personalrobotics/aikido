@@ -7,16 +7,31 @@
 
 #include "aikido/common/pointers.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
+#include "aikido/control/Executor.hpp"
+
+#include <dart/dynamics/Skeleton.hpp>
+#include <dart/dynamics/DegreeOfFreedom.hpp>
 
 namespace aikido {
 namespace control {
 
+// inline function to get joint names from skeleton
+inline std::vector<std::string> skeletonToJointNames(dart::dynamics::SkeletonPtr skeleton) {
+  std::vector<std::string> ret;
+  ret.reserve(skeleton->getNumDofs());
+  for (auto dof : skeleton->getDofs()) {
+    ret.push_back(dof->getName());
+  }
+  return ret;
+}
+
 AIKIDO_DECLARE_POINTERS(TrajectoryExecutor)
 
 /// Abstract class for executing trajectories.
-class TrajectoryExecutor
+class TrajectoryExecutor : public Executor
 {
 public:
+  TrajectoryExecutor(std::vector<std::string> joints) : Executor(ExecutorType::kTRAJECTORY, joints) {}
   virtual ~TrajectoryExecutor() = default;
 
   /// Validate the traj in preparation for execution.

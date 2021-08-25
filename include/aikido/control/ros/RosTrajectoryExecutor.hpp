@@ -33,6 +33,7 @@ public:
       const std::string& serverName,
       double waypointTimestep,
       double goalTimeTolerance,
+      std::vector<std::string> jointNames,
       const std::chrono::milliseconds& connectionTimeout
       = std::chrono::milliseconds{1000},
       const std::chrono::milliseconds& connectionPollingPeriod

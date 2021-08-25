@@ -8,10 +8,15 @@ namespace control {
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : mExecutor{std::move(executor)}, mInProgress{false}, mMutex{}
+  : TrajectoryExecutor(executor->getJoints())
+  , mExecutor{std::move(executor)}, mInProgress{false}
+  , mMutex{}
 {
   if (!mExecutor)
     throw std::invalid_argument("Executor is null.");
+
+  // Use our thread instead
+  mExecutor->stop();
 }
 
 //==============================================================================
