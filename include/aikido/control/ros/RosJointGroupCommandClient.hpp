@@ -43,7 +43,10 @@ public:
   /// \param[in] type Selecting between Position, Velocity, or Effort
   /// \param[in] goal Vector of target positions for each joint
   /// \param[in] timeout How long until command should expire
-  std::future<int> execute(ExecutorType type, const std::vector<double> goal, ::ros::Duration timeout);
+  std::future<int> execute(
+      ExecutorType type,
+      const std::vector<double> goal,
+      ::ros::Duration timeout);
 
   /// To be executed on a separate thread.
   /// Regularly checks for the completion of a sent command.

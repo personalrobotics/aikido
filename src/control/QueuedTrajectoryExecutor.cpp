@@ -9,7 +9,8 @@ namespace control {
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
   : TrajectoryExecutor(executor->getJoints())
-  , mExecutor{std::move(executor)}, mInProgress{false}
+  , mExecutor{std::move(executor)}
+  , mInProgress{false}
   , mMutex{}
 {
   if (!mExecutor)

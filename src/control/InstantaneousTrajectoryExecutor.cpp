@@ -12,7 +12,8 @@ namespace control {
 InstantaneousTrajectoryExecutor::InstantaneousTrajectoryExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
   : TrajectoryExecutor(skeletonToJointNames(skeleton))
-  , mSkeleton{std::move(skeleton)}, mPromise{nullptr}
+  , mSkeleton{std::move(skeleton)}
+  , mPromise{nullptr}
   , mMutex{}
 {
   if (!mSkeleton)

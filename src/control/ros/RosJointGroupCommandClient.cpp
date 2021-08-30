@@ -46,7 +46,8 @@ std::future<int> RosJointGroupCommandClient::execute(
   pr_control_msgs::JointGroupCommandGoal commandGoal;
   commandGoal.joint_names = mJointNames;
   commandGoal.command.time_from_start = timeout;
-  switch(type) {
+  switch (type)
+  {
     case ExecutorType::kPOSITION:
       commandGoal.command.positions = goal;
       break;
@@ -57,8 +58,8 @@ std::future<int> RosJointGroupCommandClient::execute(
       commandGoal.command.effort = goal;
       break;
     default:
-      promise->set_exception(
-        std::make_exception_ptr(std::runtime_error("Unsupported command type.")));
+      promise->set_exception(std::make_exception_ptr(
+          std::runtime_error("Unsupported command type.")));
       return promise->get_future();
   }
 
@@ -72,22 +73,24 @@ std::future<int> RosJointGroupCommandClient::execute(
     std::lock_guard<std::mutex> lock(mMutex);
     DART_UNUSED(lock); // Suppress unused variable warning
 
-    if (!waitForServer) {
-      promise->set_exception(
-          std::make_exception_ptr(std::runtime_error("Unable to connect to action server (is the controller running?)")));
+    if (!waitForServer)
+    {
+      promise->set_exception(std::make_exception_ptr(std::runtime_error(
+          "Unable to connect to action server (is the controller running?)")));
       mInProgress = false;
       return promise->get_future();
     }
 
-    if (mInProgress) {
-      promise->set_exception(
-        std::make_exception_ptr(std::runtime_error("Another position command is in progress.")));
+    if (mInProgress)
+    {
+      promise->set_exception(std::make_exception_ptr(
+          std::runtime_error("Another position command is in progress.")));
       return promise->get_future();
     }
 
     mPromise.reset(promise);
     mInProgress = true;
-    
+
     mGoalHandle = mClient.sendGoal(
         commandGoal,
         boost::bind(&RosJointGroupCommandClient::transitionCallback, this, _1));
@@ -114,20 +117,26 @@ void RosJointGroupCommandClient::transitionCallback(GoalHandle handle)
     {
       // Communicate error code
       error_code = result->error_code;
-      if (result->error_code) {
+      if (result->error_code)
+      {
         message << result->error_string;
         ROS_WARN_STREAM_NAMED("RosJointGroupCommandClient", message.str());
       }
-    } else {
+    }
+    else
+    {
       // Only communication is exception
       isSuccessful = false;
     }
 
-    if(isSuccessful) {
+    if (isSuccessful)
+    {
       mPromise->set_value(error_code);
-    } else {
+    }
+    else
+    {
       mPromise->set_exception(
-        std::make_exception_ptr(std::runtime_error(message.str())));
+          std::make_exception_ptr(std::runtime_error(message.str())));
     }
 
     mInProgress = false;

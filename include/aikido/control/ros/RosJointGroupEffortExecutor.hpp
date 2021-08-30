@@ -14,8 +14,7 @@ namespace ros {
 /// This Executor uses pr_control_msgs/JointGrouCommandAction to
 /// execute joint-wise effort commands.
 /// \see RosJointGroupCommandClient
-class RosJointGroupEffortExecutor
-  : public aikido::control::EffortExecutor
+class RosJointGroupEffortExecutor : public aikido::control::EffortExecutor
 {
 public:
   /// Constructor.
@@ -36,13 +35,14 @@ public:
   virtual ~RosJointGroupEffortExecutor();
 
   /// \copydoc EffortExecutor::execute()
-  std::future<int> execute(const std::vector<double> command, const std::chrono::duration<double>& timeout) override;
+  std::future<int> execute(
+      const std::vector<double> command,
+      const std::chrono::duration<double>& timeout) override;
 
   /// \copydoc Executor::step()
   void step(const std::chrono::system_clock::time_point& timepoint) override;
 
 private:
-
   RosJointGroupCommandClient mClient;
 };
 

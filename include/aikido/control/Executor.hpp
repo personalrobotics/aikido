@@ -6,8 +6,8 @@
 #include <set>
 #include <vector>
 
-#include "aikido/common/pointers.hpp"
 #include "aikido/common/ExecutorThread.hpp"
+#include "aikido/common/pointers.hpp"
 
 namespace aikido {
 namespace control {
@@ -37,25 +37,42 @@ public:
   /// \param[in] types Vector of controller types
   /// \param[in] joints Vector of joint names this Executor acts upon
   /// \param[in] threadRate (Optional) How often to call step()
-  Executor(std::vector<ExecutorType> types, std::vector<std::string> joints, std::chrono::milliseconds threadRate = cDefaultThreadRate)
-    : mTypes(types)
-    , mJoints(joints)
+  Executor(
+      std::vector<ExecutorType> types,
+      std::vector<std::string> joints,
+      std::chrono::milliseconds threadRate = cDefaultThreadRate)
+    : mTypes(types), mJoints(joints)
   {
     mThread = std::make_unique<aikido::common::ExecutorThread>(
-      std::bind(&Executor::step, this, std::chrono::system_clock::now()), threadRate);
+        std::bind(&Executor::step, this, std::chrono::system_clock::now()),
+        threadRate);
   }
 
-  Executor(ExecutorType type, std::vector<std::string> joints, std::chrono::milliseconds threadRate = cDefaultThreadRate)
-    : Executor(std::vector<ExecutorType>{type}, joints, threadRate) {}
+  Executor(
+      ExecutorType type,
+      std::vector<std::string> joints,
+      std::chrono::milliseconds threadRate = cDefaultThreadRate)
+    : Executor(std::vector<ExecutorType>{type}, joints, threadRate)
+  {
+  }
 
   /// Get primary ExecutorType
-  ExecutorType getType() { return mTypes[0]; }
+  ExecutorType getType()
+  {
+    return mTypes[0];
+  }
 
   // Get all ExecutorTypes
-  std::vector<ExecutorType> getTypes() { return mTypes; }
+  std::vector<ExecutorType> getTypes()
+  {
+    return mTypes;
+  }
 
   // Get Executor Joint Lists
-  std::vector<std::string> getJoints() { return mJoints; }
+  std::vector<std::string> getJoints()
+  {
+    return mJoints;
+  }
 
   /// Step to a point in time.
   /// \note \c timepoint can be a time in the future to enable faster than
@@ -65,7 +82,10 @@ public:
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
   /// Stops the underlying ExecutorThread
-  void stop() { mThread->stop(); }
+  void stop()
+  {
+    mThread->stop();
+  }
 
 protected:
   /// Executor thread calling step function
