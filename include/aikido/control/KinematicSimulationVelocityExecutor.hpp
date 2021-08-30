@@ -1,29 +1,29 @@
-#ifndef AIKIDO_CONTROL_KINEMATICSIMULATIONPOSITIONEXECUTOR_HPP_
-#define AIKIDO_CONTROL_KINEMATICSIMULATIONPOSITIONEXECUTOR_HPP_
+#ifndef AIKIDO_CONTROL_KINEMATICSIMULATIONVELOCITYEXECUTOR_HPP_
+#define AIKIDO_CONTROL_KINEMATICSIMULATIONVELOCITYEXECUTOR_HPP_
 
 #include <future>
 #include <mutex>
 
 #include <dart/dynamics/Skeleton.hpp>
 
-#include "aikido/control/PositionExecutor.hpp"
+#include "aikido/control/VelocityExecutor.hpp"
 
 namespace aikido {
 namespace control {
 
-/// Executes joint position command in DART. This simulates by setting
+/// Executes joint velocity command in DART. This simulates by setting
 /// interpolated DOF positions, without running dynamic simulation.
-class KinematicSimulationPositionExecutor : public PositionExecutor
+class KinematicSimulationVelocityExecutor : public VelocityExecutor
 {
 public:
   /// Constructor.
   ///
   /// \param skeleton Skeleton to execute commands on.
   ///        All degrees of freedom are assumed to be commanded.
-  explicit KinematicSimulationPositionExecutor(
+  explicit KinematicSimulationVelocityExecutor(
       ::dart::dynamics::SkeletonPtr skeleton);
 
-  virtual ~KinematicSimulationPositionExecutor();
+  virtual ~KinematicSimulationVelocityExecutor();
 
   /// Documentation inherited
   virtual std::future<int> execute(
@@ -66,7 +66,7 @@ private:
   /// Position at start of command (for interpolation)
   std::vector<double> mStartPosition;
 
-  /// Position timeout (for interpolation)
+  /// Velocity timeout
   std::chrono::duration<double> mTimeout;
 };
 

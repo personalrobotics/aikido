@@ -1,4 +1,4 @@
-#include "aikido/control/KinematicSimulationPositionExecutor.hpp"
+#include "aikido/control/KinematicSimulationVelocityExecutor.hpp"
 
 #include <dart/common/Console.hpp>
 
@@ -8,9 +8,9 @@ namespace aikido {
 namespace control {
 
 //==============================================================================
-KinematicSimulationPositionExecutor::KinematicSimulationPositionExecutor(
+KinematicSimulationVelocityExecutor::KinematicSimulationVelocityExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
-  : PositionExecutor(skeletonToJointNames(skeleton))
+  : VelocityExecutor(skeletonToJointNames(skeleton))
   , mSkeleton{std::move(skeleton)}
   , mInProgress{false}
   , mPromise{nullptr}
@@ -21,7 +21,7 @@ KinematicSimulationPositionExecutor::KinematicSimulationPositionExecutor(
 }
 
 //==============================================================================
-KinematicSimulationPositionExecutor::~KinematicSimulationPositionExecutor()
+KinematicSimulationVelocityExecutor::~KinematicSimulationVelocityExecutor()
 {
   {
     std::lock_guard<std::mutex> lock(mMutex);
@@ -37,7 +37,7 @@ KinematicSimulationPositionExecutor::~KinematicSimulationPositionExecutor()
 }
 
 //==============================================================================
-std::future<int> KinematicSimulationPositionExecutor::execute(
+std::future<int> KinematicSimulationVelocityExecutor::execute(
     const std::vector<double> command,
     const std::chrono::duration<double>& timeout)
 {
@@ -70,10 +70,7 @@ std::future<int> KinematicSimulationPositionExecutor::execute(
     for (size_t i; i < mSkeleton->getDofs().size(); i++)
     {
       auto dof = mSkeleton->getDof(i);
-      if (mTimeout.count() > 1E-8)
-      {
-        dof->setVelocity((command[i] - mStartPosition[i]) / mTimeout.count());
-      }
+      dof->setVelocity(command[i]);
       mStartPosition.push_back(dof->getPosition());
     }
     mTimeout = timeout;
@@ -83,7 +80,7 @@ std::future<int> KinematicSimulationPositionExecutor::execute(
 }
 
 //==============================================================================
-void KinematicSimulationPositionExecutor::step(
+void KinematicSimulationVelocityExecutor::step(
     const std::chrono::system_clock::time_point& timepoint)
 {
   std::lock_guard<std::mutex> lock(mMutex);
@@ -95,10 +92,6 @@ void KinematicSimulationPositionExecutor::step(
   const auto executionTime
       = std::chrono::duration<double>(timeSinceBeginning).count();
 
-  // Instantaneous movement if no timeout.
-  double interpTime
-      = (mTimeout.count() == 0) ? 1.0 : executionTime / mTimeout.count();
-
   // executionTime may be negative if the thread calling \c step is queued
   // before and dequeued after \c execute is called.
   if (executionTime < 0)
@@ -107,12 +100,11 @@ void KinematicSimulationPositionExecutor::step(
   for (size_t i; i < mSkeleton->getDofs().size(); i++)
   {
     auto dof = mSkeleton->getDof(i);
-    dof->setPosition(
-        (1.0 - interpTime) * mStartPosition[i] + interpTime * mCommand[i]);
+    dof->setPosition(mStartPosition[i] + executionTime * mCommand[i]);
   }
 
   // Check if command has timed out
-  if (executionTime >= mTimeout.count())
+  if (mTimeout.count() > 0.0 && executionTime >= mTimeout.count())
   {
     mCommand.clear();
     mInProgress = false;
@@ -121,7 +113,7 @@ void KinematicSimulationPositionExecutor::step(
 }
 
 //==============================================================================
-void KinematicSimulationPositionExecutor::cancel()
+void KinematicSimulationVelocityExecutor::cancel()
 {
   std::lock_guard<std::mutex> lock(mMutex);
 
@@ -134,7 +126,7 @@ void KinematicSimulationPositionExecutor::cancel()
   }
   else
   {
-    dtwarn << "[KinematicSimulationPositionExecutor::cancel] Attempting to "
+    dtwarn << "[KinematicSimulationVelocityExecutor::cancel] Attempting to "
            << "cancel command, but no command in progress.\n";
   }
 }
