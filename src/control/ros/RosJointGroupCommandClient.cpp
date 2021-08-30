@@ -1,4 +1,4 @@
-#include "aikido/control/ros/RosPositionCommandExecutor.hpp"
+#include "aikido/control/ros/RosJointGroupCommandClient.hpp"
 
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/util.hpp"
@@ -10,7 +10,7 @@ namespace ros {
 using std::chrono::milliseconds;
 
 //==============================================================================
-RosPositionCommandExecutor::RosPositionCommandExecutor(
+RosJointGroupCommandClient::RosJointGroupCommandClient(
     ::ros::NodeHandle node,
     const std::string& serverName,
     std::vector<std::string> jointNames,
@@ -30,97 +30,112 @@ RosPositionCommandExecutor::RosPositionCommandExecutor(
 }
 
 //==============================================================================
-RosPositionCommandExecutor::~RosPositionCommandExecutor()
+RosJointGroupCommandClient::~RosJointGroupCommandClient()
 {
   // Do nothing.
 }
 
 //==============================================================================
-std::future<void> RosPositionCommandExecutor::execute(
-    const Eigen::VectorXd& goalPositions)
+std::future<int> RosJointGroupCommandClient::execute(
+    ExecutorType type, const std::vector<double> goal, ::ros::Duration timeout)
 {
-  using aikido::control::ros::positionsToJointState;
+  auto promise = new std::promise<int>();
 
   // Convert goal positions and joint names to jointstate
   // Will check for size matching in the positionsToJointState function
-  pr_control_msgs::SetPositionGoal goal;
-  goal.command = positionsToJointState(goalPositions, mJointNames);
+  pr_control_msgs::JointGroupCommandGoal commandGoal;
+  commandGoal.joint_names = mJointNames;
+  commandGoal.command.time_from_start = timeout;
+  switch(type) {
+    case ExecutorType::kPOSITION:
+      commandGoal.command.positions = goal;
+      break;
+    case ExecutorType::kVELOCITY:
+      commandGoal.command.velocities = goal;
+      break;
+    case ExecutorType::kEFFORT:
+      commandGoal.command.effort = goal;
+      break;
+    default:
+      promise->set_exception(
+        std::make_exception_ptr(std::runtime_error("Unsupported command type.")));
+      return promise->get_future();
+  }
 
   bool waitForServer = waitForActionServer<
-      pr_control_msgs::SetPositionAction,
+      pr_control_msgs::JointGroupCommandAction,
       std::chrono::milliseconds,
       std::chrono::milliseconds>(
       mClient, mCallbackQueue, mConnectionTimeout, mConnectionPollingPeriod);
-
-  if (!waitForServer)
-    throw std::runtime_error("Unable to connect to action server.");
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
     DART_UNUSED(lock); // Suppress unused variable warning
 
-    if (mInProgress)
-      throw std::runtime_error("Another position command is in progress.");
+    if (!waitForServer) {
+      promise->set_exception(
+          std::make_exception_ptr(std::runtime_error("Unable to connect to action server (is the controller running?)")));
+      mInProgress = false;
+      return promise->get_future();
+    }
 
-    mPromise.reset(new std::promise<void>());
+    if (mInProgress) {
+      promise->set_exception(
+        std::make_exception_ptr(std::runtime_error("Another position command is in progress.")));
+      return promise->get_future();
+    }
+
+    mPromise.reset(promise);
     mInProgress = true;
+    
     mGoalHandle = mClient.sendGoal(
-        goal,
-        boost::bind(&RosPositionCommandExecutor::transitionCallback, this, _1));
+        commandGoal,
+        boost::bind(&RosJointGroupCommandClient::transitionCallback, this, _1));
 
     return mPromise->get_future();
   }
 }
 
 //==============================================================================
-void RosPositionCommandExecutor::transitionCallback(GoalHandle handle)
+void RosJointGroupCommandClient::transitionCallback(GoalHandle handle)
 {
+  int error_code = 0;
+
   if (handle.getCommState() == actionlib::CommState::DONE)
   {
     std::stringstream message;
     bool isSuccessful = true;
 
     const auto terminalState = handle.getTerminalState();
-    if (terminalState != actionlib::TerminalState::SUCCEEDED)
-    {
-      message << "Action " << terminalState.toString();
-
-      const auto terminalMessage = terminalState.getText();
-      if (!terminalMessage.empty())
-        message << " (" << terminalMessage << ")";
-
-      mPromise->set_exception(
-          std::make_exception_ptr(std::runtime_error(message.str())));
-
-      isSuccessful = false;
-    }
-    else
-    {
-      message << "Execution failed.";
-    }
+    message << "Action " << terminalState.toString() << "; ";
 
     const auto result = handle.getResult();
-    if (result && result->success == false)
+    if (result)
     {
-      if (!result->message.empty())
-        message << " (" << result->message << ")";
-
-      mPromise->set_exception(
-          std::make_exception_ptr(std::runtime_error(message.str())));
-
+      // Communicate error code
+      error_code = result->error_code;
+      if (result->error_code) {
+        message << result->error_string;
+        ROS_WARN_STREAM_NAMED("RosJointGroupCommandClient", message.str());
+      }
+    } else {
+      // Only communication is exception
       isSuccessful = false;
     }
 
-    if (isSuccessful)
-      mPromise->set_value();
+    if(isSuccessful) {
+      mPromise->set_value(error_code);
+    } else {
+      mPromise->set_exception(
+        std::make_exception_ptr(std::runtime_error(message.str())));
+    }
 
     mInProgress = false;
   }
 }
 
 //==============================================================================
-void RosPositionCommandExecutor::step(
-    const std::chrono::system_clock::time_point& /*timepoint*/)
+void RosJointGroupCommandClient::step()
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning.

@@ -30,6 +30,10 @@ set(sources
   RosTrajectoryExecutionException.cpp
   Conversions.cpp
   RosJointStateClient.cpp
+  RosJointGroupCommandClient.cpp
+  RosJointGroupPositionExecutor.cpp
+  RosJointGroupVelocityExecutor.cpp
+  RosJointGroupEffortExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control_ros" SHARED ${sources})

@@ -4,6 +4,7 @@
 #include <chrono>
 #include <future>
 #include <set>
+#include <vector>
 
 #include "aikido/common/pointers.hpp"
 #include "aikido/common/ExecutorThread.hpp"
