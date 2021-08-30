@@ -33,6 +33,9 @@ public:
       const std::vector<double> command,
       const std::chrono::duration<double>& timeout)
       = 0;
+
+  /// Cancels the current command.
+  virtual void cancel();
 };
 
 } // namespace control

@@ -50,6 +50,12 @@ void RosJointGroupEffortExecutor::step(
   mClient.step();
 }
 
+//==============================================================================
+void RosJointGroupEffortExecutor::cancel()
+{
+  mClient.cancel();
+}
+
 } // namespace ros
 } // namespace control
 } // namespace aikido

@@ -52,6 +52,10 @@ public:
   /// Regularly checks for the completion of a sent command.
   void step();
 
+  /// Cancel current command.
+  /// Should trigger exception for active std::promise
+  void cancel();
+
 private:
   using JointGroupCommandActionClient
       = actionlib::ActionClient<pr_control_msgs::JointGroupCommandAction>;

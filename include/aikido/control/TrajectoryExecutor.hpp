@@ -5,28 +5,12 @@
 #include <future>
 #include <set>
 
-#include <dart/dynamics/DegreeOfFreedom.hpp>
-#include <dart/dynamics/Skeleton.hpp>
-
 #include "aikido/common/pointers.hpp"
 #include "aikido/control/Executor.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
 namespace control {
-
-// inline function to get joint names from skeleton
-inline std::vector<std::string> skeletonToJointNames(
-    dart::dynamics::SkeletonPtr skeleton)
-{
-  std::vector<std::string> ret;
-  ret.reserve(skeleton->getNumDofs());
-  for (auto dof : skeleton->getDofs())
-  {
-    ret.push_back(dof->getName());
-  }
-  return ret;
-}
 
 AIKIDO_DECLARE_POINTERS(TrajectoryExecutor)
 
@@ -60,7 +44,8 @@ public:
   /// real-time execution.
   ///
   /// \param timepoint Time to simulate to
-  virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
+  virtual void step(
+      const std::chrono::system_clock::time_point& timepoint) override;
 
   /// Cancel the current trajectory.
   virtual void cancel() = 0;

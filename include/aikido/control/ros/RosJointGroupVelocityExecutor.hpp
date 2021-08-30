@@ -42,6 +42,9 @@ public:
   /// \copydoc Executor::step()
   void step(const std::chrono::system_clock::time_point& timepoint) override;
 
+  /// \copydoc VelocityExecutor::cancel()
+  void cancel() override;
+
 private:
   RosJointGroupCommandClient mClient;
 };

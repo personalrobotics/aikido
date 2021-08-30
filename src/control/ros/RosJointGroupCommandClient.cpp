@@ -159,6 +159,15 @@ void RosJointGroupCommandClient::step()
   }
 }
 
+//==============================================================================
+void RosJointGroupCommandClient::cancel()
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  DART_UNUSED(lock); // Suppress unused variable warning.
+
+  mClient.cancelAllGoals();
+}
+
 } // namespace ros
 } // namespace control
 } // namespace aikido

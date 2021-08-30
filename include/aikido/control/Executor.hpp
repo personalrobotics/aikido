@@ -6,6 +6,9 @@
 #include <set>
 #include <vector>
 
+#include <dart/dynamics/DegreeOfFreedom.hpp>
+#include <dart/dynamics/Skeleton.hpp>
+
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/pointers.hpp"
 
@@ -23,6 +26,19 @@ enum class ExecutorType
   kTRAJECTORY = 3,
   kOTHER = 4
 };
+
+// inline function to get joint names from skeleton
+inline std::vector<std::string> skeletonToJointNames(
+    dart::dynamics::SkeletonPtr skeleton)
+{
+  std::vector<std::string> ret;
+  ret.reserve(skeleton->getNumDofs());
+  for (auto dof : skeleton->getDofs())
+  {
+    ret.push_back(dof->getName());
+  }
+  return ret;
+}
 
 /// Abstract class for executing commands
 class Executor
