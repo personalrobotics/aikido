@@ -6,7 +6,6 @@
 #include <set>
 
 #include "aikido/common/pointers.hpp"
-#include "aikido/control/Executor.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
@@ -15,13 +14,9 @@ namespace control {
 AIKIDO_DECLARE_POINTERS(TrajectoryExecutor)
 
 /// Abstract class for executing trajectories.
-class TrajectoryExecutor : public Executor
+class TrajectoryExecutor
 {
 public:
-  TrajectoryExecutor(std::vector<std::string> joints)
-    : Executor(ExecutorType::kTRAJECTORY, joints)
-  {
-  }
   virtual ~TrajectoryExecutor() = default;
 
   /// Validate the traj in preparation for execution.
@@ -44,8 +39,7 @@ public:
   /// real-time execution.
   ///
   /// \param timepoint Time to simulate to
-  virtual void step(
-      const std::chrono::system_clock::time_point& timepoint) override;
+  virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
   /// Cancel the current trajectory.
   virtual void cancel() = 0;
