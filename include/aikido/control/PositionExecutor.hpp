@@ -20,9 +20,9 @@ public:
   /// Position-specific constructor.
   /// \param[in] joints Vector of joint names this Executor acts upon
   PositionExecutor(std::vector<std::string> joints)
-    : Executor(ExecutorType::kPOSITION, joints)
-  {
-  }
+    : Executor(ExecutorType::kPOSITION, joints) {}
+
+  virtual ~PositionExecutor() {}
 
   /// Execute a Joint Position Command, setting future upon completion
   /// \note Future should return 0 on success or timeout.
@@ -35,7 +35,7 @@ public:
       = 0;
 
   /// Cancels the current command.
-  virtual void cancel();
+  virtual void cancel() = 0;
 };
 
 } // namespace control

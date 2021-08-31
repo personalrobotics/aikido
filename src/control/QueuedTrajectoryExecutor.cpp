@@ -5,10 +5,17 @@
 namespace aikido {
 namespace control {
 
+static std::vector<std::string> checkNull(std::shared_ptr<TrajectoryExecutor> executor) {
+  if (!executor)
+    throw std::invalid_argument("Executor is null.");
+
+  return executor->getJoints();
+}
+
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : TrajectoryExecutor(executor->getJoints())
+  : TrajectoryExecutor(checkNull(executor))
   , mExecutor{std::move(executor)}
   , mInProgress{false}
   , mMutex{}

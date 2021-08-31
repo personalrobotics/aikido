@@ -32,6 +32,7 @@ inline std::vector<std::string> skeletonToJointNames(
     dart::dynamics::SkeletonPtr skeleton)
 {
   std::vector<std::string> ret;
+  if(!skeleton) return ret;
   ret.reserve(skeleton->getNumDofs());
   for (auto dof : skeleton->getDofs())
   {
@@ -40,12 +41,13 @@ inline std::vector<std::string> skeletonToJointNames(
   return ret;
 }
 
+// Parameter defaults
+constexpr std::chrono::milliseconds cDefaultThreadRate{10};
+
 /// Abstract class for executing commands
 class Executor
 {
 public:
-  // Parameter defaults
-  constexpr static std::chrono::milliseconds cDefaultThreadRate{10};
 
   virtual ~Executor() = default;
 
