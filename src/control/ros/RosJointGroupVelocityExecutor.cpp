@@ -26,7 +26,7 @@ RosJointGroupVelocityExecutor::RosJointGroupVelocityExecutor(
 //==============================================================================
 RosJointGroupVelocityExecutor::~RosJointGroupVelocityExecutor()
 {
-  // Do nothing.
+  stop();
 }
 
 //==============================================================================

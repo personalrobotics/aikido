@@ -19,7 +19,9 @@ class TrajectoryExecutor : public Executor
 {
 public:
   TrajectoryExecutor(std::vector<std::string> joints)
-    : Executor(ExecutorType::kTRAJECTORY, joints) {}
+    : Executor(ExecutorType::kTRAJECTORY, joints)
+  {
+  }
   virtual ~TrajectoryExecutor() = default;
 
   /// Validate the traj in preparation for execution.
@@ -38,7 +40,8 @@ public:
       = 0;
 
   /// Documentation inherited.
-  virtual void step(const std::chrono::system_clock::time_point& timepoint) override = 0;
+  virtual void step(
+      const std::chrono::system_clock::time_point& timepoint) override = 0;
 
   /// Cancel the current trajectory.
   virtual void cancel() = 0;

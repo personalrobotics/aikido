@@ -26,7 +26,7 @@ RosJointGroupPositionExecutor::RosJointGroupPositionExecutor(
 //==============================================================================
 RosJointGroupPositionExecutor::~RosJointGroupPositionExecutor()
 {
-  // Do nothing.
+  stop();
 }
 
 //==============================================================================

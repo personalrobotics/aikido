@@ -17,13 +17,16 @@ InstantaneousTrajectoryExecutor::InstantaneousTrajectoryExecutor(
   , mMutex{}
 {
   if (!mSkeleton)
+  {
+    stop();
     throw std::invalid_argument("Skeleton is null.");
+  }
 }
 
 //==============================================================================
 InstantaneousTrajectoryExecutor::~InstantaneousTrajectoryExecutor()
 {
-  // Do nothing.
+  stop();
 }
 
 //==============================================================================

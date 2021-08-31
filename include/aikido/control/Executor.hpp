@@ -32,7 +32,8 @@ inline std::vector<std::string> skeletonToJointNames(
     dart::dynamics::SkeletonPtr skeleton)
 {
   std::vector<std::string> ret;
-  if(!skeleton) return ret;
+  if (!skeleton)
+    return ret;
   ret.reserve(skeleton->getNumDofs());
   for (auto dof : skeleton->getDofs())
   {
@@ -48,8 +49,10 @@ constexpr std::chrono::milliseconds cDefaultThreadRate{10};
 class Executor
 {
 public:
-
-  virtual ~Executor() = default;
+  virtual ~Executor()
+  {
+    stop();
+  }
 
   /// Constructor.
   /// \param[in] types Vector of controller types
@@ -59,11 +62,8 @@ public:
       std::vector<ExecutorType> types,
       std::vector<std::string> joints,
       std::chrono::milliseconds threadRate = cDefaultThreadRate)
-    : mTypes(types), mJoints(joints)
+    : mThreadRate(threadRate), mThread(nullptr), mTypes(types), mJoints(joints)
   {
-    mThread = std::make_unique<aikido::common::ExecutorThread>(
-        std::bind(&Executor::step, this, std::chrono::system_clock::now()),
-        threadRate);
   }
 
   Executor(
@@ -99,11 +99,37 @@ public:
   /// \param timepoint Time to simulate to
   virtual void step(const std::chrono::system_clock::time_point& timepoint) = 0;
 
+  /// Start the underlying ExecutorThread
+  void start()
+  {
+    if (!mThread)
+    {
+      mThread = std::make_unique<aikido::common::ExecutorThread>(
+          std::bind(&Executor::spin, this), mThreadRate);
+    }
+  }
+
   /// Stops the underlying ExecutorThread
   void stop()
   {
-    mThread->stop();
+    if (mThread)
+    {
+      mThread->stop();
+      mThread.reset();
+    }
   }
+
+private:
+  /// Call to spin first to pass current time to step
+  void spin()
+  {
+    if (mThread->isRunning())
+    {
+      step(std::chrono::system_clock::now());
+    }
+  }
+
+  std::chrono::milliseconds mThreadRate;
 
 protected:
   /// Executor thread calling step function

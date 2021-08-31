@@ -81,7 +81,7 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
 //==============================================================================
 RosTrajectoryExecutor::~RosTrajectoryExecutor()
 {
-  // Do nothing.
+  stop();
   // TODO: Should we wait for the current trajectory to finish executing?
 }
 

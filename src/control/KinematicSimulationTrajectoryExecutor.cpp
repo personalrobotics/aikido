@@ -22,7 +22,10 @@ KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
   , mMutex{}
 {
   if (!mSkeleton)
+  {
+    stop();
     throw std::invalid_argument("Skeleton is null.");
+  }
 }
 
 //==============================================================================
@@ -38,6 +41,7 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
       mPromise->set_exception(
           std::make_exception_ptr(std::runtime_error("Trajectory canceled.")));
     }
+    stop();
   }
 }
 

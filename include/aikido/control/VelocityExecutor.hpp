@@ -20,9 +20,13 @@ public:
   /// Velocity-specific constructor.
   /// \param[in] joints Vector of joint names this Executor acts upon
   VelocityExecutor(std::vector<std::string> joints)
-    : Executor(ExecutorType::kVELOCITY, joints) {}
+    : Executor(ExecutorType::kVELOCITY, joints)
+  {
+  }
 
-  virtual ~VelocityExecutor() {}
+  virtual ~VelocityExecutor()
+  {
+  }
 
   /// Execute a Joint Velocity Command, setting future upon completion
   /// \note Future should return 0 on success or timeout.
@@ -33,6 +37,10 @@ public:
       const std::vector<double> command,
       const std::chrono::duration<double>& timeout)
       = 0;
+
+  /// Documentation inherited.
+  virtual void step(
+      const std::chrono::system_clock::time_point& timepoint) override = 0;
 
   /// Cancels the current command.
   virtual void cancel() = 0;

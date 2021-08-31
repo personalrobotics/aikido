@@ -1,11 +1,10 @@
 #include <chrono>
 
+#include <dart/dynamics/RevoluteJoint.hpp>
+#include <dart/dynamics/Skeleton.hpp>
 #include <gtest/gtest.h>
 
 #include <aikido/control/KinematicSimulationPositionExecutor.hpp>
-
-#include <dart/dynamics/Skeleton.hpp>
-#include <dart/dynamics/RevoluteJoint.hpp>
 
 using aikido::control::KinematicSimulationPositionExecutor;
 using ::dart::dynamics::BodyNode;
@@ -50,7 +49,7 @@ public:
     mSkeleton->createJointAndBodyNodePair<RevoluteJoint>(
         bn1, jointProperties2, bodyProperties2);
 
-    mCommand = {1.0, 1.0};
+    mCommand = std::vector<double>(2, 1.0);
   }
 
 protected:
@@ -61,8 +60,7 @@ protected:
   std::vector<double> mCommand;
 };
 
-TEST_F(
-    KinematicSimulationPositionExecutorTest, constructor_NullSkeleton_Throws)
+TEST_F(KinematicSimulationPositionExecutorTest, constructor_NullSkeleton_Throws)
 {
   EXPECT_THROW(
       KinematicSimulationPositionExecutor(nullptr), std::invalid_argument);
@@ -76,17 +74,18 @@ TEST_F(KinematicSimulationPositionExecutorTest, constructor_Passes)
 TEST_F(KinematicSimulationPositionExecutorTest, execute_EmptyCommand_Throws)
 {
   KinematicSimulationPositionExecutor executor(mSkeleton);
-  EXPECT_THROW(executor.execute(std::vector<double>()), std::runtime_error);
+  EXPECT_THROW(
+      executor.execute(std::vector<double>()).get(), std::runtime_error);
 }
 
 TEST_F(
-    KinematicSimulationPositionExecutorTest,
-    execute_PoseWithWrongDofs_Throws)
+    KinematicSimulationPositionExecutorTest, execute_PoseWithWrongDofs_Throws)
 {
   auto skeleton = Skeleton::create("Skeleton");
 
   KinematicSimulationPositionExecutor executor(skeleton);
-  EXPECT_THROW(executor.execute(std::vector<double>(6)), std::invalid_argument);
+  EXPECT_THROW(
+      executor.execute(std::vector<double>(6)).get(), std::runtime_error);
 }
 
 TEST_F(
@@ -109,7 +108,7 @@ TEST_F(
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
-  future.get();
+  EXPECT_NO_THROW(future.get());
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(1)->getPosition(), 1.0);
@@ -187,13 +186,12 @@ TEST_F(
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(1)->getPosition(), 1.0);
 }
 
-TEST_F(
-    KinematicSimulationPositionExecutorTest, step_NegativeTimepoint_NoThrows)
+TEST_F(KinematicSimulationPositionExecutorTest, step_NegativeTimepoint_NoThrows)
 {
   KinematicSimulationPositionExecutor executor(mSkeleton);
 
-  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
-  EXPECT_DOUBLE_EQ(mSkeleton->getDof(1)->getPosition(), 1.0);
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(1)->getPosition(), 0.0);
 
   auto simulationClock = std::chrono::system_clock::now();
   auto future = executor.execute(mCommand);
@@ -215,8 +213,7 @@ TEST_F(
 }
 
 TEST_F(
-    KinematicSimulationPositionExecutorTest,
-    cancel_TrajectoryInProgress_Halts)
+    KinematicSimulationPositionExecutorTest, cancel_TrajectoryInProgress_Halts)
 {
   KinematicSimulationPositionExecutor executor(mSkeleton);
 
@@ -228,6 +225,31 @@ TEST_F(
 
   EXPECT_THROW(future.get(), std::runtime_error);
 
-  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), stepTime.count() / 1000.0);
-  EXPECT_DOUBLE_EQ(mSkeleton->getDof(1)->getPosition(), stepTime.count() / 1000.0);
+  EXPECT_NEAR(
+      mSkeleton->getDof(0)->getPosition(), stepTime.count() / 1000.0, 1E-4);
+  EXPECT_NEAR(
+      mSkeleton->getDof(1)->getPosition(), stepTime.count() / 1000.0, 1E-4);
+}
+
+TEST_F(KinematicSimulationPositionExecutorTest, execute_RealTime)
+{
+  KinematicSimulationPositionExecutor executor(mSkeleton);
+  executor.start();
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(1)->getPosition(), 0.0);
+
+  auto timeout = std::chrono::duration<double>(0.05);
+  auto future = executor.execute(mCommand, timeout);
+
+  auto startClock = std::chrono::system_clock::now();
+  EXPECT_EQ(future.get(), 0);
+  auto endClock = std::chrono::system_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+      endClock - startClock);
+  EXPECT_EQ(duration.count(), 50);
+
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
+  EXPECT_DOUBLE_EQ(mSkeleton->getDof(1)->getPosition(), 1.0);
+  executor.stop();
 }

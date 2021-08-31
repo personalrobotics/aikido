@@ -12,12 +12,17 @@ KinematicSimulationPositionExecutor::KinematicSimulationPositionExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
   : PositionExecutor(skeletonToJointNames(skeleton))
   , mSkeleton{std::move(skeleton)}
+  , mMetaSkeleton{nullptr}
   , mInProgress{false}
   , mPromise{nullptr}
   , mMutex{}
+  , mExecutionStartTime{std::chrono::system_clock::now()}
 {
   if (!mSkeleton)
+  {
+    stop();
     throw std::invalid_argument("Skeleton is null.");
+  }
 }
 
 //==============================================================================
@@ -33,6 +38,7 @@ KinematicSimulationPositionExecutor::~KinematicSimulationPositionExecutor()
       mPromise->set_exception(
           std::make_exception_ptr(std::runtime_error("Command canceled.")));
     }
+    stop();
   }
 }
 
@@ -45,38 +51,38 @@ std::future<int> KinematicSimulationPositionExecutor::execute(
   {
     std::lock_guard<std::mutex> lock(mMutex);
     DART_UNUSED(lock); // Suppress unused variable warning
-    auto promise = new std::promise<int>();
+    auto promise = std::promise<int>();
 
     if (mInProgress)
     {
-      promise->set_exception(std::make_exception_ptr(
+      promise.set_exception(std::make_exception_ptr(
           std::runtime_error("Another position command is in progress.")));
-      return promise->get_future();
+      return promise.get_future();
     }
 
     if (command.size() != mJoints.size())
     {
-      promise->set_exception(std::make_exception_ptr(
+      promise.set_exception(std::make_exception_ptr(
           std::runtime_error("DOF of command does not match DOF of joints.")));
-      return promise->get_future();
+      return promise.get_future();
     }
 
-    mPromise.reset(promise);
+    mPromise.reset(new std::promise<int>());
 
     mCommand = command;
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
     mStartPosition.clear();
-    for (size_t i; i < mSkeleton->getDofs().size(); i++)
+    mTimeout = timeout;
+    for (size_t i = 0; i < mSkeleton->getDofs().size(); i++)
     {
       auto dof = mSkeleton->getDof(i);
+      mStartPosition.push_back(dof->getPosition());
       if (mTimeout.count() > 1E-8)
       {
         dof->setVelocity((command[i] - mStartPosition[i]) / mTimeout.count());
       }
-      mStartPosition.push_back(dof->getPosition());
     }
-    mTimeout = timeout;
   }
 
   return mPromise->get_future();
@@ -89,7 +95,9 @@ void KinematicSimulationPositionExecutor::step(
   std::lock_guard<std::mutex> lock(mMutex);
 
   if (!mInProgress)
+  {
     return;
+  }
 
   const auto timeSinceBeginning = timepoint - mExecutionStartTime;
   const auto executionTime
@@ -98,17 +106,25 @@ void KinematicSimulationPositionExecutor::step(
   // Instantaneous movement if no timeout.
   double interpTime
       = (mTimeout.count() == 0) ? 1.0 : executionTime / mTimeout.count();
+  // Stop at the correct position
+  if (interpTime > 1.0)
+  {
+    interpTime = 1.0;
+  }
 
   // executionTime may be negative if the thread calling \c step is queued
   // before and dequeued after \c execute is called.
   if (executionTime < 0)
+  {
     return;
+  }
 
-  for (size_t i; i < mSkeleton->getDofs().size(); i++)
+  for (size_t i = 0; i < mSkeleton->getDofs().size(); i++)
   {
     auto dof = mSkeleton->getDof(i);
-    dof->setPosition(
-        (1.0 - interpTime) * mStartPosition[i] + interpTime * mCommand[i]);
+    double pose
+        = (1.0 - interpTime) * mStartPosition[i] + interpTime * mCommand[i];
+    dof->setPosition(pose);
   }
 
   // Check if command has timed out

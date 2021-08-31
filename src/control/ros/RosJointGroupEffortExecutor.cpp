@@ -26,7 +26,7 @@ RosJointGroupEffortExecutor::RosJointGroupEffortExecutor(
 //==============================================================================
 RosJointGroupEffortExecutor::~RosJointGroupEffortExecutor()
 {
-  // Do nothing.
+  stop();
 }
 
 //==============================================================================
