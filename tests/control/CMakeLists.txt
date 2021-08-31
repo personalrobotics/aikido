@@ -13,6 +13,11 @@ aikido_add_test(test_KinematicSimulationPositionExecutor
 target_link_libraries(test_KinematicSimulationPositionExecutor
   "${PROJECT_NAME}_control")
 
+aikido_add_test(test_KinematicSimulationVelocityExecutor
+  test_KinematicSimulationVelocityExecutor.cpp)
+target_link_libraries(test_KinematicSimulationVelocityExecutor
+  "${PROJECT_NAME}_control")
+
 aikido_add_test(test_QueuedTrajectoryExecutor
   test_QueuedTrajectoryExecutor.cpp)
 target_link_libraries(test_QueuedTrajectoryExecutor
