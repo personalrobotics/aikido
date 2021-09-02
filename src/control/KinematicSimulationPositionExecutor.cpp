@@ -66,7 +66,7 @@ std::future<int> KinematicSimulationPositionExecutor::execute(
       mCommand.clear();
       mInProgress = false;
       mPromise->set_exception(
-        std::make_exception_ptr(std::runtime_error("Command canceled.")));
+          std::make_exception_ptr(std::runtime_error("Command canceled.")));
     }
 
     mPromise.reset(new std::promise<int>());

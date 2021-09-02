@@ -83,9 +83,10 @@ std::future<int> RosJointGroupCommandClient::execute(
 
     // Note: no need to cancel previous goal
     // Will be preempted by controller
-    if(mInProgress) {
-      mPromise->set_exception(
-          std::make_exception_ptr(std::runtime_error("Action PREEMPTED by new command.")));
+    if (mInProgress)
+    {
+      mPromise->set_exception(std::make_exception_ptr(
+          std::runtime_error("Action PREEMPTED by new command.")));
     }
 
     mPromise.reset(promise);
@@ -104,7 +105,8 @@ void RosJointGroupCommandClient::transitionCallback(GoalHandle handle)
 {
   int error_code = 0;
 
-  if (handle != mGoalHandle) {
+  if (handle != mGoalHandle)
+  {
     // Expired goal
     return;
   }
