@@ -6,7 +6,7 @@
 
   * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
   * Add generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
-  * Add JacobianVelocityExecutor wrapping any VelocityExecutor [#603](https://github.com/personalrobotics/aikido/pull/603)
+  * Add JacobianVelocityExecutor wrapping any VelocityExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
 
 * RViz
 
