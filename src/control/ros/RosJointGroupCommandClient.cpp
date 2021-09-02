@@ -81,11 +81,11 @@ std::future<int> RosJointGroupCommandClient::execute(
       return promise->get_future();
     }
 
-    if (mInProgress)
-    {
-      promise->set_exception(std::make_exception_ptr(
-          std::runtime_error("Another position command is in progress.")));
-      return promise->get_future();
+    // Note: no need to cancel previous goal
+    // Will be preempted by controller
+    if(mInProgress) {
+      mPromise->set_exception(
+          std::make_exception_ptr(std::runtime_error("Action PREEMPTED by new command.")));
     }
 
     mPromise.reset(promise);
@@ -103,6 +103,11 @@ std::future<int> RosJointGroupCommandClient::execute(
 void RosJointGroupCommandClient::transitionCallback(GoalHandle handle)
 {
   int error_code = 0;
+
+  if (handle != mGoalHandle) {
+    // Expired goal
+    return;
+  }
 
   if (handle.getCommState() == actionlib::CommState::DONE)
   {

@@ -53,18 +53,20 @@ std::future<int> KinematicSimulationPositionExecutor::execute(
     DART_UNUSED(lock); // Suppress unused variable warning
     auto promise = std::promise<int>();
 
-    if (mInProgress)
-    {
-      promise.set_exception(std::make_exception_ptr(
-          std::runtime_error("Another position command is in progress.")));
-      return promise.get_future();
-    }
-
     if (command.size() != mJoints.size())
     {
       promise.set_exception(std::make_exception_ptr(
           std::runtime_error("DOF of command does not match DOF of joints.")));
       return promise.get_future();
+    }
+
+    // Overwrite previous position command
+    if (mInProgress)
+    {
+      mCommand.clear();
+      mInProgress = false;
+      mPromise->set_exception(
+        std::make_exception_ptr(std::runtime_error("Command canceled.")));
     }
 
     mPromise.reset(new std::promise<int>());

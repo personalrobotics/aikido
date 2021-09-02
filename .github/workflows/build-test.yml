@@ -26,11 +26,12 @@ jobs:
       matrix:
         include:
           # OSX Build
-          - os: macos-11.0
-            catkin: OFF
-            aikidopy: OFF
-            build: XCODE11_CMAKE_RELEASE
-            config: ""
+          # TODO: New PR to fix
+          #- os: macos-11.0
+          #  catkin: OFF
+          #  aikidopy: OFF
+          #  build: XCODE11_CMAKE_RELEASE
+          #  config: ""
           # Bionic CMake
           - os: ubuntu-18.04
             catkin: OFF

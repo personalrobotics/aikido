@@ -116,7 +116,7 @@ TEST_F(
 
 TEST_F(
     KinematicSimulationPositionExecutorTest,
-    execute_CommandIsAlreadyRunning_Throws)
+    execute_CommandIsAlreadyRunning_NoThrows)
 {
   KinematicSimulationPositionExecutor executor(mSkeleton);
 
@@ -124,9 +124,9 @@ TEST_F(
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(1)->getPosition(), 0.0);
 
   auto simulationClock = std::chrono::system_clock::now();
-  auto future = executor.execute(mCommand);
+  auto future = executor.execute(std::vector<double>(2, 0.5));
 
-  EXPECT_THROW(executor.execute(mCommand).get(), std::runtime_error);
+  EXPECT_NO_THROW(future = executor.execute(mCommand));
   std::future_status status;
   do
   {

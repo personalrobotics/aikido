@@ -120,7 +120,7 @@ TEST_F(
 
 TEST_F(
     KinematicSimulationVelocityExecutorTest,
-    execute_CommandIsAlreadyRunning_Throws)
+    execute_CommandIsAlreadyRunning_NoThrows)
 {
   KinematicSimulationVelocityExecutor executor(mSkeleton);
 
@@ -129,9 +129,10 @@ TEST_F(
 
   auto simulationClock = std::chrono::system_clock::now();
   auto beginning = simulationClock;
-  auto future = executor.execute(mCommand);
+  auto future = executor.execute(std::vector<double>(2, 0.1));
 
-  EXPECT_THROW(executor.execute(mCommand).get(), std::runtime_error);
+  EXPECT_NO_THROW(future = executor.execute(mCommand));
+
   std::future_status status;
   do
   {
@@ -140,7 +141,7 @@ TEST_F(
     status = future.wait_for(waitTime);
   } while (status != std::future_status::ready);
 
-  future.get();
+  EXPECT_NO_THROW(future.get());
 
   double timeSpent
       = std::chrono::duration<double>(simulationClock - beginning).count();
