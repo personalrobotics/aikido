@@ -48,9 +48,6 @@ private:
   /// Command being executed
   std::vector<double> mCommand;
 
-  /// The controlled subset of mSkeleton for the currently executing command.
-  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
-
   /// Whether a command is being executed
   bool mInProgress;
 

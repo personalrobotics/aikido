@@ -5,6 +5,7 @@ set(sources
   QueuedTrajectoryExecutor.cpp
   KinematicSimulationPositionExecutor.cpp
   KinematicSimulationVelocityExecutor.cpp
+  JacobianVelocityExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control" SHARED ${sources})

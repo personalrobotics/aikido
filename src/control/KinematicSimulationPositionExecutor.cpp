@@ -12,7 +12,6 @@ KinematicSimulationPositionExecutor::KinematicSimulationPositionExecutor(
     ::dart::dynamics::SkeletonPtr skeleton)
   : PositionExecutor(skeletonToJointNames(skeleton))
   , mSkeleton{std::move(skeleton)}
-  , mMetaSkeleton{nullptr}
   , mInProgress{false}
   , mPromise{nullptr}
   , mMutex{}
