@@ -8,7 +8,7 @@ export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${RE
 ./scripts/internal-build.sh ${PACKAGE_NAMES}
 
 if [ $BUILD_NAME = DOCS ]; then
-  . "${TRAVIS_BUILD_DIR}/.ci/build_docs.sh"
+  . "${GITHUB_WORKSPACE}/.ci/build_docs.sh"
   exit 0
 fi
 
@@ -20,7 +20,7 @@ fi
 # Build aikidopy and pytest
 if [ $BUILD_AIKIDOPY = ON ]; then
   ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --cmake-args -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DTREAT_WARNINGS_AS_ERRORS=OFF -DCODECOV=OFF --make-args aikidopy -- aikido
-  ./scripts/internal-run.sh make -C build/aikido pytest
+  $SUDO ./scripts/internal-run.sh make -C build/aikido pytest
   exit 0
 fi
 
