@@ -3,6 +3,7 @@
 #include "aikido/control/KinematicSimulationTrajectoryExecutor.hpp"
 #include "aikido/control/PositionExecutor.hpp"
 #include "aikido/control/QueuedTrajectoryExecutor.hpp"
+#include "aikido/control/RosTrajectoryExecutor.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/control/TrajectoryResult.hpp"
 #include "aikido/control/TrajectoryRunningException.hpp"
@@ -15,3 +16,4 @@
 #include "aikido/control/ros/RosTrajectoryExecutionException.hpp"
 #include "aikido/control/ros/RosTrajectoryExecutor.hpp"
 #include "aikido/control/ros/util.hpp"
+#include "aikido/control/util.hpp"

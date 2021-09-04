@@ -11,7 +11,7 @@
 namespace aikido {
 namespace control {
 
-static std::vector<std::string> checkNull(VelocityExecutorPtr executor)
+static std::vector<std::string> checkNull(VelocityExecutor* executor)
 {
   if (!executor)
     throw std::invalid_argument("VelocityExecutor is null.");
@@ -23,8 +23,8 @@ static std::vector<std::string> checkNull(VelocityExecutorPtr executor)
 JacobianVelocityExecutor::JacobianVelocityExecutor(
     ::dart::dynamics::SkeletonPtr skeleton,
     std::string eeName,
-    VelocityExecutorPtr executor)
-  : Executor(ExecutorType::kVELOCITY, checkNull(executor))
+    std::shared_ptr<VelocityExecutor> executor)
+  : Executor(ExecutorType::VELOCITY, checkNull(executor.get()))
   , mSkeleton{std::move(skeleton)}
   , mEEName{eeName}
   , mExecutor{std::move(executor)}

@@ -1,31 +1,33 @@
-#ifndef AIKIDO_CONTROL_KINEMATICSIMULATIONPOSITIONEXECUTOR_HPP_
-#define AIKIDO_CONTROL_KINEMATICSIMULATIONPOSITIONEXECUTOR_HPP_
+#ifndef AIKIDO_CONTROL_KINEMATICSIMULATIONJOINTCOMMANDEXECUTOR_HPP_
+#define AIKIDO_CONTROL_KINEMATICSIMULATIONJOINTCOMMANDEXECUTOR_HPP_
 
 #include <future>
 #include <mutex>
 
 #include <dart/dynamics/Skeleton.hpp>
 
-#include "aikido/control/PositionExecutor.hpp"
+#include "aikido/control/JointCommandExecutor.hpp"
+#include "aikido/control/util.hpp"
 
 namespace aikido {
 namespace control {
 
-/// Executes joint position command in DART. This simulates by setting
+/// Executes joint command in DART. This simulates by setting
 /// interpolated DOF positions, without running dynamic simulation.
-class KinematicSimulationPositionExecutor : public PositionExecutor
+template <ExecutorType T>
+class KinematicSimulationJointCommandExecutor : public JointCommandExecutor<T>
 {
 public:
   /// Constructor.
   ///
   /// \param skeleton Skeleton to execute commands on.
   ///        All degrees of freedom are assumed to be commanded.
-  explicit KinematicSimulationPositionExecutor(
+  explicit KinematicSimulationJointCommandExecutor(
       ::dart::dynamics::SkeletonPtr skeleton);
 
-  virtual ~KinematicSimulationPositionExecutor();
+  virtual ~KinematicSimulationJointCommandExecutor();
 
-  /// Documentation inherited
+  // Documentation inherited
   virtual std::future<int> execute(
       const std::vector<double> command,
       const std::chrono::duration<double>& timeout
@@ -63,11 +65,20 @@ private:
   /// Position at start of command (for interpolation)
   std::vector<double> mStartPosition;
 
-  /// Position timeout (for interpolation)
+  /// Velocity timeout
   std::chrono::duration<double> mTimeout;
 };
 
+// Define common template arguments
+using KinematicSimulationPositionExecutor
+    = KinematicSimulationJointCommandExecutor<ExecutorType::POSITION>;
+using KinematicSimulationVelocityExecutor
+    = KinematicSimulationJointCommandExecutor<ExecutorType::VELOCITY>;
+// Note: No effort simulation without dynamics
+
 } // namespace control
 } // namespace aikido
+
+#include "detail/KinematicSimulationJointCommandExecutor-impl.hpp"
 
 #endif

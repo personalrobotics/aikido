@@ -48,13 +48,13 @@ std::future<int> RosJointGroupCommandClient::execute(
   commandGoal.command.time_from_start = timeout;
   switch (type)
   {
-    case ExecutorType::kPOSITION:
+    case ExecutorType::POSITION:
       commandGoal.command.positions = goal;
       break;
-    case ExecutorType::kVELOCITY:
+    case ExecutorType::VELOCITY:
       commandGoal.command.velocities = goal;
       break;
-    case ExecutorType::kEFFORT:
+    case ExecutorType::EFFORT:
       commandGoal.command.effort = goal;
       break;
     default:

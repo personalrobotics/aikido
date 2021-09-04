@@ -31,9 +31,7 @@ set(sources
   Conversions.cpp
   RosJointStateClient.cpp
   RosJointGroupCommandClient.cpp
-  RosJointGroupPositionExecutor.cpp
-  RosJointGroupVelocityExecutor.cpp
-  RosJointGroupEffortExecutor.cpp
+  RosJointCommandExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control_ros" SHARED ${sources})

@@ -3,8 +3,7 @@ set(sources
   InstantaneousTrajectoryExecutor.cpp
   KinematicSimulationTrajectoryExecutor.cpp
   QueuedTrajectoryExecutor.cpp
-  KinematicSimulationPositionExecutor.cpp
-  KinematicSimulationVelocityExecutor.cpp
+  KinematicSimulationJointCommandExecutor.cpp
   JacobianVelocityExecutor.cpp
 )
 

@@ -6,9 +6,6 @@
 #include <set>
 #include <vector>
 
-#include <dart/dynamics/DegreeOfFreedom.hpp>
-#include <dart/dynamics/Skeleton.hpp>
-
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/pointers.hpp"
 
@@ -19,31 +16,16 @@ AIKIDO_DECLARE_POINTERS(Executor)
 
 enum class ExecutorType
 {
-  kSTATE = -1,
-  kPOSITION = 0,
-  kVELOCITY = 1,
-  kEFFORT = 2,
-  kTRAJECTORY = 3,
-  kOTHER = 4
+  STATE = -1,
+  POSITION = 0,
+  VELOCITY = 1,
+  EFFORT = 2,
+  TRAJECTORY = 3,
+  OTHER = 4
 };
 
-// inline function to get joint names from skeleton
-inline std::vector<std::string> skeletonToJointNames(
-    dart::dynamics::SkeletonPtr skeleton)
-{
-  std::vector<std::string> ret;
-  if (!skeleton)
-    return ret;
-  ret.reserve(skeleton->getNumDofs());
-  for (auto dof : skeleton->getDofs())
-  {
-    ret.push_back(dof->getName());
-  }
-  return ret;
-}
-
 // Parameter defaults
-constexpr std::chrono::milliseconds cDefaultThreadRate{10};
+constexpr std::chrono::milliseconds defaultThreadRate{10};
 
 /// Abstract class for executing commands
 class Executor
@@ -59,17 +41,17 @@ public:
   /// \param[in] joints Vector of joint names this Executor acts upon
   /// \param[in] threadRate (Optional) How often to call step()
   Executor(
-      std::vector<ExecutorType> types,
-      std::vector<std::string> joints,
-      std::chrono::milliseconds threadRate = cDefaultThreadRate)
+      const std::vector<ExecutorType> types,
+      const std::vector<std::string> joints,
+      std::chrono::milliseconds threadRate = defaultThreadRate)
     : mThreadRate(threadRate), mThread(nullptr), mTypes(types), mJoints(joints)
   {
   }
 
   Executor(
-      ExecutorType type,
-      std::vector<std::string> joints,
-      std::chrono::milliseconds threadRate = cDefaultThreadRate)
+      const ExecutorType type,
+      const std::vector<std::string> joints,
+      std::chrono::milliseconds threadRate = defaultThreadRate)
     : Executor(std::vector<ExecutorType>{type}, joints, threadRate)
   {
   }
@@ -80,13 +62,13 @@ public:
     return mTypes[0];
   }
 
-  // Get all ExecutorTypes
+  /// Get all of this Executor's ExecutorTypes
   std::vector<ExecutorType> getTypes()
   {
     return mTypes;
   }
 
-  // Get Executor Joint Lists
+  /// Get list of joints needed by this Executor
   std::vector<std::string> getJoints()
   {
     return mJoints;

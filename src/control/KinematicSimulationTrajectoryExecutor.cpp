@@ -4,6 +4,7 @@
 
 #include "aikido/common/memory.hpp"
 #include "aikido/control/TrajectoryRunningException.hpp"
+#include "aikido/control/util.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 

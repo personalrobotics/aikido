@@ -7,7 +7,8 @@
 #include <dart/dynamics/Skeleton.hpp>
 
 #include "aikido/control/Executor.hpp"
-#include "aikido/control/VelocityExecutor.hpp"
+#include "aikido/control/JointCommandExecutor.hpp"
+#include "aikido/control/util.hpp"
 
 namespace aikido {
 namespace control {
@@ -27,7 +28,7 @@ public:
   explicit JacobianVelocityExecutor(
       ::dart::dynamics::SkeletonPtr skeleton,
       std::string eeName,
-      VelocityExecutorPtr executor);
+      std::shared_ptr<VelocityExecutor> executor);
 
   virtual ~JacobianVelocityExecutor();
 
@@ -62,7 +63,7 @@ private:
   std::string mEEName;
 
   /// Underlying Velocity Executor
-  VelocityExecutorPtr mExecutor;
+  std::shared_ptr<VelocityExecutor> mExecutor;
 
   /// Command being executed (6d)
   std::vector<double> mCommand;

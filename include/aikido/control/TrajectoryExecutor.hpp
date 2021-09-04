@@ -19,7 +19,7 @@ class TrajectoryExecutor : public Executor
 {
 public:
   TrajectoryExecutor(std::vector<std::string> joints)
-    : Executor(ExecutorType::kTRAJECTORY, joints)
+    : Executor(ExecutorType::TRAJECTORY, joints)
   {
   }
   virtual ~TrajectoryExecutor() = default;
@@ -39,7 +39,7 @@ public:
   virtual std::future<void> execute(const trajectory::ConstTrajectoryPtr& traj)
       = 0;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   virtual void step(
       const std::chrono::system_clock::time_point& timepoint) override = 0;
 
