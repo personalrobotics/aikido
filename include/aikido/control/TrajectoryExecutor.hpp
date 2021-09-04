@@ -19,7 +19,7 @@ class TrajectoryExecutor : public Executor
 {
 public:
   TrajectoryExecutor(std::vector<std::string> joints)
-    : Executor(ExecutorType::kTRAJECTORY, joints)
+    : Executor(ExecutorType::TRAJECTORY, joints)
   {
   }
   virtual ~TrajectoryExecutor() = default;

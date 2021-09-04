@@ -1,19 +1,23 @@
-#include "aikido/control/ros/RosJointGroupPositionExecutor.hpp"
-
 namespace aikido {
 namespace control {
 namespace ros {
 
-using std::chrono::milliseconds;
+//==============================================================================
+extern template class RosJointCommandExecutor<ExecutorType::POSITION>;
+
+extern template class RosJointCommandExecutor<ExecutorType::VELOCITY>;
+
+extern template class RosJointCommandExecutor<ExecutorType::EFFORT>;
 
 //==============================================================================
-RosJointGroupPositionExecutor::RosJointGroupPositionExecutor(
+template<ExecutorType T>
+RosJointCommandExecutor<T>::RosJointCommandExecutor(
     ::ros::NodeHandle node,
     const std::string& controllerName,
     std::vector<std::string> jointNames,
     const std::chrono::milliseconds connectionTimeout,
     const std::chrono::milliseconds connectionPollingPeriod)
-  : PositionExecutor(jointNames)
+  : aikido::control::JointCommandExecutor<T>(jointNames)
   , mClient{node,
             controllerName + "/joint_group_command",
             jointNames,
@@ -24,13 +28,15 @@ RosJointGroupPositionExecutor::RosJointGroupPositionExecutor(
 }
 
 //==============================================================================
-RosJointGroupPositionExecutor::~RosJointGroupPositionExecutor()
+template<ExecutorType T>
+RosJointCommandExecutor<T>::~RosJointCommandExecutor()
 {
-  stop();
+  this->stop();
 }
 
 //==============================================================================
-std::future<int> RosJointGroupPositionExecutor::execute(
+template<ExecutorType T>
+std::future<int> RosJointCommandExecutor<T>::execute(
     const std::vector<double> command,
     const std::chrono::duration<double>& timeout)
 {
@@ -40,18 +46,20 @@ std::future<int> RosJointGroupPositionExecutor::execute(
   duration.nsec
       = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count()
         % 1000000000UL;
-  return mClient.execute(ExecutorType::kPOSITION, command, duration);
+  return mClient.execute(T, command, duration);
 }
 
 //==============================================================================
-void RosJointGroupPositionExecutor::step(
+template<ExecutorType T>
+void RosJointCommandExecutor<T>::step(
     const std::chrono::system_clock::time_point& /* timepoint */)
 {
   mClient.step();
 }
 
 //==============================================================================
-void RosJointGroupPositionExecutor::cancel()
+template<ExecutorType T>
+void RosJointCommandExecutor<T>::cancel()
 {
   mClient.cancel();
 }

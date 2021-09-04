@@ -2,6 +2,7 @@
 
 #include <dart/common/Console.hpp>
 
+#include "aikido/control/util.hpp"
 #include "aikido/common/memory.hpp"
 #include "aikido/control/TrajectoryRunningException.hpp"
 

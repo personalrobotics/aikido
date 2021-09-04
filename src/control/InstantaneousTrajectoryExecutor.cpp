@@ -1,5 +1,6 @@
 #include "aikido/control/InstantaneousTrajectoryExecutor.hpp"
 
+#include "aikido/control/util.hpp"
 #include "aikido/control/TrajectoryRunningException.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 

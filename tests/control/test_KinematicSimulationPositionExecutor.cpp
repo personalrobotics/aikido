@@ -4,7 +4,7 @@
 #include <dart/dynamics/Skeleton.hpp>
 #include <gtest/gtest.h>
 
-#include <aikido/control/KinematicSimulationPositionExecutor.hpp>
+#include <aikido/control/KinematicSimulationJointCommandExecutor.hpp>
 
 using aikido::control::KinematicSimulationPositionExecutor;
 using ::dart::dynamics::BodyNode;

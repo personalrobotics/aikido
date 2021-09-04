@@ -7,6 +7,8 @@
 #include "aikido/control/TrajectoryResult.hpp"
 #include "aikido/control/TrajectoryRunningException.hpp"
 #include "aikido/control/VelocityExecutor.hpp"
+#include "aikido/control/RosTrajectoryExecutor.hpp"
+#include "aikido/control/util.hpp"
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/RosJointGroupEffortExecutor.hpp"
 #include "aikido/control/ros/RosJointGroupPositionExecutor.hpp"

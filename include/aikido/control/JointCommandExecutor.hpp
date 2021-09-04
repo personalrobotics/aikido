@@ -1,5 +1,5 @@
-#ifndef AIKIDO_CONTROL_POSITIONEXECUTOR_HPP_
-#define AIKIDO_CONTROL_POSITIONEXECUTOR_HPP_
+#ifndef AIKIDO_CONTROL_JOINTCOMMANDEXECUTOR_HPP_
+#define AIKIDO_CONTROL_JOINTCOMMANDEXECUTOR_HPP_
 
 #include <chrono>
 #include <future>
@@ -11,24 +11,23 @@
 namespace aikido {
 namespace control {
 
-AIKIDO_DECLARE_POINTERS(PositionExecutor)
-
-/// Abstract class for executing joint position commands
-class PositionExecutor : public Executor
+/// Abstract class for executing joint velocity commands
+template <ExecutorType T>
+class JointCommandExecutor : public Executor
 {
 public:
-  /// Position-specific constructor.
+  /// Velocity-specific constructor.
   /// \param[in] joints Vector of joint names this Executor acts upon
-  PositionExecutor(std::vector<std::string> joints)
-    : Executor(ExecutorType::kPOSITION, joints)
+  JointCommandExecutor(std::vector<std::string> joints)
+    : Executor(T, joints)
   {
   }
 
-  virtual ~PositionExecutor()
+  virtual ~JointCommandExecutor()
   {
   }
 
-  /// Execute a Joint Position Command, setting future upon completion
+  /// Execute a Joint Command, setting future upon completion
   /// \note Future should return 0 on success or timeout.
   ///
   /// \param command Vector of joint commands, parallel with joints vector
@@ -45,6 +44,11 @@ public:
   /// Cancels the current command.
   virtual void cancel() = 0;
 };
+
+// Define common executor types
+using VelocityExecutor = JointCommandExecutor<ExecutorType::VELOCITY>;
+using PositionExecutor = JointCommandExecutor<ExecutorType::POSITION>;
+using EffortExecutor = JointCommandExecutor<ExecutorType::EFFORT>;
 
 } // namespace control
 } // namespace aikido
