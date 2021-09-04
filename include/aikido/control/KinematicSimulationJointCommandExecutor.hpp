@@ -27,7 +27,7 @@ public:
 
   virtual ~KinematicSimulationJointCommandExecutor();
 
-  /// Documentation inherited
+  // Documentation inherited
   virtual std::future<int> execute(
       const std::vector<double> command,
       const std::chrono::duration<double>& timeout
@@ -73,8 +73,10 @@ private:
 };
 
 // Define common template arguments
-using KinematicSimulationPositionExecutor = KinematicSimulationJointCommandExecutor<ExecutorType::POSITION>;
-using KinematicSimulationVelocityExecutor = KinematicSimulationJointCommandExecutor<ExecutorType::VELOCITY>;
+using KinematicSimulationPositionExecutor
+    = KinematicSimulationJointCommandExecutor<ExecutorType::POSITION>;
+using KinematicSimulationVelocityExecutor
+    = KinematicSimulationJointCommandExecutor<ExecutorType::VELOCITY>;
 // Note: No effort simulation without dynamics
 
 } // namespace control

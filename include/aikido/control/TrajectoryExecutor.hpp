@@ -39,7 +39,7 @@ public:
   virtual std::future<void> execute(const trajectory::ConstTrajectoryPtr& traj)
       = 0;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   virtual void step(
       const std::chrono::system_clock::time_point& timepoint) override = 0;
 

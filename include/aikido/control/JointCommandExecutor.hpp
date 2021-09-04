@@ -18,8 +18,7 @@ class JointCommandExecutor : public Executor
 public:
   /// Velocity-specific constructor.
   /// \param[in] joints Vector of joint names this Executor acts upon
-  JointCommandExecutor(std::vector<std::string> joints)
-    : Executor(T, joints)
+  JointCommandExecutor(std::vector<std::string> joints) : Executor(T, joints)
   {
   }
 
@@ -37,7 +36,7 @@ public:
       const std::chrono::duration<double>& timeout)
       = 0;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   virtual void step(
       const std::chrono::system_clock::time_point& timepoint) override = 0;
 

@@ -11,13 +11,13 @@ namespace control {
 
 /// Get joint names from skeleton for Executor intiialization
 static std::vector<std::string> skeletonToJointNames(
-    dart::dynamics::SkeletonPtr skeleton)
+    const dart::dynamics::SkeletonPtr skeleton)
 {
   std::vector<std::string> ret;
   if (!skeleton)
     return ret;
   ret.reserve(skeleton->getNumDofs());
-  for (auto dof : skeleton->getDofs())
+  for (const auto& dof : skeleton->getDofs())
   {
     ret.push_back(dof->getName());
   }

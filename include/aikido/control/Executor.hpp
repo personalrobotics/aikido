@@ -25,7 +25,7 @@ enum class ExecutorType
 };
 
 // Parameter defaults
-constexpr std::chrono::milliseconds cDefaultThreadRate{10};
+constexpr std::chrono::milliseconds defaultThreadRate{10};
 
 /// Abstract class for executing commands
 class Executor
@@ -41,17 +41,17 @@ public:
   /// \param[in] joints Vector of joint names this Executor acts upon
   /// \param[in] threadRate (Optional) How often to call step()
   Executor(
-      std::vector<ExecutorType> types,
-      std::vector<std::string> joints,
-      std::chrono::milliseconds threadRate = cDefaultThreadRate)
+      const std::vector<ExecutorType> types,
+      const std::vector<std::string> joints,
+      std::chrono::milliseconds threadRate = defaultThreadRate)
     : mThreadRate(threadRate), mThread(nullptr), mTypes(types), mJoints(joints)
   {
   }
 
   Executor(
-      ExecutorType type,
-      std::vector<std::string> joints,
-      std::chrono::milliseconds threadRate = cDefaultThreadRate)
+      const ExecutorType type,
+      const std::vector<std::string> joints,
+      std::chrono::milliseconds threadRate = defaultThreadRate)
     : Executor(std::vector<ExecutorType>{type}, joints, threadRate)
   {
   }
@@ -62,13 +62,13 @@ public:
     return mTypes[0];
   }
 
-  // Get all ExecutorTypes
+  /// Get all of this Executor's ExecutorTypes
   std::vector<ExecutorType> getTypes()
   {
     return mTypes;
   }
 
-  // Get Executor Joint Lists
+  /// Get list of joints needed by this Executor
   std::vector<std::string> getJoints()
   {
     return mJoints;

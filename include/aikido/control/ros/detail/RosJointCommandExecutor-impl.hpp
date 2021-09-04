@@ -10,7 +10,7 @@ extern template class RosJointCommandExecutor<ExecutorType::VELOCITY>;
 extern template class RosJointCommandExecutor<ExecutorType::EFFORT>;
 
 //==============================================================================
-template<ExecutorType T>
+template <ExecutorType T>
 RosJointCommandExecutor<T>::RosJointCommandExecutor(
     ::ros::NodeHandle node,
     const std::string& controllerName,
@@ -28,14 +28,14 @@ RosJointCommandExecutor<T>::RosJointCommandExecutor(
 }
 
 //==============================================================================
-template<ExecutorType T>
+template <ExecutorType T>
 RosJointCommandExecutor<T>::~RosJointCommandExecutor()
 {
   this->stop();
 }
 
 //==============================================================================
-template<ExecutorType T>
+template <ExecutorType T>
 std::future<int> RosJointCommandExecutor<T>::execute(
     const std::vector<double> command,
     const std::chrono::duration<double>& timeout)
@@ -50,7 +50,7 @@ std::future<int> RosJointCommandExecutor<T>::execute(
 }
 
 //==============================================================================
-template<ExecutorType T>
+template <ExecutorType T>
 void RosJointCommandExecutor<T>::step(
     const std::chrono::system_clock::time_point& /* timepoint */)
 {
@@ -58,7 +58,7 @@ void RosJointCommandExecutor<T>::step(
 }
 
 //==============================================================================
-template<ExecutorType T>
+template <ExecutorType T>
 void RosJointCommandExecutor<T>::cancel()
 {
   mClient.cancel();

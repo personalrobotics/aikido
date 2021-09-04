@@ -6,14 +6,17 @@ namespace aikido {
 namespace control {
 
 //==============================================================================
-extern template class KinematicSimulationJointCommandExecutor<ExecutorType::POSITION>;
+extern template class KinematicSimulationJointCommandExecutor<
+    ExecutorType::POSITION>;
 
-extern template class KinematicSimulationJointCommandExecutor<ExecutorType::VELOCITY>;
+extern template class KinematicSimulationJointCommandExecutor<
+    ExecutorType::VELOCITY>;
 
 //==============================================================================
 template <ExecutorType T>
-KinematicSimulationJointCommandExecutor<T>::KinematicSimulationJointCommandExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton)
+KinematicSimulationJointCommandExecutor<
+    T>::KinematicSimulationJointCommandExecutor(::dart::dynamics::SkeletonPtr
+                                                    skeleton)
   : JointCommandExecutor<T>(skeletonToJointNames(skeleton))
   , mSkeleton{std::move(skeleton)}
   , mInProgress{false}
@@ -26,7 +29,8 @@ KinematicSimulationJointCommandExecutor<T>::KinematicSimulationJointCommandExecu
 
 //==============================================================================
 template <ExecutorType T>
-KinematicSimulationJointCommandExecutor<T>::~KinematicSimulationJointCommandExecutor()
+KinematicSimulationJointCommandExecutor<
+    T>::~KinematicSimulationJointCommandExecutor()
 {
   {
     std::lock_guard<std::mutex> lock(mMutex);
@@ -76,7 +80,8 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
     mExecutionStartTime = std::chrono::system_clock::now();
     mStartPosition.clear();
     mTimeout = timeout;
-    switch(T) {
+    switch (T)
+    {
       case ExecutorType::VELOCITY:
 
         for (size_t i = 0; i < mSkeleton->getDofs().size(); i++)
@@ -96,7 +101,8 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
           mStartPosition.push_back(dof->getPosition());
           if (mTimeout.count() > 1E-8)
           {
-            dof->setVelocity((command[i] - mStartPosition[i]) / timeout.count());
+            dof->setVelocity(
+                (command[i] - mStartPosition[i]) / timeout.count());
           }
         }
 
@@ -105,11 +111,10 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
       default:
         // Other Executors not implemented
         mCommand.clear();
-        mPromise->set_exception(
-            std::make_exception_ptr(std::logic_error("Executor not implemented")));
+        mPromise->set_exception(std::make_exception_ptr(
+            std::logic_error("Executor not implemented")));
         mInProgress = false;
     }
-    
   }
 
   return mPromise->get_future();
@@ -136,7 +141,8 @@ void KinematicSimulationJointCommandExecutor<T>::step(
 
   // Set joint states
   double interpTime;
-  switch(T) {
+  switch (T)
+  {
     case ExecutorType::VELOCITY:
       for (size_t i = 0; i < mSkeleton->getDofs().size(); i++)
       {
@@ -167,8 +173,9 @@ void KinematicSimulationJointCommandExecutor<T>::step(
       break;
 
     default:
-    // SHOULD NEVER REACH
-    throw std::logic_error("Other KinematicSimulationExecutors not implemented.");
+      // SHOULD NEVER REACH
+      throw std::logic_error(
+          "Other KinematicSimulationExecutors not implemented.");
   }
 
   // Check if command has timed out

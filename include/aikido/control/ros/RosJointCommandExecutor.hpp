@@ -14,7 +14,7 @@ namespace ros {
 /// This Executor uses pr_control_msgs/JointGrouCommandAction to
 /// execute joint-wise velocity commands.
 /// \see RosJointGroupCommandClient
-template<ExecutorType T>
+template <ExecutorType T>
 class RosJointCommandExecutor : public aikido::control::JointCommandExecutor<T>
 {
 public:
@@ -35,15 +35,15 @@ public:
 
   virtual ~RosJointCommandExecutor();
 
-  /// Documentation inherited.
+  // Documentation inherited.
   std::future<int> execute(
       const std::vector<double> command,
       const std::chrono::duration<double>& timeout) override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   void step(const std::chrono::system_clock::time_point& timepoint) override;
 
-  /// Documentation inherited.
+  // Documentation inherited.
   void cancel() override;
 
 private:
@@ -52,8 +52,10 @@ private:
 
 // Define common executors
 
-using RosJointPositionExecutor = RosJointCommandExecutor<ExecutorType::POSITION>;
-using RosJointVelocityExecutor = RosJointCommandExecutor<ExecutorType::VELOCITY>;
+using RosJointPositionExecutor
+    = RosJointCommandExecutor<ExecutorType::POSITION>;
+using RosJointVelocityExecutor
+    = RosJointCommandExecutor<ExecutorType::VELOCITY>;
 using RosJointEffortExecutor = RosJointCommandExecutor<ExecutorType::EFFORT>;
 
 } // namespace ros
