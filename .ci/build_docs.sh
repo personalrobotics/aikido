@@ -19,9 +19,9 @@ while read version; do
   echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${GITHUB_WORKSPACE}/gh-pages/README.md
 
   # Build documentation
-  git -C .. checkout ${version}
+  git -C ${GITHUB_WORKSPACE} checkout ${version}
   rm -rf *
-  cmake -DDOWNLOAD_TAGFILES=ON ..
+  cmake -DDOWNLOAD_TAGFILES=ON ${GITHUB_WORKSPACE}
   make docs
   mv doxygen ${GITHUB_WORKSPACE}/gh-pages/${version}
 done < ${GITHUB_WORKSPACE}/.ci/docs_versions.txt
