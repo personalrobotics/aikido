@@ -19,7 +19,7 @@ while read version; do
   echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${GITHUB_WORKSPACE}/gh-pages/README.md
 
   # Build documentation
-  git checkout ${version}
+  git -C .. checkout ${version}
   rm -rf *
   cmake -DDOWNLOAD_TAGFILES=ON ..
   make docs
