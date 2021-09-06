@@ -43,6 +43,11 @@ jobs:
         run: .ci/install.sh
       - name: Script
         run: .ci/script.sh
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages
       - name: After failure
         if: ${{ failure() }}
         run: .ci/after_failure.sh
