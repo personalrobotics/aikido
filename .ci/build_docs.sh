@@ -2,16 +2,6 @@
 
 set -ex
 
-# Install DART manually
-$SUDO apt-add-repository -y ppa:dartsim/ppa
-$SUDO apt-get -qq update
-$SUDO apt-get -y install \
-  libdart6-all-dev
-
-cd "${HOME}/workspace"
-
-AIKIDO_DIR="${HOME}/workspace/src/aikido"
-
 # Organize into "gh-pages" directory
 mkdir -p ${GITHUB_WORKSPACE}/gh-pages
 
@@ -29,9 +19,9 @@ while read version; do
   echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${GITHUB_WORKSPACE}/gh-pages/README.md
 
   # Build documentation
-  git -C ${AIKIDO_DIR} checkout ${version}
+  git checkout ${version}
   rm -rf *
-  cmake -DDOWNLOAD_TAGFILES=ON ${AIKIDO_DIR}
+  cmake -DDOWNLOAD_TAGFILES=ON ..
   make docs
   mv doxygen ${GITHUB_WORKSPACE}/gh-pages/${version}
 done < ${GITHUB_WORKSPACE}/.ci/docs_versions.txt
