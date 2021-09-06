@@ -7,13 +7,6 @@ cd "${HOME}/workspace"
 
 AIKIDO_DIR="${HOME}/workspace/src/aikido"
 
-# For branch builds, Travis only clones that branch with a fixed depth of 50
-# commits. This means that the clone knows nothing about other Git branches or
-# tags. We fix this by deleting and re-cloning the full repository.
-# TODO: Unsure if we still need to do this for Github Actions
-rm -rf ${AIKIDO_DIR}
-git clone "https://github.com/${GITHUB_REPOSITORY}.git" ${AIKIDO_DIR}
-
 # Organize into "gh-pages" directory
 mkdir -p ${GITHUB_WORKSPACE}/gh-pages
 

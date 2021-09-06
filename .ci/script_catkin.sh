@@ -4,13 +4,13 @@ set -ex
 
 cd "${HOME}/workspace"
 
-export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${REPOSITORY})"
-./scripts/internal-build.sh ${PACKAGE_NAMES}
-
 if [ $BUILD_NAME = DOCS ]; then
   . "${GITHUB_WORKSPACE}/.ci/build_docs.sh"
   exit 0
 fi
+
+export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${REPOSITORY})"
+./scripts/internal-build.sh ${PACKAGE_NAMES}
 
 # Check code style
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
