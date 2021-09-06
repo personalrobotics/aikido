@@ -2,6 +2,12 @@
 
 set -ex
 
+# Install DART manually
+$SUDO apt-add-repository -y ppa:dartsim/ppa
+$SUDO apt-get -qq update
+$SUDO apt-get -y install \
+  libdart6-all-dev
+
 cd "${HOME}/workspace"
 
 AIKIDO_DIR="${HOME}/workspace/src/aikido"

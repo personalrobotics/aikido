@@ -18,7 +18,7 @@ jobs:
         include:
           # Docs
           - os: ubuntu-20.04
-            catkin: ON
+            catkin: OFF
             aikidopy: OFF
             build: DOCS
             config: ""
