@@ -3,7 +3,6 @@
 set -ex
 
 cd "${HOME}/workspace"
-. devel/setup.bash
 
 AIKIDO_DIR="${HOME}/workspace/src/aikido"
 
