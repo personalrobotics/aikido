@@ -28,37 +28,6 @@ class Robot
 public:
   virtual ~Robot() = default;
 
-  /// Returns a timed trajectory that can be executed by the robot.
-  /// \param[in] metaSkeleton Metaskeleton of the path.
-  /// \param[in] path Geometric path to execute.
-  /// \param[in] constraint Must be satisfied after postprocessing. Typically
-  /// collision constraint is passed.
-  virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      const constraint::TestablePtr& constraint)
-      = 0;
-
-  /// Returns a timed trajectory that can be executed by the robot.
-  /// \param[in] metaSkeleton Metaskeleton of the path.
-  /// \param[in] path Geometric path to execute.
-  virtual std::unique_ptr<aikido::trajectory::Spline> retimePath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path)
-      = 0;
-
-  /// Returns a timed trajectory computed with KunzRetimer
-  /// \param[in] metaSkeleton Metaskeleton of the path.
-  /// \param[in] path Geometric path to execute.
-  /// \param[in] maxDeviation Maximum deviation allowed from original path.
-  /// \param[in] timestep Time step between trajectory points.
-  virtual std::unique_ptr<aikido::trajectory::Spline> retimePathWithKunz(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      double maxDeviation,
-      double timestep)
-      = 0;
-
   /// Executes a trajectory
   /// \param[in] trajectory Timed trajectory to execute
   virtual std::future<void> executeTrajectory(

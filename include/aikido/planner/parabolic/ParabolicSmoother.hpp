@@ -11,7 +11,7 @@ namespace aikido {
 namespace planner {
 namespace parabolic {
 
-constexpr double DEFAULT_TIMELIMT = 3.0;
+constexpr double DEFAULT_TIMELIMIT = 3.0;
 constexpr double DEFAULT_BLEND_RADIUS = 0.5;
 constexpr int DEFAULT_BLEND_ITERATIONS = 4;
 constexpr double DEFAULT_CHECK_RESOLUTION = 1e-4;
@@ -50,7 +50,7 @@ std::unique_ptr<trajectory::Spline> doShortcut(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
     aikido::common::RNG& _rng,
-    double _timelimit = DEFAULT_TIMELIMT,
+    double _timelimit = DEFAULT_TIMELIMIT,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
     double _tolerance = DEFAULT_TOLERANCE);
 
@@ -124,7 +124,7 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
     const Eigen::VectorXd& _maxVelocity,
     const Eigen::VectorXd& _maxAcceleration,
     aikido::common::RNG& _rng,
-    double _timelimit = DEFAULT_TIMELIMT,
+    double _timelimit = DEFAULT_TIMELIMIT,
     double _blendRadius = DEFAULT_BLEND_RADIUS,
     int _blendIterations = DEFAULT_BLEND_ITERATIONS,
     double _checkResolution = DEFAULT_CHECK_RESOLUTION,
@@ -134,6 +134,52 @@ std::unique_ptr<trajectory::Spline> doShortcutAndBlend(
 class ParabolicSmoother : public aikido::planner::TrajectoryPostProcessor
 {
 public:
+  /// Hauser postprocessor parameters.
+  struct Params
+  {
+    /// \param _enableShortcut Whether shortcutting is used in smoothing.
+    /// \param _enableBlend Whether blending is used in smoothing.
+    /// \param _shortcutTimelimit Timelimit for shortcutting. It is ineffective
+    /// when _enableShortcut is false.
+    /// \param _blendRadius Blend radius for blending. It is ineffective
+    /// when _enableBlend is false.
+    /// \param _blendIterations Blend iterations for blending. It is
+    /// ineffective when _enableBlend is false.
+    /// \param _feasibilityCheckResolution The resolution in discretizing
+    /// a segment in checking the feasibility of the segment.
+    /// \param _feasibilityApproxTolerance This tolerance is used in a
+    /// piecewise linear discretization that deviates no more than
+    /// \c _feasibilityApproxTolerance from the parabolic ramp along any
+    /// axis, and then checks for configuration and segment feasibility along
+    /// that piecewise linear path.
+    Params(
+        bool _enableShortcut = true,
+        bool _enableBlend = true,
+        double _shortcutTimelimit = DEFAULT_TIMELIMIT,
+        double _blendRadius = DEFAULT_BLEND_RADIUS,
+        int _blendIterations = DEFAULT_BLEND_ITERATIONS,
+        double _feasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION,
+        double _feasibilityApproxTolerance = DEFAULT_TOLERANCE)
+      : mEnableShortcut(_enableShortcut)
+      , mEnableBlend(_enableBlend)
+      , mShortcutTimelimit(_shortcutTimelimit)
+      , mBlendRadius(_blendRadius)
+      , mBlendIterations(_blendIterations)
+      , mFeasibilityCheckResolution(_feasibilityCheckResolution)
+      , mFeasibilityApproxTolerance(_feasibilityApproxTolerance)
+    {
+      // Do nothing.
+    }
+
+    bool mEnableShortcut;
+    bool mEnableBlend;
+    double mShortcutTimelimit;
+    double mBlendRadius;
+    int mBlendIterations;
+    double mFeasibilityCheckResolution;
+    double mFeasibilityApproxTolerance;
+  };
+
   /// \param _velocityLimits Maximum velocity for each dimension.
   /// \param _accelerationLimits Maximum acceleration for each dimension.
   /// \param _enableShortcut Whether shortcutting is used in smoothing.
@@ -156,11 +202,19 @@ public:
       const Eigen::VectorXd& _accelerationLimits,
       bool _enableShortcut = true,
       bool _enableBlend = true,
-      double _shortcutTimelimit = DEFAULT_TIMELIMT,
+      double _shortcutTimelimit = DEFAULT_TIMELIMIT,
       double _blendRadius = DEFAULT_BLEND_RADIUS,
       int _blendIterations = DEFAULT_BLEND_ITERATIONS,
       double _feasibilityCheckResolution = DEFAULT_CHECK_RESOLUTION,
       double _feasibilityApproxTolerance = DEFAULT_TOLERANCE);
+
+  /// \param _velocityLimits Maximum velocity for each dimension.
+  /// \param _accelerationLimits Maximum acceleration for each dimension.
+  /// \param _params Postprocessor parameters.
+  ParabolicSmoother(
+      const Eigen::VectorXd& _velocityLimits,
+      const Eigen::VectorXd& _accelerationLimits,
+      const Params& _params);
 
   /// Performs parabolic smoothing on an input trajectory.
   /// \param _inputTraj The untimed trajectory for the arm to process.

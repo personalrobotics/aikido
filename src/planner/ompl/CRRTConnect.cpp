@@ -87,6 +87,18 @@ void CRRTConnect::clear()
 //==============================================================================
 void CRRTConnect::setConnectionRadius(double radius)
 {
+  if (radius > si_->getStateValidityCheckingResolution())
+  {
+    radius = si_->getStateValidityCheckingResolution();
+
+    ::ompl::msg::log(
+        __FILE__,
+        __LINE__,
+        ::ompl::msg::LOG_WARN,
+        "Passed connection radius was too large. Clamped to: %f \n",
+        radius);
+  }
+
   mConnectionRadius = radius;
 }
 
