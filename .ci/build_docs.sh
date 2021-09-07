@@ -14,10 +14,7 @@ git clone "https://github.com/${GITHUB_REPOSITORY}.git" ${AIKIDO_DIR}
 mkdir -p ${GITHUB_WORKSPACE}/gh-pages
 
 # Initialize list of API versions
-cat <<EOF > ${GITHUB_WORKSPACE}/gh-pages/index.md
----
-title: API Documentation
----
+cat <<EOF > ${GITHUB_WORKSPACE}/gh-pages/README.md
 
 ## API Documentation
 
@@ -28,7 +25,7 @@ cd build_docs
 
 while read version; do
   # Add entry to list of API versions
-  echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${GITHUB_WORKSPACE}/gh-pages/index.md
+  echo "* [${version}](https://personalrobotics.github.io/aikido/${version}/)" >> ${GITHUB_WORKSPACE}/gh-pages/README.md
 
   # Build documentation
   git -C ${AIKIDO_DIR} checkout ${version}
