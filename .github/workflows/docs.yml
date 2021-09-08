@@ -18,7 +18,7 @@ jobs:
         include:
           # Docs
           - os: ubuntu-20.04
-            catkin: ON
+            catkin: OFF
             aikidopy: OFF
             build: DOCS
             config: ""
@@ -43,6 +43,13 @@ jobs:
         run: .ci/install.sh
       - name: Script
         run: .ci/script.sh
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages
+          force_orphan: true
+          enable_jekyll: true
       - name: After failure
         if: ${{ failure() }}
         run: .ci/after_failure.sh

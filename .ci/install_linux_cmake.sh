@@ -57,7 +57,7 @@ if [ "$BUILD_AIKIDOPY" = "ON" ]; then
   fi
 fi
 
-if [ $BUILD_DOCS = "ON" ]; then
+if [ $BUILD_NAME = DOCS ]; then
   $SUDO apt-get -qq -y install doxygen
 fi
 

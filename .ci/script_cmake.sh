@@ -7,6 +7,11 @@ unset -f cd; # Disable rvm override of cd (see https://github.com/travis-ci/trav
 mkdir build
 cd build
 
+if [ $BUILD_NAME = DOCS ]; then
+  . "${GITHUB_WORKSPACE}/.ci/build_docs.sh"
+  exit 0
+fi
+
 if [ $BUILD_AIKIDOPY = ON ]; then
   cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTREAT_WARNINGS_AS_ERRORS=ON -DBUILD_AIKIDOPY=ON ..
   make -j4 aikidopy
