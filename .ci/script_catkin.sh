@@ -7,11 +7,6 @@ cd "${HOME}/workspace"
 export PACKAGE_NAMES="$(./scripts/internal-get-packages.py distribution.yml ${REPOSITORY})"
 ./scripts/internal-build.sh ${PACKAGE_NAMES}
 
-if [ $BUILD_NAME = DOCS ]; then
-  . "${GITHUB_WORKSPACE}/.ci/build_docs.sh"
-  exit 0
-fi
-
 # Check code style
 if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
   ./scripts/internal-run.sh catkin build --no-status --no-deps -p 1 -i --make-args check-format -- aikido
