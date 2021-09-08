@@ -48,6 +48,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-pages
+          force_orphan: true
           enable_jekyll: true
       - name: After failure
         if: ${{ failure() }}

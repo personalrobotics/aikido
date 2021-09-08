@@ -92,6 +92,7 @@ find_package(DART 6.6.2 REQUIRED
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
 )
+
 # Check if DART is built with octomap so that it supports VoxelGridShape
 include(CheckCXXSourceCompiles)
 set(CMAKE_REQUIRED_DEFINITIONS "")
@@ -180,11 +181,11 @@ if(${DOXYGEN_FOUND})
   # Optionally download Doxygen tagfiles for dependencies.
   set(DOXYGEN_TAGFILES "")
   if(DOWNLOAD_TAGFILES)
-    set(tagfile_url "http://dartsim.github.io/dart/v6.6.2/dart.tag")
+    set(tagfile_url "http://dartsim.github.io/dart/v${DART_VERSION}/dart.tag")
     message(STATUS "Downloading DART Doxygen tagfile from: ${tagfile_url}")
     file(DOWNLOAD "${tagfile_url}" "${DOXYGEN_WORKING_DIR}/dart.tag")
     set(DOXYGEN_TAGFILES
-      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/v6.6.2")
+      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/v${DART_VERSION}")
 
     is_component(needs_ompl aikido planner_ompl)
     if(needs_ompl)

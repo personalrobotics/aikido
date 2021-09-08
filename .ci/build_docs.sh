@@ -4,9 +4,8 @@ set -ex
 
 AIKIDO_DIR="${HOME}/workspace/src/aikido"
 
-# Github Actions doesn't do a full clone of the repository.
-# We do it ourselves in a separate directory
-# To access all branches and tags.
+# GitHub Actions doesn't do a full clone of the repository, so
+# we clone it again in a separate directory to access all tags.
 mkdir -p ${AIKIDO_DIR}
 git clone "https://github.com/${GITHUB_REPOSITORY}.git" ${AIKIDO_DIR}
 
@@ -15,7 +14,6 @@ mkdir -p ${GITHUB_WORKSPACE}/gh-pages
 
 # Initialize list of API versions
 cat <<EOF > ${GITHUB_WORKSPACE}/gh-pages/README.md
-
 ## API Documentation
 
 EOF
