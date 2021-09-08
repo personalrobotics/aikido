@@ -1,5 +1,5 @@
 # GTest setup
-IF(EXISTS "googletest/googletest")
+IF(EXISTS "${PROJECT_SOURCE_DIR}/tests/googletest/googletest")
   set(BUILD_GMOCK OFF CACHE BOOL "Builds the googlemock subproject")
   set(INSTALL_GTEST OFF CACHE BOOL "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)")
   add_subdirectory("googletest")

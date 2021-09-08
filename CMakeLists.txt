@@ -92,24 +92,30 @@ find_package(DART 6.6.2 REQUIRED
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
 )
-# Check if DART is built with octomap so that it supports VoxelGridShape
-include(CheckCXXSourceCompiles)
-set(CMAKE_REQUIRED_DEFINITIONS "")
-set(CMAKE_REQUIRED_FLAGS "-std=c++14")
-set(CMAKE_REQUIRED_INCLUDES ${DART_INCLUDE_DIRS})
-set(CMAKE_REQUIRED_LIBRARIES ${DART_LIBRARIES})
-check_cxx_source_compiles(
-"
-#include <dart/dart.hpp>
-int main()
-{
-  auto voxel = new dart::dynamics::VoxelGridShape();
-  delete voxel;
-  return 0;
-}
-"
-DART_HAS_VOXELGRIDSHAPE
-)
+
+# Define DART test in separate function
+# Avoid polluting CMAKE variables.
+function(dart_voxelgrid_test)
+  # Check if DART is built with octomap so that it supports VoxelGridShape
+  include(CheckCXXSourceCompiles)
+  set(CMAKE_REQUIRED_DEFINITIONS "")
+  set(CMAKE_REQUIRED_FLAGS "-std=c++14")
+  set(CMAKE_REQUIRED_INCLUDES ${DART_INCLUDE_DIRS})
+  set(CMAKE_REQUIRED_LIBRARIES ${DART_LIBRARIES})
+  check_cxx_source_compiles(
+  "
+  #include <dart/dart.hpp>
+  int main()
+  {
+    auto voxel = new dart::dynamics::VoxelGridShape();
+    delete voxel;
+    return 0;
+  }
+  "
+  DART_HAS_VOXELGRIDSHAPE
+  )
+endfunction()
+dart_voxelgrid_test()
 
 find_package(ompl REQUIRED)
 
