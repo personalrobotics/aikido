@@ -19,6 +19,7 @@
 * Build & Testing & ETC
 
   * Migrate from Travis CI to Github Actions: [#598](https://github.com/personalrobotics/aikido/pull/598)
+  * Update GTest to v1.11 and make submodule: [#568](https://github.com/personalrobotics/aikido/pull/568)
 
 ### 0.4.0 (2020-08-27)
 

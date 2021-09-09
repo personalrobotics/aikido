@@ -26,11 +26,12 @@ jobs:
       matrix:
         include:
           # OSX Build
-          - os: macos-11.0
-            catkin: OFF
-            aikidopy: OFF
-            build: XCODE11_CMAKE_RELEASE
-            config: ""
+          # TODO: New PR to fix
+          #- os: macos-11.0
+          #  catkin: OFF
+          #  aikidopy: OFF
+          #  build: XCODE11_CMAKE_RELEASE
+          #  config: ""
           # Bionic CMake
           - os: ubuntu-18.04
             catkin: OFF
@@ -77,6 +78,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Before install
         run: .ci/before_install.sh
       - name: Install
