@@ -11,7 +11,9 @@ ConfigurationToTSR::ConfigurationToTSR(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    std::size_t maxSamples,
+    std::size_t maxSamplingTries,
+    std::size_t batchSize,
+    std::size_t maxBatches,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
@@ -19,7 +21,9 @@ ConfigurationToTSR::ConfigurationToTSR(
   , mMetaSkeleton(std::move(metaSkeleton))
   , mStartState(mMetaSkeletonStateSpace->createState())
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mMaxSamples(maxSamples)
+  , mMaxSamplingTries(maxSamplingTries)
+  , mBatchSize(batchSize)
+  , mMaxBatches(maxBatches)
   , mGoalTSR(goalTSR)
 {
   // Do nothing.
@@ -30,7 +34,9 @@ ConfigurationToTSR::ConfigurationToTSR(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     const statespace::dart::MetaSkeletonStateSpace::State* startState,
     ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-    std::size_t maxSamples,
+    std::size_t maxSamplingTries,
+    std::size_t batchSize,
+    std::size_t maxBatches,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
@@ -38,7 +44,9 @@ ConfigurationToTSR::ConfigurationToTSR(
   , mMetaSkeleton(nullptr)
   , mStartState(stateSpace->cloneState(startState))
   , mEndEffectorBodyNode(std::move(endEffectorBodyNode))
-  , mMaxSamples(maxSamples)
+  , mMaxSamplingTries(maxSamplingTries)
+  , mBatchSize(batchSize)
+  , mMaxBatches(maxBatches)
   , mGoalTSR(goalTSR)
 {
   // Do nothing.
@@ -65,9 +73,21 @@ const std::string& ConfigurationToTSR::getStaticType()
 }
 
 //==============================================================================
-std::size_t ConfigurationToTSR::getMaxSamples() const
+std::size_t ConfigurationToTSR::getMaxSamplingTries() const
 {
-  return mMaxSamples;
+  return mMaxSamplingTries;
+}
+
+//==============================================================================
+std::size_t ConfigurationToTSR::getBatchSize() const
+{
+  return mBatchSize;
+}
+
+//==============================================================================
+std::size_t ConfigurationToTSR::getMaxBatches() const
+{
+  return mMaxBatches;
 }
 
 //==============================================================================

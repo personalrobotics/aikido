@@ -363,7 +363,9 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     const CollisionFreePtr& collisionFree,
     double timelimit,
     std::size_t maxNumTrials,
-    const distance::ConstConfigurationRankerPtr& ranker)
+    const distance::ConstConfigurationRankerPtr& ranker,
+    std::size_t batchSize,
+    std::size_t maxBatches)
 {
   DART_UNUSED(timelimit);
 
@@ -380,7 +382,14 @@ TrajectoryPtr ConcreteRobot::planToTSR(
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
   auto problem = ConfigurationToTSR(
-      stateSpace, metaSkeleton, bn, maxNumTrials, tsr, collisionConstraint);
+      stateSpace,
+      metaSkeleton,
+      bn,
+      maxNumTrials,
+      batchSize,
+      maxBatches,
+      tsr,
+      collisionConstraint);
 
   // Plan.
   return tsrPlanner->plan(problem, /*result*/ nullptr);

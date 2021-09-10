@@ -224,6 +224,8 @@ public:
   /// \param[in] maxNumTrials Max numer of trials to plan.
   /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
   /// NominalConfigurationRanker is used with the current metaSkeleton pose.
+  /// \param[in] batchSize the number of configurations to sample per batch
+  /// \param[in] maxBatches the max number of batches to run before failing
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   aikido::trajectory::TrajectoryPtr planToTSR(
       const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
@@ -233,7 +235,9 @@ public:
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit,
       std::size_t maxNumTrials,
-      const distance::ConstConfigurationRankerPtr& ranker = nullptr);
+      const distance::ConstConfigurationRankerPtr& ranker = nullptr,
+      std::size_t batchSize = 100,
+      std::size_t maxBatches = 1);
 
   /// Plans to a named configuration.
   /// \param[in] name Name of the configuration to plan to
