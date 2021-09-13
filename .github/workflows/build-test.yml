@@ -78,6 +78,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Before install
         run: .ci/before_install.sh
       - name: Install
