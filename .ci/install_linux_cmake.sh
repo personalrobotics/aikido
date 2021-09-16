@@ -29,6 +29,20 @@ $SUDO apt-get -y install \
   libdart6-all-dev \
   libompl-dev
 
+# ROS Dependencies
+if [ $(lsb_release -sc) = "bionic" ]; then
+  $SUDO apt-get -y install \
+    ros-melodic-urdf \
+    ros-melodic-srdfdom
+elif [ $(lsb_release -sc) = "focal" ]; then
+  $SUDO apt-get -y install \
+    ros-noetic-urdf \
+    ros-noetic-srdfdom
+else
+  echo -e "$(lsb_release -sc) is not supported."
+  exit 1
+fi  
+
 # Optional dependencies
 $SUDO apt-get -y install \
   libtinyxml2-dev \
@@ -39,7 +53,7 @@ if [ "$BUILD_AIKIDOPY" = "ON" ]; then
   $SUDO apt-get -y install python3-pip -y
   $SUDO pip3 install pytest -U
 
-  if [ $(lsb_release -sc) = "trusty" ] || [ $(lsb_release -sc) = "xenial" ] || [ $(lsb_release -sc) = "bionic" ]; then
+  if [ $(lsb_release -sc) = "bionic" ]; then
     git clone https://github.com/pybind/pybind11 -b 'v2.3.0' --single-branch --depth 1
     cd pybind11
     mkdir build
