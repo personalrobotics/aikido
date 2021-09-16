@@ -92,6 +92,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
+          # >1 to suppress Codecov warning
+          fetch-depth: 2
       - name: Before install
         run: .ci/before_install.sh
       - name: Install
