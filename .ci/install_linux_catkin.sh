@@ -6,16 +6,14 @@ cd "${HOME}/workspace"
 cp -r "${GITHUB_WORKSPACE}" src
 ./scripts/internal-distro.py --workspace=src distribution.yml --repository "${REPOSITORY}" ${REQUIRED_ONLY}
 
-if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  sudo apt-get install -y clang-format-6.0
-fi
+$SUDO apt-get install -y clang-format-6.0
 
 if [ "$BUILD_AIKIDOPY" = "ON" ]; then
   $SUDO apt-get -y install python3-dev python3-numpy
   $SUDO apt-get -y install python3-pip -y
   $SUDO pip3 install pytest -U
 
-  if [ $(lsb_release -sc) = "trusty" ] || [ $(lsb_release -sc) = "xenial" ] || [ $(lsb_release -sc) = "bionic" ]; then
+  if [ $(lsb_release -sc) = "bionic" ]; then
     git clone https://github.com/pybind/pybind11 -b 'v2.3.0' --single-branch --depth 1
     cd pybind11
     mkdir build
