@@ -81,7 +81,7 @@ jobs:
       BUILD_NAME: ${{ matrix.build }}
       CATKIN_CONFIG_OPTIONS: ${{ matrix.config }}
       BUILD_AIKIDOPY: ${{ matrix.aikidopy }}
-      BUILD_TYPE: {{ matrix.type }}
+      BUILD_TYPE: ${{ matrix.type }}
       OS_NAME: ${{ matrix.os }}
       DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
       REPOSITORY: aikido
