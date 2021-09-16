@@ -268,9 +268,9 @@ endif()
 #
 # We only support one specific ClangFormat version because different versions
 # result in different code formatting with the same configuration. The current
-# supported version is 6.0.
+# supported version is 10
 
-clang_format_setup(VERSION 6.0)
+clang_format_setup(VERSION 10)
 
 if (CLANG_FORMAT_EXECUTABLE)
   clang_format_add_sources(${aikido_headers})
