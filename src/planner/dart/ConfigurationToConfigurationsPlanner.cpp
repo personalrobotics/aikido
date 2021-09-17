@@ -10,9 +10,9 @@ ConfigurationToConfigurationsPlanner::ConfigurationToConfigurationsPlanner(
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
     distance::ConstConfigurationRankerPtr configurationRanker)
   : dart::SingleProblemPlanner<
-        ConfigurationToConfigurationsPlanner,
-        ConfigurationToConfigurations>(
-        std::move(stateSpace), std::move(metaSkeleton))
+      ConfigurationToConfigurationsPlanner,
+      ConfigurationToConfigurations>(
+      std::move(stateSpace), std::move(metaSkeleton))
   , mConfigurationRanker(std::move(configurationRanker))
 {
   // Do nothing

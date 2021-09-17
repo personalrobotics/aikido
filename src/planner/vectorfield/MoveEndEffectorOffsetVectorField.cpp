@@ -26,7 +26,7 @@ MoveEndEffectorOffsetVectorField::MoveEndEffectorOffsetVectorField(
     double maxStepSize,
     double jointLimitPadding)
   : BodyNodePoseVectorField(
-        stateSpace, metaskeleton, bn, maxStepSize, jointLimitPadding)
+      stateSpace, metaskeleton, bn, maxStepSize, jointLimitPadding)
   , mDirection(direction)
   , mMinDistance(minDistance)
   , mMaxDistance(maxDistance)

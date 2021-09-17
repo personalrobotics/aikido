@@ -19,7 +19,7 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::
         double constraintCheckResolution,
         std::chrono::duration<double> timelimit)
   : ConfigurationToEndEffectorOffsetPlanner(
-        std::move(stateSpace), std::move(metaSkeleton))
+      std::move(stateSpace), std::move(metaSkeleton))
   , mDistanceTolerance(distanceTolerance)
   , mPositionTolerance(positionTolerance)
   , mAngularTolerance(angularTolerance)
