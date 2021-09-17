@@ -10,17 +10,17 @@ planning and decision making problems. This library is tightly integrated with
 optionally integrates with [ROS], through the suite of `aikido_ros` packages, for
 execution on real robots.
 
+
+<!--- TODO: Re-add Aikido to PPA
 ## Installation
 
-### On Ubuntu Trusty using `apt-get`
+### On Ubuntu Focal using `apt`
 
-AIKIDO depends on [ROS]. You should [install ROS](http://wiki.ros.org/indigo/Installation/Ubuntu) by adding the ROS repository to your `sources.list` as follows. We encourage users to install [`indigo`](http://wiki.ros.org/indigo).
+AIKIDO depends on [ROS]. You should [install ROS](http://wiki.ros.org/noetic/Installation/Ubuntu) by adding the ROS repository to your `sources.list` as follows. We encourage users to install [`noetic`](http://wiki.ros.org/noetic) with at least the following packages:
 ```shell
-$ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-$ sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-$ sudo apt-get update
-$ sudo apt-get install ros-indigo-actionlib ros-indigo-geometry-msgs ros-indigo-interactive-markers ros-indigo-roscpp ros-indigo-std-msgs ros-indigo-tf ros-indigo-trajectory-msgs ros-indigo-visualization-msgs
+$ sudo apt install ros-noetic-actionlib ros-noetic-geometry-msgs ros-noetic-interactive-markers ros-noetic-roscpp ros-noetic-std-msgs ros-noetic-tf ros-noetic-trajectory-msgs ros-noetic-visualization-msgs
 ```
+
 
 Once ROS is installed, you can install AIKIDO from the [Personal Robotics Lab PPA](https://launchpad.net/~personalrobotics/+archive/ubuntu/ppa):
 ```shell
@@ -31,6 +31,9 @@ $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
 $ sudo apt-get install libaikido-all-dev
 ```
+-->
+
+<!--- TODO: Test on OS X and re-add to Homebrew
 
 ### On macOS using [Homebrew]
 
@@ -42,24 +45,29 @@ $ brew tap personalrobotics/tap
 # Install AIKIDO
 $ brew install aikido
 ```
-> Note: While ROS seems to be [available on macOS](http://wiki.ros.org/indigo/Installation/OSX/Homebrew/Source), we haven't tested it with AIKIDO. For now, `brew install aikido` installs AIKIDO without the ROS-dependent components.
+> Note: While ROS seems to be [available on macOS](http://wiki.ros.org/noetic/Installation/OSX/Homebrew/Source), we haven't tested it with AIKIDO. For now, `brew install aikido` installs AIKIDO without the ROS-dependent components.
+-->
+
 
 ## Building from Source
 
 ### Dependencies
 
-AIKIDO depends on [CMake], [Boost], [DART] \(version 6.3 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), tinyxml2, pr-control-msgs, libmicrohttpd, and the
+AIKIDO depends on [ROS]. You should [install ROS](http://wiki.ros.org/noetic/Installation/Ubuntu) by adding the ROS repository to your `sources.list` as follows. We encourage users to install [`noetic`](http://wiki.ros.org/noetic) with at least the following packages:
+```shell
+$ sudo apt install ros-noetic-actionlib ros-noetic-geometry-msgs ros-noetic-interactive-markers ros-noetic-roscpp ros-noetic-std-msgs ros-noetic-tf ros-noetic-trajectory-msgs ros-noetic-visualization-msgs
+```
+
+AIKIDO also depends on [CMake], [Boost], [DART] \(version 6.6.2 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), tinyxml2, pr-control-msgs, libmicrohttpd, and the
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
 make heavy use of C++14 and require a modern compiler.
 
-### On Ubuntu Trusty using CMake
+### On Ubuntu Focal using CMake
 
 You should install the ROS packages as described above to build all the ROS-dependent AIKIDO components (e.g., `aikido-control-ros`).
 
 Install the other dependencies:
 ```shell
-$ sudo add-apt-repository ppa:libccd-debs/ppa
-$ sudo add-apt-repository ppa:fcl-debs/ppa
 $ sudo add-apt-repository ppa:dartsim/ppa
 $ sudo add-apt-repository ppa:personalrobotics/ppa
 $ sudo apt-get update
@@ -84,7 +92,7 @@ running the above commands, e.g.:
 $ . /path/to/my/workspace/setup.bash
 ```
 
-### On Ubuntu Trusty using Catkin
+### On Ubuntu Focal using Catkin
 
 It is also possible to build AIKIDO as a [third-party package][REP-136] inside a
 [Catkin workspace][Catkin Workspaces]. To do so, clone AIKIDO into your Catkin
@@ -133,6 +141,7 @@ Michael Koval ([**@mkoval**](https://github.com/mkoval))
 and Pras Velagapudi ([**@psigen**](https://github.com/psigen)).
 It has received major contributions from
 Shushman Choudhury ([**@Shushman**](https://github.com/Shushman)),
+Ethan Gordon ([**@egordon**](https://github.com/egordon)),
 Brian Hou ([**@brianhou**](https://github.com/brianhou)),
 Aaron Johnson ([**@aaronjoh**](https://github.com/aaronjoh)),
 Jennifer King ([**@jeking**](https://github.com/jeking04)),

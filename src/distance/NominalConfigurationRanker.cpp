@@ -13,7 +13,7 @@ NominalConfigurationRanker::NominalConfigurationRanker(
     const statespace::CartesianProduct::State* nominalConfiguration,
     std::vector<double> weights)
   : ConfigurationRanker(
-        std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
+      std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
   , mNominalConfiguration(
         mMetaSkeletonStateSpace->cloneState(nominalConfiguration))
 {
@@ -26,7 +26,7 @@ NominalConfigurationRanker::NominalConfigurationRanker(
     ConstMetaSkeletonPtr metaSkeleton,
     std::vector<double> weights)
   : ConfigurationRanker(
-        std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
+      std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
   , mNominalConfiguration(
         mMetaSkeletonStateSpace->getScopedStateFromMetaSkeleton(
             mMetaSkeleton.get()))
