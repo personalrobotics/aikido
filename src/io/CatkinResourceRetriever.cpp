@@ -130,7 +130,7 @@ void searchForPackages(
 //==============================================================================
 CatkinResourceRetriever::CatkinResourceRetriever()
   : CatkinResourceRetriever(
-        std::make_shared<dart::common::LocalResourceRetriever>())
+      std::make_shared<dart::common::LocalResourceRetriever>())
 {
 }
 
