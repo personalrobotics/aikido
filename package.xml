@@ -17,8 +17,6 @@
   <depend>python</depend>
   <depend>tinyxml2</depend>
   <depend>yaml-cpp</depend>
-  <depend>srdfdom</depend>
-  <depend>urdf</depend>
   <!-- Workaround to build DART with optional features enabled. -->
   <depend>nlopt</depend>
 
@@ -35,6 +33,8 @@
   <depend>visualization_msgs</depend>
   <depend>pr_control_msgs</depend>
   <depend>octomap_ros</depend>
+  <depend>urdf</depend>
+  <depend>srdfdom</depend>
 
   <doc_depend>doxygen</doc_depend>
 

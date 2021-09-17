@@ -58,3 +58,5 @@ add_component_dependencies(${PROJECT_NAME} robot
 )
 
 clang_format_add_sources(${sources})
+
+add_subdirectory("ros") # Dependencies: same

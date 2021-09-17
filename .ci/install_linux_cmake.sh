@@ -9,6 +9,7 @@ if [ $(lsb_release -sc) = "trusty" ]; then
   $SUDO apt-add-repository -y ppa:fcl-debs/ppa
 fi
 $SUDO apt-add-repository -y ppa:dartsim/ppa
+
 $SUDO apt-get -qq update
 
 # Build tools
@@ -28,20 +29,6 @@ $SUDO apt-get -y install \
   libboost-filesystem-dev \
   libdart6-all-dev \
   libompl-dev
-
-# ROS Dependencies
-if [ $(lsb_release -sc) = "bionic" ]; then
-  $SUDO apt-get -y install \
-    ros-melodic-urdf \
-    ros-melodic-srdfdom
-elif [ $(lsb_release -sc) = "focal" ]; then
-  $SUDO apt-get -y install \
-    ros-noetic-urdf \
-    ros-noetic-srdfdom
-else
-  echo -e "$(lsb_release -sc) is not supported."
-  exit 1
-fi  
 
 # Optional dependencies
 $SUDO apt-get -y install \

@@ -138,6 +138,22 @@ const dart::dynamics::BodyNode* getBodyNodeOrThrow(
 dart::dynamics::BodyNode* getBodyNodeOrThrow(
     dart::dynamics::MetaSkeleton& skeleton, const std::string& bodyNodeName);
 
+/// Get a set of degree-of-freedom names from MetaSkeleton
+/// \param[in] skeleton MetaSkeleton pointer
+/// \return A set of DoFs with skeleton->getNumDofs() elements
+inline std::set<std::string> dofNamesFromSkeleton(
+    const dart::dynamics::MetaSkeletonPtr& skeleton)
+{
+  std::set<std::string> ret;
+  if (!skeleton)
+    return ret;
+  for (const auto& dof : skeleton->getDofs())
+  {
+    ret.insert(dof->getName());
+  }
+  return ret;
+}
+
 } // namespace util
 } // namespace robot
 } // namespace aikido

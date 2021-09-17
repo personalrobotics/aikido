@@ -1,66 +1,53 @@
 #include "aikido/robot/Robot.hpp"
 
 #include <dart/collision/fcl/FCLCollisionDetector.hpp>
-#include <srdfdom/model.h>
-#include <urdf/model.h>
+#include <dart/common/Console.hpp>
 
-#include <aikido/constraint/TestableIntersection.hpp>
-#include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
-#include <aikido/planner/ConfigurationToConfiguration.hpp>
+#include "aikido/constraint/TestableIntersection.hpp"
+#include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
+#include "aikido/planner/dart/ConfigurationToTSR.hpp"
+#include "aikido/robot/util.hpp"
+#include "aikido/statespace/GeodesicInterpolator.hpp"
+#include "aikido/statespace/StateSpace.hpp"
+#include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 namespace aikido {
 namespace robot {
 
 //==============================================================================
 Robot::Robot(
-    const dart::common::Uri& urdf,
-    const dart::common::Uri& srdf,
+    const dart::dynamics::MetaSkeletonPtr& skeleton,
     const std::string name,
-    const dart::common::ResourceRetrieverPtr& retriever)
+    const aikido::control::TrajectoryExecutorPtr& trajExecutor)
   : mName(name)
+  , mMetaSkeleton(skeleton)
+  , mDofs(util::dofNamesFromSkeleton(skeleton))
   , mCollisionDetector(dart::collision::FCLCollisionDetector::create())
-  , mSelfCollisionFilter(
-        std::make_shared<dart::collision::BodyNodeCollisionFilter>())
-  , mResourceRetriever(retriever)
 {
-  // Read the URDF.
-  dart::utils::DartLoader urdfLoader;
-  mMetaSkeleton = urdfLoader.parseSkeleton(urdf, mResourceRetriever);
-  if (!mMetaSkeleton)
-  {
-    throw std::runtime_error("Unable to load the robot from URDF.");
-  }
-
-  // Read the SRDF.
-  urdf::Model urdfModel;
-  std::string urdfAsString = mResourceRetriever->readAll(urdf);
-  urdfModel.initString(urdfAsString);
-
-  srdf::Model srdfModel;
-  std::string srdfAsString = mResourceRetriever->readAll(srdf);
-  srdfModel.initString(urdfModel, srdfAsString);
-  auto disabledCollisions = srdfModel.getDisabledCollisionPairs();
-  for (auto disabledPair : disabledCollisions)
-  {
-    auto body0 = mMetaSkeleton->getBodyNode(disabledPair.link1_);
-    auto body1 = mMetaSkeleton->getBodyNode(disabledPair.link2_);
-    mSelfCollisionFilter->addBodyNodePairToBlackList(body0, body1);
-  }
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
       mMetaSkeleton.get());
+  mMetaSkeleton->getBodyNode(0)->getSkeleton()->enableSelfCollisionCheck();
+  mMetaSkeleton->getBodyNode(0)->getSkeleton()->disableAdjacentBodyCheck();
+
+  setTrajectoryExecutor(trajExecutor);
 }
 
 //==============================================================================
-Robot::Robot(
-    const dart::dynamics::MetaSkeletonPtr& skeleton,
-    const std::string name,
-    const dart::common::ResourceRetrieverPtr& retriever)
-  : mName(name), mResourceRetriever(retriever)
+void Robot::ignoreSelfCollisionPairs(
+    const std::vector<std::pair<std::string, std::string>> bodyNodeList)
 {
-  mMetaSkeleton = skeleton;
-  mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
-      mMetaSkeleton.get());
-  // TODO(avk): Do we want to allow SRDF equivalence after construction?
+  for (auto pair : bodyNodeList)
+  {
+    auto body0 = mMetaSkeleton->getBodyNode(pair.first);
+    auto body1 = mMetaSkeleton->getBodyNode(pair.second);
+    if (body0 && body1)
+    {
+      mSelfCollisionFilter->addBodyNodePairToBlackList(body0, body1);
+    }
+  }
 }
 
 //==============================================================================
@@ -69,10 +56,46 @@ std::future<void> Robot::executeTrajectory(
 {
   if (!mTrajectoryExecutor)
   {
-    // TODO(avk): Try with the parent's trajectory executor.
-    throw std::invalid_argument("Executor is null!");
+    throw std::runtime_error(
+        "TrajectoryExecutor is null, cannot execute trajectory.");
+  }
+
+  // Ensure all other executors that could contain these joints are cancelled
+  if (mRootRobot)
+  {
+    mRootRobot->cancelAllTrajectories(true, getName());
+  }
+  for (const auto& subrobot : mSubRobots)
+  {
+    subrobot.second->cancelAllTrajectories(false);
   }
   return mTrajectoryExecutor->execute(trajectory);
+}
+
+//==============================================================================
+void Robot::cancelAllTrajectories(
+    bool includeParents, const std::string excludeSubrobot)
+{
+  // Cancel this trajectory
+  if (mTrajectoryExecutor)
+  {
+    mTrajectoryExecutor->cancel();
+  }
+
+  // Cancel parents' trajectories (if requested)
+  if (includeParents && mRootRobot)
+  {
+    mRootRobot->cancelAllTrajectories(true, getName());
+  }
+
+  // Cancel children's trajectories (unless requested)
+  for (const auto& subrobot : mSubRobots)
+  {
+    if (subrobot.first != excludeSubrobot)
+    {
+      subrobot.second->cancelAllTrajectories(false);
+    }
+  }
 }
 
 //==============================================================================
@@ -85,61 +108,28 @@ void Robot::step(const std::chrono::system_clock::time_point& timepoint)
 }
 
 // ==============================================================================
-constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint(
-    statespace::dart::MetaSkeletonStateSpacePtr space,
-    dart::dynamics::MetaSkeletonPtr skeleton) const
+constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
 {
-  // If this is the root root, return self collision constraint.
+  // Only use root robot's self-collision constraint
   if (mRootRobot)
   {
-    return mRootRobot->getSelfCollisionConstraint(space, skeleton);
+    return mRootRobot->getSelfCollisionConstraint();
   }
 
-  // TODO(avk): Do I really need this post SRDF?
-  // TODO(avk): Can we move this to the constructor?
-  // TODO(avk): Why disable adjacent body check?
-  auto rootSkeleton = mMetaSkeleton->getBodyNode(0)->getSkeleton();
-  rootSkeleton->enableSelfCollisionCheck();
-  rootSkeleton->disableAdjacentBodyCheck();
-
-  // Create collision option with self-collision filter from SRDF.
+  // Add collision option with self-collision filter
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
 
   // Create the constraint and return.
   auto collisionFreeConstraint
       = std::make_shared<constraint::dart::CollisionFree>(
-          space, skeleton, mCollisionDetector, collisionOption);
+          mStateSpace,
+          mMetaSkeleton->cloneMetaSkeleton(),
+          mCollisionDetector,
+          collisionOption);
   collisionFreeConstraint->addSelfCheck(
       mCollisionDetector->createCollisionGroupAsSharedPtr(mMetaSkeleton.get()));
   return collisionFreeConstraint;
-}
-
-//=============================================================================
-constraint::TestablePtr Robot::getFullCollisionConstraint(
-    statespace::dart::MetaSkeletonStateSpacePtr space,
-    dart::dynamics::MetaSkeletonPtr skeleton,
-    const constraint::dart::CollisionFreePtr& collisionFree) const
-{
-  // If this is the root robot, return full collision constraint.
-  if (mRootRobot)
-  {
-    return mRootRobot->getFullCollisionConstraint(
-        space, skeleton, collisionFree);
-  }
-
-  // Get the robot's self collision constraint.
-  auto selfCollisionFree = getSelfCollisionConstraint(space, skeleton);
-  if (!collisionFree)
-  {
-    return selfCollisionFree;
-  }
-
-  // Make testable constraints for collision check.
-  std::vector<constraint::ConstTestablePtr> constraints{
-      selfCollisionFree, collisionFree};
-  return std::make_shared<constraint::TestableIntersection>(
-      mStateSpace, constraints);
 }
 
 //=============================================================================
@@ -147,33 +137,116 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
     const std::string& name)
 {
+  // Ensure name is unique
   if (mSubRobots.find(name) != mSubRobots.end())
   {
-    throw std::invalid_argument("Child is already present");
+    dtwarn << "Subrobot '" << name << "' already exists." << std::endl;
+    return nullptr;
   }
 
-  // Create a child robot.
-  auto subRobot
-      = std::make_shared<Robot>(metaSkeleton, name, mResourceRetriever);
-  const auto& root = mRootRobot ? mRootRobot : this;
+  // Ensure subrobot DoFs are disjoint
+  for (const auto& subrobot : mSubRobots)
+  {
+    auto dofs = subrobot.second->mDofs;
+    for (std::string dofName : util::dofNamesFromSkeleton(metaSkeleton))
+    {
+      if (dofs.find(dofName) != dofs.end())
+      {
+        dtwarn << "Subrobot '" << name << "'' overlaps existing subrobot "
+               << subrobot.first << "." << std::endl;
+        return nullptr;
+      }
+    }
+  }
+
+  // Create the subrobot.
+  auto subRobot = std::make_shared<Robot>(metaSkeleton, name);
+  const auto& root = mRootRobot ? mRootRobot : RobotPtr(this);
   subRobot->setRootRobot(root);
-  subRobot->mTrajectoryExecutor = mTrajectoryExecutor;
   mSubRobots[name] = subRobot;
   return subRobot;
 }
 
 //=============================================================================
 trajectory::TrajectoryPtr Robot::planToConfiguration(
-    const planner::PlannerPtr& planner,
     const statespace::StateSpace::State* goalState,
-    const constraint::TestablePtr& testableConstraint) const
+    const constraint::TestablePtr& testableConstraint,
+    const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
+        planner) const
 {
   // Create the problem.
-  auto problem = planner::ConfigurationToConfiguration(
-      mStateSpace, getCurrentState(), goalState, testableConstraint);
+  auto problem = planner::dart::ConfigurationToConfiguration(
+      mStateSpace,
+      mStateSpace->cloneState(getCurrentState()),
+      mStateSpace->cloneState(goalState),
+      testableConstraint);
 
-  // Solve the problem with the provided planner.
-  return planner->plan(problem);
+  // Default to base Snap Planner
+  auto basePlanner = planner;
+  if (!basePlanner)
+  {
+    using planner::SnapConfigurationToConfigurationPlanner;
+    using statespace::GeodesicInterpolator;
+    basePlanner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+        mStateSpace, std::make_shared<GeodesicInterpolator>(mStateSpace));
+  }
+
+  // Convert to DART Planner
+  using planner::dart::
+      ConfigurationToConfiguration_to_ConfigurationToConfiguration;
+  auto dartPlanner = std::make_shared<
+      ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
+      basePlanner, mMetaSkeleton);
+
+  // Solve the problem with the DART planner.
+  return dartPlanner->plan(problem, /* result */ nullptr);
+}
+
+//=============================================================================
+trajectory::TrajectoryPtr Robot::planToTSR(
+    const std::string bodyNodeName,
+    const constraint::dart::TSRPtr& tsr,
+    const constraint::TestablePtr& testableConstraint,
+    std::size_t maxSamples,
+    const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
+        planner,
+    const distance::ConstConfigurationRankerPtr& ranker) const
+{
+  // Get Body Node
+  auto bn = mMetaSkeleton->getBodyNode(bodyNodeName);
+  if (!bn)
+  {
+    dtwarn << "Request body node not present in robot '" << mName << "'"
+           << std::endl;
+    return nullptr;
+  }
+
+  // Create the problem.
+  auto problem = planner::dart::ConfigurationToTSR(
+      mStateSpace,
+      mStateSpace->cloneState(getCurrentState()),
+      bn,
+      maxSamples,
+      tsr,
+      testableConstraint);
+
+  // Default to base Snap Planner
+  auto basePlanner = planner;
+  if (!basePlanner)
+  {
+    using planner::SnapConfigurationToConfigurationPlanner;
+    using statespace::GeodesicInterpolator;
+    basePlanner = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+        mStateSpace, std::make_shared<GeodesicInterpolator>(mStateSpace));
+  }
+
+  // Convert to DART TSR planner.
+  auto tsrPlanner = std::make_shared<
+      planner::dart::ConfigurationToConfiguration_to_ConfigurationToTSR>(
+      basePlanner, mMetaSkeleton, ranker);
+
+  // Solve the problem with the DART planner.
+  return tsrPlanner->plan(problem, /* result */ nullptr);
 }
 
 } // namespace robot
