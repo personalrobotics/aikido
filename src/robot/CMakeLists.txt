@@ -25,6 +25,7 @@ target_include_directories("${PROJECT_NAME}_robot" SYSTEM
 target_link_libraries("${PROJECT_NAME}_robot"
   PUBLIC
     "${PROJECT_NAME}_common"
+    "${PROJECT_NAME}_control"
     "${PROJECT_NAME}_io"
     "${PROJECT_NAME}_planner"
     "${PROJECT_NAME}_planner_ompl"
@@ -46,6 +47,7 @@ add_component(${PROJECT_NAME} robot)
 add_component_targets(${PROJECT_NAME} robot "${PROJECT_NAME}_robot")
 add_component_dependencies(${PROJECT_NAME} robot
   common
+  control
   io
   planner
   planner_ompl
