@@ -24,7 +24,7 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
     double maxStepSize,
     double jointLimitPadding)
   : BodyNodePoseVectorField(
-        stateSpace, metaskeleton, bn, maxStepSize, jointLimitPadding)
+      stateSpace, metaskeleton, bn, maxStepSize, jointLimitPadding)
   , mGoalPose(goalPose)
   , mPoseErrorTolerance(poseErrorTolerance)
   , mConversionRatioFromRadiusToMeter(r)

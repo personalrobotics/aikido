@@ -250,8 +250,8 @@ bool MetaSkeletonStateSpace::Properties::operator!=(
 //==============================================================================
 MetaSkeletonStateSpace::MetaSkeletonStateSpace(const MetaSkeleton* metaskeleton)
   : CartesianProduct(
-        convertVectorType<ConstJointStateSpacePtr, ConstStateSpacePtr>(
-            createStateSpace(*metaskeleton)))
+      convertVectorType<ConstJointStateSpacePtr, ConstStateSpacePtr>(
+          createStateSpace(*metaskeleton)))
   , mProperties(MetaSkeletonStateSpace::Properties(metaskeleton))
 {
   // Do nothing.
