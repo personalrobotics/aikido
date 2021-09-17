@@ -4,10 +4,7 @@ set -ex
 
 $SUDO apt-get -qq update
 $SUDO apt-get -y install lsb-release software-properties-common
-if [ $(lsb_release -sc) = "trusty" ]; then
-  $SUDO apt-add-repository -y ppa:libccd-debs/ppa
-  $SUDO apt-add-repository -y ppa:fcl-debs/ppa
-fi
+
 $SUDO apt-add-repository -y ppa:dartsim/ppa
 
 $SUDO apt-get -qq update
@@ -60,8 +57,4 @@ fi
 
 if [ $BUILD_NAME = DOCS ]; then
   $SUDO apt-get -qq -y install doxygen
-fi
-
-if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  sudo apt-get install -y clang-format-6.0
 fi

@@ -1,6 +1,7 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
 # CMake 2.8.11 or above is required for target_include_directories.
-cmake_minimum_required(VERSION 2.8.12)
+# CMake 3.0.0 or above is required for version in project()
+cmake_minimum_required(VERSION 3.0.0)
 
 # Set the CMAKE_CXX_COMPILER_ID variable to AppleClang instead of Clang.
 # AppleClang and Clang have different version number. This was introduced in
@@ -16,13 +17,12 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
-project(aikido)
+# Set PROJECT_VERSION variables
+if(POLICY CMP0048)
+  cmake_policy(SET CMP0048 NEW)
+endif()
 
-# If you change the version, please update the <version> tag in package.xml.
-set(AIKIDO_MAJOR_VERSION "0")
-set(AIKIDO_MINOR_VERSION "4")
-set(AIKIDO_PATCH_VERSION "0")
-set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
+project(aikido VERSION 0.4.0 LANGUAGES CXX)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -268,9 +268,9 @@ endif()
 #
 # We only support one specific ClangFormat version because different versions
 # result in different code formatting with the same configuration. The current
-# supported version is 6.0.
+# supported version is 10
 
-clang_format_setup(VERSION 6.0)
+clang_format_setup(VERSION 10)
 
 if (CLANG_FORMAT_EXECUTABLE)
   clang_format_add_sources(${aikido_headers})

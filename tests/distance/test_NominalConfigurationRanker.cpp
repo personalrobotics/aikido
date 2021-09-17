@@ -101,9 +101,10 @@ TEST_F(NominalConfigurationRankerTest, Constructor)
 
 TEST_F(NominalConfigurationRankerTest, CurrentNominalConfigurationOrderTest)
 {
-  std::vector<Eigen::Vector2d> jointPositions{Eigen::Vector2d(0.3, 0.3),
-                                              Eigen::Vector2d(0.1, 0.1),
-                                              Eigen::Vector2d(0.2, 0.2)};
+  std::vector<Eigen::Vector2d> jointPositions{
+      Eigen::Vector2d(0.3, 0.3),
+      Eigen::Vector2d(0.1, 0.1),
+      Eigen::Vector2d(0.2, 0.2)};
 
   std::vector<aikido::statespace::CartesianProduct::ScopedState> states;
   for (std::size_t i = 0; i < jointPositions.size(); ++i)
@@ -130,9 +131,10 @@ TEST_F(NominalConfigurationRankerTest, CurrentNominalConfigurationOrderTest)
 
 TEST_F(NominalConfigurationRankerTest, GivenNominalConfigurationOrderTest)
 {
-  std::vector<Eigen::Vector2d> jointPositions{Eigen::Vector2d(0.3, 0.3),
-                                              Eigen::Vector2d(0.1, 0.1),
-                                              Eigen::Vector2d(0.2, 0.2)};
+  std::vector<Eigen::Vector2d> jointPositions{
+      Eigen::Vector2d(0.3, 0.3),
+      Eigen::Vector2d(0.1, 0.1),
+      Eigen::Vector2d(0.2, 0.2)};
 
   auto nominalState = mStateSpace->createState();
   Eigen::Vector2d nominalConfiguration(0.3, 0.3);
@@ -175,9 +177,10 @@ TEST_F(NominalConfigurationRankerTest, GivenNominalConfigurationOrderTest)
 
 TEST_F(NominalConfigurationRankerTest, WeightedOrderTest)
 {
-  std::vector<Eigen::Vector2d> jointPositions{Eigen::Vector2d(0.2, 0.5),
-                                              Eigen::Vector2d(0.1, 0.6),
-                                              Eigen::Vector2d(0.5, 0.1)};
+  std::vector<Eigen::Vector2d> jointPositions{
+      Eigen::Vector2d(0.2, 0.5),
+      Eigen::Vector2d(0.1, 0.6),
+      Eigen::Vector2d(0.5, 0.1)};
 
   std::vector<aikido::statespace::CartesianProduct::ScopedState> states;
   for (std::size_t i = 0; i < jointPositions.size(); ++i)
