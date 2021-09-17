@@ -29,8 +29,10 @@ struct DynamicCastFactory_raw_ptr
 
 //==============================================================================
 template <
-    template <class> class Factory,
-    template <class> class Pointer,
+    template <class>
+    class Factory,
+    template <class>
+    class Pointer,
     class BaseParameter>
 struct DynamicCastFactory<Factory, Pointer, BaseParameter, common::type_list<>>
 {
@@ -45,8 +47,10 @@ struct DynamicCastFactory<Factory, Pointer, BaseParameter, common::type_list<>>
 
 //==============================================================================
 template <
-    template <class> class Factory,
-    template <class> class Pointer,
+    template <class>
+    class Factory,
+    template <class>
+    class Pointer,
     class BaseParameter,
     class Arg,
     class... Args>

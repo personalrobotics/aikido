@@ -19,7 +19,7 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::
         double constraintCheckResolution,
         std::chrono::duration<double> timelimit)
   : ConfigurationToEndEffectorOffsetPlanner(
-        std::move(stateSpace), std::move(metaSkeleton))
+      std::move(stateSpace), std::move(metaSkeleton))
   , mDistanceTolerance(distanceTolerance)
   , mPositionTolerance(positionTolerance)
   , mAngularTolerance(angularTolerance)
@@ -64,6 +64,8 @@ VectorFieldConfigurationToEndEffectorOffsetPlanner::plan(
   }
 
   // Just call the core VFP function.
+  // NOTE: This both locks the metaskeleton while planning and restores its
+  // state after planning.
   return planToEndEffectorOffset(
       getMetaSkeletonStateSpace(),
       *problem.getStartState(),

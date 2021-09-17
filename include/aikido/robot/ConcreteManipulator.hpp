@@ -125,12 +125,6 @@ public:
   void setVectorFieldPlannerParameters(
       const util::VectorFieldPlannerParameters& vfParameters);
 
-  /// TODO: This should be revisited once we have Planner API.
-  /// Sets CRRTPlanner parameters.
-  /// \param[in] crrtParameters CRRT planner parameters
-  void setCRRTPlannerParameters(
-      const util::CRRTPlannerParameters& crrtParameters);
-
 private:
   /// The robot whose metaSkeleton corresponds to this manipulator
   RobotPtr mRobot;
@@ -140,9 +134,6 @@ private:
 
   /// VectorFieldPlanenr-related parameters
   util::VectorFieldPlannerParameters mVectorFieldParameters;
-
-  /// CRRTPlanner-related parameters
-  util::CRRTPlannerParameters mCRRTParameters;
 };
 
 } // namespace robot

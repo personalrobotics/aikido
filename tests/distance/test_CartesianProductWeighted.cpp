@@ -28,9 +28,10 @@ TEST(CartesianProductWeightedDistance, ThrowsOnNullMetric)
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
-  std::vector<DistanceMetricPtr> dmetrics = {std::make_shared<SO2Angular>(so2),
-                                             std::make_shared<R3Euclidean>(rv3),
-                                             nullptr};
+  std::vector<DistanceMetricPtr> dmetrics
+      = {std::make_shared<SO2Angular>(so2),
+         std::make_shared<R3Euclidean>(rv3),
+         nullptr};
 
   EXPECT_THROW(
       CartesianProductWeighted(space, dmetrics), std::invalid_argument);

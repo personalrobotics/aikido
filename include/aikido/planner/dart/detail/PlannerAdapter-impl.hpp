@@ -17,10 +17,9 @@ PlannerAdapter<DelegatePlanner, TargetPlanner, DelegateIsDartPlanner>::
         std::shared_ptr<DelegatePlanner> planner,
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton)
   : TargetPlanner(
-        std::dynamic_pointer_cast<
-            const statespace::dart::MetaSkeletonStateSpace>(
-            planner->getStateSpace()),
-        std::move(metaSkeleton))
+      std::dynamic_pointer_cast<const statespace::dart::MetaSkeletonStateSpace>(
+          planner->getStateSpace()),
+      std::move(metaSkeleton))
   , mDelegate(std::move(planner))
 {
   // Do nothing
@@ -38,7 +37,7 @@ PlannerAdapter<
         DelegatePlanner>::value>::type>::
     PlannerAdapter(std::shared_ptr<DelegatePlanner> planner)
   : TargetPlanner(
-        planner->getMetaSkeletonStateSpace(), planner->getMetaSkeleton())
+      planner->getMetaSkeletonStateSpace(), planner->getMetaSkeleton())
   , mDelegate(std::move(planner))
 {
   // Do nothing

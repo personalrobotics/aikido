@@ -2,6 +2,7 @@ set(sources
   ConfigurationToConfiguration.cpp
   ConfigurationToConfigurationPlanner.cpp
   ConfigurationToConfigurations.cpp
+  ConfigurationToConfigurationsPlanner.cpp
   FirstSupportedMetaPlanner.cpp
   CompositePlanner.cpp
   Planner.cpp

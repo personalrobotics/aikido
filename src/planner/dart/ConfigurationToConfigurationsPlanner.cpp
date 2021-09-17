@@ -1,15 +1,17 @@
-#include "aikido/planner/dart/ConfigurationToTSRPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToConfigurationsPlanner.hpp"
 
 namespace aikido {
 namespace planner {
 namespace dart {
 
 //==============================================================================
-ConfigurationToTSRPlanner::ConfigurationToTSRPlanner(
+ConfigurationToConfigurationsPlanner::ConfigurationToConfigurationsPlanner(
     statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
     distance::ConstConfigurationRankerPtr configurationRanker)
-  : dart::SingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>(
+  : dart::SingleProblemPlanner<
+      ConfigurationToConfigurationsPlanner,
+      ConfigurationToConfigurations>(
       std::move(stateSpace), std::move(metaSkeleton))
   , mConfigurationRanker(std::move(configurationRanker))
 {

@@ -1,11 +1,26 @@
 ## Aikido 0 (prerelease)
 
-### 0.5.0 (2020-XX-XX)
+### 0.5.0 (2021-XX-XX)
+
+* Control
+
+  * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
+
+* RViz
+
+  * Propogate removal of WorldInteractiveMarkerViewer to Aikidopy: [#599](https://github.com/personalrobotics/aikido/pull/599)
 
 * Planner
 
   * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
   * Make planner_dart component and build all DART planners as planner_dart component: [#567](https://github.com/personalrobotics/aikido/pull/567)
+  * Added ConfigurationToConfigurations planner adapter: [#587](https://github.com/personalrobotics/aikido/pull/587)
+  * Cleaned up planning methods in robot/util: [#588](https://github.com/personalrobotics/aikido/pull/588)
+
+* Build & Testing & ETC
+
+  * Migrate from Travis CI to Github Actions: [#598](https://github.com/personalrobotics/aikido/pull/598)
+  * Update GTest to v1.11 and make submodule: [#568](https://github.com/personalrobotics/aikido/pull/568)
 
 ### 0.4.0 (2020-08-27)
 

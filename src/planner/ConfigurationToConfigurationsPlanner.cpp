@@ -1,14 +1,14 @@
-#include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
+#include "aikido/planner/ConfigurationToConfigurationsPlanner.hpp"
 
 namespace aikido {
 namespace planner {
 
 //==============================================================================
-ConfigurationToConfigurationPlanner::ConfigurationToConfigurationPlanner(
+ConfigurationToConfigurationsPlanner::ConfigurationToConfigurationsPlanner(
     statespace::ConstStateSpacePtr stateSpace, common::RNG* rng)
   : SingleProblemPlanner<
-      ConfigurationToConfigurationPlanner,
-      ConfigurationToConfiguration>(std::move(stateSpace), std::move(rng))
+      ConfigurationToConfigurationsPlanner,
+      ConfigurationToConfigurations>(std::move(stateSpace), std::move(rng))
 {
   // Do nothing
 }
