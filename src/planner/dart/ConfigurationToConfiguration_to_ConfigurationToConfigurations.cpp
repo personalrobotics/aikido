@@ -23,9 +23,9 @@ ConfigurationToConfiguration_to_ConfigurationToConfigurations::
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
         distance::ConstConfigurationRankerPtr configurationRanker)
   : PlannerAdapter<
-        planner::ConfigurationToConfigurationPlanner,
-        planner::dart::ConfigurationToConfigurationsPlanner>(
-        std::move(planner), std::move(metaSkeleton))
+      planner::ConfigurationToConfigurationPlanner,
+      planner::dart::ConfigurationToConfigurationsPlanner>(
+      std::move(planner), std::move(metaSkeleton))
 {
   mConfigurationRanker = std::move(configurationRanker);
 }

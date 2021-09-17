@@ -1,0 +1,106 @@
+name: build-test
+
+on:
+  # Pushes / merges to master
+  push:
+    branches:
+      - master
+  # On creation and updating of PR
+  pull_request:
+    types: [opened, reopened, synchronize]
+    # Only those targeting master branch
+    branches:
+      - master
+  # Every two days
+  schedule:
+    - cron: '0 23 */2 * *'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    continue-on-error: true
+    strategy:
+      matrix:
+        include:
+          # OSX Build
+          # TODO: New PR to fix
+          #- os: macos-11.0
+          #  catkin: OFF
+          #  aikidopy: OFF
+          #  build: XCODE11_CMAKE_RELEASE
+          #  config: ""
+          # Bionic CMake
+          - os: ubuntu-18.04
+            catkin: OFF
+            aikidopy: OFF
+            type: Release
+            build: BIONIC_CMAKE_RELEASE
+            config: ""
+          # Focal CMake
+          - os: ubuntu-20.04
+            catkin: OFF
+            aikidopy: OFF
+            type: Release
+            build: FOCAL_CMAKE_RELEASE
+            config: ""
+          # Focal CMake Aikidopy
+          - os: ubuntu-20.04
+            catkin: OFF
+            aikidopy: ON
+            type: Release
+            build: FOCAL_CMAKE_RELEASE_AIKIDOPY
+            config: ""
+          # Focal Catkin
+          - os: ubuntu-20.04
+            catkin: ON
+            aikidopy: OFF
+            type: Release
+            build: FOCAL_CATKIN_FULL_RELEASE
+            config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON"
+          # Focal Catkin Aikidopy
+          - os: ubuntu-20.04
+            catkin: ON
+            aikidopy: ON
+            type: Release
+            build: FOCAL_CATKIN_FULL_RELEASE_AIKIDOPY
+            config: "-DCMAKE_BUILD_TYPE=Release -DTREAT_WARNINGS_AS_ERRORS=ON -DBUILD_AIKIDOPY=ON"
+          # Focal Catkin Debug + Codecov
+          - os: ubuntu-20.04
+            catkin: ON
+            aikidopy: OFF
+            type: Debug
+            build: FOCAL_CATKIN_DEBUG_CODECOV
+            config: "-DCMAKE_BUILD_TYPE=Debug -DTREAT_WARNINGS_AS_ERRORS=ON"
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.build }}
+    env:
+      USE_CATKIN: ${{ matrix.catkin }}
+      BUILD_NAME: ${{ matrix.build }}
+      CATKIN_CONFIG_OPTIONS: ${{ matrix.config }}
+      BUILD_AIKIDOPY: ${{ matrix.aikidopy }}
+      BUILD_TYPE: ${{ matrix.type }}
+      OS_NAME: ${{ matrix.os }}
+      DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
+      REPOSITORY: aikido
+      SUDO: sudo
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          # >1 to suppress Codecov warning
+          fetch-depth: 2
+      - name: Before install
+        run: .ci/before_install.sh
+      - name: Install
+        run: .ci/install.sh
+      - name: Script
+        run: .ci/script.sh
+      # Report on failed tests
+      - name: After failure
+        if: ${{ failure() }}
+        run: .ci/after_failure.sh
