@@ -1,8 +1,8 @@
 #ifndef AIKIDO_DISTANCE_EUCLIDEANDISTANCEMETRIC_HPP_
 #define AIKIDO_DISTANCE_EUCLIDEANDISTANCEMETRIC_HPP_
 
-#include "../statespace/Rn.hpp"
-#include "DistanceMetric.hpp"
+#include "aikido/distance/DistanceMetric.hpp"
+#include "aikido/statespace/Rn.hpp"
 
 namespace aikido {
 namespace distance {

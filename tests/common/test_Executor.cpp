@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/common/ExecutorMultiplexer.hpp>
 #include <aikido/common/ExecutorThread.hpp>
 

@@ -1,5 +1,6 @@
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/planner/ompl/StateValidityChecker.hpp>
+
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
 

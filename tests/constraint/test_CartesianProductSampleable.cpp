@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/CartesianProductSampleable.hpp>
 #include <aikido/constraint/Sampleable.hpp>
@@ -6,6 +7,7 @@
 #include <aikido/constraint/uniform/SO2UniformSampler.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
+
 #include "../eigen_tests.hpp"
 
 using aikido::common::RNG;

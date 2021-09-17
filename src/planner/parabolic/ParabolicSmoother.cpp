@@ -2,9 +2,11 @@
 
 #include <cassert>
 #include <set>
+
 #include "aikido/common/Spline.hpp"
 #include "aikido/common/memory.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
+
 #include "DynamicPath.h"
 #include "HauserParabolicSmootherHelpers.hpp"
 #include "ParabolicUtil.hpp"
@@ -133,6 +135,24 @@ ParabolicSmoother::ParabolicSmoother(
   , mShortcutTimelimit{_shortcutTimelimit}
   , mBlendRadius{_blendRadius}
   , mBlendIterations{_blendIterations}
+{
+  // Do nothing
+}
+
+//==============================================================================
+ParabolicSmoother::ParabolicSmoother(
+    const Eigen::VectorXd& _velocityLimits,
+    const Eigen::VectorXd& _accelerationLimits,
+    const Params& _params)
+  : mFeasibilityCheckResolution{_params.mFeasibilityCheckResolution}
+  , mFeasibilityApproxTolerance{_params.mFeasibilityApproxTolerance}
+  , mVelocityLimits{_velocityLimits}
+  , mAccelerationLimits{_accelerationLimits}
+  , mEnableShortcut{_params.mEnableShortcut}
+  , mEnableBlend{_params.mEnableBlend}
+  , mShortcutTimelimit{_params.mShortcutTimelimit}
+  , mBlendRadius{_params.mBlendRadius}
+  , mBlendIterations{_params.mBlendIterations}
 {
   // Do nothing
 }

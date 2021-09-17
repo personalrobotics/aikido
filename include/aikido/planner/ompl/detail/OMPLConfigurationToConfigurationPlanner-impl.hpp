@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_OMPL_DETAIL_OMPLCONFIGURATIONTOCONFIGURATION_IMPL_HPP_
 
 #include <utility>
+
 #include "aikido/constraint/TestableIntersection.hpp"
 #include "aikido/constraint/dart/FrameDifferentiable.hpp"
 #include "aikido/constraint/dart/FrameTestable.hpp"

@@ -2,7 +2,9 @@
 #define AIKIDO_PERCEPTION_DETECTEDOBJECT_HPP_
 
 #include <string>
+
 #include <dart/dart.hpp>
+
 #include "aikido/io/yaml.hpp"
 
 namespace aikido {
@@ -70,7 +72,7 @@ public:
   std::string getName() const;
 
   /// Get the map of keys to additional informations
-  YAML::Node getYamlNode();
+  YAML::Node getYamlNode() const;
 
   /// Get the metaSkeleton associated with this object.
   dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const;

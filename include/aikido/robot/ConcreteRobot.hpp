@@ -4,8 +4,10 @@
 #include <chrono>
 #include <string>
 #include <unordered_map>
+
 #include <Eigen/Core>
 #include <dart/dart.hpp>
+
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/CollisionFree.hpp"
@@ -15,7 +17,6 @@
 #include "aikido/planner/parabolic/ParabolicSmoother.hpp"
 #include "aikido/planner/parabolic/ParabolicTimer.hpp"
 #include "aikido/robot/Robot.hpp"
-#include "aikido/robot/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
@@ -50,24 +51,6 @@ public:
           selfCollisionFilter);
 
   virtual ~ConcreteRobot() = default;
-
-  // Documentation inherited.
-  virtual aikido::trajectory::UniqueSplinePtr smoothPath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      const constraint::TestablePtr& constraint) override;
-
-  // Documentation inherited.
-  virtual aikido::trajectory::UniqueSplinePtr retimePath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path) override;
-
-  // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline> retimePathWithKunz(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      double maxDeviation,
-      double timestep) override;
 
   // Documentation inherited.
   virtual std::future<void> executeTrajectory(
@@ -110,19 +93,59 @@ public:
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
       const constraint::dart::CollisionFreePtr& collisionFree) const override;
 
-  // Get a smoothing post postprocessor that respects velocity and acceleration
-  // limits, as well as the passed constraint.
-  /// \param[in] metaSkeleton The MetaSkeleton whose limits must be respected.
+  /// Get a postprocessor that respects velocity and acceleration limits. The
+  /// specific postprocessor returned is controlled by `postProcessorParams`.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
   std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
   getTrajectoryPostProcessor(
       const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      bool enableShortcut,
-      bool enableBlend,
-      double shortcutTimelimit,
-      double blendRadius,
-      int blendIterations,
-      double feasibilityCheckResolution,
-      double feasibilityApproxTolerance) const;
+      const typename PostProcessor::Params& postProcessorParams) const;
+
+  /// Get a postprocessor that respects velocity and acceleration limits. The
+  /// specific postprocessor returned is controlled by `postProcessorParams`.
+  /// \param[in] velocityLimits Maximum velocity for each dimension.
+  /// \param[in] accelerationLimits Maximum acceleration for each dimension.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getTrajectoryPostProcessor(
+      const Eigen::VectorXd& velocityLimits,
+      const Eigen::VectorXd& accelerationLimits,
+      const typename PostProcessor::Params& postProcessorParams) const;
+
+  /// Returns a post-processed trajectory that can be executed by the robot.
+  /// \param[in] metaSkeleton Metaskeleton of the path.
+  /// \param[in] path Geometric path to execute.
+  /// \param[in] constraint Must be satisfied after postprocessing. Typically
+  /// collision constraint is passed.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
+  aikido::trajectory::UniqueSplinePtr postProcessPath(
+      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      const aikido::trajectory::Trajectory* path,
+      const constraint::TestablePtr& constraint,
+      const typename PostProcessor::Params& postProcessorParams);
+
+  /// Returns a post-processed trajectory that can be executed by the robot.
+  /// \param[in] velocityLimits Maximum velocity for each dimension.
+  /// \param[in] accelerationLimits Maximum acceleration for each dimension.
+  /// \param[in] path Geometric path to execute.
+  /// \param[in] constraint Must be satisfied after postprocessing. Typically
+  /// collision constraint is passed.
+  /// \param[in] postProcessorParams Postprocessor parameters.
+  /// \tparam PostProcessor The trajectory postprocessor to use.
+  template <typename PostProcessor>
+  aikido::trajectory::UniqueSplinePtr postProcessPath(
+      const Eigen::VectorXd& velocityLimits,
+      const Eigen::VectorXd& accelerationLimits,
+      const aikido::trajectory::Trajectory* path,
+      const constraint::TestablePtr& constraint,
+      const typename PostProcessor::Params& postProcessorParams);
 
   /// TODO: Replace this with Problem interface.
   /// Plan the robot to a specific configuration. Restores the robot to its
@@ -212,27 +235,6 @@ public:
       std::size_t maxNumTrials,
       const distance::ConstConfigurationRankerPtr& ranker = nullptr);
 
-  /// TODO: Replace this with Problem interface.
-  /// Returns a Trajectory that moves the configuration of the metakeleton such
-  /// that the specified bodynode is set to a sample in a goal TSR and
-  /// the trajectory is constrained to a constraint TSR
-  /// \param[in] stateSpace The StateSpace for the metaskeleton
-  /// \param[in] metaSkeleton The MetaSkeleton to plan with.
-  /// \param[in] bodyNode Bodynode whose frame is meant for TSR
-  /// \param[in] goalTsr The goal TSR to move to
-  /// \param[in] constraintTsr The constraint TSR for the trajectory
-  /// \param[in] collisionFree Collision constraint
-  /// \param[in] timelimit Max time (seconds) to spend per planning to each IK
-  /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
-  aikido::trajectory::TrajectoryPtr planToTSRwithTrajectoryConstraint(
-      const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const dart::dynamics::BodyNodePtr& bodyNode,
-      const aikido::constraint::dart::TSRPtr& goalTsr,
-      const aikido::constraint::dart::TSRPtr& constraintTsr,
-      const aikido::constraint::dart::CollisionFreePtr& collisionFree,
-      double timelimit);
-
   /// Plans to a named configuration.
   /// \param[in] name Name of the configuration to plan to
   /// \param[in] collisionFree Collision constraint
@@ -243,11 +245,19 @@ public:
       const aikido::constraint::dart::CollisionFreePtr& collisionFree,
       double timelimit);
 
-  /// TODO: This should be revisited once we have Planner API.
-  /// Sets CRRTPlanner parameters.
-  /// \param[in] crrtParameters CRRT planner parameters
-  void setCRRTPlannerParameters(
-      const util::CRRTPlannerParameters& crrtParameters);
+  /// Computes velocity limits from the MetaSkeleton. These should be
+  /// interpreted as absolute in both the positive and negative directions.
+  /// \param[in] metaSkeleton MetaSkeleton to compute limits for.
+  /// \return Symmetric velocity limits.
+  Eigen::VectorXd getVelocityLimits(
+      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
+
+  /// Computes acceleration limits from the MetaSkeleton. These should be
+  /// interpreted as absolute in both the positive and negative directions.
+  /// \param[in] metaSkeleton MetaSkeleton to compute limits for.
+  /// \return Symmetric acceleration limits.
+  Eigen::VectorXd getAccelerationLimits(
+      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
 
 private:
   // Named Configurations are read from a YAML file
@@ -255,14 +265,6 @@ private:
       = std::unordered_map<std::string, const Eigen::VectorXd>;
 
   std::unique_ptr<aikido::common::RNG> cloneRNG();
-
-  /// Compute velocity limits from the MetaSkeleton
-  Eigen::VectorXd getVelocityLimits(
-      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
-
-  /// Compute acceleration limits from the MetaSkeleton
-  Eigen::VectorXd getAccelerationLimits(
-      const dart::dynamics::MetaSkeleton& metaSkeleton) const;
 
   /// If this robot belongs to another (Composite)Robot,
   /// mRootRobot is the topmost robot containing this robot.
@@ -295,11 +297,11 @@ private:
   ::dart::collision::CollisionDetectorPtr mCollisionDetector;
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
-
-  util::CRRTPlannerParameters mCRRTParameters;
 };
 
 } // namespace robot
 } // namespace aikido
+
+#include "detail/ConcreteRobot-impl.hpp"
 
 #endif // AIKIDO_ROBOT_CONCRETEROBOT_HPP_

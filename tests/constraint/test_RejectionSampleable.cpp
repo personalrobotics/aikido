@@ -1,5 +1,6 @@
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/FiniteSampleable.hpp>
 #include <aikido/constraint/RejectionSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>

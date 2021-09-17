@@ -1,5 +1,7 @@
 #include "aikido/control/ros/RosTrajectoryExecutor.hpp"
+
 #include <dart/common/Console.hpp>
+
 #include "aikido/control/TrajectoryRunningException.hpp"
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/RosTrajectoryExecutionException.hpp"
@@ -125,14 +127,11 @@ std::future<void> RosTrajectoryExecutor::execute(
   // Convert the Aikido trajectory into a ROS JointTrajectory.
   goal.trajectory = toRosJointTrajectory(traj, mWaypointTimestep);
 
-  bool waitForServer
-      = waitForActionServer<control_msgs::FollowJointTrajectoryAction,
-                            std::chrono::milliseconds,
-                            std::chrono::milliseconds>(
-          mClient,
-          mCallbackQueue,
-          mConnectionTimeout,
-          mConnectionPollingPeriod);
+  bool waitForServer = waitForActionServer<
+      control_msgs::FollowJointTrajectoryAction,
+      std::chrono::milliseconds,
+      std::chrono::milliseconds>(
+      mClient, mCallbackQueue, mConnectionTimeout, mConnectionPollingPeriod);
 
   if (!waitForServer)
     throw std::runtime_error("Unable to connect to action server.");
@@ -166,6 +165,7 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
   {
     std::stringstream message;
     bool isSuccessful = true;
+    int errorCode = -1;
 
     // Check the status of the actionlib call. Note that the actionlib call can
     // succeed, even if execution failed.
@@ -178,9 +178,8 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
       if (!terminalMessage.empty())
         message << " (" << terminalMessage << ")";
 
-      mPromise->set_exception(
-          std::make_exception_ptr(
-              RosTrajectoryExecutionException(message.str(), terminalState)));
+      // mPromise->set_exception(std::make_exception_ptr(
+      //    RosTrajectoryExecutionException(message.str(), terminalState)));
 
       isSuccessful = false;
     }
@@ -200,16 +199,20 @@ void RosTrajectoryExecutor::transitionCallback(GoalHandle handle)
       if (!result->error_string.empty())
         message << " (" << result->error_string << ")";
 
-      mPromise->set_exception(
-          std::make_exception_ptr(
-              RosTrajectoryExecutionException(
-                  message.str(), result->error_code)));
+      errorCode = result->error_code;
 
       isSuccessful = false;
     }
 
     if (isSuccessful)
+    {
       mPromise->set_value();
+    }
+    else
+    {
+      mPromise->set_exception(std::make_exception_ptr(
+          RosTrajectoryExecutionException(message.str(), errorCode)));
+    }
 
     mInProgress = false;
   }

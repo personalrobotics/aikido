@@ -2,8 +2,10 @@
 #define AIKIDO_CONTROL_ROS_CONVERSIONS_HPP_
 
 #include <memory>
+
 #include <sensor_msgs/JointState.h>
 #include <trajectory_msgs/JointTrajectory.h>
+
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Spline.hpp"
 

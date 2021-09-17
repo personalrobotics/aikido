@@ -1,4 +1,4 @@
-#include <aikido/rviz/SkeletonMarker.hpp>
+#include "aikido/rviz/SkeletonMarker.hpp"
 
 using aikido::rviz::BodyNodeMarker;
 using aikido::rviz::BodyNodeMarkerPtr;

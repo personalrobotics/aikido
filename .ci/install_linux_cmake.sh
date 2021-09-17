@@ -4,10 +4,7 @@ set -ex
 
 $SUDO apt-get -qq update
 $SUDO apt-get -y install lsb-release software-properties-common
-if [ $(lsb_release -sc) = "trusty" ]; then
-  $SUDO apt-add-repository -y ppa:libccd-debs/ppa
-  $SUDO apt-add-repository -y ppa:fcl-debs/ppa
-fi
+
 $SUDO apt-add-repository -y ppa:dartsim/ppa
 $SUDO apt-get -qq update
 
@@ -39,7 +36,7 @@ if [ "$BUILD_AIKIDOPY" = "ON" ]; then
   $SUDO apt-get -y install python3-pip -y
   $SUDO pip3 install pytest -U
 
-  if [ $(lsb_release -sc) = "trusty" ] || [ $(lsb_release -sc) = "xenial" ] || [ $(lsb_release -sc) = "bionic" ]; then
+  if [ $(lsb_release -sc) = "bionic" ]; then
     git clone https://github.com/pybind/pybind11 -b 'v2.3.0' --single-branch --depth 1
     cd pybind11
     mkdir build
@@ -48,7 +45,7 @@ if [ "$BUILD_AIKIDOPY" = "ON" ]; then
     make -j4
     $SUDO make install
     cd ../..
-  elif [ $(lsb_release -sc) = "cosmic" ] || [ $(lsb_release -sc) = "disco" ]; then
+  elif [ $(lsb_release -sc) = "focal" ]; then
     $SUDO apt-get -y install pybind11-dev python3 libpython3-dev python3-pytest \
       python3-distutils
   else
@@ -57,10 +54,6 @@ if [ "$BUILD_AIKIDOPY" = "ON" ]; then
   fi
 fi
 
-if [ $BUILD_DOCS = "ON" ]; then
+if [ $BUILD_NAME = DOCS ]; then
   $SUDO apt-get -qq -y install doxygen
-fi
-
-if [ $BUILD_NAME = TRUSTY_FULL_DEBUG ]; then
-  sudo apt-get install -y clang-format-6.0
 fi

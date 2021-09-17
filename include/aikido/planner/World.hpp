@@ -3,7 +3,9 @@
 
 #include <string>
 #include <unordered_map>
+
 #include <dart/dart.hpp>
+
 #include "aikido/common/pointers.hpp"
 
 namespace aikido {

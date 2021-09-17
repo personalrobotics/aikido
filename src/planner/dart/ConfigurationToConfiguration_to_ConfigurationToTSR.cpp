@@ -1,6 +1,7 @@
 #include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
 
 #include <dart/dynamics/dynamics.hpp>
+
 #include "aikido/common/RNG.hpp"
 #include "aikido/constraint/dart/InverseKinematicsSampleable.hpp"
 #include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
@@ -32,8 +33,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::
         ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
         distance::ConstConfigurationRankerPtr configurationRanker)
   : PlannerAdapter<
-        planner::ConfigurationToConfigurationPlanner,
-        ConfigurationToTSRPlanner>(std::move(planner), std::move(metaSkeleton))
+      planner::ConfigurationToConfigurationPlanner,
+      ConfigurationToTSRPlanner>(std::move(planner), std::move(metaSkeleton))
 {
   mConfigurationRanker = std::move(configurationRanker);
 }
@@ -44,6 +45,14 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     const ConfigurationToTSR& problem, Planner::Result* result)
 {
   // TODO: Check equality between state space of this planner and given problem.
+
+  // NOTE: Make sure we lock the metaskeleton used to plan and return it to
+  // correct state after.
+  auto metaskeletonMutex = mMetaSkeleton->getLockableReference();
+  std::lock_guard<::dart::common::LockableReference> lock(*metaskeletonMutex);
+  // Save the current state of the space.
+  auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
+  DART_UNUSED(saver);
 
   // TODO: DART may be updated to check for single skeleton
   if (mMetaSkeleton->getNumDofs() == 0)
@@ -84,9 +93,6 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       problem.getMaxSamples());
   auto generator = ikSampleable.createSampleGenerator();
 
-  auto saver = MetaSkeletonStateSaver(mMetaSkeleton);
-  DART_UNUSED(saver);
-
   auto robot = mMetaSkeleton->getBodyNode(0)->getSkeleton();
 
   std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
@@ -110,7 +116,6 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   while (samples < maxSamples && generator->canSample())
   {
     // Sample from TSR
-    std::lock_guard<std::mutex> lock(robot->getMutex());
     bool sampled = generator->sample(goalState);
 
     // Increment even if it's not a valid sample since this loop

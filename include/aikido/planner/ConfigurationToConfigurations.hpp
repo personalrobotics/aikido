@@ -2,6 +2,7 @@
 #define AIKIDO_PLANNER_CONFIGURATIONTOCONFIGURATIONS_HPP_
 
 #include <unordered_set>
+
 #include "aikido/constraint/Testable.hpp"
 #include "aikido/planner/Problem.hpp"
 #include "aikido/statespace/Interpolator.hpp"
@@ -17,7 +18,7 @@ namespace planner {
 class ConfigurationToConfigurations : public Problem
 {
 public:
-  using GoalStates = std::unordered_set<const statespace::StateSpace::State*>;
+  using GoalStates = std::vector<const statespace::StateSpace::State*>;
 
   /// Constructor.
   ///
@@ -46,14 +47,14 @@ public:
   std::size_t getNumGoalStates() const;
 
   /// Returns goal states.
-  const GoalStates& getGoalStates() const;
+  GoalStates getGoalStates() const;
 
 protected:
   /// Start state.
-  const statespace::StateSpace::State* mStartState;
+  statespace::StateSpace::ScopedState mStartState;
 
   /// Goal States.
-  const GoalStates mGoalStates;
+  std::vector<statespace::StateSpace::ScopedState> mGoalStates;
 };
 
 } // namespace planner

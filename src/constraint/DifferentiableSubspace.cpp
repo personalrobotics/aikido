@@ -1,5 +1,6 @@
+#include "aikido/constraint/DifferentiableSubspace.hpp"
+
 #include <sstream>
-#include <aikido/constraint/DifferentiableSubspace.hpp>
 
 namespace aikido {
 namespace constraint {

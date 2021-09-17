@@ -3,8 +3,9 @@
 
 #include <ompl/datastructures/NearestNeighbors.h>
 #include <ompl/geometric/planners/PlannerIncludes.h>
-#include <aikido/planner/ompl/CRRT.hpp>
-#include "../../constraint/Projectable.hpp"
+
+#include "aikido/constraint/Projectable.hpp"
+#include "aikido/planner/ompl/CRRT.hpp"
 
 namespace aikido {
 namespace planner {
@@ -72,7 +73,9 @@ protected:
   /// The goal tree
   TreeData mGoalTree;
 
-  /// Max distance between two trees to consider them connected
+  /// Max distance between two trees to consider them connected. Note that this
+  /// must be less than the resolution used to collision-check, since we assume
+  /// the connection motion is collision-free
   double mConnectionRadius;
 
   /// The pair of states in each tree connected during planning.  Use for

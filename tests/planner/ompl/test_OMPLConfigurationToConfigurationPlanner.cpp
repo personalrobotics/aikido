@@ -1,4 +1,5 @@
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
+
 #include <aikido/common/StepSequence.hpp>
 #include <aikido/constraint.hpp>
 #include <aikido/planner/ConfigurationToConfiguration.hpp>
@@ -7,6 +8,7 @@
 #include <aikido/planner/ompl/Planner.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/trajectory/Interpolated.hpp>
+
 #include "../../constraint/MockConstraints.hpp"
 #include "OMPLTestHelpers.hpp"
 

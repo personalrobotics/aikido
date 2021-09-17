@@ -1,9 +1,9 @@
 #ifndef AIKIDO_PLANNER_DETAIL_SINGLEPROBLEMPLANNER_IMPL_HPP_
 #define AIKIDO_PLANNER_DETAIL_SINGLEPROBLEMPLANNER_IMPL_HPP_
 
-#include "aikido/planner/SingleProblemPlanner.hpp"
-
 #include <utility>
+
+#include "aikido/planner/SingleProblemPlanner.hpp"
 
 namespace aikido {
 namespace planner {

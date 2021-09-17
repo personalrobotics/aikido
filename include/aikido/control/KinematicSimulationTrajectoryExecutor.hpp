@@ -3,7 +3,9 @@
 
 #include <future>
 #include <mutex>
+
 #include <dart/dynamics/Skeleton.hpp>
+
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"

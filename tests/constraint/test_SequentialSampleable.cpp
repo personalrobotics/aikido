@@ -1,13 +1,13 @@
-#include <aikido/constraint/SequentialSampleable.hpp>
-
 #include <Eigen/StdVector>
+#include <gtest/gtest.h>
+
 #include <aikido/constraint/CyclicSampleable.hpp>
 #include <aikido/constraint/FiniteSampleable.hpp>
+#include <aikido/constraint/SequentialSampleable.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/StateSpace.hpp>
-#include "../eigen_tests.hpp"
 
-#include <gtest/gtest.h>
+#include "../eigen_tests.hpp"
 
 using aikido::constraint::ConstSampleablePtr;
 using aikido::constraint::CyclicSampleable;

@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <dart/common/Console.hpp>
@@ -129,7 +130,7 @@ void searchForPackages(
 //==============================================================================
 CatkinResourceRetriever::CatkinResourceRetriever()
   : CatkinResourceRetriever(
-        std::make_shared<dart::common::LocalResourceRetriever>())
+      std::make_shared<dart::common::LocalResourceRetriever>())
 {
 }
 

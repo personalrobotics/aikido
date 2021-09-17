@@ -1,4 +1,5 @@
 #include "aikido/control/ros/RosPositionCommandExecutor.hpp"
+
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/util.hpp"
 
@@ -45,9 +46,10 @@ std::future<void> RosPositionCommandExecutor::execute(
   pr_control_msgs::SetPositionGoal goal;
   goal.command = positionsToJointState(goalPositions, mJointNames);
 
-  bool waitForServer = waitForActionServer<pr_control_msgs::SetPositionAction,
-                                           std::chrono::milliseconds,
-                                           std::chrono::milliseconds>(
+  bool waitForServer = waitForActionServer<
+      pr_control_msgs::SetPositionAction,
+      std::chrono::milliseconds,
+      std::chrono::milliseconds>(
       mClient, mCallbackQueue, mConnectionTimeout, mConnectionPollingPeriod);
 
   if (!waitForServer)

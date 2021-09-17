@@ -1,4 +1,4 @@
-#include <aikido/distance/SO2Angular.hpp>
+#include "aikido/distance/SO2Angular.hpp"
 
 namespace aikido {
 namespace distance {
@@ -28,7 +28,7 @@ double SO2Angular::distance(
   double diff = mStateSpace->toAngle(
                     static_cast<const statespace::SO2::State*>(_state1))
                 - mStateSpace->toAngle(
-                      static_cast<const statespace::SO2::State*>(_state2));
+                    static_cast<const statespace::SO2::State*>(_state2));
   diff = std::fmod(std::fabs(diff), 2.0 * M_PI);
   if (diff > M_PI)
     diff -= 2.0 * M_PI;

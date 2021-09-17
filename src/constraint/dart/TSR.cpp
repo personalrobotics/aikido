@@ -1,15 +1,15 @@
 #include "aikido/constraint/dart/TSR.hpp"
+
 #include <cmath>
 #include <random>
 #include <stdexcept>
 #include <vector>
+
 #include <boost/format.hpp>
 #include <dart/common/Console.hpp>
 #include <dart/math/Geometry.hpp>
-#include "aikido/common/memory.hpp"
 
-#undef dtwarn
-#define dtwarn (::dart::common::colorErr("Warning", __FILE__, __LINE__, 33))
+#include "aikido/common/memory.hpp"
 
 using aikido::statespace::SE3;
 using boost::format;

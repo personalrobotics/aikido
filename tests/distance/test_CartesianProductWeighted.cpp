@@ -1,10 +1,10 @@
+#include <gtest/gtest.h>
+
 #include <aikido/distance/CartesianProductWeighted.hpp>
 #include <aikido/distance/RnEuclidean.hpp>
 #include <aikido/distance/SO2Angular.hpp>
 #include <aikido/distance/SO3Angular.hpp>
 #include <aikido/statespace/CartesianProduct.hpp>
-
-#include <gtest/gtest.h>
 
 using namespace aikido::distance;
 using namespace aikido::statespace;
@@ -28,9 +28,10 @@ TEST(CartesianProductWeightedDistance, ThrowsOnNullMetric)
 
   auto space = std::make_shared<CartesianProduct>(spaces);
 
-  std::vector<DistanceMetricPtr> dmetrics = {std::make_shared<SO2Angular>(so2),
-                                             std::make_shared<R3Euclidean>(rv3),
-                                             nullptr};
+  std::vector<DistanceMetricPtr> dmetrics
+      = {std::make_shared<SO2Angular>(so2),
+         std::make_shared<R3Euclidean>(rv3),
+         nullptr};
 
   EXPECT_THROW(
       CartesianProductWeighted(space, dmetrics), std::invalid_argument);

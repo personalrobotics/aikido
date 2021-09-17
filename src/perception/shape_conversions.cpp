@@ -1,4 +1,4 @@
-#include <aikido/perception/shape_conversions.hpp>
+#include "aikido/perception/shape_conversions.hpp"
 
 #include <dart/common/Console.hpp>
 

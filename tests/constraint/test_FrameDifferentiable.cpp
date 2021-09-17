@@ -1,3 +1,6 @@
+#include <Eigen/Dense>
+#include <gtest/gtest.h>
+
 #include <aikido/common/RNG.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/dart/FrameDifferentiable.hpp>
@@ -6,9 +9,6 @@
 #include <aikido/statespace/SE3.hpp>
 #include <aikido/statespace/SO2.hpp>
 #include <aikido/statespace/dart/MetaSkeletonStateSpace.hpp>
-
-#include <Eigen/Dense>
-#include <gtest/gtest.h>
 
 using aikido::common::RNG;
 using aikido::common::RNGWrapper;

@@ -1,9 +1,14 @@
 #include "aikido/robot/ConcreteManipulator.hpp"
+
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/dart/util.hpp"
-#include "aikido/robot/util.hpp"
+#include "aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp"
 
 namespace aikido {
 namespace robot {
+
+using planner::dart::ConfigurationToEndEffectorOffset;
+using planner::vectorfield::VectorFieldConfigurationToEndEffectorOffsetPlanner;
 
 //==============================================================================
 ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)
@@ -16,34 +21,6 @@ ConcreteManipulator::ConcreteManipulator(RobotPtr robot, HandPtr hand)
 ConstHandPtr ConcreteManipulator::getHand() const
 {
   return mHand;
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::smoothPath(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    const constraint::TestablePtr& constraint)
-{
-  return mRobot->smoothPath(metaSkeleton, path, constraint);
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline> ConcreteManipulator::retimePath(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path)
-{
-  return mRobot->retimePath(metaSkeleton, path);
-}
-
-//==============================================================================
-std::unique_ptr<aikido::trajectory::Spline>
-ConcreteManipulator::retimePathWithKunz(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    double maxDeviation,
-    double timestep)
-{
-  return mRobot->retimePathWithKunz(metaSkeleton, path, maxDeviation, timestep);
 }
 
 //==============================================================================
@@ -131,23 +108,27 @@ trajectory::TrajectoryPtr ConcreteManipulator::planToEndEffectorOffset(
     double positionTolerance,
     double angularTolerance)
 {
+  // NOTE: We plan using VFP.
+  auto vfpPlanner
+      = std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
+          space,
+          metaSkeleton,
+          mVectorFieldParameters.distanceTolerance,
+          positionTolerance,
+          angularTolerance,
+          mVectorFieldParameters.initialStepSize,
+          mVectorFieldParameters.jointLimitTolerance,
+          mVectorFieldParameters.constraintCheckResolution,
+          std::chrono::duration<double>(timelimit));
 
-  auto collision
+  // Create planning problem.
+  auto collisionConstraint
       = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
-  auto trajectory = util::planToEndEffectorOffset(
-      space,
-      metaSkeleton,
-      body,
-      direction,
-      collision,
-      distance,
-      timelimit,
-      positionTolerance,
-      angularTolerance,
-      mVectorFieldParameters,
-      mCRRTParameters);
+  auto problem = ConfigurationToEndEffectorOffset(
+      space, metaSkeleton, body, direction, distance, collisionConstraint);
 
-  return trajectory;
+  // Plan.
+  return vfpPlanner->plan(problem);
 }
 
 //==============================================================================
@@ -161,9 +142,6 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     double positionTolerance,
     double angularTolerance)
 {
-  auto collision
-      = getFullCollisionConstraint(space, metaSkeleton, collisionFree);
-
   Eigen::Vector3d direction
       = planner::dart::util::getEndEffectorDirection(body);
 
@@ -173,20 +151,16 @@ trajectory::TrajectoryPtr ConcreteManipulator::planEndEffectorStraight(
     direction = direction * -1;
   }
 
-  auto trajectory = util::planToEndEffectorOffset(
+  return planToEndEffectorOffset(
       space,
       metaSkeleton,
       body,
+      collisionFree,
       direction,
-      collision,
       distance,
       timelimit,
       positionTolerance,
-      angularTolerance,
-      mVectorFieldParameters,
-      mCRRTParameters);
-
-  return trajectory;
+      angularTolerance);
 }
 
 //==============================================================================
@@ -194,13 +168,6 @@ void ConcreteManipulator::setVectorFieldPlannerParameters(
     const util::VectorFieldPlannerParameters& vfParameters)
 {
   mVectorFieldParameters = vfParameters;
-}
-
-//=============================================================================
-void ConcreteManipulator::setCRRTPlannerParameters(
-    const util::CRRTPlannerParameters& crrtParameters)
-{
-  mCRRTParameters = crrtParameters;
 }
 
 } // namespace robot

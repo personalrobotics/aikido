@@ -1,5 +1,6 @@
 #include <dart/common/StlHelpers.hpp>
 #include <gtest/gtest.h>
+
 #include <aikido/common/VanDerCorput.hpp>
 
 using aikido::common::VanDerCorput;
@@ -214,4 +215,38 @@ TEST(VanDerCorput, IterationEndsWhenMinimumResolutionReached)
   }
   EXPECT_EQ(7, iterations);
   EXPECT_EQ(7, vdc_0_125.getLength());
+}
+
+TEST(VanDerCorput, ScaleAndIterateProperlyOverSpanWithResolution)
+{
+  // Check that with a non-unit span, iteration stops appropriately.
+  VanDerCorput vdc{2, false, false, 0.25};
+  int iterations = 0;
+  EXPECT_NO_THROW({
+    for (VanDerCorput::const_iterator itr = vdc.begin(); itr != vdc.end();
+         ++itr)
+    {
+      ++iterations;
+    }
+  });
+  EXPECT_EQ(7, iterations);
+  EXPECT_EQ(7, vdc.getLength());
+
+  // Check that with a non-unit span, the vdc values are correct.
+  EXPECT_DOUBLE_EQ(1.00, vdc[0].first);
+  EXPECT_DOUBLE_EQ(0.50, vdc[1].first);
+  EXPECT_DOUBLE_EQ(1.50, vdc[2].first);
+  EXPECT_DOUBLE_EQ(0.25, vdc[3].first);
+  EXPECT_DOUBLE_EQ(1.25, vdc[4].first);
+  EXPECT_DOUBLE_EQ(0.75, vdc[5].first);
+  EXPECT_DOUBLE_EQ(1.75, vdc[6].first);
+
+  // Check that with a non-unit span, the resolution is computed correctly.
+  EXPECT_DOUBLE_EQ(1.00, vdc[0].second);
+  EXPECT_DOUBLE_EQ(1.00, vdc[1].second);
+  EXPECT_DOUBLE_EQ(0.50, vdc[2].second);
+  EXPECT_DOUBLE_EQ(0.50, vdc[3].second);
+  EXPECT_DOUBLE_EQ(0.50, vdc[4].second);
+  EXPECT_DOUBLE_EQ(0.50, vdc[5].second);
+  EXPECT_DOUBLE_EQ(0.25, vdc[6].second);
 }

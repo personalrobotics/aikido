@@ -1,6 +1,7 @@
-#include <aikido/rviz/ResourceServer.hpp>
+#include "aikido/rviz/ResourceServer.hpp"
 
 #include <fstream>
+
 #include <assimp/cexport.h>
 #include <assimp/version.h>
 #include <boost/filesystem.hpp>

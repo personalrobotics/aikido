@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
+
 #include <aikido/constraint/CartesianProductTestable.hpp>
 #include <aikido/constraint/Satisfied.hpp>
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/constraint/uniform/RnBoxConstraint.hpp>
 #include <aikido/statespace/Rn.hpp>
 #include <aikido/statespace/SO2.hpp>
+
 #include "../eigen_tests.hpp"
 
 using aikido::constraint::CartesianProductTestable;
