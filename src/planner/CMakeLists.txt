@@ -2,6 +2,7 @@ set(sources
   ConfigurationToConfiguration.cpp
   ConfigurationToConfigurationPlanner.cpp
   ConfigurationToConfigurations.cpp
+  ConfigurationToConfigurationsPlanner.cpp
   FirstSupportedMetaPlanner.cpp
   CompositePlanner.cpp
   Planner.cpp
@@ -16,6 +17,8 @@ set(sources
   WorldStateSaver.cpp
   dart/ConfigurationToConfiguration.cpp
   dart/ConfigurationToConfigurationPlanner.cpp
+  dart/ConfigurationToConfigurations.cpp
+  dart/ConfigurationToConfigurationsPlanner.cpp
   dart/ConfigurationToEndEffectorOffset.cpp
   dart/ConfigurationToEndEffectorPose.cpp
   dart/ConfigurationToTSR.cpp
@@ -23,6 +26,7 @@ set(sources
   # dart/ConfigurationToEndEffectorPosePlanner.cpp
   dart/ConfigurationToTSRPlanner.cpp
   dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.cpp
+  dart/ConfigurationToConfiguration_to_ConfigurationToConfigurations.cpp
   dart/ConfigurationToConfiguration_to_ConfigurationToTSR.cpp
   dart/util.cpp
 )

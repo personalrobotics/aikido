@@ -1,6 +1,7 @@
 # CMake 2.8.12 or above is required for CMakeParseArguments.
 # CMake 2.8.11 or above is required for target_include_directories.
-cmake_minimum_required(VERSION 2.8.12)
+# CMake 3.0.0 or above is required for version in project()
+cmake_minimum_required(VERSION 3.0.0)
 
 # Set the CMAKE_CXX_COMPILER_ID variable to AppleClang instead of Clang.
 # AppleClang and Clang have different version number. This was introduced in
@@ -16,13 +17,12 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
-project(aikido)
+# Set PROJECT_VERSION variables
+if(POLICY CMP0048)
+  cmake_policy(SET CMP0048 NEW)
+endif()
 
-# If you change the version, please update the <version> tag in package.xml.
-set(AIKIDO_MAJOR_VERSION "0")
-set(AIKIDO_MINOR_VERSION "3")
-set(AIKIDO_PATCH_VERSION "0")
-set(AIKIDO_VERSION "${AIKIDO_MAJOR_VERSION}.${AIKIDO_MINOR_VERSION}.${AIKIDO_PATCH_VERSION}")
+project(aikido VERSION 0.4.0 LANGUAGES CXX)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -92,24 +92,30 @@ find_package(DART 6.6.2 REQUIRED
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
 )
-# Check if DART is built with octomap so that it supports VoxelGridShape
-include(CheckCXXSourceCompiles)
-set(CMAKE_REQUIRED_DEFINITIONS "")
-set(CMAKE_REQUIRED_FLAGS "-std=c++11")
-set(CMAKE_REQUIRED_INCLUDES ${DART_INCLUDE_DIRS})
-set(CMAKE_REQUIRED_LIBRARIES ${DART_LIBRARIES})
-check_cxx_source_compiles(
-"
-#include <dart/dart.hpp>
-int main()
-{
-  auto voxel = new dart::dynamics::VoxelGridShape();
-  delete voxel;
-  return 0;
-}
-"
-DART_HAS_VOXELGRIDSHAPE
-)
+
+# Define DART test in separate function
+# Avoid polluting CMAKE variables.
+function(dart_voxelgrid_test)
+  # Check if DART is built with octomap so that it supports VoxelGridShape
+  include(CheckCXXSourceCompiles)
+  set(CMAKE_REQUIRED_DEFINITIONS "")
+  set(CMAKE_REQUIRED_FLAGS "-std=c++14")
+  set(CMAKE_REQUIRED_INCLUDES ${DART_INCLUDE_DIRS})
+  set(CMAKE_REQUIRED_LIBRARIES ${DART_LIBRARIES})
+  check_cxx_source_compiles(
+  "
+  #include <dart/dart.hpp>
+  int main()
+  {
+    auto voxel = new dart::dynamics::VoxelGridShape();
+    delete voxel;
+    return 0;
+  }
+  "
+  DART_HAS_VOXELGRIDSHAPE
+  )
+endfunction()
+dart_voxelgrid_test()
 
 find_package(ompl REQUIRED)
 
@@ -180,11 +186,11 @@ if(${DOXYGEN_FOUND})
   # Optionally download Doxygen tagfiles for dependencies.
   set(DOXYGEN_TAGFILES "")
   if(DOWNLOAD_TAGFILES)
-    set(tagfile_url "http://dartsim.github.io/dart/v6.3.0/dart.tag")
+    set(tagfile_url "http://dartsim.github.io/dart/v${DART_VERSION}/dart.tag")
     message(STATUS "Downloading DART Doxygen tagfile from: ${tagfile_url}")
     file(DOWNLOAD "${tagfile_url}" "${DOXYGEN_WORKING_DIR}/dart.tag")
     set(DOXYGEN_TAGFILES
-      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/v6.3.0")
+      "${DOXYGEN_TAGFILES} dart.tag=http://dartsim.github.io/dart/v${DART_VERSION}")
 
     is_component(needs_ompl aikido planner_ompl)
     if(needs_ompl)
@@ -262,9 +268,9 @@ endif()
 #
 # We only support one specific ClangFormat version because different versions
 # result in different code formatting with the same configuration. The current
-# supported version is 6.0.
+# supported version is 10
 
-clang_format_setup(VERSION 6.0)
+clang_format_setup(VERSION 10)
 
 if (CLANG_FORMAT_EXECUTABLE)
   clang_format_add_sources(${aikido_headers})

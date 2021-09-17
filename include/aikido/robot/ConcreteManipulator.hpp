@@ -32,24 +32,6 @@ public:
   virtual ConstHandPtr getHand() const override;
 
   // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline> smoothPath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      const constraint::TestablePtr& constraint) override;
-
-  // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline> retimePath(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path) override;
-
-  // Documentation inherited.
-  virtual std::unique_ptr<aikido::trajectory::Spline> retimePathWithKunz(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-      const aikido::trajectory::Trajectory* path,
-      double maxDeviation,
-      double timestep) override;
-
-  // Documentation inherited.
   virtual std::future<void> executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) const override;
 
@@ -143,12 +125,6 @@ public:
   void setVectorFieldPlannerParameters(
       const util::VectorFieldPlannerParameters& vfParameters);
 
-  /// TODO: This should be revisited once we have Planner API.
-  /// Sets CRRTPlanner parameters.
-  /// \param[in] crrtParameters CRRT planner parameters
-  void setCRRTPlannerParameters(
-      const util::CRRTPlannerParameters& crrtParameters);
-
 private:
   /// The robot whose metaSkeleton corresponds to this manipulator
   RobotPtr mRobot;
@@ -158,9 +134,6 @@ private:
 
   /// VectorFieldPlanenr-related parameters
   util::VectorFieldPlannerParameters mVectorFieldParameters;
-
-  /// CRRTPlanner-related parameters
-  util::CRRTPlannerParameters mCRRTParameters;
 };
 
 } // namespace robot

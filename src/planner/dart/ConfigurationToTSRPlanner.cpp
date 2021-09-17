@@ -10,7 +10,7 @@ ConfigurationToTSRPlanner::ConfigurationToTSRPlanner(
     ::dart::dynamics::MetaSkeletonPtr metaSkeleton,
     distance::ConstConfigurationRankerPtr configurationRanker)
   : dart::SingleProblemPlanner<ConfigurationToTSRPlanner, ConfigurationToTSR>(
-        std::move(stateSpace), std::move(metaSkeleton))
+      std::move(stateSpace), std::move(metaSkeleton))
   , mConfigurationRanker(std::move(configurationRanker))
 {
   // Do nothing

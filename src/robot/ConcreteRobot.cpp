@@ -1,8 +1,14 @@
 #include "aikido/robot/ConcreteRobot.hpp"
 
 #include "aikido/constraint/TestableIntersection.hpp"
-#include "aikido/planner/kunzretimer/KunzRetimer.hpp"
+#include "aikido/planner/SnapConfigurationToConfigurationPlanner.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfiguration.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToConfigurations.hpp"
+#include "aikido/planner/dart/ConfigurationToConfiguration_to_ConfigurationToTSR.hpp"
+#include "aikido/planner/dart/ConfigurationToConfigurations.hpp"
 #include "aikido/robot/util.hpp"
+#include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 
 namespace aikido {
@@ -12,20 +18,23 @@ using constraint::ConstTestablePtr;
 using constraint::TestablePtr;
 using constraint::dart::CollisionFreePtr;
 using constraint::dart::TSRPtr;
+using planner::SnapConfigurationToConfigurationPlanner;
 using planner::TrajectoryPostProcessor;
-using planner::kunzretimer::KunzRetimer;
-using planner::parabolic::ParabolicSmoother;
-using planner::parabolic::ParabolicTimer;
+using planner::dart::ConfigurationToConfiguration;
+using planner::dart::
+    ConfigurationToConfiguration_to_ConfigurationToConfiguration;
+using planner::dart::
+    ConfigurationToConfiguration_to_ConfigurationToConfigurations;
+using planner::dart::ConfigurationToConfiguration_to_ConfigurationToTSR;
+using planner::dart::ConfigurationToConfigurations;
+using planner::dart::ConfigurationToTSR;
+using statespace::GeodesicInterpolator;
 using statespace::StateSpace;
 using statespace::StateSpacePtr;
 using statespace::dart::ConstMetaSkeletonStateSpacePtr;
 using statespace::dart::MetaSkeletonStateSpace;
 using statespace::dart::MetaSkeletonStateSpacePtr;
-using trajectory::Interpolated;
-using trajectory::InterpolatedPtr;
-using trajectory::Spline;
 using trajectory::TrajectoryPtr;
-using trajectory::UniqueSplinePtr;
 
 using dart::dynamics::BodyNodePtr;
 using dart::dynamics::MetaSkeleton;
@@ -118,73 +127,6 @@ ConcreteRobot::ConcreteRobot(
     throw std::invalid_argument("Robot is nullptr.");
 
   mParentSkeleton = mMetaSkeleton->getBodyNode(0)->getSkeleton();
-}
-
-//==============================================================================
-UniqueSplinePtr ConcreteRobot::smoothPath(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    const constraint::TestablePtr& constraint)
-{
-  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto smoother
-      = std::make_shared<ParabolicSmoother>(velocityLimits, accelerationLimits);
-
-  auto interpolated = dynamic_cast<const Interpolated*>(path);
-  if (interpolated)
-    return smoother->postprocess(
-        *interpolated, *(cloneRNG().get()), constraint);
-
-  auto spline = dynamic_cast<const Spline*>(path);
-  if (spline)
-    return smoother->postprocess(*spline, *(cloneRNG().get()), constraint);
-
-  throw std::invalid_argument("Path should be either Spline or Interpolated.");
-}
-
-//==============================================================================
-UniqueSplinePtr ConcreteRobot::retimePath(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path)
-{
-  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto retimer
-      = std::make_shared<ParabolicTimer>(velocityLimits, accelerationLimits);
-
-  auto interpolated = dynamic_cast<const Interpolated*>(path);
-  if (interpolated)
-    return retimer->postprocess(*interpolated, *(cloneRNG().get()));
-
-  auto spline = dynamic_cast<const Spline*>(path);
-  if (spline)
-    return retimer->postprocess(*spline, *(cloneRNG().get()));
-
-  throw std::invalid_argument("Path should be either Spline or Interpolated.");
-}
-
-//==============================================================================
-UniqueSplinePtr ConcreteRobot::retimePathWithKunz(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    const aikido::trajectory::Trajectory* path,
-    double maxDeviation,
-    double timestep)
-{
-  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-  auto retimer = std::make_shared<KunzRetimer>(
-      velocityLimits, accelerationLimits, maxDeviation, timestep);
-
-  auto interpolated = dynamic_cast<const Interpolated*>(path);
-  if (interpolated)
-    return retimer->postprocess(*interpolated, *(cloneRNG().get()));
-
-  auto spline = dynamic_cast<const Spline*>(path);
-  if (spline)
-    return retimer->postprocess(*spline, *(cloneRNG().get()));
-
-  throw std::invalid_argument("Path should be either Spline or Interpolated.");
 }
 
 //==============================================================================
@@ -305,33 +247,6 @@ TestablePtr ConcreteRobot::getFullCollisionConstraint(
 }
 
 //==============================================================================
-std::shared_ptr<TrajectoryPostProcessor>
-ConcreteRobot::getTrajectoryPostProcessor(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
-    bool enableShortcut,
-    bool enableBlend,
-    double shortcutTimelimit,
-    double blendRadius,
-    int blendIterations,
-    double feasibilityCheckResolution,
-    double feasibilityApproxTolerance) const
-{
-  Eigen::VectorXd velocityLimits = getVelocityLimits(*metaSkeleton);
-  Eigen::VectorXd accelerationLimits = getAccelerationLimits(*metaSkeleton);
-
-  return std::make_shared<ParabolicSmoother>(
-      velocityLimits,
-      accelerationLimits,
-      enableShortcut,
-      enableBlend,
-      shortcutTimelimit,
-      blendRadius,
-      blendIterations,
-      feasibilityCheckResolution,
-      feasibilityApproxTolerance);
-}
-
-//==============================================================================
 TrajectoryPtr ConcreteRobot::planToConfiguration(
     const MetaSkeletonStateSpacePtr& stateSpace,
     const MetaSkeletonPtr& metaSkeleton,
@@ -339,16 +254,28 @@ TrajectoryPtr ConcreteRobot::planToConfiguration(
     const CollisionFreePtr& collisionFree,
     double timelimit)
 {
+  DART_UNUSED(timelimit);
+
+  auto snapConfigToConfigPlanner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+          stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
+
+  // Convert to DART planner.
+  auto dartSnapConfigToConfigPlanner = std::make_shared<
+      ConfigurationToConfiguration_to_ConfigurationToConfiguration>(
+      snapConfigToConfigPlanner, metaSkeleton);
+
+  // Create planning problem.
+  auto castedGoalState
+      = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(
+          goalState);
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+  auto problem = ConfigurationToConfiguration(
+      stateSpace, metaSkeleton, castedGoalState, collisionConstraint);
 
-  return util::planToConfiguration(
-      stateSpace,
-      metaSkeleton,
-      goalState,
-      collisionConstraint,
-      cloneRNG().get(),
-      timelimit);
+  // Plan.
+  return dartSnapConfigToConfigPlanner->plan(problem, /*result*/ nullptr);
 }
 
 //==============================================================================
@@ -374,13 +301,35 @@ TrajectoryPtr ConcreteRobot::planToConfigurations(
     const CollisionFreePtr& collisionFree,
     double timelimit)
 {
-  return util::planToConfigurations(
-      stateSpace,
-      metaSkeleton,
-      goalStates,
-      collisionFree,
-      cloneRNG().get(),
-      timelimit);
+  DART_UNUSED(timelimit);
+
+  auto snapConfigToConfigPlanner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+          stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
+
+  // Convert to DART multi-configuration planner.
+  auto multiConfigPlanner = std::make_shared<
+      ConfigurationToConfiguration_to_ConfigurationToConfigurations>(
+      snapConfigToConfigPlanner, metaSkeleton);
+
+  // Create planning problem.
+  std::vector<const statespace::dart::MetaSkeletonStateSpace::State*>
+      castedGoalStates;
+  for (const auto curGoalState : goalStates)
+  {
+    auto curCastedState
+        = static_cast<const statespace::dart::MetaSkeletonStateSpace::State*>(
+            curGoalState);
+    castedGoalStates.push_back(curCastedState);
+  }
+
+  auto collisionConstraint
+      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+  auto problem = ConfigurationToConfigurations(
+      stateSpace, metaSkeleton, castedGoalStates, collisionConstraint);
+
+  // Plan.
+  return multiConfigPlanner->plan(problem, /*result*/ nullptr);
 }
 
 //==============================================================================
@@ -416,44 +365,25 @@ TrajectoryPtr ConcreteRobot::planToTSR(
     std::size_t maxNumTrials,
     const distance::ConstConfigurationRankerPtr& ranker)
 {
+  DART_UNUSED(timelimit);
+
+  auto snapConfigToConfigPlanner
+      = std::make_shared<SnapConfigurationToConfigurationPlanner>(
+          stateSpace, std::make_shared<GeodesicInterpolator>(stateSpace));
+
+  // Convert to DART TSR planner.
+  auto tsrPlanner
+      = std::make_shared<ConfigurationToConfiguration_to_ConfigurationToTSR>(
+          snapConfigToConfigPlanner, metaSkeleton, ranker);
+
+  // Create planning problem.
   auto collisionConstraint
       = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
+  auto problem = ConfigurationToTSR(
+      stateSpace, metaSkeleton, bn, maxNumTrials, tsr, collisionConstraint);
 
-  return util::planToTSR(
-      stateSpace,
-      metaSkeleton,
-      bn,
-      tsr,
-      collisionConstraint,
-      cloneRNG().get(),
-      timelimit,
-      maxNumTrials,
-      ranker);
-}
-
-//==============================================================================
-TrajectoryPtr ConcreteRobot::planToTSRwithTrajectoryConstraint(
-    const MetaSkeletonStateSpacePtr& stateSpace,
-    const MetaSkeletonPtr& metaSkeleton,
-    const BodyNodePtr& bodyNode,
-    const TSRPtr& goalTsr,
-    const TSRPtr& constraintTsr,
-    const CollisionFreePtr& collisionFree,
-    double timelimit)
-{
-  auto collisionConstraint
-      = getFullCollisionConstraint(stateSpace, metaSkeleton, collisionFree);
-
-  // Uses CRRT.
-  return util::planToTSRwithTrajectoryConstraint(
-      stateSpace,
-      metaSkeleton,
-      bodyNode,
-      goalTsr,
-      constraintTsr,
-      collisionConstraint,
-      timelimit,
-      mCRRTParameters);
+  // Plan.
+  return tsrPlanner->plan(problem, /*result*/ nullptr);
 }
 
 //==============================================================================
@@ -471,13 +401,6 @@ TrajectoryPtr ConcreteRobot::planToNamedConfiguration(
 
   return planToConfiguration(
       mStateSpace, mMetaSkeleton, goalState, collisionFree, timelimit);
-}
-
-//=============================================================================
-void ConcreteRobot::setCRRTPlannerParameters(
-    const util::CRRTPlannerParameters& crrtParameters)
-{
-  mCRRTParameters = crrtParameters;
 }
 
 //==============================================================================

@@ -112,8 +112,8 @@ double CartesianProductWeighted::distance(
   {
     dist += mMetrics[i].second
             * mMetrics[i].first->distance(
-                  mStateSpace->getSubState<>(state1, i),
-                  mStateSpace->getSubState<>(state2, i));
+                mStateSpace->getSubState<>(state1, i),
+                mStateSpace->getSubState<>(state2, i));
   }
   return dist;
 }

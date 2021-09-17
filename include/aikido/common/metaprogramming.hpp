@@ -40,8 +40,10 @@ class type_list
 /// \tparam BaseParameter base class
 /// \tparam TypeList \c type_list of subclasses of \c BaseParameter
 template <
-    template <class> class Factory,
-    template <class> class Pointer,
+    template <class>
+    class Factory,
+    template <class>
+    class Pointer,
     class BaseParameter,
     class TypeList>
 struct DynamicCastFactory

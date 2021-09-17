@@ -12,10 +12,12 @@ ConfigurationToConfigurations::ConfigurationToConfigurations(
     const GoalStates& goalStates,
     constraint::ConstTestablePtr constraint)
   : Problem(std::move(stateSpace), std::move(constraint))
-  , mStartState(startState)
-  , mGoalStates(goalStates)
+  , mStartState(stateSpace->cloneState(startState))
 {
-  // Do nothing
+  for (const statespace::StateSpace::State* goal : goalStates)
+  {
+    mGoalStates.push_back(stateSpace->cloneState(goal));
+  }
 }
 
 //==============================================================================
@@ -45,10 +47,15 @@ std::size_t ConfigurationToConfigurations::getNumGoalStates() const
 }
 
 //==============================================================================
-const ConfigurationToConfigurations::GoalStates&
+ConfigurationToConfigurations::GoalStates
 ConfigurationToConfigurations::getGoalStates() const
 {
-  return mGoalStates;
+  std::vector<const statespace::StateSpace::State*> pointerStates;
+  for (const auto& goal : mGoalStates)
+  {
+    pointerStates.push_back(goal.getState());
+  }
+  return pointerStates;
 }
 
 } // namespace planner
