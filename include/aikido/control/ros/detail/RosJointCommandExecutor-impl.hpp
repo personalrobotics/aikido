@@ -18,11 +18,12 @@ RosJointCommandExecutor<T>::RosJointCommandExecutor(
     const std::chrono::milliseconds connectionTimeout,
     const std::chrono::milliseconds connectionPollingPeriod)
   : aikido::control::JointCommandExecutor<T>(jointNames)
-  , mClient{node,
-            controllerName + "/joint_group_command",
-            jointNames,
-            connectionTimeout,
-            connectionPollingPeriod}
+  , mClient{
+        node,
+        controllerName + "/joint_group_command",
+        jointNames,
+        connectionTimeout,
+        connectionPollingPeriod}
 {
   // Do nothing.
 }
