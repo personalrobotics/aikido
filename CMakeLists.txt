@@ -118,8 +118,6 @@ endfunction()
 dart_voxelgrid_test()
 
 find_package(ompl REQUIRED)
-find_package(urdf REQUIRED)
-find_package(srdfdom REQUIRED)
 
 #==============================================================================
 # Compiler settings
