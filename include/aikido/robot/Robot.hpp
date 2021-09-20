@@ -11,14 +11,15 @@
 
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
+#include "aikido/control/KinematicSimulationTrajectoryExecutor.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/Planner.hpp"
+#include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
-#include <aikido/control/KinematicSimulationTrajectoryExecutor.hpp>
 
 namespace aikido {
 namespace robot {
@@ -146,6 +147,17 @@ public:
           planner
       = nullptr) const;
 
+  /// Default to selfCollisionConstraint
+  trajectory::TrajectoryPtr planToConfiguration(
+      const statespace::StateSpace::State* goalState,
+      const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
+          planner
+      = nullptr) const
+  {
+    return planToConfiguration(
+        goalState, getSelfCollisionConstraint(), planner);
+  }
+
   ///
   /// Plan a specific body node of the robot to a
   /// sample configuraiton within a Task Space Region.
@@ -169,6 +181,25 @@ public:
       = nullptr,
       const distance::ConstConfigurationRankerPtr& ranker = nullptr) const;
 
+  /// Default to selfCollisionConstraint
+  trajectory::TrajectoryPtr planToTSR(
+      const std::string bodyNodeName,
+      const constraint::dart::TSRPtr& tsr,
+      std::size_t maxSamples = 1,
+      const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
+          planner
+      = nullptr,
+      const distance::ConstConfigurationRankerPtr& ranker = nullptr) const
+  {
+    return planToTSR(
+        bodyNodeName,
+        tsr,
+        getSelfCollisionConstraint(),
+        maxSamples,
+        planner,
+        ranker);
+  }
+
   /////////////// Getters and Setters //////////////////
 
   // Gets the (sub)robot's name
@@ -177,10 +208,10 @@ public:
     return mName;
   }
 
-  // Sets the root robot.
-  void setRootRobot(RobotPtr root)
+  // Gets a copy of the (sub)robot's metaskeleton at the current state
+  dart::dynamics::MetaSkeletonPtr getMetaSkeletonClone() const
   {
-    mRootRobot = root;
+    return mMetaSkeleton->cloneMetaSkeleton();
   }
 
   // Retrieves current state of the robot
@@ -189,9 +220,27 @@ public:
     return mStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get());
   }
 
+  // Clones the RNG pointer (constructing a new one if not set)
+  common::UniqueRNGPtr cloneRNG() const
+  {
+    return mRng->clone();
+  }
+
+  // Sets the RNG pointer
+  void setRNG(common::UniqueRNGPtr rng)
+  {
+    mRng = std::move(rng);
+  }
+
+  // Sets the root robot.
+  void setRootRobot(RobotPtr root)
+  {
+    mRootRobot = root;
+  }
+
   // Sets the Trajectory Executor
   // TODO(egordon) Later: ensure trajectory executor joints match managed DoFs
-  virtual void setTrajectoryExecutor(
+  void setTrajectoryExecutor(
       const aikido::control::TrajectoryExecutorPtr& trajExecutor)
   {
     if (mTrajectoryExecutor)
@@ -199,6 +248,30 @@ public:
       mTrajectoryExecutor->cancel();
     }
     mTrajectoryExecutor = trajExecutor;
+  }
+
+  // Sets the default trajectory post-processor.
+  // Also enables automatic post-processing for planning functions.
+  void setDefaultPostProcessor(
+      const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+          trajPostProcessor)
+  {
+    mDefaultPostProcessor = trajPostProcessor;
+    mEnablePostProcessing = true;
+  }
+
+  // Enables/disables automatic post-processing for planning functions.
+  void setEnablePostProcessing(bool enable = true)
+  {
+    if (enable && !mDefaultPostProcessor)
+    {
+      // Initialize default post-processor
+      mDefaultPostProcessor
+          = std::make_shared<aikido::planner::kunzretimer::KunzRetimer>(
+              mMetaSkeleton->getVelocityUpperLimits(),
+              mMetaSkeleton->getAccelerationUpperLimits());
+    }
+    mEnablePostProcessing = enable;
   }
 
 protected:
@@ -218,6 +291,14 @@ protected:
   dart::collision::CollisionDetectorPtr mCollisionDetector;
   std::shared_ptr<dart::collision::BodyNodeCollisionFilter>
       mSelfCollisionFilter;
+
+  // Planning post-processor
+  bool mEnablePostProcessing{false};
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+      mDefaultPostProcessor{nullptr};
+
+  // Custom random-number-generator for repeatable planning and post-processing
+  std::unique_ptr<common::RNG> mRng;
 };
 
 } // namespace robot

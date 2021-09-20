@@ -33,6 +33,7 @@ Robot::Robot(
   mMetaSkeleton->getBodyNode(0)->getSkeleton()->disableAdjacentBodyCheck();
 
   setTrajectoryExecutor(trajExecutor);
+  mRng.reset(new common::RNGWrapper<std::default_random_engine>(0));
 }
 
 //==============================================================================
@@ -199,7 +200,31 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
       basePlanner, mMetaSkeleton);
 
   // Solve the problem with the DART planner.
-  return dartPlanner->plan(problem, /* result */ nullptr);
+  auto rawPlan = dartPlanner->plan(problem, /* result */ nullptr);
+
+  // Postprocess if enabled
+  if (rawPlan && mEnablePostProcessing && mDefaultPostProcessor)
+  {
+    // Cast to interpolated or spline:
+    auto interpolated
+        = dynamic_cast<const aikido::trajectory::Interpolated*>(rawPlan.get());
+    if (interpolated)
+    {
+      return mDefaultPostProcessor->postprocess(
+          *interpolated, *(cloneRNG().get()), testableConstraint);
+    }
+
+    auto spline
+        = dynamic_cast<const aikido::trajectory::Spline*>(rawPlan.get());
+    if (spline)
+    {
+      return mDefaultPostProcessor->postprocess(
+          *spline, *(cloneRNG().get()), testableConstraint);
+    }
+
+    // Else return raw path
+  }
+  return rawPlan;
 }
 
 //=============================================================================
@@ -246,13 +271,35 @@ trajectory::TrajectoryPtr Robot::planToTSR(
       basePlanner, mMetaSkeleton, ranker);
 
   // Solve the problem with the DART planner.
-  return tsrPlanner->plan(problem, /* result */ nullptr);
+  auto rawPlan = tsrPlanner->plan(problem, /* result */ nullptr);
+
+  // Postprocess if enabled
+  if (rawPlan && mEnablePostProcessing && mDefaultPostProcessor)
+  {
+    // Cast to interpolated or spline:
+    auto interpolated
+        = dynamic_cast<const aikido::trajectory::Interpolated*>(rawPlan.get());
+    if (interpolated)
+    {
+      return mDefaultPostProcessor->postprocess(
+          *interpolated, *(cloneRNG().get()), testableConstraint);
+    }
+
+    auto spline
+        = dynamic_cast<const aikido::trajectory::Spline*>(rawPlan.get());
+    if (spline)
+    {
+      return mDefaultPostProcessor->postprocess(
+          *spline, *(cloneRNG().get()), testableConstraint);
+    }
+
+    // Else return raw path
+  }
+  return rawPlan;
 }
 
 } // namespace robot
 } // namespace aikido
 
-// TODO(avk): Why do planner and problem store similar information?
-// TODO(avk): Why does planToConfiguration need to take current robot state?
 // TODO: Switch to PRIMITIVE once this is fixed in DART.
 // mCollisionDetector->setPrimitiveShapeType(FCLCollisionDetector::PRIMITIVE);
