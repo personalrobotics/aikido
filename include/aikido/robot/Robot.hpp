@@ -100,7 +100,7 @@ public:
       bool includeParents = false, const std::string excludeSubrobot = "");
 
   ///
-  /// Steps the robot (and underlying executors) through time.
+  /// Steps the robot (and underlying executors and subrobots) through time.
   /// Call regularly to update the state of the robot.
   ///
   /// \param[in] timepoint The point in time to step to.

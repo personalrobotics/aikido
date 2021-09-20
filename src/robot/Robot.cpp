@@ -107,10 +107,15 @@ void Robot::cancelAllTrajectories(
 //==============================================================================
 void Robot::step(const std::chrono::system_clock::time_point& timepoint)
 {
-  // TODO(avk): Is the following statement valid? Where is it conveyed to the
-  // user and what are its implications and where is the parent robot locked?
-  // Assumes that the parent robot is locked
-  mTrajectoryExecutor->step(timepoint);
+  if (mTrajectoryExecutor)
+  {
+    mTrajectoryExecutor->step(timepoint);
+  }
+
+  for (const auto& subrobot : mSubRobots)
+  {
+    subrobot.second->step(timepoint);
+  }
 }
 
 // ==============================================================================
