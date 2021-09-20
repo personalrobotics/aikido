@@ -16,6 +16,7 @@
 #include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/Planner.hpp"
+#include "aikido/planner/World.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -118,6 +119,17 @@ public:
       const constraint::dart::CollisionFreePtr& collisionFree) const;
 
   ///
+  /// Get the collission constraint between the root robot
+  /// and selected bodies within its World, combined with
+  /// its self-collision constraint.
+  /// \param[in] bodyNames Names of the bodies in
+  /// the robot's world to check collision with.
+  /// Leave blank to check with all non-robot bodies.
+  constraint::TestablePtr getWorldCollisionConstraint(
+      const std::vector<std::string> bodyNames
+      = std::vector<std::string>()) const;
+
+  ///
   /// Registers a subset of the joints of the skeleton as a new robot.
   /// Must be disjoint from other subrobots.
   ///
@@ -138,8 +150,8 @@ public:
   ///
   /// \param[in] goalState Goal configuration.
   /// \param[in] testableConstraint Planning (e.g. collision) constraints, set
-  /// to nullptr for no constraints (not recommended) \param[in] planner
-  /// Configuration planner, defaults to Snap Planner
+  /// to nullptr for no constraints (not recommended)
+  /// \param[in] planner Configuration planner, defaults to Snap Planner
   trajectory::TrajectoryPtr planToConfiguration(
       const statespace::StateSpace::State* goalState,
       const constraint::TestablePtr& testableConstraint,
@@ -164,11 +176,12 @@ public:
   ///
   /// \param[in] bodyNodeName Bodynode (usually the end effector) whose frame
   /// should end up in the TSR. \param[in] tsr \see constraint::dart::TSR
-  /// \param[in] testableConstraint Planning (e.g. collision) constraints, set
-  /// to nullptr for no constraints (not recommended) \param[in] maxSamples
-  /// Maximum number of TSR samples to plan to (defaults to 1) \param[in]
-  /// planner Base configuration planner, defaults to Snap Planner \param[in]
-  /// ranker Ranker to rank the sampled configurations. If nullptr,
+  /// \param[in] testableConstraint Planning (e.g. collision) constraints,
+  /// set to nullptr for no constraints (not recommended)
+  /// \param[in] maxSamples Maximum number of TSR samples
+  /// to plan to (defaults to 1)
+  /// \param[in] planner Base configuration planner, defaults to Snap Planner
+  /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
   /// NominalConfigurationRanker is used with the current metaSkeleton pose.
   /// \return Trajectory to a sample in TSR, or nullptr if planning fails.
   trajectory::TrajectoryPtr planToTSR(
@@ -230,6 +243,31 @@ public:
   void setRNG(common::UniqueRNGPtr rng)
   {
     mRng = std::move(rng);
+  }
+
+  // Gets this robot's (mutable) planning world
+  aikido::planner::WorldPtr getWorld() const
+  {
+    if (mRootRobot)
+    {
+      return mRootRobot->getWorld();
+    }
+    return mWorld;
+  }
+
+  // Set's this robot's planning world
+  // Adds robot to world if not already present
+  void setWorld(aikido::planner::WorldPtr world)
+  {
+    mWorld = world;
+    if (world)
+    {
+      auto skeleton = mMetaSkeleton->getBodyNode(0)->getSkeleton();
+      if (!world->hasSkeleton(skeleton))
+      {
+        world->addSkeleton(skeleton);
+      }
+    }
   }
 
   // Sets the root robot.
@@ -299,6 +337,9 @@ protected:
 
   // Custom random-number-generator for repeatable planning and post-processing
   std::unique_ptr<common::RNG> mRng;
+
+  // Planning world in which the robot resides
+  aikido::planner::WorldPtr mWorld{nullptr};
 };
 
 } // namespace robot

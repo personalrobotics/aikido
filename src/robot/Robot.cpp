@@ -29,11 +29,16 @@ Robot::Robot(
 {
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
       mMetaSkeleton.get());
-  mMetaSkeleton->getBodyNode(0)->getSkeleton()->enableSelfCollisionCheck();
-  mMetaSkeleton->getBodyNode(0)->getSkeleton()->disableAdjacentBodyCheck();
+  auto skeletonObj = mMetaSkeleton->getBodyNode(0)->getSkeleton();
+  skeletonObj->enableSelfCollisionCheck();
+  skeletonObj->disableAdjacentBodyCheck();
 
   setTrajectoryExecutor(trajExecutor);
-  mRng.reset(new common::RNGWrapper<std::default_random_engine>(0));
+  auto rngSeed = std::chrono::system_clock::now().time_since_epoch().count();
+  mRng = std::make_unique<common::RNGWrapper<std::default_random_engine>>(
+      rngSeed);
+  mWorld = std::make_shared<aikido::planner::World>();
+  mWorld->addSkeleton(skeletonObj);
 }
 
 //==============================================================================
@@ -133,6 +138,87 @@ constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
   return collisionFreeConstraint;
 }
 
+// ==============================================================================
+constraint::TestablePtr Robot::combineCollisionConstraint(
+    const constraint::dart::CollisionFreePtr& collisionFree) const
+{
+  using constraint::TestableIntersection;
+
+  // Only use root robot's self-collision constraint
+  if (mRootRobot)
+  {
+    return mRootRobot->combineCollisionConstraint(collisionFree);
+  }
+
+  auto selfCollisionFree = getSelfCollisionConstraint();
+
+  if (!collisionFree)
+    return selfCollisionFree;
+
+  // Make testable constraints for collision check
+  std::vector<aikido::constraint::ConstTestablePtr> constraints;
+  constraints.reserve(2);
+  constraints.emplace_back(selfCollisionFree);
+  if (collisionFree)
+  {
+    if (collisionFree->getStateSpace() != mStateSpace)
+    {
+      dtwarn << "CollisionFreePtr space does not match robot space."
+             << std::endl;
+      return selfCollisionFree;
+    }
+    constraints.emplace_back(collisionFree);
+  }
+
+  return std::make_shared<TestableIntersection>(mStateSpace, constraints);
+}
+
+// ==============================================================================
+constraint::TestablePtr Robot::getWorldCollisionConstraint(
+    const std::vector<std::string> bodyNames) const
+{
+  // Only use root robot's self-collision constraint and World
+  if (mRootRobot)
+  {
+    return mRootRobot->getWorldCollisionConstraint(bodyNames);
+  }
+
+  if (!mWorld)
+    return getSelfCollisionConstraint();
+
+  auto robotCollisionGroup
+      = mCollisionDetector->createCollisionGroup(mMetaSkeleton.get());
+
+  auto worldCollisionGroup = mCollisionDetector->createCollisionGroup();
+  for (std::string name : bodyNames)
+  {
+    auto skeleton = mWorld->getSkeleton(name);
+    if (skeleton)
+    {
+      worldCollisionGroup->addShapeFramesOf(skeleton.get());
+    }
+  }
+
+  // Add all skeletons in world if bodyNames is empty
+  if (bodyNames.size() == 0)
+  {
+    for (std::size_t i = 0; i < mWorld->getNumSkeletons(); i++)
+    {
+      auto skeleton = mWorld->getSkeleton(i);
+      if (skeleton != mMetaSkeleton->getBodyNode(0)->getSkeleton())
+      {
+        worldCollisionGroup->addShapeFramesOf(skeleton.get());
+      }
+    }
+  }
+
+  // Create constraint and combine with self-constraint
+  auto worldCollisionConstraint
+      = std::make_shared<aikido::constraint::dart::CollisionFree>(
+          mStateSpace, mMetaSkeleton, mCollisionDetector);
+  return combineCollisionConstraint(worldCollisionConstraint);
+}
+
 //=============================================================================
 std::shared_ptr<Robot> Robot::registerSubRobot(
     const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
@@ -164,6 +250,7 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
   auto subRobot = std::make_shared<Robot>(metaSkeleton, name);
   const auto& root = mRootRobot ? mRootRobot : RobotPtr(this);
   subRobot->setRootRobot(root);
+  subRobot->setWorld(nullptr); // inherit root robot world
   mSubRobots[name] = subRobot;
   return subRobot;
 }
