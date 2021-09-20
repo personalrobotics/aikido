@@ -175,7 +175,8 @@ public:
   /// sample configuraiton within a Task Space Region.
   ///
   /// \param[in] bodyNodeName Bodynode (usually the end effector) whose frame
-  /// should end up in the TSR. \param[in] tsr \see constraint::dart::TSR
+  /// should end up in the TSR.
+  /// \param[in] tsr \see constraint::dart::TSR
   /// \param[in] testableConstraint Planning (e.g. collision) constraints,
   /// set to nullptr for no constraints (not recommended)
   /// \param[in] maxSamples Maximum number of TSR samples
