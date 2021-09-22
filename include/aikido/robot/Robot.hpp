@@ -172,6 +172,9 @@ public:
       const constraint::TestablePtr& testableConstraint,
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
+      = nullptr,
+      const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+          trajPostProcessor
       = nullptr) const;
 
   /// Default to selfCollisionConstraint
@@ -207,6 +210,9 @@ public:
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
       = nullptr,
+      const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+          trajPostProcessor
+      = nullptr,
       const distance::ConstConfigurationRankerPtr& ranker = nullptr) const;
 
   /// Default to selfCollisionConstraint
@@ -217,6 +223,9 @@ public:
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
       = nullptr,
+      const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+          trajPostProcessor
+      = nullptr,
       const distance::ConstConfigurationRankerPtr& ranker = nullptr) const
   {
     return planToTSR(
@@ -225,6 +234,7 @@ public:
         getSelfCollisionConstraint(),
         maxSamples,
         planner,
+        trajPostProcessor,
         ranker);
   }
 

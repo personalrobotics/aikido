@@ -298,7 +298,9 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
     const Eigen::VectorXd& goalConf,
     const constraint::TestablePtr& testableConstraint,
     const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
-        planner) const
+        planner,
+    const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+        trajPostProcessor) const
 {
   statespace::dart::MetaSkeletonStateSpace::State* goalState = nullptr;
   try
@@ -339,15 +341,19 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
   // Solve the problem with the DART planner.
   auto rawPlan = dartPlanner->plan(problem, /* result */ nullptr);
 
-  // Postprocess if enabled
-  if (rawPlan && mEnablePostProcessing && mDefaultPostProcessor)
+  // Postprocess if enabled or provided
+  auto postprocessor
+      = (trajPostProcessor)
+            ? trajPostProcessor
+            : ((mEnablePostProcessing) ? mDefaultPostProcessor : nullptr);
+  if (rawPlan && postprocessor)
   {
     // Cast to interpolated or spline:
     auto interpolated
         = dynamic_cast<const aikido::trajectory::Interpolated*>(rawPlan.get());
     if (interpolated)
     {
-      return mDefaultPostProcessor->postprocess(
+      return postprocessor->postprocess(
           *interpolated, *(cloneRNG().get()), testableConstraint);
     }
 
@@ -355,7 +361,7 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
         = dynamic_cast<const aikido::trajectory::Spline*>(rawPlan.get());
     if (spline)
     {
-      return mDefaultPostProcessor->postprocess(
+      return postprocessor->postprocess(
           *spline, *(cloneRNG().get()), testableConstraint);
     }
 
@@ -372,6 +378,8 @@ trajectory::TrajectoryPtr Robot::planToTSR(
     std::size_t maxSamples,
     const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
         planner,
+    const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+        trajPostProcessor,
     const distance::ConstConfigurationRankerPtr& ranker) const
 {
   // Get Body Node
@@ -410,15 +418,19 @@ trajectory::TrajectoryPtr Robot::planToTSR(
   // Solve the problem with the DART planner.
   auto rawPlan = tsrPlanner->plan(problem, /* result */ nullptr);
 
-  // Postprocess if enabled
-  if (rawPlan && mEnablePostProcessing && mDefaultPostProcessor)
+  // Postprocess if enabled or provided
+  auto postprocessor
+      = (trajPostProcessor)
+            ? trajPostProcessor
+            : ((mEnablePostProcessing) ? mDefaultPostProcessor : nullptr);
+  if (rawPlan && postprocessor)
   {
     // Cast to interpolated or spline:
     auto interpolated
         = dynamic_cast<const aikido::trajectory::Interpolated*>(rawPlan.get());
     if (interpolated)
     {
-      return mDefaultPostProcessor->postprocess(
+      return postprocessor->postprocess(
           *interpolated, *(cloneRNG().get()), testableConstraint);
     }
 
@@ -426,7 +438,7 @@ trajectory::TrajectoryPtr Robot::planToTSR(
         = dynamic_cast<const aikido::trajectory::Spline*>(rawPlan.get());
     if (spline)
     {
-      return mDefaultPostProcessor->postprocess(
+      return postprocessor->postprocess(
           *spline, *(cloneRNG().get()), testableConstraint);
     }
 
