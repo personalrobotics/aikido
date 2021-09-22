@@ -69,18 +69,20 @@ std::future<void> Robot::executeTrajectory(
   // Ensure all other executors that could contain these joints are cancelled
   if (mRootRobot)
   {
-    mRootRobot->cancelAllTrajectories(true, getName());
+    mRootRobot->cancelAllTrajectories(false, true);
   }
   for (const auto& subrobot : mSubRobots)
   {
-    subrobot.second->cancelAllTrajectories(false);
+    subrobot.second->cancelAllTrajectories(true, false);
   }
   return mTrajectoryExecutor->execute(trajectory);
 }
 
 //==============================================================================
 void Robot::cancelAllTrajectories(
-    bool includeParents, const std::string excludeSubrobot)
+    bool incluldeSubrobots,
+    bool includeParents,
+    const std::vector<std::string> excludedSubrobots)
 {
   // Cancel this trajectory
   if (mTrajectoryExecutor)
@@ -91,15 +93,21 @@ void Robot::cancelAllTrajectories(
   // Cancel parents' trajectories (if requested)
   if (includeParents && mRootRobot)
   {
-    mRootRobot->cancelAllTrajectories(true, getName());
+    mRootRobot->cancelAllTrajectories(false, true);
   }
 
-  // Cancel children's trajectories (unless requested)
-  for (const auto& subrobot : mSubRobots)
+  // Cancel children's trajectories
+  if (incluldeSubrobots)
   {
-    if (subrobot.first != excludeSubrobot)
+    for (const auto& subrobot : mSubRobots)
     {
-      subrobot.second->cancelAllTrajectories(false);
+      if (!std::count(
+              excludedSubrobots.begin(),
+              excludedSubrobots.end(),
+              subrobot.first))
+      {
+        subrobot.second->cancelAllTrajectories(true, false);
+      }
     }
   }
 }
@@ -107,6 +115,14 @@ void Robot::cancelAllTrajectories(
 //==============================================================================
 void Robot::step(const std::chrono::system_clock::time_point& timepoint)
 {
+  // Lock only if root robot
+  std::unique_ptr<std::lock_guard<std::mutex>> lock;
+  if (!mRootRobot)
+  {
+    lock = std::make_unique<std::lock_guard<std::mutex>>(
+        mMetaSkeleton->getBodyNode(0)->getSkeleton()->getMutex());
+  }
+
   if (mTrajectoryExecutor)
   {
     mTrajectoryExecutor->step(timepoint);
@@ -261,17 +277,46 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
 }
 
 //=============================================================================
+Eigen::VectorXd Robot::getNamedConfiguration(const std::string& name) const
+{
+  auto configuration = mNamedConfigurations.find(name);
+  if (configuration == mNamedConfigurations.end())
+    return Eigen::VectorXd();
+
+  return configuration->second;
+}
+
+//=============================================================================
+void Robot::setNamedConfigurations(
+    std::unordered_map<std::string, const Eigen::VectorXd> namedConfigurations)
+{
+  mNamedConfigurations = std::move(namedConfigurations);
+}
+
+//=============================================================================
 trajectory::TrajectoryPtr Robot::planToConfiguration(
-    const statespace::StateSpace::State* goalState,
+    const Eigen::VectorXd& goalConf,
     const constraint::TestablePtr& testableConstraint,
     const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
         planner) const
 {
+  statespace::dart::MetaSkeletonStateSpace::State* goalState = nullptr;
+  try
+  {
+    mStateSpace->convertPositionsToState(goalConf, goalState);
+  }
+  catch (const std::exception& e)
+  {
+    dtwarn << "Cannot convert configuration to robot state: " << e.what()
+           << std::endl;
+    return nullptr;
+  }
+
   // Create the problem.
   auto problem = planner::dart::ConfigurationToConfiguration(
       mStateSpace,
-      mStateSpace->cloneState(getCurrentState()),
-      mStateSpace->cloneState(goalState),
+      mStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get()),
+      goalState,
       testableConstraint);
 
   // Default to base Snap Planner
@@ -341,7 +386,7 @@ trajectory::TrajectoryPtr Robot::planToTSR(
   // Create the problem.
   auto problem = planner::dart::ConfigurationToTSR(
       mStateSpace,
-      mStateSpace->cloneState(getCurrentState()),
+      mStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get()),
       bn,
       maxSamples,
       tsr,

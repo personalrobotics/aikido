@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 
+#include <Eigen/Dense>
 #include <dart/collision/CollisionDetector.hpp>
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/dynamics/dynamics.hpp>
@@ -83,21 +84,24 @@ public:
 
   ///
   /// Executes given trajectory on the robot.
-  /// Note: cancels all running trajectories on root robot
-  ///       and other subrobots.
+  /// Note: cancels all running trajectories on root robot(s)
   ///
   /// \param[in] trajectory The trajectory to execute.
   virtual std::future<void> executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory) const;
 
   ///
-  /// Cancels all running trajectories on this
-  /// and all subrobots.
+  /// Cancels all running trajectories on this robot.
   ///
+  /// \param[in] includeSubrobots Also cancel trajectories on all subrobots.
   /// \param[in] includeParents Also cancel trajectories on parent robots
-  /// \param[in] excludeSubrobot Ignore trajectories on particular subrobot
+  /// \param[in] excludedSubrobots Ignores theese subrobots when issuing
+  /// cancellations
   virtual void cancelAllTrajectories(
-      bool includeParents = false, const std::string excludeSubrobot = "");
+      bool includeSubrobots = true,
+      bool includeParents = false,
+      const std::vector<std::string> excludeSubrobots
+      = std::vector<std::string>());
 
   ///
   /// Steps the robot (and underlying executors and subrobots) through time.
@@ -145,15 +149,26 @@ public:
   /// \param[in] name Name of the subrobot.
   RobotPtr getSubRobotByName(const std::string& name) const;
 
+  /// Returns a named configuration, or size-0 vector if not found.
+  /// \param[in] name Name of the configuration.
+  Eigen::VectorXd getNamedConfiguration(const std::string& name) const;
+
+  /// Sets the list of named configurations.
+  /// \param[in] namedConfigurations Map of name, configuration.
+  void setNamedConfigurations(
+      std::unordered_map<std::string, const Eigen::VectorXd>
+          namedConfigurations);
+
   ///
   /// Plan the robot to a specific configuration.
   ///
-  /// \param[in] goalState Goal configuration.
+  /// \param[in] goalConf Goal configuration
+  /// Returns nullptr if not in robot's statespace.
   /// \param[in] testableConstraint Planning (e.g. collision) constraints, set
   /// to nullptr for no constraints (not recommended)
   /// \param[in] planner Configuration planner, defaults to Snap Planner
   trajectory::TrajectoryPtr planToConfiguration(
-      const statespace::StateSpace::State* goalState,
+      const Eigen::VectorXd& goalConf,
       const constraint::TestablePtr& testableConstraint,
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
@@ -161,13 +176,12 @@ public:
 
   /// Default to selfCollisionConstraint
   trajectory::TrajectoryPtr planToConfiguration(
-      const statespace::StateSpace::State* goalState,
+      const Eigen::VectorXd& goalConf,
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
       = nullptr) const
   {
-    return planToConfiguration(
-        goalState, getSelfCollisionConstraint(), planner);
+    return planToConfiguration(goalConf, getSelfCollisionConstraint(), planner);
   }
 
   ///
@@ -229,21 +243,28 @@ public:
   }
 
   // Retrieves current state of the robot
-  statespace::StateSpace::State* getCurrentState() const
+  Eigen::VectorXd getCurrentConfiguration() const
   {
-    return mStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get());
+    return mMetaSkeleton->getPositions();
   }
 
-  // Clones the RNG pointer (constructing a new one if not set)
+  // Clones the RNG pointer (or nullptr if not set)
   common::UniqueRNGPtr cloneRNG() const
   {
-    return mRng->clone();
+    if (mRng)
+    {
+      return mRng->clone();
+    }
+    return nullptr;
   }
 
   // Sets the RNG pointer
   void setRNG(common::UniqueRNGPtr rng)
   {
-    mRng = std::move(rng);
+    if (rng)
+    {
+      mRng = std::move(rng);
+    }
   }
 
   // Gets this robot's (mutable) planning world
@@ -290,7 +311,7 @@ public:
   }
 
   // Sets the default trajectory post-processor.
-  // Also enables automatic post-processing for planning functions.
+  // Also enables automatic post-processing for all planning functions.
   void setDefaultPostProcessor(
       const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
           trajPostProcessor)
@@ -299,7 +320,7 @@ public:
     mEnablePostProcessing = true;
   }
 
-  // Enables/disables automatic post-processing for planning functions.
+  // Enables/disables automatic post-processing for all planning functions.
   void setEnablePostProcessing(bool enable = true)
   {
     if (enable && !mDefaultPostProcessor)
@@ -341,6 +362,11 @@ protected:
 
   // Planning world in which the robot resides
   aikido::planner::WorldPtr mWorld{nullptr};
+
+  // Map of commonly-used configurations
+  using ConfigurationMap
+      = std::unordered_map<std::string, const Eigen::VectorXd>;
+  ConfigurationMap mNamedConfigurations;
 };
 
 } // namespace robot
