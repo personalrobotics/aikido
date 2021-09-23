@@ -256,6 +256,16 @@ public:
     return mMetaSkeleton->cloneMetaSkeleton();
   }
 
+  dart::dynamics::MetaSkeletonPtr getMetaSkeleton()
+  {
+    return mMetaSkeleton;
+  }
+
+  const dart::dynamics::MetaSkeletonPtr getMetaSkeleton() const
+  {
+    return mMetaSkeleton;
+  }
+
   // Retrieves current state of the robot
   Eigen::VectorXd getCurrentConfiguration() const
   {
