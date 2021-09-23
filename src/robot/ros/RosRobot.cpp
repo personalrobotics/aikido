@@ -3,28 +3,11 @@
 #include <srdfdom/model.h>
 #include <urdf/model.h>
 
+#include "aikido/io/util.hpp"
+
 namespace aikido {
 namespace robot {
 namespace ros {
-
-namespace internal {
-
-inline dart::dynamics::MetaSkeletonPtr skeletonFromURDF(
-    const dart::common::Uri& urdf,
-    const dart::common::ResourceRetrieverPtr& retriever)
-{
-  dart::utils::DartLoader urdfLoader;
-
-  auto ret = urdfLoader.parseSkeleton(urdf, retriever);
-  if (!ret)
-  {
-    throw std::runtime_error("Unable to load the robot from URDF.");
-  }
-
-  return ret;
-}
-
-} // namespace internal
 
 //==============================================================================
 RosRobot::RosRobot(
@@ -32,7 +15,7 @@ RosRobot::RosRobot(
     const dart::common::Uri& srdf,
     const std::string name,
     const dart::common::ResourceRetrieverPtr& retriever)
-  : Robot(internal::skeletonFromURDF(urdf, retriever), name)
+  : Robot(aikido::io::loadSkeletonFromURDF(retriever, urdf), name)
 {
   // Read the SRDF for disabled collision pairs.
   urdf::Model urdfModel;

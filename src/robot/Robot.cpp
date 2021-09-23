@@ -19,9 +19,9 @@ namespace robot {
 
 //==============================================================================
 Robot::Robot(
-    const dart::dynamics::MetaSkeletonPtr& skeleton,
+    dart::dynamics::SkeletonPtr skeleton,
     const std::string name,
-    const aikido::control::TrajectoryExecutorPtr& trajExecutor)
+    const aikido::control::TrajectoryExecutorPtr trajExecutor)
   : mName(name)
   , mMetaSkeleton(skeleton)
   , mDofs(util::dofNamesFromSkeleton(skeleton))
@@ -29,7 +29,7 @@ Robot::Robot(
 {
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
       mMetaSkeleton.get());
-  auto skeletonObj = mMetaSkeleton->getBodyNode(0)->getSkeleton();
+  auto skeletonObj = getRootSkeleton();
   skeletonObj->enableSelfCollisionCheck();
   skeletonObj->disableAdjacentBodyCheck();
 
@@ -39,6 +39,22 @@ Robot::Robot(
       rngSeed);
   mWorld = std::make_shared<aikido::planner::World>();
   mWorld->addSkeleton(skeletonObj);
+}
+
+//==============================================================================
+Robot::Robot(
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton,
+    RobotPtr rootRobot,
+    const std::string name)
+  : mName(name)
+  , mMetaSkeleton(refSkeleton)
+  , mParentRobot(rootRobot)
+  , mDofs(util::dofNamesFromSkeleton(refSkeleton))
+  , mCollisionDetector(nullptr)
+  , mWorld(nullptr)
+{
+  mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
+      mMetaSkeleton.get());
 }
 
 //==============================================================================
@@ -57,6 +73,21 @@ void Robot::ignoreSelfCollisionPairs(
 }
 
 //==============================================================================
+void Robot::enforceSelfCollisionPairs(
+    const std::vector<std::pair<std::string, std::string>> bodyNodeList)
+{
+  for (auto pair : bodyNodeList)
+  {
+    auto body0 = mMetaSkeleton->getBodyNode(pair.first);
+    auto body1 = mMetaSkeleton->getBodyNode(pair.second);
+    if (body0 && body1)
+    {
+      mSelfCollisionFilter->removeBodyNodePairFromBlackList(body0, body1);
+    }
+  }
+}
+
+//==============================================================================
 std::future<void> Robot::executeTrajectory(
     const trajectory::TrajectoryPtr& trajectory) const
 {
@@ -67,9 +98,9 @@ std::future<void> Robot::executeTrajectory(
   }
 
   // Ensure all other executors that could contain these joints are cancelled
-  if (mRootRobot)
+  if (mParentRobot)
   {
-    mRootRobot->cancelAllTrajectories(false, true);
+    mParentRobot->cancelAllTrajectories(false, true);
   }
   for (const auto& subrobot : mSubRobots)
   {
@@ -91,9 +122,9 @@ void Robot::cancelAllTrajectories(
   }
 
   // Cancel parents' trajectories (if requested)
-  if (includeParents && mRootRobot)
+  if (includeParents && mParentRobot)
   {
-    mRootRobot->cancelAllTrajectories(false, true);
+    mParentRobot->cancelAllTrajectories(false, true);
   }
 
   // Cancel children's trajectories
@@ -117,10 +148,10 @@ void Robot::step(const std::chrono::system_clock::time_point& timepoint)
 {
   // Lock only if root robot
   std::unique_ptr<std::lock_guard<std::mutex>> lock;
-  if (!mRootRobot)
+  if (!mParentRobot)
   {
     lock = std::make_unique<std::lock_guard<std::mutex>>(
-        mMetaSkeleton->getBodyNode(0)->getSkeleton()->getMutex());
+        getRootSkeleton()->getMutex());
   }
 
   if (mTrajectoryExecutor)
@@ -138,9 +169,9 @@ void Robot::step(const std::chrono::system_clock::time_point& timepoint)
 constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
 {
   // Only use root robot's self-collision constraint
-  if (mRootRobot)
+  if (mParentRobot)
   {
-    return mRootRobot->getSelfCollisionConstraint();
+    return mParentRobot->getSelfCollisionConstraint();
   }
 
   // Add collision option with self-collision filter
@@ -166,9 +197,9 @@ constraint::TestablePtr Robot::combineCollisionConstraint(
   using constraint::TestableIntersection;
 
   // Only use root robot's self-collision constraint
-  if (mRootRobot)
+  if (mParentRobot)
   {
-    return mRootRobot->combineCollisionConstraint(collisionFree);
+    return mParentRobot->combineCollisionConstraint(collisionFree);
   }
 
   auto selfCollisionFree = getSelfCollisionConstraint();
@@ -199,9 +230,9 @@ constraint::TestablePtr Robot::getWorldCollisionConstraint(
     const std::vector<std::string> bodyNames) const
 {
   // Only use root robot's self-collision constraint and World
-  if (mRootRobot)
+  if (mParentRobot)
   {
-    return mRootRobot->getWorldCollisionConstraint(bodyNames);
+    return mParentRobot->getWorldCollisionConstraint(bodyNames);
   }
 
   if (!mWorld)
@@ -226,7 +257,7 @@ constraint::TestablePtr Robot::getWorldCollisionConstraint(
     for (std::size_t i = 0; i < mWorld->getNumSkeletons(); i++)
     {
       auto skeleton = mWorld->getSkeleton(i);
-      if (skeleton != mMetaSkeleton->getBodyNode(0)->getSkeleton())
+      if (skeleton != getRootSkeleton())
       {
         worldCollisionGroup->addShapeFramesOf(skeleton.get());
       }
@@ -242,7 +273,7 @@ constraint::TestablePtr Robot::getWorldCollisionConstraint(
 
 //=============================================================================
 std::shared_ptr<Robot> Robot::registerSubRobot(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+    dart::dynamics::ReferentialSkeletonPtr& refSkeleton,
     const std::string& name)
 {
   // Ensure name is unique
@@ -252,11 +283,23 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
     return nullptr;
   }
 
+  // Ensure all body nodes in skeleton are owned by this robot
+  for (auto bodyNode : refSkeleton->getBodyNodes())
+  {
+    if (!mMetaSkeleton->hasBodyNode(bodyNode))
+    {
+      dtwarn << "Subrobot '" << name << "'' contains body node "
+             << bodyNode->getName() << " not in parent MetaSkeleton."
+             << std::endl;
+      return nullptr;
+    }
+  }
+
   // Ensure subrobot DoFs are disjoint
   for (const auto& subrobot : mSubRobots)
   {
     auto dofs = subrobot.second->mDofs;
-    for (std::string dofName : util::dofNamesFromSkeleton(metaSkeleton))
+    for (std::string dofName : util::dofNamesFromSkeleton(refSkeleton))
     {
       if (dofs.find(dofName) != dofs.end())
       {
@@ -268,10 +311,7 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
   }
 
   // Create the subrobot.
-  auto subRobot = std::make_shared<Robot>(metaSkeleton, name);
-  const auto& root = mRootRobot ? mRootRobot : RobotPtr(this);
-  subRobot->setRootRobot(root);
-  subRobot->setWorld(nullptr); // inherit root robot world
+  auto subRobot = std::make_shared<Robot>(refSkeleton, RobotPtr(this), name);
   mSubRobots[name] = subRobot;
   return subRobot;
 }

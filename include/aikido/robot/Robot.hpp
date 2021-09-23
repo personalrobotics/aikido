@@ -29,15 +29,14 @@ namespace robot {
 namespace internal {
 
 inline aikido::control::TrajectoryExecutorPtr trajExecFromSkeleton(
-    const dart::dynamics::MetaSkeletonPtr& metaSkeleton)
+    const dart::dynamics::SkeletonPtr& skeleton)
 {
-  if (!metaSkeleton)
+  if (!skeleton)
   {
     throw std::invalid_argument("Null MetaskeletonPtr");
   }
   return std::make_shared<
-      aikido::control::KinematicSimulationTrajectoryExecutor>(
-      metaSkeleton->getBodyNode(0)->getSkeleton());
+      aikido::control::KinematicSimulationTrajectoryExecutor>(skeleton);
 }
 
 } // namespace internal
@@ -55,21 +54,29 @@ public:
   /// \param[in] name The name of the robot.
   /// \param[in] trajExecutor Custom executor for trajectories
   Robot(
-      const dart::dynamics::MetaSkeletonPtr& skeleton,
+      dart::dynamics::SkeletonPtr skeleton,
       const std::string name,
-      const aikido::control::TrajectoryExecutorPtr& trajExecutor);
+      const aikido::control::TrajectoryExecutorPtr trajExecutor);
 
   ///
   /// Construct a new Robot object.
   ///
   /// \param[in] skeleton The skeleton defining the robot.
   /// \param[in] name The name of the robot.
-  Robot(
-      const dart::dynamics::MetaSkeletonPtr& skeleton,
-      const std::string name = "robot")
+  Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name = "robot")
     : Robot(skeleton, name, internal::trajExecFromSkeleton(skeleton))
   {
   }
+
+  ///
+  /// Construct a new Robot as subrobot.
+  ///
+  /// \param[in] skeleton The skeleton defining the robot.
+  /// \param[in] name The name of the robot.
+  Robot(
+      dart::dynamics::ReferentialSkeletonPtr refSkeleton,
+      RobotPtr rootRobot,
+      const std::string name = "subrobot");
 
   /// Destructor.
   virtual ~Robot() = default;
@@ -80,6 +87,15 @@ public:
   ///
   /// \param[in] bodyNodeList list of pairs of body node names
   virtual void ignoreSelfCollisionPairs(
+      const std::vector<std::pair<std::string, std::string>> bodyNodeList);
+
+  ///
+  /// Manually remove pairs of body nodes for which collision constraints
+  /// are enforced.
+  /// Note: adjacent body pairs start ignored.
+  ///
+  /// \param[in] bodyNodeList list of pairs of body node names
+  virtual void enforceSelfCollisionPairs(
       const std::vector<std::pair<std::string, std::string>> bodyNodeList);
 
   ///
@@ -137,10 +153,10 @@ public:
   /// Registers a subset of the joints of the skeleton as a new robot.
   /// Must be disjoint from other subrobots.
   ///
-  /// \param[in] metaSkeleton The metaskeleton corresponding to the subrobot.
-  /// \param[in] name Name of the subrobot.
+  /// \param[in] metaSkeleton The referential skeleton corresponding to the
+  /// subrobot. \param[in] name Name of the subrobot.
   virtual RobotPtr registerSubRobot(
-      const dart::dynamics::MetaSkeletonPtr& metaSkeleton,
+      dart::dynamics::ReferentialSkeletonPtr& refSkeleton,
       const std::string& name);
 
   ///
@@ -294,9 +310,9 @@ public:
   // Gets this robot's (mutable) planning world
   aikido::planner::WorldPtr getWorld() const
   {
-    if (mRootRobot)
+    if (mParentRobot)
     {
-      return mRootRobot->getWorld();
+      return mParentRobot->getWorld();
     }
     return mWorld;
   }
@@ -308,7 +324,7 @@ public:
     mWorld = world;
     if (world)
     {
-      auto skeleton = mMetaSkeleton->getBodyNode(0)->getSkeleton();
+      auto skeleton = getRootSkeleton();
       if (!world->hasSkeleton(skeleton))
       {
         world->addSkeleton(skeleton);
@@ -319,7 +335,7 @@ public:
   // Sets the root robot.
   void setRootRobot(RobotPtr root)
   {
-    mRootRobot = root;
+    mParentRobot = root;
   }
 
   // Sets the Trajectory Executor
@@ -358,6 +374,30 @@ public:
     mEnablePostProcessing = enable;
   }
 
+  // Utility function to get root skeleton
+  dart::dynamics::ConstSkeletonPtr getRootSkeleton() const
+  {
+    if (mParentRobot)
+    {
+      return mParentRobot->getRootSkeleton();
+    }
+
+    // Root robot should be a real skeleton
+    return mMetaSkeleton->getBodyNode(0)->getSkeleton();
+  }
+
+  // Utility function to get root skeleton
+  dart::dynamics::SkeletonPtr getRootSkeleton()
+  {
+    if (mParentRobot)
+    {
+      return mParentRobot->getRootSkeleton();
+    }
+
+    // Root robot should be a real skeleton
+    return mMetaSkeleton->getBodyNode(0)->getSkeleton();
+  }
+
 protected:
   std::string mName;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
@@ -365,7 +405,7 @@ protected:
   aikido::control::TrajectoryExecutorPtr mTrajectoryExecutor{nullptr};
 
   // Subrobot and Joint Management
-  RobotPtr mRootRobot{nullptr};
+  RobotPtr mParentRobot{nullptr};
   // Managed degrees of freedom (= mMetaSkeleton->getDofs()->getName())
   std::set<std::string> mDofs;
   // Subrobots indexed by name

@@ -5,8 +5,8 @@
 
 #include <dart/utils/urdf/DartLoader.hpp>
 
+#include "aikido/io/CatkinResourceRetriever.hpp"
 #include "aikido/robot/Robot.hpp"
-#include <aikido/io/CatkinResourceRetriever.hpp>
 
 namespace aikido {
 namespace robot {
