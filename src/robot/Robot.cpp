@@ -17,6 +17,21 @@
 namespace aikido {
 namespace robot {
 
+namespace internal {
+
+inline aikido::control::TrajectoryExecutorPtr trajExecFromSkeleton(
+    const dart::dynamics::SkeletonPtr& skeleton)
+{
+  if (!skeleton)
+  {
+    throw std::invalid_argument("Null MetaskeletonPtr");
+  }
+  return std::make_shared<
+      aikido::control::KinematicSimulationTrajectoryExecutor>(skeleton);
+}
+
+} // namespace internal
+
 //==============================================================================
 Robot::Robot(
     dart::dynamics::SkeletonPtr skeleton,
@@ -39,6 +54,12 @@ Robot::Robot(
       rngSeed);
   mWorld = std::make_shared<aikido::planner::World>();
   mWorld->addSkeleton(skeletonObj);
+}
+
+//==============================================================================
+Robot::Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name)
+  : Robot(skeleton, name, internal::trajExecFromSkeleton(skeleton))
+{
 }
 
 //==============================================================================
@@ -273,8 +294,7 @@ constraint::TestablePtr Robot::getWorldCollisionConstraint(
 
 //=============================================================================
 std::shared_ptr<Robot> Robot::registerSubRobot(
-    dart::dynamics::ReferentialSkeletonPtr& refSkeleton,
-    const std::string& name)
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name)
 {
   // Ensure name is unique
   if (mSubRobots.find(name) != mSubRobots.end())
@@ -411,6 +431,18 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
 }
 
 //=============================================================================
+trajectory::TrajectoryPtr Robot::planToConfiguration(
+    const Eigen::VectorXd& goalConf,
+    const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
+        planner,
+    const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+        trajPostProcessor) const
+{
+  return planToConfiguration(
+      goalConf, getSelfCollisionConstraint(), planner, trajPostProcessor);
+}
+
+//=============================================================================
 trajectory::TrajectoryPtr Robot::planToTSR(
     const std::string bodyNodeName,
     const constraint::dart::TSRPtr& tsr,
@@ -485,6 +517,164 @@ trajectory::TrajectoryPtr Robot::planToTSR(
     // Else return raw path
   }
   return rawPlan;
+}
+
+//=============================================================================
+trajectory::TrajectoryPtr Robot::planToTSR(
+    const std::string bodyNodeName,
+    const constraint::dart::TSRPtr& tsr,
+    std::size_t maxSamples,
+    const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
+        planner,
+    const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+        trajPostProcessor,
+    const distance::ConstConfigurationRankerPtr& ranker) const
+{
+  return planToTSR(
+      bodyNodeName,
+      tsr,
+      getSelfCollisionConstraint(),
+      maxSamples,
+      planner,
+      trajPostProcessor,
+      ranker);
+}
+
+//=============================================================================
+std::string Robot::getName() const
+{
+  return mName;
+}
+
+//=============================================================================
+dart::dynamics::MetaSkeletonPtr Robot::getMetaSkeletonClone() const
+{
+  return mMetaSkeleton->cloneMetaSkeleton();
+}
+
+//=============================================================================
+dart::dynamics::MetaSkeletonPtr Robot::getMetaSkeleton()
+{
+  return mMetaSkeleton;
+}
+
+//=============================================================================
+const dart::dynamics::MetaSkeletonPtr Robot::getMetaSkeleton() const
+{
+  return mMetaSkeleton;
+}
+
+//=============================================================================
+Eigen::VectorXd Robot::getCurrentConfiguration() const
+{
+  return mMetaSkeleton->getPositions();
+}
+
+//=============================================================================
+common::UniqueRNGPtr Robot::cloneRNG() const
+{
+  if (mRng)
+  {
+    return mRng->clone();
+  }
+  return nullptr;
+}
+
+//=============================================================================
+void Robot::setRNG(common::UniqueRNGPtr rng)
+{
+  if (rng)
+  {
+    mRng = std::move(rng);
+  }
+}
+
+//=============================================================================
+aikido::planner::WorldPtr Robot::getWorld() const
+{
+  if (mParentRobot)
+  {
+    return mParentRobot->getWorld();
+  }
+  return mWorld;
+}
+
+//=============================================================================
+void Robot::setWorld(aikido::planner::WorldPtr world)
+{
+  mWorld = world;
+  if (world)
+  {
+    auto skeleton = getRootSkeleton();
+    if (!world->hasSkeleton(skeleton))
+    {
+      world->addSkeleton(skeleton);
+    }
+  }
+}
+
+//=============================================================================
+void Robot::setRootRobot(RobotPtr root)
+{
+  mParentRobot = root;
+}
+
+//=============================================================================
+void Robot::setTrajectoryExecutor(
+    const aikido::control::TrajectoryExecutorPtr& trajExecutor)
+{
+  if (mTrajectoryExecutor)
+  {
+    mTrajectoryExecutor->cancel();
+  }
+  mTrajectoryExecutor = trajExecutor;
+}
+
+//=============================================================================
+void Robot::setDefaultPostProcessor(
+    const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+        trajPostProcessor)
+{
+  mDefaultPostProcessor = trajPostProcessor;
+  mEnablePostProcessing = true;
+}
+
+//=============================================================================
+void Robot::setEnablePostProcessing(bool enable)
+{
+  if (enable && !mDefaultPostProcessor)
+  {
+    // Initialize default post-processor
+    mDefaultPostProcessor
+        = std::make_shared<aikido::planner::kunzretimer::KunzRetimer>(
+            mMetaSkeleton->getVelocityUpperLimits(),
+            mMetaSkeleton->getAccelerationUpperLimits());
+  }
+  mEnablePostProcessing = enable;
+}
+
+//=============================================================================
+dart::dynamics::ConstSkeletonPtr Robot::getRootSkeleton() const
+{
+  if (mParentRobot)
+  {
+    return mParentRobot->getRootSkeleton();
+  }
+
+  // Root robot should be a real skeleton
+  return mMetaSkeleton->getBodyNode(0)->getSkeleton();
+}
+
+//=============================================================================
+dart::dynamics::SkeletonPtr Robot::getRootSkeleton()
+{
+  if (mParentRobot)
+  {
+    return mParentRobot->getRootSkeleton();
+  }
+
+  // Root robot should be a real skeleton
+  return mMetaSkeleton->getBodyNode(0)->getSkeleton();
 }
 
 } // namespace robot
