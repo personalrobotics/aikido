@@ -187,7 +187,8 @@ public:
           trajPostProcessor
       = nullptr) const
   {
-    return planToConfiguration(goalConf, getSelfCollisionConstraint(), planner, trajPostProcessor);
+    return planToConfiguration(
+        goalConf, getSelfCollisionConstraint(), planner, trajPostProcessor);
   }
 
   ///
