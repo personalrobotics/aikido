@@ -182,9 +182,12 @@ public:
       const Eigen::VectorXd& goalConf,
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
+      = nullptr,
+      const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+          trajPostProcessor
       = nullptr) const
   {
-    return planToConfiguration(goalConf, getSelfCollisionConstraint(), planner);
+    return planToConfiguration(goalConf, getSelfCollisionConstraint(), planner, trajPostProcessor);
   }
 
   ///
