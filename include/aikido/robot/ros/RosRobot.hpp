@@ -29,6 +29,9 @@ public:
       const std::string name,
       const dart::common::ResourceRetrieverPtr& retriever
       = std::make_shared<aikido::io::CatkinResourceRetriever>());
+
+  /// Destructor.
+  virtual ~RosRobot() = default;
 };
 
 } // namespace ros

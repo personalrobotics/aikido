@@ -57,7 +57,7 @@ public:
   /// \param[in] name The name of the robot.
   Robot(
       dart::dynamics::ReferentialSkeletonPtr refSkeleton,
-      RobotPtr rootRobot,
+      Robot* rootRobot,
       dart::collision::CollisionDetectorPtr collisionDetector,
       std::shared_ptr<dart::collision::BodyNodeCollisionFilter> collisionFilter,
       const std::string name = "subrobot");
@@ -256,9 +256,6 @@ public:
   // Adds robot to world if not already present
   void setWorld(aikido::planner::WorldPtr world);
 
-  // Sets the root robot.
-  void setRootRobot(RobotPtr root);
-
   // Sets the Trajectory Executor
   // TODO(egordon) Later: ensure trajectory executor joints match managed DoFs
   void setTrajectoryExecutor(
@@ -290,7 +287,7 @@ protected:
   aikido::control::TrajectoryExecutorPtr mTrajectoryExecutor{nullptr};
 
   // Subrobot and Joint Management
-  RobotPtr mParentRobot{nullptr};
+  Robot* mParentRobot{nullptr};
   // Managed degrees of freedom (= mMetaSkeleton->getDofs()->getName())
   std::set<std::string> mDofs;
   // Subrobots indexed by name

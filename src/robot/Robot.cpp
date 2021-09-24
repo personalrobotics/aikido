@@ -68,7 +68,7 @@ Robot::Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name)
 //==============================================================================
 Robot::Robot(
     dart::dynamics::ReferentialSkeletonPtr refSkeleton,
-    RobotPtr rootRobot,
+    Robot* rootRobot,
     dart::collision::CollisionDetectorPtr collisionDetector,
     std::shared_ptr<dart::collision::BodyNodeCollisionFilter> collisionFilter,
     const std::string name)
@@ -330,7 +330,7 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
   // Create the subrobot.
   auto subRobot = std::make_shared<Robot>(
       refSkeleton,
-      RobotPtr(this),
+      this,
       mCollisionDetector,
       mSelfCollisionFilter,
       name);
@@ -607,20 +607,14 @@ aikido::planner::WorldPtr Robot::getWorld() const
 void Robot::setWorld(aikido::planner::WorldPtr world)
 {
   mWorld = world;
-  if (world)
+  if (mWorld)
   {
     auto skeleton = getRootSkeleton();
-    if (!world->hasSkeleton(skeleton))
+    if (!mWorld->hasSkeleton(skeleton))
     {
-      world->addSkeleton(skeleton);
+      mWorld->addSkeleton(skeleton);
     }
   }
-}
-
-//=============================================================================
-void Robot::setRootRobot(RobotPtr root)
-{
-  mParentRobot = root;
 }
 
 //=============================================================================
