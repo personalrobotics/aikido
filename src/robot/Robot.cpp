@@ -41,9 +41,11 @@ Robot::Robot(
   , mMetaSkeleton(skeleton)
   , mDofs(util::dofNamesFromSkeleton(skeleton))
   , mCollisionDetector(dart::collision::FCLCollisionDetector::create())
+  , mSelfCollisionFilter(std::make_shared<dart::collision::BodyNodeCollisionFilter>())
 {
-  mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
-      mMetaSkeleton.get());
+  auto controlledMetaSkeleton = dart::dynamics::Group::create(name, mMetaSkeleton->getDofs());
+  mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(controlledMetaSkeleton.get());
+
   auto skeletonObj = getRootSkeleton();
   skeletonObj->enableSelfCollisionCheck();
   skeletonObj->disableAdjacentBodyCheck();
@@ -52,8 +54,6 @@ Robot::Robot(
   auto rngSeed = std::chrono::system_clock::now().time_since_epoch().count();
   mRng = std::make_unique<common::RNGWrapper<std::default_random_engine>>(
       rngSeed);
-  mWorld = std::make_shared<aikido::planner::World>();
-  mWorld->addSkeleton(skeletonObj);
 }
 
 //==============================================================================
@@ -66,16 +66,19 @@ Robot::Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name)
 Robot::Robot(
     dart::dynamics::ReferentialSkeletonPtr refSkeleton,
     RobotPtr rootRobot,
+    dart::collision::CollisionDetectorPtr collisionDetector,
+    std::shared_ptr<dart::collision::BodyNodeCollisionFilter> collisionFilter,
     const std::string name)
   : mName(name)
   , mMetaSkeleton(refSkeleton)
   , mParentRobot(rootRobot)
   , mDofs(util::dofNamesFromSkeleton(refSkeleton))
-  , mCollisionDetector(nullptr)
+  , mCollisionDetector(collisionDetector)
+  , mSelfCollisionFilter(collisionFilter)
   , mWorld(nullptr)
 {
-  mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
-      mMetaSkeleton.get());
+  auto controlledMetaSkeleton = dart::dynamics::Group::create(name, mMetaSkeleton->getDofs());
+  mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(controlledMetaSkeleton.get());
 }
 
 //==============================================================================
@@ -189,12 +192,6 @@ void Robot::step(const std::chrono::system_clock::time_point& timepoint)
 // ==============================================================================
 constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
 {
-  // Only use root robot's self-collision constraint
-  if (mParentRobot)
-  {
-    return mParentRobot->getSelfCollisionConstraint();
-  }
-
   // Add collision option with self-collision filter
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
@@ -216,12 +213,6 @@ constraint::TestablePtr Robot::combineCollisionConstraint(
     const constraint::dart::CollisionFreePtr& collisionFree) const
 {
   using constraint::TestableIntersection;
-
-  // Only use root robot's self-collision constraint
-  if (mParentRobot)
-  {
-    return mParentRobot->combineCollisionConstraint(collisionFree);
-  }
 
   auto selfCollisionFree = getSelfCollisionConstraint();
 
@@ -250,13 +241,7 @@ constraint::TestablePtr Robot::combineCollisionConstraint(
 constraint::TestablePtr Robot::getWorldCollisionConstraint(
     const std::vector<std::string> bodyNames) const
 {
-  // Only use root robot's self-collision constraint and World
-  if (mParentRobot)
-  {
-    return mParentRobot->getWorldCollisionConstraint(bodyNames);
-  }
-
-  if (!mWorld)
+  if (!getWorld())
     return getSelfCollisionConstraint();
 
   auto robotCollisionGroup
@@ -324,14 +309,14 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
       if (dofs.find(dofName) != dofs.end())
       {
         dtwarn << "Subrobot '" << name << "'' overlaps existing subrobot "
-               << subrobot.first << "." << std::endl;
+               << subrobot.first << " at DoF " << dofName << "." << std::endl;
         return nullptr;
       }
     }
   }
 
   // Create the subrobot.
-  auto subRobot = std::make_shared<Robot>(refSkeleton, RobotPtr(this), name);
+  auto subRobot = std::make_shared<Robot>(refSkeleton, RobotPtr(this), mCollisionDetector, mSelfCollisionFilter, name);
   mSubRobots[name] = subRobot;
   return subRobot;
 }
@@ -362,14 +347,14 @@ trajectory::TrajectoryPtr Robot::planToConfiguration(
     const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
         trajPostProcessor) const
 {
-  statespace::dart::MetaSkeletonStateSpace::State* goalState = nullptr;
+  auto goalState = mStateSpace->createState();
   try
   {
     mStateSpace->convertPositionsToState(goalConf, goalState);
   }
   catch (const std::exception& e)
   {
-    dtwarn << "Cannot convert configuration to robot state: " << e.what()
+    dtwarn << "Cannot convert configuration of size " << goalConf.size() << " to robot state of size " << mStateSpace->getProperties().getNumDofs() << " : " << e.what()
            << std::endl;
     return nullptr;
   }
@@ -637,6 +622,12 @@ void Robot::setDefaultPostProcessor(
 {
   mDefaultPostProcessor = trajPostProcessor;
   mEnablePostProcessing = true;
+}
+
+//=============================================================================
+std::shared_ptr<aikido::planner::TrajectoryPostProcessor> Robot::getDefaultPostProcessor() const
+{
+  return mDefaultPostProcessor;
 }
 
 //=============================================================================
