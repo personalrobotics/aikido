@@ -329,11 +329,7 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
 
   // Create the subrobot.
   auto subRobot = std::make_shared<Robot>(
-      refSkeleton,
-      this,
-      mCollisionDetector,
-      mSelfCollisionFilter,
-      name);
+      refSkeleton, this, mCollisionDetector, mSelfCollisionFilter, name);
   mSubRobots[name] = subRobot;
   return subRobot;
 }
