@@ -271,7 +271,8 @@ public:
           trajPostProcessor);
 
   // Get current default postprocessor
-  std::shared_ptr<aikido::planner::TrajectoryPostProcessor> getDefaultPostProcessor() const;
+  std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+  getDefaultPostProcessor() const;
 
   // Enables/disables automatic post-processing for all planning functions.
   void setEnablePostProcessing(bool enable = true);
