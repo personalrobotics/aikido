@@ -4,14 +4,14 @@
 #include <chrono>
 
 #include <dart/dynamics/DegreeOfFreedom.hpp>
-#include <dart/dynamics/Skeleton.hpp>
+#include <dart/dynamics/MetaSkeleton.hpp>
 
 namespace aikido {
 namespace control {
 
 /// Get joint names from skeleton for Executor intiialization
-static std::vector<std::string> skeletonToJointNames(
-    const dart::dynamics::SkeletonPtr skeleton)
+inline std::vector<std::string> skeletonToJointNames(
+    const dart::dynamics::MetaSkeletonPtr skeleton)
 {
   std::vector<std::string> ret;
   if (!skeleton)
