@@ -602,6 +602,12 @@ aikido::planner::WorldPtr Robot::getWorld() const
 //=============================================================================
 void Robot::setWorld(aikido::planner::WorldPtr world)
 {
+  if (mParentRobot)
+  {
+    mParentRobot->setWorld(world);
+    return;
+  }
+
   mWorld = world;
   if (mWorld)
   {
