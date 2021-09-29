@@ -10,8 +10,9 @@ namespace control {
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : TrajectoryExecutor(checkNull(executor)->getDofs(), executor->getTypes())
-  , mExecutor{std::move(executor)}
+  : TrajectoryExecutor(
+      checkNull(executor)->getDofs(), checkNull(executor)->getTypes())
+  , mExecutor{executor}
   , mInProgress{false}
   , mMutex{}
 {

@@ -12,7 +12,7 @@
 namespace aikido {
 namespace control {
 
-// Init static DofManager to empty vectors
+// Init static membres
 std::unordered_map<ExecutorType, std::set<dart::dynamics::DegreeOfFreedom*>>
     Executor::mDofManager = std::unordered_map<
         ExecutorType,
@@ -33,6 +33,8 @@ std::unordered_map<ExecutorType, std::set<dart::dynamics::DegreeOfFreedom*>>
         std::pair<ExecutorType, std::set<dart::dynamics::DegreeOfFreedom*>>{
             ExecutorType::MODE, std::set<dart::dynamics::DegreeOfFreedom*>()}};
 
+std::mutex Executor::mMutex{};
+
 //==============================================================================
 Executor::Executor(
     const std::set<ExecutorType>& types,
@@ -40,6 +42,13 @@ Executor::Executor(
     const std::chrono::milliseconds threadRate)
   : mThreadRate(threadRate), mThread(nullptr), mTypes(types), mDofs(dofs)
 {
+  // Ensure not declaring STATE and READONLY
+  if (types.find(ExecutorType::STATE) != types.end()
+      && types.find(ExecutorType::READONLY) != types.end())
+  {
+    throw std::invalid_argument(
+        "Cannot declare types STATE and READONLY simultaneously.");
+  }
 
   registerDofs();
   if (!mDofsRegistered)
@@ -147,7 +156,7 @@ bool Executor::registerDofs()
 void Executor::releaseDofs()
 {
   // Return if already unlocked
-  if (mDofsRegistered)
+  if (!mDofsRegistered)
     return;
 
   std::lock_guard<std::mutex> lock(mMutex);
