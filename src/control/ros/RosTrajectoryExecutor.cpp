@@ -106,11 +106,16 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
   const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
-  if (!space)
+  if (!space) {
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
+  }
 
-  // TODO(egordon): check joints in traj against this->getJoints()
+  dart::dynamics::MetaSkeletonPtr metaSkeleton = dart::dynamics::Group::create("check", getDofs());
+  if(!space->isCompatible(metaSkeleton.get())) {
+    throw std::invalid_argument(
+      "Trajectory StateSpace incompatible with MetaSkeleton");
+  }
 
   // TODO: No check's happening here. Is that correct?
   mValidatedTrajectories.emplace(traj);
