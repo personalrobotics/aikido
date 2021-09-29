@@ -21,7 +21,7 @@ public:
   // Encapsulates the state of the World.
   struct State
   {
-    std::unordered_map<std::string, dart::dynamics::Skeleton::Configuration>
+    std::unordered_map<std::string, ::dart::dynamics::Skeleton::Configuration>
         configurations;
 
     /// Returns true if two world states have the same
@@ -59,27 +59,27 @@ public:
 
   /// Find a Skeleton by index
   /// \param i Index of desired Skeleton
-  dart::dynamics::SkeletonPtr getSkeleton(std::size_t i) const;
+  ::dart::dynamics::SkeletonPtr getSkeleton(std::size_t i) const;
 
   /// Find a Skeleton by name
   /// \param name Name of desired Skeleton
-  dart::dynamics::SkeletonPtr getSkeleton(const std::string& name) const;
+  ::dart::dynamics::SkeletonPtr getSkeleton(const std::string& name) const;
 
   /// Returns true if the Skeleton is in this World.
   /// \param skel Desired Skeleton
   /// \return True if succeeded to find the Skeleton
-  bool hasSkeleton(const dart::dynamics::SkeletonPtr& skel) const;
+  bool hasSkeleton(const ::dart::dynamics::SkeletonPtr& skel) const;
 
   /// Get the number of Skeletons
   std::size_t getNumSkeletons() const;
 
   /// Add a Skeleton to this World
   /// \param skeleton Skeleton to add to the World
-  std::string addSkeleton(const dart::dynamics::SkeletonPtr& skeleton);
+  std::string addSkeleton(const ::dart::dynamics::SkeletonPtr& skeleton);
 
   /// Remove a Skeleton from this World
   /// \param skeleton Skeleton to remove from the World
-  void removeSkeleton(const dart::dynamics::SkeletonPtr& skeleton);
+  void removeSkeleton(const ::dart::dynamics::SkeletonPtr& skeleton);
 
   // TODO: Add methods for registering callbacks?
 
@@ -112,16 +112,17 @@ protected:
   std::string mName;
 
   /// Skeletons in this World
-  std::vector<dart::dynamics::SkeletonPtr> mSkeletons;
+  std::vector<::dart::dynamics::SkeletonPtr> mSkeletons;
 
   /// Mutex to protect this World
   mutable std::mutex mMutex;
 
   /// NameManager for keeping track of Worlds
-  static dart::common::NameManager<World*> mWorldNameManager;
+  static ::dart::common::NameManager<World*> mWorldNameManager;
 
   /// NameManager for keeping track of Skeletons
-  dart::common::NameManager<dart::dynamics::SkeletonPtr> mSkeletonNameManager;
+  ::dart::common::NameManager<::dart::dynamics::SkeletonPtr>
+      mSkeletonNameManager;
 };
 
 } // namespace planner

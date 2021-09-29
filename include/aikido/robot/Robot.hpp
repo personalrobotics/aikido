@@ -18,6 +18,7 @@
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
 #include "aikido/planner/Planner.hpp"
 #include "aikido/planner/World.hpp"
+#include "aikido/planner/dart/ConfigurationToEndEffectorOffsetPlanner.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -182,6 +183,38 @@ public:
       const Eigen::VectorXd& goalConf,
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
+      = nullptr,
+      const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+          trajPostProcessor
+      = nullptr) const;
+
+  ///
+  /// Plan a specific body node of the robot to
+  /// a position offset.
+  ///
+  /// \param[in] bodyNodeName Bodynode (usually the end effector) to offset
+  /// \param[in] offset Position offset in R^3
+  /// \param[in] testableConstraint Planning (e.g. collision) constraints, set
+  /// to nullptr for no constraints (not recommended)
+  /// \param[in] planner Configuration planner, defaults to VectorFieldPlanner
+  /// with robot::util::defaultVFParams
+  trajectory::TrajectoryPtr planToOffset(
+      const std::string bodyNodeName,
+      const Eigen::Vector3d& offset,
+      const constraint::TestablePtr& testableConstraint,
+      const std::shared_ptr<
+          planner::dart::ConfigurationToEndEffectorOffsetPlanner>& planner
+      = nullptr,
+      const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+          trajPostProcessor
+      = nullptr) const;
+
+  /// Default to selfCollisionConstraint
+  trajectory::TrajectoryPtr planToOffset(
+      const std::string bodyNodeName,
+      const Eigen::Vector3d& offset,
+      const std::shared_ptr<
+          planner::dart::ConfigurationToEndEffectorOffsetPlanner>& planner
       = nullptr,
       const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
           trajPostProcessor
