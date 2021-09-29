@@ -37,7 +37,7 @@ RosJointGroupCommandClient::~RosJointGroupCommandClient()
 
 //==============================================================================
 std::future<int> RosJointGroupCommandClient::execute(
-    ExecutorType type, const std::vector<double> goal, ::ros::Duration timeout)
+    ExecutorType type, const std::vector<double>& goal, ::ros::Duration timeout)
 {
   auto promise = new std::promise<int>();
 

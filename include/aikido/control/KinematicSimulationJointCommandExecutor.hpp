@@ -20,16 +20,15 @@ class KinematicSimulationJointCommandExecutor : public JointCommandExecutor<T>
 public:
   /// Constructor.
   ///
-  /// \param skeleton Skeleton to execute commands on.
-  ///        All degrees of freedom are assumed to be commanded.
+  /// \param metaskeleton MetaSkeleton to execute commands on.
   explicit KinematicSimulationJointCommandExecutor(
-      ::dart::dynamics::SkeletonPtr skeleton);
+      ::dart::dynamics::MetaSkeletonPtr metaskeleton);
 
   virtual ~KinematicSimulationJointCommandExecutor();
 
   // Documentation inherited
   virtual std::future<int> execute(
-      const std::vector<double> command,
+      const std::vector<double>& command,
       const std::chrono::duration<double>& timeout
       = std::chrono::duration<double>(1)) override;
 
@@ -44,9 +43,6 @@ public:
   void cancel() override;
 
 private:
-  /// Skeleton to execute trajectories on
-  ::dart::dynamics::SkeletonPtr mSkeleton;
-
   /// Command being executed
   std::vector<double> mCommand;
 

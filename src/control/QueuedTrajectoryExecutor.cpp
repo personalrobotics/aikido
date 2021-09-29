@@ -1,35 +1,28 @@
 #include "aikido/control/QueuedTrajectoryExecutor.hpp"
+#include "aikido/control/util.hpp"
 
 #include <chrono>
 
 namespace aikido {
 namespace control {
 
-static std::vector<std::string> checkNull(
-    std::shared_ptr<TrajectoryExecutor> executor)
-{
-  if (!executor)
-    throw std::invalid_argument("Executor is null.");
-
-  return executor->getJoints();
-}
-
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : TrajectoryExecutor(checkNull(executor))
+  : TrajectoryExecutor(checkNull(executor)->getDofs(), executor->getTypes())
   , mExecutor{std::move(executor)}
   , mInProgress{false}
   , mMutex{}
 {
-  if (!mExecutor)
-  {
-    stop();
-    throw std::invalid_argument("Executor is null.");
-  }
+  // Executor already check with checkNull
+  stop();
 
   // Use our thread instead
   mExecutor->stop();
+
+  // register Dofs from here instead
+  mExecutor->releaseDofs();
+  registerDofs();
 }
 
 //==============================================================================

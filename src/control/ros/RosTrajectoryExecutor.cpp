@@ -56,10 +56,11 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
     const std::string& serverName,
     double waypointTimestep,
     double goalTimeTolerance,
-    std::vector<std::string> jointNames,
+    const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
     const std::chrono::milliseconds& connectionTimeout,
     const std::chrono::milliseconds& connectionPollingPeriod)
-  : TrajectoryExecutor(jointNames)
+// Does not update DoF values diretly
+  : TrajectoryExecutor(dofs, std::set<ExecutorType>{ExecutorType::READONLY})
   , mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}

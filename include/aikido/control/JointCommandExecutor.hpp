@@ -7,18 +7,26 @@
 
 #include "aikido/common/pointers.hpp"
 #include "aikido/control/Executor.hpp"
+#include "aikido/control/util.hpp"
+
+#include <dart/dart.hpp>
 
 namespace aikido {
 namespace control {
 
-/// Abstract class for executing joint velocity commands
+/// Abstract class for executing a command of a single type
+/// on a group of joints.
+/// \tparam T The primary and only type of this executor.
 template <ExecutorType T>
 class JointCommandExecutor : public Executor
 {
 public:
-  /// Velocity-specific constructor.
-  /// \param[in] joints Vector of joint names this Executor acts upon
-  JointCommandExecutor(std::vector<std::string> joints) : Executor(T, joints)
+  /// Constructor
+  /// Documentation inherited.
+  /// \param[in] otherTypes Other resources this executor needs beyond the primary
+  JointCommandExecutor(const std::vector<dart::dynamics::DegreeOfFreedom*> dofs,
+    const std::set<ExecutorType> otherTypes = std::set<ExecutorType>(),
+    const std::chrono::milliseconds threadRate = defaultThreadRate) : Executor(concatenateTypes(std::set<ExecutorType>{T}, otherTypes), dofs, threadRate)
   {
   }
 
@@ -32,7 +40,7 @@ public:
   /// \param command Vector of joint commands, parallel with joints vector
   /// \param timeout How long until command expires
   virtual std::future<int> execute(
-      const std::vector<double> command,
+      const std::vector<double>& command,
       const std::chrono::duration<double>& timeout)
       = 0;
 
@@ -45,8 +53,8 @@ public:
 };
 
 // Define common executor types
-using VelocityExecutor = JointCommandExecutor<ExecutorType::VELOCITY>;
 using PositionExecutor = JointCommandExecutor<ExecutorType::POSITION>;
+using VelocityExecutor = JointCommandExecutor<ExecutorType::VELOCITY>;
 using EffortExecutor = JointCommandExecutor<ExecutorType::EFFORT>;
 
 } // namespace control

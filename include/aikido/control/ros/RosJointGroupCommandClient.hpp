@@ -45,7 +45,7 @@ public:
   /// \param[in] timeout How long until command should expire
   std::future<int> execute(
       ExecutorType type,
-      const std::vector<double> goal,
+      const std::vector<double>& goal,
       ::ros::Duration timeout);
 
   /// To be executed on a separate thread.

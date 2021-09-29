@@ -14,17 +14,12 @@ extern template class KinematicSimulationJointCommandExecutor<
 
 //==============================================================================
 template <ExecutorType T>
-KinematicSimulationJointCommandExecutor<
-    T>::KinematicSimulationJointCommandExecutor(::dart::dynamics::SkeletonPtr
-                                                    skeleton)
-  : JointCommandExecutor<T>(skeletonToJointNames(skeleton))
-  , mSkeleton{std::move(skeleton)}
+KinematicSimulationJointCommandExecutor<T>::KinematicSimulationJointCommandExecutor(::dart::dynamics::MetaSkeletonPtr metaskeleton)
+  : JointCommandExecutor<T>(checkNull(metaskeleton)->getDofs(), std::set<ExecutorType>{ExecutorType::STATE})
   , mInProgress{false}
   , mPromise{nullptr}
   , mMutex{}
 {
-  if (!mSkeleton)
-    throw std::invalid_argument("Skeleton is null.");
 }
 
 //==============================================================================
@@ -49,22 +44,20 @@ KinematicSimulationJointCommandExecutor<
 //==============================================================================
 template <ExecutorType T>
 std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
-    const std::vector<double> command,
+    const std::vector<double>& command,
     const std::chrono::duration<double>& timeout)
 {
-
-  {
-    std::lock_guard<std::mutex> lock(mMutex);
-    DART_UNUSED(lock); // Suppress unused variable warning
     auto promise = std::promise<int>();
 
-    if (command.size() != this->mJoints.size())
+    if (command.size() != this->getDofs().size())
     {
       promise.set_exception(std::make_exception_ptr(
           std::runtime_error("DOF of command does not match DOF of joints.")));
       return promise.get_future();
     }
 
+    std::lock_guard<std::mutex> lock(mMutex);
+    DART_UNUSED(lock); // Suppress unused variable warning
     if (mInProgress)
     {
       // Overwrite previous command
@@ -78,28 +71,33 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
     mCommand = command;
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
-    mStartPosition.clear();
     mTimeout = timeout;
+
+    // Set start positions
+    mStartPosition.clear();
+    for (std::size_t i = 0; i < this->getDofs().size(); ++i)
+    {
+      auto dof = this->getDofs()[i];
+      mStartPosition.push_back(dof->getPosition());
+    }
     switch (T)
     {
       case ExecutorType::VELOCITY:
 
-        for (size_t i = 0; i < mSkeleton->getDofs().size(); i++)
+        for (std::size_t i = 0; i < this->getDofs().size(); ++i)
         {
-          auto dof = mSkeleton->getDof(i);
+          auto dof = this->getDofs()[i];
           dof->setVelocity(command[i]);
-          mStartPosition.push_back(dof->getPosition());
         }
 
         break;
 
       case ExecutorType::POSITION:
 
-        for (size_t i = 0; i < mSkeleton->getDofs().size(); i++)
+        for (std::size_t i = 0; i < this->getDofs().size(); ++i)
         {
-          auto dof = mSkeleton->getDof(i);
-          mStartPosition.push_back(dof->getPosition());
-          if (mTimeout.count() > 1E-8)
+          auto dof = this->getDofs()[i];
+          if (mTimeout.count() > 0.0)
           {
             dof->setVelocity(
                 (command[i] - mStartPosition[i]) / timeout.count());
@@ -115,7 +113,6 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
             std::logic_error("Executor not implemented")));
         mInProgress = false;
     }
-  }
 
   return mPromise->get_future();
 }
@@ -140,21 +137,22 @@ void KinematicSimulationJointCommandExecutor<T>::step(
     return;
 
   // Set joint states
-  double interpTime;
   switch (T)
   {
     case ExecutorType::VELOCITY:
-      for (size_t i = 0; i < mSkeleton->getDofs().size(); i++)
+    {
+      for (size_t i = 0; i < this->getDofs().size(); ++i)
       {
-        auto dof = mSkeleton->getDof(i);
+        auto dof = this->getDofs()[i];
         dof->setPosition(mStartPosition[i] + executionTime * mCommand[i]);
       }
 
       break;
-
+    }
     case ExecutorType::POSITION:
+    {
       // Instantaneous movement if no timeout.
-      interpTime
+      double interpTime
           = (mTimeout.count() == 0) ? 1.0 : executionTime / mTimeout.count();
       // Stop at the correct position
       if (interpTime > 1.0)
@@ -162,18 +160,17 @@ void KinematicSimulationJointCommandExecutor<T>::step(
         interpTime = 1.0;
       }
 
-      for (size_t i = 0; i < mSkeleton->getDofs().size(); i++)
+      for (size_t i = 0; i < this->getDofs().size(); ++i)
       {
-        auto dof = mSkeleton->getDof(i);
+        auto dof = this->getDofs()[i];
         double pose
             = (1.0 - interpTime) * mStartPosition[i] + interpTime * mCommand[i];
         dof->setPosition(pose);
       }
 
       break;
-
+    }
     default:
-      // SHOULD NEVER REACH
       throw std::logic_error(
           "Other KinematicSimulationExecutors not implemented.");
   }
