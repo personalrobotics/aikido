@@ -14,8 +14,10 @@ namespace control {
 //==============================================================================
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
     ::dart::dynamics::MetaSkeletonPtr metaskeleton)
-// Edits MetaSkeleton DoFs directly
-  : TrajectoryExecutor(checkNull(metaskeleton)->getDofs(), std::set<ExecutorType>{ExecutorType::STATE})
+  // Edits MetaSkeleton DoFs directly
+  : TrajectoryExecutor(
+      checkNull(metaskeleton)->getDofs(),
+      std::set<ExecutorType>{ExecutorType::STATE})
   , mMetaSkeleton{metaskeleton}
   , mTraj{nullptr}
   , mStateSpace{nullptr}
@@ -64,9 +66,10 @@ void KinematicSimulationTrajectoryExecutor::validate(
   }
 
   // Check that traj space is compatible with metaskeleton
-  if (!space->isCompatible(mMetaSkeleton.get())) {
+  if (!space->isCompatible(mMetaSkeleton.get()))
+  {
     throw std::invalid_argument(
-      "Trajectory StateSpace incompatible with MetaSkeleton");
+        "Trajectory StateSpace incompatible with MetaSkeleton");
   }
 
   mValidatedTrajectories.emplace(traj);

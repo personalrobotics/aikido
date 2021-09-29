@@ -59,7 +59,7 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
     const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
     const std::chrono::milliseconds& connectionTimeout,
     const std::chrono::milliseconds& connectionPollingPeriod)
-// Does not update DoF values diretly
+  // Does not update DoF values diretly
   : TrajectoryExecutor(dofs, std::set<ExecutorType>{ExecutorType::READONLY})
   , mNode{std::move(node)}
   , mCallbackQueue{}
@@ -106,15 +106,18 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
   const auto space = std::dynamic_pointer_cast<const MetaSkeletonStateSpace>(
       traj->getStateSpace());
 
-  if (!space) {
+  if (!space)
+  {
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
-  dart::dynamics::MetaSkeletonPtr metaSkeleton = dart::dynamics::Group::create("check", getDofs());
-  if(!space->isCompatible(metaSkeleton.get())) {
+  dart::dynamics::MetaSkeletonPtr metaSkeleton
+      = dart::dynamics::Group::create("check", getDofs());
+  if (!space->isCompatible(metaSkeleton.get()))
+  {
     throw std::invalid_argument(
-      "Trajectory StateSpace incompatible with MetaSkeleton");
+        "Trajectory StateSpace incompatible with MetaSkeleton");
   }
 
   // TODO: No check's happening here. Is that correct?

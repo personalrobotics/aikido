@@ -2,12 +2,13 @@
 #define AIKIDO_CONTROL_EXECUTOR_HPP_
 
 #include <chrono>
-#include <vector>
 #include <set>
+#include <vector>
+
+#include <dart/dart.hpp>
 
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/pointers.hpp"
-#include <dart/dart.hpp>
 
 namespace aikido {
 namespace control {
@@ -18,7 +19,7 @@ AIKIDO_DECLARE_POINTERS(Executor)
 /// Can be used to determine if 2 executors make conflicting
 /// demands of individual degrees of freedom (Dofs)
 /// Can also be used to gracefully dynamic_cast
-/// Roughly analogous to default ROS control types: 
+/// Roughly analogous to default ROS control types:
 /// https://wiki.ros.org/ros_control
 /// The following updates the state of the DoF directly:
 /// STATE
@@ -76,7 +77,10 @@ public:
   /// real-time execution.
   ///
   /// \param timepoint Time to simulate to
-  virtual void step(const std::chrono::system_clock::time_point& /* timepoint */) { /* Do Nothing */ }
+  virtual void step(
+      const std::chrono::system_clock::time_point& /* timepoint */)
+  { /* Do Nothing */
+  }
 
   /// Start the underlying ExecutorThread
   void start();
@@ -110,7 +114,9 @@ private:
   bool mDofsRegistered{false};
 
   /// Manager for locking resources for degrees of freedom
-  static std::unordered_map<ExecutorType, std::set<dart::dynamics::DegreeOfFreedom*>> mDofManager;
+  static std::
+      unordered_map<ExecutorType, std::set<dart::dynamics::DegreeOfFreedom*>>
+          mDofManager;
 
   /// Mutex to protects the DofManager
   static std::mutex mMutex;

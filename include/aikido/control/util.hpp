@@ -1,10 +1,10 @@
 #ifndef AIKIDO_CONTROL_UTIL_HPP_
 #define AIKIDO_CONTROL_UTIL_HPP_
 
+#include <set>
+
 #include <dart/dynamics/DegreeOfFreedom.hpp>
 #include <dart/dynamics/MetaSkeleton.hpp>
-
-#include<set>
 
 namespace aikido {
 namespace control {
@@ -27,7 +27,7 @@ inline std::vector<std::string> skeletonToDofNames(
 /// Concatenate two sets of ExecutorTypes
 /// Useful for initializer-list constructors
 inline std::set<ExecutorType> concatenateTypes(
-  std::set<ExecutorType> first, std::set<ExecutorType> second)
+    std::set<ExecutorType> first, std::set<ExecutorType> second)
 {
   std::set<ExecutorType> ret;
   ret.insert(first.begin(), first.end());
@@ -38,8 +38,10 @@ inline std::set<ExecutorType> concatenateTypes(
 /// Check if MetaSkeletonPtr is null
 /// Useful for initializer Lists
 template <typename T>
-inline T checkNull(T obj) {
-  if(!obj) {
+inline T checkNull(T obj)
+{
+  if (!obj)
+  {
     throw std::invalid_argument("Object is null.");
   }
   return obj;

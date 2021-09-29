@@ -1,7 +1,8 @@
 #include "aikido/control/QueuedTrajectoryExecutor.hpp"
-#include "aikido/control/util.hpp"
 
 #include <chrono>
+
+#include "aikido/control/util.hpp"
 
 namespace aikido {
 namespace control {

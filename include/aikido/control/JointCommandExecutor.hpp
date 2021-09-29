@@ -5,11 +5,11 @@
 #include <future>
 #include <set>
 
+#include <dart/dart.hpp>
+
 #include "aikido/common/pointers.hpp"
 #include "aikido/control/Executor.hpp"
 #include "aikido/control/util.hpp"
-
-#include <dart/dart.hpp>
 
 namespace aikido {
 namespace control {
@@ -23,10 +23,16 @@ class JointCommandExecutor : public Executor
 public:
   /// Constructor
   /// Documentation inherited.
-  /// \param[in] otherTypes Other resources this executor needs beyond the primary
-  JointCommandExecutor(const std::vector<dart::dynamics::DegreeOfFreedom*> dofs,
-    const std::set<ExecutorType> otherTypes = std::set<ExecutorType>(),
-    const std::chrono::milliseconds threadRate = defaultThreadRate) : Executor(concatenateTypes(std::set<ExecutorType>{T}, otherTypes), dofs, threadRate)
+  /// \param[in] otherTypes Other resources this executor needs beyond the
+  /// primary
+  JointCommandExecutor(
+      const std::vector<dart::dynamics::DegreeOfFreedom*> dofs,
+      const std::set<ExecutorType> otherTypes = std::set<ExecutorType>(),
+      const std::chrono::milliseconds threadRate = defaultThreadRate)
+    : Executor(
+        concatenateTypes(std::set<ExecutorType>{T}, otherTypes),
+        dofs,
+        threadRate)
   {
   }
 

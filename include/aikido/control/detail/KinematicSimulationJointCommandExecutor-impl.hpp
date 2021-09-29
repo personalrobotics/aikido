@@ -14,8 +14,12 @@ extern template class KinematicSimulationJointCommandExecutor<
 
 //==============================================================================
 template <ExecutorType T>
-KinematicSimulationJointCommandExecutor<T>::KinematicSimulationJointCommandExecutor(::dart::dynamics::MetaSkeletonPtr metaskeleton)
-  : JointCommandExecutor<T>(checkNull(metaskeleton)->getDofs(), std::set<ExecutorType>{ExecutorType::STATE})
+KinematicSimulationJointCommandExecutor<T>::
+    KinematicSimulationJointCommandExecutor(
+        ::dart::dynamics::MetaSkeletonPtr metaskeleton)
+  : JointCommandExecutor<T>(
+      checkNull(metaskeleton)->getDofs(),
+      std::set<ExecutorType>{ExecutorType::STATE})
   , mInProgress{false}
   , mPromise{nullptr}
   , mMutex{}
@@ -47,72 +51,71 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
     const std::vector<double>& command,
     const std::chrono::duration<double>& timeout)
 {
-    auto promise = std::promise<int>();
+  auto promise = std::promise<int>();
 
-    if (command.size() != this->getDofs().size())
-    {
-      promise.set_exception(std::make_exception_ptr(
-          std::runtime_error("DOF of command does not match DOF of joints.")));
-      return promise.get_future();
-    }
+  if (command.size() != this->getDofs().size())
+  {
+    promise.set_exception(std::make_exception_ptr(
+        std::runtime_error("DOF of command does not match DOF of joints.")));
+    return promise.get_future();
+  }
 
-    std::lock_guard<std::mutex> lock(mMutex);
-    DART_UNUSED(lock); // Suppress unused variable warning
-    if (mInProgress)
-    {
-      // Overwrite previous command
+  std::lock_guard<std::mutex> lock(mMutex);
+  DART_UNUSED(lock); // Suppress unused variable warning
+  if (mInProgress)
+  {
+    // Overwrite previous command
+    mCommand.clear();
+    mPromise->set_exception(
+        std::make_exception_ptr(std::runtime_error("Command canceled.")));
+  }
+
+  mPromise.reset(new std::promise<int>());
+
+  mCommand = command;
+  mInProgress = true;
+  mExecutionStartTime = std::chrono::system_clock::now();
+  mTimeout = timeout;
+
+  // Set start positions
+  mStartPosition.clear();
+  for (std::size_t i = 0; i < this->getDofs().size(); ++i)
+  {
+    auto dof = this->getDofs()[i];
+    mStartPosition.push_back(dof->getPosition());
+  }
+  switch (T)
+  {
+    case ExecutorType::VELOCITY:
+
+      for (std::size_t i = 0; i < this->getDofs().size(); ++i)
+      {
+        auto dof = this->getDofs()[i];
+        dof->setVelocity(command[i]);
+      }
+
+      break;
+
+    case ExecutorType::POSITION:
+
+      for (std::size_t i = 0; i < this->getDofs().size(); ++i)
+      {
+        auto dof = this->getDofs()[i];
+        if (mTimeout.count() > 0.0)
+        {
+          dof->setVelocity((command[i] - mStartPosition[i]) / timeout.count());
+        }
+      }
+
+      break;
+
+    default:
+      // Other Executors not implemented
       mCommand.clear();
-      mPromise->set_exception(
-          std::make_exception_ptr(std::runtime_error("Command canceled.")));
-    }
-
-    mPromise.reset(new std::promise<int>());
-
-    mCommand = command;
-    mInProgress = true;
-    mExecutionStartTime = std::chrono::system_clock::now();
-    mTimeout = timeout;
-
-    // Set start positions
-    mStartPosition.clear();
-    for (std::size_t i = 0; i < this->getDofs().size(); ++i)
-    {
-      auto dof = this->getDofs()[i];
-      mStartPosition.push_back(dof->getPosition());
-    }
-    switch (T)
-    {
-      case ExecutorType::VELOCITY:
-
-        for (std::size_t i = 0; i < this->getDofs().size(); ++i)
-        {
-          auto dof = this->getDofs()[i];
-          dof->setVelocity(command[i]);
-        }
-
-        break;
-
-      case ExecutorType::POSITION:
-
-        for (std::size_t i = 0; i < this->getDofs().size(); ++i)
-        {
-          auto dof = this->getDofs()[i];
-          if (mTimeout.count() > 0.0)
-          {
-            dof->setVelocity(
-                (command[i] - mStartPosition[i]) / timeout.count());
-          }
-        }
-
-        break;
-
-      default:
-        // Other Executors not implemented
-        mCommand.clear();
-        mPromise->set_exception(std::make_exception_ptr(
-            std::logic_error("Executor not implemented")));
-        mInProgress = false;
-    }
+      mPromise->set_exception(std::make_exception_ptr(
+          std::logic_error("Executor not implemented")));
+      mInProgress = false;
+  }
 
   return mPromise->get_future();
 }
@@ -139,8 +142,7 @@ void KinematicSimulationJointCommandExecutor<T>::step(
   // Set joint states
   switch (T)
   {
-    case ExecutorType::VELOCITY:
-    {
+    case ExecutorType::VELOCITY: {
       for (size_t i = 0; i < this->getDofs().size(); ++i)
       {
         auto dof = this->getDofs()[i];
@@ -149,8 +151,7 @@ void KinematicSimulationJointCommandExecutor<T>::step(
 
       break;
     }
-    case ExecutorType::POSITION:
-    {
+    case ExecutorType::POSITION: {
       // Instantaneous movement if no timeout.
       double interpTime
           = (mTimeout.count() == 0) ? 1.0 : executionTime / mTimeout.count();

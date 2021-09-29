@@ -45,9 +45,10 @@ void InstantaneousTrajectoryExecutor::validate(
         "Trajectory is not in a MetaSkeletonStateSpace.");
 
   // Check that traj space is compatible with metaskeleton
-  if (!space->isCompatible(mMetaSkeleton.get())) {
+  if (!space->isCompatible(mMetaSkeleton.get()))
+  {
     throw std::invalid_argument(
-      "Trajectory StateSpace incompatible with MetaSkeleton");
+        "Trajectory StateSpace incompatible with MetaSkeleton");
   }
 
   mValidatedTrajectories.emplace(traj);
