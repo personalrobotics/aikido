@@ -186,7 +186,8 @@ void ConcreteRobot::setRoot(Robot* robot)
 void ConcreteRobot::step(const std::chrono::system_clock::time_point& timepoint)
 {
   // Assumes that the parent robot is locked
-  mTrajectoryExecutor->step(timepoint);
+  if (mTrajectoryExecutor)
+    mTrajectoryExecutor->step(timepoint);
 }
 
 // ==============================================================================
