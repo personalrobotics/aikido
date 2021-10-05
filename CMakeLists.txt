@@ -87,7 +87,7 @@ include(ClangFormat)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-find_package(DART 6.6.2 REQUIRED
+find_package(DART 6.8.5 REQUIRED
   COMPONENTS optimizer-nlopt utils
   OPTIONAL_COMPONENTS utils-urdf # for 'perception' target
   CONFIG
