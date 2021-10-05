@@ -58,7 +58,7 @@ AIKIDO depends on [ROS]. You should [install ROS](http://wiki.ros.org/noetic/Ins
 $ sudo apt install ros-noetic-actionlib ros-noetic-geometry-msgs ros-noetic-interactive-markers ros-noetic-roscpp ros-noetic-std-msgs ros-noetic-tf ros-noetic-trajectory-msgs ros-noetic-visualization-msgs
 ```
 
-AIKIDO also depends on [CMake], [Boost], [DART] \(version 6.6.2 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), tinyxml2, pr-control-msgs, libmicrohttpd, and the
+AIKIDO also depends on [CMake], [Boost], [DART] \(version 6.8.5 or above), [OMPL], [yaml-cpp](https://github.com/jbeder/yaml-cpp), tinyxml2, pr-control-msgs, libmicrohttpd, and the
 Python development headers (`python-dev` on Debian systems). [DART] and AIKIDO both
 make heavy use of C++14 and require a modern compiler.
 
