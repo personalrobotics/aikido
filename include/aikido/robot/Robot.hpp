@@ -38,17 +38,6 @@ public:
   ///
   /// \param[in] skeleton The skeleton defining the robot.
   /// \param[in] name The name of the robot.
-  /// \param[in] trajExecutor Custom executor for trajectories
-  Robot(
-      dart::dynamics::SkeletonPtr skeleton,
-      const std::string name,
-      const aikido::control::TrajectoryExecutorPtr trajExecutor);
-
-  ///
-  /// Construct a new Robot object.
-  ///
-  /// \param[in] skeleton The skeleton defining the robot.
-  /// \param[in] name The name of the robot.
   Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name = "robot");
 
   ///
@@ -82,27 +71,6 @@ public:
   /// \param[in] bodyNodeList list of pairs of body node names
   virtual void enforceSelfCollisionPairs(
       const std::vector<std::pair<std::string, std::string>> bodyNodeList);
-
-  ///
-  /// Executes given trajectory on the robot.
-  /// Note: cancels all running trajectories on root robot(s)
-  ///
-  /// \param[in] trajectory The trajectory to execute.
-  virtual std::future<void> executeTrajectory(
-      const trajectory::TrajectoryPtr& trajectory) const;
-
-  ///
-  /// Cancels all running trajectories on this robot.
-  ///
-  /// \param[in] includeSubrobots Also cancel trajectories on all subrobots.
-  /// \param[in] includeParents Also cancel trajectories on parent robots
-  /// \param[in] excludedSubrobots Ignores theese subrobots when issuing
-  /// cancellations
-  virtual void cancelAllTrajectories(
-      bool includeSubrobots = true,
-      bool includeParents = false,
-      const std::vector<std::string> excludeSubrobots
-      = std::vector<std::string>());
 
   ///
   /// Steps the robot (and underlying executors and subrobots) through time.
@@ -261,6 +229,77 @@ public:
       = nullptr,
       const distance::ConstConfigurationRankerPtr& ranker = nullptr) const;
 
+  /////////////// Executor Management //////////////////
+
+  ///
+  /// Clears the inactive executor list.
+  /// Forgets all unique names.
+  /// 
+  virtual void clearInactiveExecutors();
+
+  ///
+  /// Add an executor to the inactive exectuors list.
+  /// Releases DoFs held by executor if held.
+  ///
+  /// \param[in] executor The Executor to add to the inactive list.
+  /// \param[in] desiredName Desired unique name fo the executor.
+  /// \return A robot-unique name for the executor to use for reference.
+  virtual std::string registerExecutor(
+      aikido::control::ExecutorPtr executor, const std::string& desiredName);
+
+  ///
+  /// Sets an executor from the inactive executor list to be the
+  /// active executor. Holds and releases DoFs as appropriate
+  ///
+  /// \param[in] executorName Name of executor on inactive executor list.
+  /// \return True if successful.
+  virtual bool swapActiveExecutor(const std::string& executorName);
+
+  ///
+  /// Utility: calls registerExecutor and swapActiveExecutor on
+  /// the provided executor
+  ///
+  /// \param[in] executor The Executor to set as active executor
+  /// \param[in] desiredName Desired unique name fo the executor.
+  /// \return A robot-unique name for the executor to use for reference.
+  virtual std::string registerActiveExecutor(
+      aikido::control::ExecutorPtr executor, const std::string& desiredName);
+
+  ///
+  /// Utility: executes given joint command on the robot.
+  /// Does this by first activating the first inactive JointCommandExecutor
+  /// of the given type.
+  /// Note: cancels all running commands on root and sub robot(s)
+  ///
+  /// \param[in] command The joint command to execute.
+  /// \param[in] timeout Timeout for the joint command
+  /// \param[in] type Type of JointCommandExecutor to look for.
+  virtual std::future<int> executeJointCommand(
+      const Eigen::VectorXd& command, const std::chrono::duration<double>& timeout, 
+      const aikido::control::ExecutorType type = aikido::control::ExecutorType::VELOCITY);
+
+  ///
+  /// Utility: executes given trajectory on the robot.
+  /// If there is no active 
+  /// Note: cancels all running commands on root and sub robot(s)
+  ///
+  /// \param[in] trajectory The trajectory to execute.
+  virtual std::future<void> executeTrajectory(
+      const trajectory::TrajectoryPtr& trajectory, const std::string& executorName = "default");
+
+  ///
+  /// Cancels all running commands on this robot.
+  ///
+  /// \param[in] includeSubrobots Also cancel commands on all subrobots.
+  /// \param[in] includeParents Also cancel commands on parent robots
+  /// \param[in] excludedSubrobots Ignores theese subrobots when issuing
+  /// cancellations
+  virtual void cancelAllCommands(
+      bool includeSubrobots = true,
+      bool includeParents = false,
+      const std::vector<std::string> excludeSubrobots
+      = std::vector<std::string>());
+
   /////////////// Getters and Setters //////////////////
 
   // Gets the (sub)robot's name
@@ -317,7 +356,8 @@ protected:
   std::string mName;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
-  aikido::control::TrajectoryExecutorPtr mTrajectoryExecutor{nullptr};
+  std::pair<std::string, aikido::control::ExecutorPtr> mActiveExecutor{"", nullptr};
+  std::vector<std::pair<std::string, aikido::control::ExecutorPtr>> mInactiveExecutors;
 
   // Subrobot and Joint Management
   Robot* mParentRobot{nullptr};

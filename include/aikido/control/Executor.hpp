@@ -82,6 +82,11 @@ public:
   { /* Do Nothing */
   }
 
+  /// Cancels any command running on the executor.
+  virtual void cancel()
+  { /* Do Nothing */
+  }
+
   /// Start the underlying ExecutorThread
   void start();
 
