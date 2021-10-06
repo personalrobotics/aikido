@@ -267,8 +267,8 @@ public:
 
   ///
   /// Utility: executes given joint command on the robot.
-  /// Does this by first activating the first inactive JointCommandExecutor
-  /// of the given type.
+  /// Throws runtime_error if active executor is not of the
+  /// appropriate type.
   /// Note: cancels all running commands on root and sub robot(s)
   ///
   /// \param[in] command The joint command to execute.
@@ -280,12 +280,13 @@ public:
 
   ///
   /// Utility: executes given trajectory on the robot.
-  /// If there is no active 
+  /// Throws runtime_error if active executor is not a Trajectory
+  /// Executor.
   /// Note: cancels all running commands on root and sub robot(s)
   ///
   /// \param[in] trajectory The trajectory to execute.
   virtual std::future<void> executeTrajectory(
-      const trajectory::TrajectoryPtr& trajectory, const std::string& executorName = "default");
+      const trajectory::TrajectoryPtr& trajectory);
 
   ///
   /// Cancels all running commands on this robot.
