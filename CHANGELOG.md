@@ -6,6 +6,9 @@
 
   * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
 
+* Robot
+  * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
+
 * RViz
 
   * Propogate removal of WorldInteractiveMarkerViewer to Aikidopy: [#599](https://github.com/personalrobotics/aikido/pull/599)
