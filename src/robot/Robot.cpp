@@ -483,7 +483,7 @@ trajectory::TrajectoryPtr Robot::planToOffset(
     dartPlanner
         = std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
             mStateSpace,
-            getMetaSkeletonClone(),
+            getMetaSkeleton(),
             vfParams.distanceTolerance,
             vfParams.positionTolerance,
             vfParams.angularTolerance,
