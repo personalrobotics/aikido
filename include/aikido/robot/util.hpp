@@ -24,37 +24,58 @@ namespace robot {
 // The planning methods will be removed once we have a Planner API.
 namespace util {
 
+/// Default Vector Field Planner Parameters
+/// Suitable for ADA-robot end-effector offsets
+const std::vector<double> defaultVFParams{
+    0.03,  // distanceTolerance
+    0.004, // positionTolerance
+    0.004, // angularTolerance
+    0.01,  // initialStepSize
+    1e-3,  // jointlimitTolerance
+    1e-3,  // constraintCheckResolution
+    1.0};  // timeout
+
+/// Paramters for Vector Field Planner
 struct VectorFieldPlannerParameters
 {
-  VectorFieldPlannerParameters() = default;
+  /// Struct Constructor
+  /// \param[in] distanceTolerance (m) How much a planned trajectory is allowed
+  /// to deviate from the requested distance to move the body node \param[in]
+  /// positionTolerance (m) How a planned trajectory is allowed to deviated from
+  /// a straight line segment defined by the offset \param[in] angularTolerance
+  /// (rad) How a planned trajectory is allowed to deviate from a given offset
+  /// direction. \param[in] initialStepSize (m) Initial step size. \param[in]
+  /// jointLimitTolerance (defined by joint) If less then this distance to joint
+  /// limit, velocity is bounded in that direction to 0.
+  /// \param[in] constraintCheckResolution Resolution used in constraint
+  /// checking.
+  /// \param[in] timeout timeout in seconds.
   VectorFieldPlannerParameters(
-      double linearVelocity,
-      double distanceTolerance,
-      double initialStepSize,
-      double jointLimitTolerance,
-      double constraintCheckResolution,
-      double linearGain = 1.0,
-      double angularGain = 0.2,
-      double timestep = 0.1)
-    : linearVelocity(linearVelocity)
-    , distanceTolerance(distanceTolerance)
+      double distanceTolerance = defaultVFParams[0],
+      double positionTolerance = defaultVFParams[1],
+      double angularTolerance = defaultVFParams[2],
+      double initialStepSize = defaultVFParams[3],
+      double jointLimitTolerance = defaultVFParams[4],
+      double constraintCheckResolution = defaultVFParams[5],
+      std::chrono::duration<double> timeout
+      = std::chrono::duration<double>(defaultVFParams[6]))
+    : distanceTolerance(distanceTolerance)
+    , positionTolerance(positionTolerance)
+    , angularTolerance(angularTolerance)
     , initialStepSize(initialStepSize)
     , jointLimitTolerance(jointLimitTolerance)
     , constraintCheckResolution(constraintCheckResolution)
-    , linearGain(linearGain)
-    , angularGain(angularGain)
-    , timestep(timestep){
+    , timeout(timeout){
           // Do nothing
       };
 
-  double linearVelocity;
   double distanceTolerance;
+  double positionTolerance;
+  double angularTolerance;
   double initialStepSize;
   double jointLimitTolerance;
   double constraintCheckResolution;
-  double linearGain;
-  double angularGain;
-  double timestep;
+  std::chrono::duration<double> timeout;
 };
 
 struct CRRTPlannerParameters
@@ -137,6 +158,22 @@ const dart::dynamics::BodyNode* getBodyNodeOrThrow(
 /// \return The BodyNode
 dart::dynamics::BodyNode* getBodyNodeOrThrow(
     dart::dynamics::MetaSkeleton& skeleton, const std::string& bodyNodeName);
+
+/// Get a set of degree-of-freedom names from MetaSkeleton
+/// \param[in] skeleton MetaSkeleton pointer
+/// \return A set of DoFs with skeleton->getNumDofs() elements
+inline std::set<std::string> dofNamesFromSkeleton(
+    const dart::dynamics::MetaSkeletonPtr& skeleton)
+{
+  std::set<std::string> ret;
+  if (!skeleton)
+    return ret;
+  for (const auto& dof : skeleton->getDofs())
+  {
+    ret.insert(dof->getName());
+  }
+  return ret;
+}
 
 } // namespace util
 } // namespace robot

@@ -79,13 +79,13 @@ BSpline::BSpline(
     double startTime,
     double endTime)
   : BSpline(
-        std::move(stateSpace),
-        computeUniformKnots(
-            degree,
-            static_cast<std::size_t>(controlPoints.size()),
-            startTime,
-            endTime),
-        controlPoints)
+      std::move(stateSpace),
+      computeUniformKnots(
+          degree,
+          static_cast<std::size_t>(controlPoints.size()),
+          startTime,
+          endTime),
+      controlPoints)
 {
   if (static_cast<std::size_t>(controlPoints.size()) <= degree)
   {
@@ -104,12 +104,12 @@ BSpline::BSpline(
     double startTime,
     double endTime)
   : BSpline(
-        std::move(stateSpace),
-        degree,
-        ControlPointVectorType::Zero(
-            static_cast<ControlPointVectorType::Index>(numControlPoints)),
-        startTime,
-        endTime)
+      std::move(stateSpace),
+      degree,
+      ControlPointVectorType::Zero(
+          static_cast<ControlPointVectorType::Index>(numControlPoints)),
+      startTime,
+      endTime)
 {
   if (startTime >= endTime)
   {

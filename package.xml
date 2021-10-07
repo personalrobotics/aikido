@@ -33,6 +33,8 @@
   <depend>visualization_msgs</depend>
   <depend>pr_control_msgs</depend>
   <depend>octomap_ros</depend>
+  <depend>urdf</depend>
+  <depend>srdfdom</depend>
 
   <doc_depend>doxygen</doc_depend>
 

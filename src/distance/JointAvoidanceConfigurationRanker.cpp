@@ -12,7 +12,7 @@ JointAvoidanceConfigurationRanker::JointAvoidanceConfigurationRanker(
     ConstMetaSkeletonPtr metaSkeleton,
     std::vector<double> weights)
   : ConfigurationRanker(
-        std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
+      std::move(metaSkeletonStateSpace), std::move(metaSkeleton), weights)
   , mLowerLimitsState(mMetaSkeletonStateSpace->createState())
   , mUpperLimitsState(mMetaSkeletonStateSpace->createState())
 {
