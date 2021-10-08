@@ -24,11 +24,11 @@ public:
   /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.
-  /// \param[in] maxSamplingTries Maximum number of times to try when
-  /// sampling from the TSR.
-  /// \param[in] batchSize Number of TSR samples to include per batch.
-  /// \param[in] maxBatches Maximum number of batches to run when planning to
-  /// TSR samples.
+  /// \param[in] maxSamplingTries Maximum number of times for the sample
+  /// generator to retry sampling from the TSR.
+  /// \param[in] batchSize Number of TSR samples to include per ranked batch.
+  /// \param[in] maxBatches Maximum number of ranked batches to run when
+  /// planning to TSR samples.
   /// \param[in] goalTSR Goal TSR.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
@@ -50,11 +50,11 @@ public:
   /// \param[in] startState Start state to plan from.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.
-  /// \param[in] maxSamplingTries Maximum number of times to try when
-  /// sampling from the TSR.
-  /// \param[in] batchSize Number of TSR samples to include per batch.
-  /// \param[in] maxBatches Maximum number of batches to run when planning to
-  /// TSR samples.
+  /// \param[in] maxSamplingTries Maximum number of times for the sample
+  /// generator to retry sampling from the TSR
+  /// \param[in] batchSize Number of TSR samples to include per ranked batch.
+  /// \param[in] maxBatches Maximum number of ranked batches to run when
+  /// planning to TSR samples.
   /// \param[in] goalTSR Goal TSR.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state

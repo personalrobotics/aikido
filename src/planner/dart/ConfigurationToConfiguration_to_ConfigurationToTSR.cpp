@@ -95,11 +95,11 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
   auto robot = mMetaSkeleton->getBodyNode(0)->getSkeleton();
 
-  std::size_t batches = 0;
   std::size_t maxBatches = problem.getMaxBatches();
   std::size_t batchSize = problem.getBatchSize();
-  while (batches < maxBatches && generator->canSample())
+  for (std::size_t batches = 0; batches < maxBatches; batches++)
   {
+    if (!generator->canSample()) break;
 
     std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
 
@@ -117,9 +117,10 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     auto goalState = mMetaSkeletonStateSpace->createState();
 
     // Sample valid configurations first.
-    std::size_t samples = 0;
-    while (samples < batchSize && generator->canSample())
+    for (std::size_t samples = 0; samples < batchSize; samples++)
     {
+      if (!generator->canSample()) break;
+
       // Sample from TSR
       bool sampled = generator->sample(goalState);
 
@@ -127,10 +128,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       // has to terminate even if none are valid.
       ++samples;
 
-      if (!sampled)
-        continue;
-
-      configurations.emplace_back(goalState.clone());
+      if (sampled)
+        configurations.emplace_back(goalState.clone());
     }
 
     if (configurations.empty())

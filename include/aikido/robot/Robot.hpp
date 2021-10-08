@@ -229,11 +229,11 @@ public:
   /// \param[in] tsr \see constraint::dart::TSR
   /// \param[in] testableConstraint Planning (e.g. collision) constraints,
   /// set to nullptr for no constraints (not recommended)
-  /// \param[in] maxSamplingTries How many times to retry when attempting to
-  /// sample one end effector pose from the TSR
-  /// \param[in] batchSize the number of configurations to sample per batch
-  /// \param[in] maxBatches the max number of batches to run before failing
-  /// to plan to
+  /// \param[in] maxSamplingTries Maximum number of times for the sample
+  /// generator to retry sampling from the TSR.
+  /// \param[in] batchSize Number of TSR samples to include per ranked batch.
+  /// \param[in] maxBatches Maximum number of ranked batches to run when
+  /// planning to TSR samples.
   /// \param[in] planner Base configuration planner, defaults to Snap Planner
   /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
   /// NominalConfigurationRanker is used with the current metaSkeleton pose.
