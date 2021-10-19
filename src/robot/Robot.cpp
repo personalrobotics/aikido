@@ -455,7 +455,7 @@ trajectory::TrajectoryPtr Robot::planToOffset(
         trajPostProcessor) const
 {
   // Get Body Node
-  auto bn = mMetaSkeleton->getBodyNode(bodyNodeName);
+  auto bn = getRootSkeleton()->getBodyNode(bodyNodeName);
   if (!bn)
   {
     dtwarn << "Request body node not present in robot '" << mName << "'"
@@ -483,7 +483,7 @@ trajectory::TrajectoryPtr Robot::planToOffset(
     dartPlanner
         = std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
             mStateSpace,
-            getMetaSkeletonClone(),
+            getMetaSkeleton(),
             vfParams.distanceTolerance,
             vfParams.positionTolerance,
             vfParams.angularTolerance,
@@ -557,7 +557,7 @@ trajectory::TrajectoryPtr Robot::planToTSR(
     const distance::ConstConfigurationRankerPtr& ranker) const
 {
   // Get Body Node
-  auto bn = mMetaSkeleton->getBodyNode(bodyNodeName);
+  auto bn = getRootSkeleton()->getBodyNode(bodyNodeName);
   if (!bn)
   {
     dtwarn << "Request body node not present in robot '" << mName << "'"
