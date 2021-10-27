@@ -11,7 +11,6 @@
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/dart/ConfigurationToTSR.hpp"
 #include "aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp"
-#include "aikido/robot/util.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -547,9 +546,7 @@ trajectory::TrajectoryPtr Robot::planToTSR(
     const std::string bodyNodeName,
     const constraint::dart::TSRPtr& tsr,
     const constraint::TestablePtr& testableConstraint,
-    std::size_t maxSamplingTries,
-    std::size_t batchSize,
-    std::size_t maxBatches,
+    const util::PlanToTSRParameters& params,
     const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
         planner,
     const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
@@ -570,9 +567,9 @@ trajectory::TrajectoryPtr Robot::planToTSR(
       mStateSpace,
       mStateSpace->getScopedStateFromMetaSkeleton(mMetaSkeleton.get()),
       bn,
-      maxSamplingTries,
-      batchSize,
-      maxBatches,
+      params.maxSamplingTries,
+      params.batchSize,
+      params.maxBatches,
       tsr,
       testableConstraint);
 
@@ -627,9 +624,7 @@ trajectory::TrajectoryPtr Robot::planToTSR(
 trajectory::TrajectoryPtr Robot::planToTSR(
     const std::string bodyNodeName,
     const constraint::dart::TSRPtr& tsr,
-    std::size_t maxSamplingTries,
-    std::size_t batchSize,
-    std::size_t maxBatches,
+    const util::PlanToTSRParameters& params,
     const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
         planner,
     const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
@@ -640,9 +635,7 @@ trajectory::TrajectoryPtr Robot::planToTSR(
       bodyNodeName,
       tsr,
       getSelfCollisionConstraint(),
-      maxSamplingTries,
-      batchSize,
-      maxBatches,
+      params,
       planner,
       trajPostProcessor,
       ranker);

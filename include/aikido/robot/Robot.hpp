@@ -20,6 +20,7 @@
 #include "aikido/planner/World.hpp"
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffsetPlanner.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
+#include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
@@ -242,9 +243,7 @@ public:
       const std::string bodyNodeName,
       const constraint::dart::TSRPtr& tsr,
       const constraint::TestablePtr& testableConstraint,
-      std::size_t maxSamplingTries = 1,
-      std::size_t batchSize = 100,
-      std::size_t maxBatches = 1,
+      const util::PlanToTSRParameters& params = util::PlanToTSRParameters(),
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
       = nullptr,
@@ -257,9 +256,7 @@ public:
   trajectory::TrajectoryPtr planToTSR(
       const std::string bodyNodeName,
       const constraint::dart::TSRPtr& tsr,
-      std::size_t maxSamplingTries = 1,
-      std::size_t batchSize = 100,
-      std::size_t maxBatches = 1,
+      const util::PlanToTSRParameters& params = util::PlanToTSRParameters(),
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
       = nullptr,
