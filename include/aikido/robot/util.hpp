@@ -114,9 +114,9 @@ struct CRRTPlannerParameters
 struct PlanToTSRParameters
 {
   PlanToTSRParameters(
-    std::size_t maxSamplingTries = 1,
-    std::size_t batchSize = 100,
-    std::size_t maxBatches = 1)
+      std::size_t maxSamplingTries = 1,
+      std::size_t batchSize = 100,
+      std::size_t maxBatches = 1)
     : maxSamplingTries(maxSamplingTries)
     , batchSize(batchSize)
     , maxBatches(maxBatches)

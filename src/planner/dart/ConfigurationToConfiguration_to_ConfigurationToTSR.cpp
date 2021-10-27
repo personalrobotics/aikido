@@ -99,7 +99,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
   std::size_t batchSize = problem.getBatchSize();
   for (std::size_t batches = 0; batches < maxBatches; batches++)
   {
-    if (!generator->canSample()) break;
+    if (!generator->canSample())
+      break;
 
     std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
 
@@ -119,7 +120,8 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
     // Sample valid configurations first.
     for (std::size_t samples = 0; samples < batchSize; samples++)
     {
-      if (!generator->canSample()) break;
+      if (!generator->canSample())
+        break;
 
       // Sample from TSR
       bool sampled = generator->sample(goalState);
