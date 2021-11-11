@@ -14,6 +14,7 @@ ConfigurationToTSR::ConfigurationToTSR(
     std::size_t maxSamplingTries,
     std::size_t batchSize,
     std::size_t maxBatches,
+    std::size_t numMaxIterations,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
@@ -24,6 +25,7 @@ ConfigurationToTSR::ConfigurationToTSR(
   , mMaxSamplingTries(maxSamplingTries)
   , mBatchSize(batchSize)
   , mMaxBatches(maxBatches)
+  , mNumMaxIterations(numMaxIterations)
   , mGoalTSR(goalTSR)
 {
   // Do nothing.
@@ -37,6 +39,7 @@ ConfigurationToTSR::ConfigurationToTSR(
     std::size_t maxSamplingTries,
     std::size_t batchSize,
     std::size_t maxBatches,
+    std::size_t numMaxIterations,
     constraint::dart::ConstTSRPtr goalTSR,
     constraint::ConstTestablePtr constraint)
   : Problem(stateSpace, std::move(constraint))
@@ -47,6 +50,7 @@ ConfigurationToTSR::ConfigurationToTSR(
   , mMaxSamplingTries(maxSamplingTries)
   , mBatchSize(batchSize)
   , mMaxBatches(maxBatches)
+  , mNumMaxIterations(numMaxIterations)
   , mGoalTSR(goalTSR)
 {
   // Do nothing.
@@ -88,6 +92,12 @@ std::size_t ConfigurationToTSR::getBatchSize() const
 std::size_t ConfigurationToTSR::getMaxBatches() const
 {
   return mMaxBatches;
+}
+
+//==============================================================================
+std::size_t ConfigurationToTSR::getNumMaxIterations() const
+{
+  return mNumMaxIterations;
 }
 
 //==============================================================================

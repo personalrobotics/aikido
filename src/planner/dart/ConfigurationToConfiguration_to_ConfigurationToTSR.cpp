@@ -75,6 +75,9 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
+  auto ikProperties = ik->getSolver()->getSolverProperties();
+  ikProperties.mNumMaxIterations = problem.getNumMaxIterations();
+  ik->getSolver()->setProperties(ikProperties);
 
   // Get the start state from the MetaSkeleton, since this is a DART planner.
   auto startState = mMetaSkeletonStateSpace->createState();

@@ -570,6 +570,7 @@ trajectory::TrajectoryPtr Robot::planToTSR(
       params.maxSamplingTries,
       params.batchSize,
       params.maxBatches,
+      params.numMaxIterations,
       tsr,
       testableConstraint);
 

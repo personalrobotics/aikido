@@ -29,6 +29,7 @@ public:
   /// \param[in] batchSize Number of TSR samples to include per ranked batch.
   /// \param[in] maxBatches Maximum number of ranked batches to run when
   /// planning to TSR samples.
+  /// \param[in] numMaxIterations Maximum number of iterations for the IK Solver
   /// \param[in] goalTSR Goal TSR.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
@@ -40,6 +41,7 @@ public:
       std::size_t maxSamplingTries,
       std::size_t batchSize,
       std::size_t maxBatches,
+      std::size_t numMaxIterations,
       constraint::dart::ConstTSRPtr goalTSR,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -55,6 +57,7 @@ public:
   /// \param[in] batchSize Number of TSR samples to include per ranked batch.
   /// \param[in] maxBatches Maximum number of ranked batches to run when
   /// planning to TSR samples.
+  /// \param[in] numMaxIterations Maximum number of iterations for the IK Solver
   /// \param[in] goalTSR Goal TSR.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
@@ -66,6 +69,7 @@ public:
       std::size_t maxSamplingTries,
       std::size_t batchSize,
       std::size_t maxBatches,
+      std::size_t numMaxIterations,
       constraint::dart::ConstTSRPtr goalTSR,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -86,6 +90,9 @@ public:
 
   /// Returns the maximum number of batches to run when planning to TSR samples.
   std::size_t getMaxBatches() const;
+
+  /// Returns the maximum number of iterations for the IK Solver.
+  std::size_t getNumMaxIterations() const;
 
   /// Returns the start state to plan from, either set on construction or
   /// taken from the current state of the MetaSkeleton.
@@ -116,6 +123,9 @@ protected:
 
   /// Maximum number of batches to run when planning to TSR samples.
   std::size_t mMaxBatches;
+
+  /// Maximum number of iterations for the IK Solver.
+  std::size_t mNumMaxIterations;
 
   /// Goal TSR.
   const constraint::dart::ConstTSRPtr mGoalTSR;

@@ -116,10 +116,12 @@ struct PlanToTSRParameters
   PlanToTSRParameters(
       std::size_t maxSamplingTries = 1,
       std::size_t batchSize = 100,
-      std::size_t maxBatches = 1)
+      std::size_t maxBatches = 1,
+      std::size_t numMaxIterations = 500)
     : maxSamplingTries(maxSamplingTries)
     , batchSize(batchSize)
     , maxBatches(maxBatches)
+    , numMaxIterations(numMaxIterations)
   {
     // Do nothing
   }
@@ -127,6 +129,7 @@ struct PlanToTSRParameters
   std::size_t maxSamplingTries;
   std::size_t batchSize;
   std::size_t maxBatches;
+  std::size_t numMaxIterations;
 };
 
 /// Parses YAML node for named configurtaions
