@@ -34,13 +34,13 @@ AIKIDO_DECLARE_POINTERS(Executor)
 /// READONLY
 enum class ExecutorType
 {
-  STATE = -1,
-  POSITION = 0,
-  VELOCITY = 1,
-  EFFORT = 2,
-  TRAJECTORY = 3,
-  MODE = 4,
-  READONLY = 5
+  STATE = 0,
+  POSITION = 1,
+  VELOCITY = 2,
+  EFFORT = 3,
+  TRAJECTORY = 4,
+  MODE = 5,
+  READONLY = 6
 };
 
 // Default rate for ExecutorThread to call step()
@@ -59,6 +59,10 @@ public:
       const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
       const std::chrono::milliseconds threadRate = defaultThreadRate);
 
+  /// Constructor.
+  /// \param[in] type Single type to be added to this class's set of types
+  /// \param[in] dofs Vector of degree-of-freedom names this Executor acts upon
+  /// \param[in] threadRate (Optional) How often to call step()
   Executor(
       const ExecutorType type,
       const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
