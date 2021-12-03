@@ -2,8 +2,8 @@
 #define AIKIDO_ROBOT_IK_GRADIENTDESCENTIK_HPP_
 
 #include <vector>
-#include <Eigen/Dense>
 
+#include <Eigen/Dense>
 #include <dart/dart.hpp>
 
 #include "aikido/constraint/Sampleable.hpp"
@@ -18,17 +18,17 @@ namespace robot {
 class GradientDescentIk : public InverseKinematics
 {
 public:
-
   GradientDescentIk(
-    ::dart::dynamics::MetaSkeletonPtr arm,
-    ::dart::dynamics::BodyNodePtr endEffector,
-    statespace::dart::ConstMetaSkeletonStateSpacePtr armSpace,
-    common::RNG* rng);
+      ::dart::dynamics::MetaSkeletonPtr arm,
+      ::dart::dynamics::BodyNodePtr endEffector,
+      statespace::dart::ConstMetaSkeletonStateSpacePtr armSpace,
+      common::RNG* rng);
 
   // Documentation inherited.
   std::vector<Eigen::VectorXd> getSolutions(
-    const Eigen::Isometry3d& targetPose, const size_t maxSolutions) const override;
-  
+      const Eigen::Isometry3d& targetPose,
+      const size_t maxSolutions) const override;
+
 private:
   ::dart::dynamics::MetaSkeletonPtr mArm;
   ::dart::dynamics::BodyNodePtr mEndEffector;

@@ -12,23 +12,25 @@ namespace robot {
 
 //==============================================================================
 GradientDescentIk::GradientDescentIk(
-  ::dart::dynamics::MetaSkeletonPtr arm,
+    ::dart::dynamics::MetaSkeletonPtr arm,
     ::dart::dynamics::BodyNodePtr endEffector,
     statespace::dart::ConstMetaSkeletonStateSpacePtr armSpace,
-    common::RNG* rng) :
-    mArm(arm), mEndEffector(endEffector), mArmSpace(armSpace),
-    mSeedConfigSampleable(createSampleableBounds(mArmSpace, std::move(cloneRNGFrom(*rng)[0]))),
-    mDartIkSolver(::dart::dynamics::InverseKinematics::create(mEndEffector))
+    common::RNG* rng)
+  : mArm(arm)
+  , mEndEffector(endEffector)
+  , mArmSpace(armSpace)
+  , mSeedConfigSampleable(
+        createSampleableBounds(mArmSpace, std::move(cloneRNGFrom(*rng)[0])))
+  , mDartIkSolver(::dart::dynamics::InverseKinematics::create(mEndEffector))
 {
   // Do nothing.
 }
 
 //==============================================================================
 std::vector<Eigen::VectorXd> GradientDescentIk::getSolutions(
-    const Eigen::Isometry3d& targetPose,
-    const size_t maxSolutions
-) const {
-   auto saver = MetaSkeletonStateSaver(
+    const Eigen::Isometry3d& targetPose, const size_t maxSolutions) const
+{
+  auto saver = MetaSkeletonStateSaver(
       mArm, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
