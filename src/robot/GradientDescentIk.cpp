@@ -1,8 +1,7 @@
-#include "aikido/robot/ik/GradientDescentIk.hpp"
+#include "aikido/robot/GradientDescentIk.hpp"
 
 namespace aikido {
 namespace robot {
-namespace ik {
 
 //==============================================================================
 GradientDescentIk::GradientDescentIk()
@@ -11,13 +10,12 @@ GradientDescentIk::GradientDescentIk()
 }
 
 //==============================================================================
-GradientDescentIk::getSolutions(
+std::vector<Eigen::VectorXd> GradientDescentIk::getSolutions(
     const Eigen::Isometry3d& targetPose,
     const size_t maxSolutions
-) {
+) const {
   // TODO.
 }
 
-} // namespace ik
 } // namespace robot
 } // namespace aikido

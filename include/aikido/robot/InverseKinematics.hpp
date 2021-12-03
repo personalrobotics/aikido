@@ -3,14 +3,11 @@
 
 namespace aikido {
 namespace robot {
-namespace ik {
 
 /// Interface for IK solvers used with the Robot class.
 class InverseKinematics
 {
 public:
-
-  virtual ~InverseKinematics() = default;
 
   /// Returns a set of IK solutions for the given pose. Note that *at most*
   /// \c maxSolutions solutions are returned, but fewer may be (and possibly
@@ -22,12 +19,8 @@ public:
   virtual std::vector<Eigen::VectorXd> getSolutions(
     const Eigen::Isometry3d& targetPose,
     const size_t maxSolutions) const = 0;
-
-  /// Destructor.
-  virtual ~InverseKinematics() = default;
 };
 
-} // namespace ik
 } // namespace robot
 } // namespace aikido
 
