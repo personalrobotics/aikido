@@ -14,7 +14,7 @@ public:
 
   /// Returns a set of IK solutions for the given pose. Note that *at most*
   /// \c maxSolutions solutions are returned, but fewer may be (and possibly
-  // none if solving fails).
+  /// none if solving fails).
   ///
   /// \param targetPose End-effector pose to solve inverse kinematics for.
   /// \param maxSolutions Upper limit on how many solutions to find and return.
