@@ -26,11 +26,11 @@ public:
     const Eigen::Isometry3d& targetPose, const size_t maxSolutions) const override;
   
 private:
-
   ::dart::dynamics::MetaSkeletonPtr mArm;
+  ::dart::dynamics::BodyNodePtr mEndEffector;
   statespace::dart::ConstMetaSkeletonStateSpacePtr mArmSpace;
 
-  std::shared_ptr<aikido::constraint::Sampleable> mSeedSampleable;
+  std::shared_ptr<aikido::constraint::Sampleable> mSeedConfigSampleable;
   ::dart::dynamics::InverseKinematicsPtr mDartIkSolver;
 };
 

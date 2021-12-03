@@ -26,12 +26,12 @@ std::vector<Eigen::VectorXd> GradientDescentIk::getSolutions(
   std::vector<Eigen::VectorXd> solutions;
 
   std::shared_ptr<SampleGenerator> ikSeedGenerator
-      = mSeedSampleable->createSampleGenerator();
+      = mSeedConfigSampleable->createSampleGenerator();
   auto seedState = mArmSpace->createState();
 
   // How many times the IK solver will re-sample a single solution if it
   // is out of tolerance.
-  for (int i = 0; i < maxSolutions; i++)
+  for (size_t i = 0; i < maxSolutions; i++)
   {
     // TODO: What to do if we can't sample a seed config?
     if (!ikSeedGenerator->sample(seedState))
