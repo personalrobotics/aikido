@@ -19,7 +19,11 @@ class GradientDescentIk : public InverseKinematics
 {
 public:
 
-  GradientDescentIk();
+  GradientDescentIk(
+    ::dart::dynamics::MetaSkeletonPtr arm,
+    ::dart::dynamics::BodyNodePtr endEffector,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr armSpace,
+    common::RNG* rng);
 
   // Documentation inherited.
   std::vector<Eigen::VectorXd> getSolutions(

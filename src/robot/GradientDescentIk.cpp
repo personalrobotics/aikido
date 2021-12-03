@@ -1,17 +1,26 @@
 #include "aikido/robot/GradientDescentIk.hpp"
 
+#include "aikido/constraint/dart/JointStateSpaceHelpers.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSaver.hpp"
 
 using aikido::constraint::SampleGenerator;
+using aikido::constraint::dart::createSampleableBounds;
 using aikido::statespace::dart::MetaSkeletonStateSaver;
 
 namespace aikido {
 namespace robot {
 
 //==============================================================================
-GradientDescentIk::GradientDescentIk()
+GradientDescentIk::GradientDescentIk(
+  ::dart::dynamics::MetaSkeletonPtr arm,
+    ::dart::dynamics::BodyNodePtr endEffector,
+    statespace::dart::ConstMetaSkeletonStateSpacePtr armSpace,
+    common::RNG* rng) :
+    mArm(arm), mEndEffector(endEffector), mArmSpace(armSpace),
+    mSeedConfigSampleable(createSampleableBounds(mArmSpace, std::move(cloneRNGFrom(*rng)[0]))),
+    mDartIkSolver(::dart::dynamics::InverseKinematics::create(mEndEffector))
 {
-  // TODO.
+  // Do nothing.
 }
 
 //==============================================================================
@@ -29,8 +38,6 @@ std::vector<Eigen::VectorXd> GradientDescentIk::getSolutions(
       = mSeedConfigSampleable->createSampleGenerator();
   auto seedState = mArmSpace->createState();
 
-  // How many times the IK solver will re-sample a single solution if it
-  // is out of tolerance.
   for (size_t i = 0; i < maxSolutions; i++)
   {
     // TODO: What to do if we can't sample a seed config?
