@@ -83,7 +83,8 @@ public:
   /// \param timepoint Time to simulate to
   virtual void step(
       const std::chrono::system_clock::time_point& /* timepoint */)
-  { /* Do Nothing */
+  {
+    // Do nothing
   }
 
   /// Start the underlying ExecutorThread
