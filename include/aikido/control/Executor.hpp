@@ -43,7 +43,7 @@ enum class ExecutorType
   READONLY = 6
 };
 
-// Default rate for ExecutorThread to call step()
+/// Default rate for ExecutorThread to call step()
 constexpr std::chrono::milliseconds defaultThreadRate{10};
 
 /// Abstract class for executing commands on degrees of freedom
