@@ -14,7 +14,7 @@ static std::vector<std::string> jointNamesFromDofs(
     const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs)
 {
   std::vector<std::string> jointNames;
-  for (auto dof : dofs)
+  for (const auto& dof : dofs)
   {
     jointNames.push_back(dof->getName());
   }
