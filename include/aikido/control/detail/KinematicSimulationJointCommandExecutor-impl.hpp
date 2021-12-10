@@ -53,7 +53,7 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
 {
   auto promise = std::promise<int>();
 
-  if (command.size() != mDofs.size())
+  if (command.size() != this->mDofs.size())
   {
     promise.set_exception(std::make_exception_ptr(
         std::runtime_error("DOF of command does not match DOF of joints.")));
@@ -79,18 +79,18 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
 
   // Set start positions
   mStartPosition.clear();
-  for (std::size_t i = 0; i < mDofs.size(); ++i)
+  for (std::size_t i = 0; i < this->mDofs.size(); ++i)
   {
-    auto dof = mDofs[i];
+    auto dof = this->mDofs[i];
     mStartPosition.push_back(dof->getPosition());
   }
   switch (T)
   {
     case ExecutorType::VELOCITY:
 
-      for (std::size_t i = 0; i < mDofs.size(); ++i)
+      for (std::size_t i = 0; i < this->mDofs.size(); ++i)
       {
-        auto dof = mDofs[i];
+        auto dof = this->mDofs[i];
         dof->setVelocity(command[i]);
       }
 
@@ -98,9 +98,9 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
 
     case ExecutorType::POSITION:
 
-      for (std::size_t i = 0; i < mDofs.size(); ++i)
+      for (std::size_t i = 0; i < this->mDofs.size(); ++i)
       {
-        auto dof = mDofs[i];
+        auto dof = this->mDofs[i];
         if (mTimeout.count() > 0.0)
         {
           dof->setVelocity((command[i] - mStartPosition[i]) / timeout.count());
@@ -143,9 +143,9 @@ void KinematicSimulationJointCommandExecutor<T>::step(
   switch (T)
   {
     case ExecutorType::VELOCITY: {
-      for (size_t i = 0; i < mDofs.size(); ++i)
+      for (size_t i = 0; i < this->mDofs.size(); ++i)
       {
-        auto dof = mDofs[i];
+        auto dof = this->mDofs[i];
         dof->setPosition(mStartPosition[i] + executionTime * mCommand[i]);
       }
 
@@ -161,9 +161,9 @@ void KinematicSimulationJointCommandExecutor<T>::step(
         interpTime = 1.0;
       }
 
-      for (size_t i = 0; i < mDofs.size(); ++i)
+      for (size_t i = 0; i < this->mDofs.size(); ++i)
       {
-        auto dof = mDofs[i];
+        auto dof = this->mDofs[i];
         double pose
             = (1.0 - interpTime) * mStartPosition[i] + interpTime * mCommand[i];
         dof->setPosition(pose);
