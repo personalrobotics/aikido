@@ -43,7 +43,7 @@ private:
       ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
       std::unique_ptr<SampleGenerator> _poseSampler,
       std::unique_ptr<SampleGenerator> _seedSampler,
-      int _maxNumTrials);
+      int _maxSamplingTries);
 
   ConstMetaSkeletonStateSpacePtr mMetaSkeletonStateSpace;
   ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
@@ -51,7 +51,7 @@ private:
   ::dart::dynamics::InverseKinematicsPtr mInverseKinematics;
   std::unique_ptr<SampleGenerator> mPoseSampler;
   std::unique_ptr<SampleGenerator> mSeedSampler;
-  int mMaxNumTrials;
+  int mMaxSamplingTries;
 
   friend class InverseKinematicsSampleable;
 };
@@ -63,13 +63,13 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
     SampleablePtr _poseConstraint,
     SampleablePtr _seedConstraint,
     ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
-    int _maxNumTrials)
+    int _maxSamplingTries)
   : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(_metaskeleton))
   , mPoseConstraint(std::move(_poseConstraint))
   , mSeedConstraint(std::move(_seedConstraint))
   , mInverseKinematics(std::move(_inverseKinematics))
-  , mMaxNumTrials(_maxNumTrials)
+  , mMaxSamplingTries(_maxSamplingTries)
 {
   if (!mMetaSkeletonStateSpace)
     throw std::invalid_argument("MetaSkeletonStateSpace is nullptr.");
@@ -115,7 +115,7 @@ InverseKinematicsSampleable::InverseKinematicsSampleable(
     throw std::invalid_argument(
         "Seed SampleGenerator is not for this StateSpace.");
 
-  if (mMaxNumTrials <= 0)
+  if (mMaxSamplingTries <= 0)
     throw std::invalid_argument("Maximum number of trials must be positive.");
 }
 
@@ -136,7 +136,7 @@ InverseKinematicsSampleable::createSampleGenerator() const
       mInverseKinematics,
       mPoseConstraint->createSampleGenerator(),
       mSeedConstraint->createSampleGenerator(),
-      mMaxNumTrials));
+      mMaxSamplingTries));
 }
 
 //==============================================================================
@@ -146,7 +146,7 @@ IkSampleGenerator::IkSampleGenerator(
     ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
     std::unique_ptr<SampleGenerator> _poseSampler,
     std::unique_ptr<SampleGenerator> _seedSampler,
-    int _maxNumTrials)
+    int _maxSamplingTries)
   : mMetaSkeletonStateSpace(std::move(_metaSkeletonStateSpace))
   , mMetaSkeleton(std::move(_metaskeleton))
   , mPoseStateSpace(
@@ -154,7 +154,7 @@ IkSampleGenerator::IkSampleGenerator(
   , mInverseKinematics(std::move(_inverseKinematics))
   , mPoseSampler(std::move(_poseSampler))
   , mSeedSampler(std::move(_seedSampler))
-  , mMaxNumTrials(_maxNumTrials)
+  , mMaxSamplingTries(_maxSamplingTries)
 {
   assert(mMetaSkeletonStateSpace);
   assert(mMetaSkeleton);
@@ -163,7 +163,7 @@ IkSampleGenerator::IkSampleGenerator(
   assert(mPoseSampler);
   assert(mSeedSampler);
   assert(mSeedSampler->getStateSpace() == mMetaSkeletonStateSpace);
-  assert(mMaxNumTrials > 0);
+  assert(mMaxSamplingTries > 0);
 
   if (mPoseSampler->getNumSamples() != NO_LIMIT)
   {
@@ -178,7 +178,7 @@ IkSampleGenerator::IkSampleGenerator(
   if (mSeedSampler->getNumSamples() != NO_LIMIT)
   {
     dtwarn << "[IkSampleGenerator::constructor] IkSampleGenerator uses up to "
-           << mMaxNumTrials << " seeds per pose sample. The provided seed"
+           << mMaxSamplingTries << " seeds per pose sample. The provided seed"
            << " SampleGenerator contains a finite set of "
            << mSeedSampler->getNumSamples()
            << " samples. We advise against using this class on a finite"
@@ -202,7 +202,7 @@ bool IkSampleGenerator::sample(statespace::StateSpace::State* _state)
   auto poseState = mPoseStateSpace->createState();
   auto outputState = static_cast<MetaSkeletonStateSpace::State*>(_state);
 
-  for (int i = 0; i < mMaxNumTrials; ++i)
+  for (int i = 0; i < mMaxSamplingTries; ++i)
   {
     // Sample a seed for the IK solver.
     // TODO: What should the retry logic look like if sampling a seed fails?
