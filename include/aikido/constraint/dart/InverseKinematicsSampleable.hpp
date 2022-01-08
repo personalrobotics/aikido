@@ -29,7 +29,7 @@ public:
   ///        These samples are used as seeds when solving inverse kinematics.
   /// \param _inverseKinematics InverseKinematics solver for the pose being
   ///        sampled by _poseConstaint.
-  /// \param _maxNumTrials Max number of trials for its sample generator
+  /// \param _maxSamplingTries Max number of trials for its sample generator
   ///        to retry sampling and finding an inverse kinematics solution.
   InverseKinematicsSampleable(
       statespace::dart::ConstMetaSkeletonStateSpacePtr _metaSkeletonStateSpace,
@@ -37,7 +37,7 @@ public:
       SampleablePtr _poseConstraint,
       SampleablePtr _seedConstraint,
       ::dart::dynamics::InverseKinematicsPtr _inverseKinematics,
-      int _maxNumTrials);
+      int _maxSamplingTries);
 
   virtual ~InverseKinematicsSampleable() = default;
 
@@ -53,7 +53,7 @@ private:
   SampleablePtr mPoseConstraint;
   SampleablePtr mSeedConstraint;
   ::dart::dynamics::InverseKinematicsPtr mInverseKinematics;
-  int mMaxNumTrials;
+  int mMaxSamplingTries;
 };
 
 } // namespace dart

@@ -75,6 +75,9 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
 
   auto ik = InverseKinematics::create(endEffectorBodyNode);
   ik->setDofs(mMetaSkeleton->getDofs());
+  auto ikProperties = ik->getSolver()->getSolverProperties();
+  ikProperties.mNumMaxIterations = problem.getNumMaxIterations();
+  ik->getSolver()->setProperties(ikProperties);
 
   // Get the start state from the MetaSkeleton, since this is a DART planner.
   auto startState = mMetaSkeletonStateSpace->createState();
@@ -90,63 +93,70 @@ ConfigurationToConfiguration_to_ConfigurationToTSR::plan(
       std::const_pointer_cast<TSR>(problem.getGoalTSR()),
       createSampleableBounds(mMetaSkeletonStateSpace, std::move(rng)),
       ik,
-      problem.getMaxSamples());
+      problem.getMaxSamplingTries());
   auto generator = ikSampleable.createSampleGenerator();
 
   auto robot = mMetaSkeleton->getBodyNode(0)->getSkeleton();
 
-  std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
-
-  // Use a ranker
-  ConstConfigurationRankerPtr configurationRanker(mConfigurationRanker);
-  if (!configurationRanker)
+  std::size_t maxBatches = problem.getMaxBatches();
+  std::size_t batchSize = problem.getBatchSize();
+  for (std::size_t batches = 0; batches < maxBatches; batches++)
   {
-    auto nominalState = mMetaSkeletonStateSpace->createState();
-    mMetaSkeletonStateSpace->copyState(startState, nominalState);
-    configurationRanker = std::make_shared<const NominalConfigurationRanker>(
-        mMetaSkeletonStateSpace, mMetaSkeleton, nominalState);
-  }
+    if (!generator->canSample())
+      break;
 
-  // Goal state
-  auto goalState = mMetaSkeletonStateSpace->createState();
+    std::vector<MetaSkeletonStateSpace::ScopedState> configurations;
 
-  // Sample valid configurations first.
-  static const std::size_t maxSamples{100};
-  std::size_t samples = 0;
-  while (samples < maxSamples && generator->canSample())
-  {
-    // Sample from TSR
-    bool sampled = generator->sample(goalState);
+    // Use a ranker
+    ConstConfigurationRankerPtr configurationRanker(mConfigurationRanker);
+    if (!configurationRanker)
+    {
+      auto nominalState = mMetaSkeletonStateSpace->createState();
+      mMetaSkeletonStateSpace->copyState(startState, nominalState);
+      configurationRanker = std::make_shared<const NominalConfigurationRanker>(
+          mMetaSkeletonStateSpace, mMetaSkeleton, nominalState);
+    }
 
-    // Increment even if it's not a valid sample since this loop
-    // has to terminate even if none are valid.
-    ++samples;
+    // Goal state
+    auto goalState = mMetaSkeletonStateSpace->createState();
 
-    if (!sampled)
+    // Sample valid configurations first.
+    for (std::size_t samples = 0; samples < batchSize; samples++)
+    {
+      if (!generator->canSample())
+        break;
+
+      // Sample from TSR
+      bool sampled = generator->sample(goalState);
+
+      // Increment even if it's not a valid sample since this loop
+      // has to terminate even if none are valid.
+      ++samples;
+
+      if (sampled)
+        configurations.emplace_back(goalState.clone());
+    }
+
+    if (configurations.empty())
       continue;
 
-    configurations.emplace_back(goalState.clone());
-  }
+    configurationRanker->rankConfigurations(configurations);
 
-  if (configurations.empty())
-    return nullptr;
+    for (std::size_t i = 0; i < configurations.size(); ++i)
+    {
+      // Create ConfigurationToConfiguration Problem.
+      // NOTE: This is done here because the ConfigurationToConfiguration
+      // problem stores a *cloned* scoped state of the passed state.
+      auto delegateProblem = ConfigurationToConfiguration(
+          mMetaSkeletonStateSpace,
+          startState,
+          configurations[i],
+          problem.getConstraint());
 
-  configurationRanker->rankConfigurations(configurations);
-
-  for (std::size_t i = 0; i < configurations.size(); ++i)
-  {
-    // Create ConfigurationToConfiguration Problem.
-    // NOTE: This is done here because the ConfigurationToConfiguration
-    // problem stores a *cloned* scoped state of the passed state.
-    auto delegateProblem = ConfigurationToConfiguration(
-        mMetaSkeletonStateSpace,
-        startState,
-        configurations[i],
-        problem.getConstraint());
-
-    auto traj = mDelegate->plan(delegateProblem, result);
-    if (traj)
-      return traj;
+      auto traj = mDelegate->plan(delegateProblem, result);
+      if (traj)
+        return traj;
+    }
   }
 
   return nullptr;
