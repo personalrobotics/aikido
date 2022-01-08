@@ -1,13 +1,14 @@
 #ifndef AIKIDO_ROBOT_HAND_HPP_
 #define AIKIDO_ROBOT_HAND_HPP_
 
+#include <future>
 #include <set>
 #include <string>
 #include <unordered_map>
 
 #include <dart/dart.hpp>
 
-#include "aikido/control/PositionCommandExecutor.hpp"
+#include "aikido/common/pointers.hpp"
 #include "aikido/io/yaml.hpp"
 #include "aikido/robot/GrabMetadata.hpp"
 

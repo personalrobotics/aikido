@@ -1,6 +1,7 @@
 #include "aikido/control/InstantaneousTrajectoryExecutor.hpp"
 
 #include "aikido/control/TrajectoryRunningException.hpp"
+#include "aikido/control/util.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
@@ -10,17 +11,20 @@ namespace control {
 
 //==============================================================================
 InstantaneousTrajectoryExecutor::InstantaneousTrajectoryExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton)
-  : mSkeleton{std::move(skeleton)}, mPromise{nullptr}, mMutex{}
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton)
+  : TrajectoryExecutor(checkNull(metaskeleton)->getDofs())
+  , mMetaSkeleton{metaskeleton}
+  , mPromise{nullptr}
+  , mMutex{}
 {
-  if (!mSkeleton)
-    throw std::invalid_argument("Skeleton is null.");
+  // MetaSkeleton checked by checkNull
+  stop();
 }
 
 //==============================================================================
 InstantaneousTrajectoryExecutor::~InstantaneousTrajectoryExecutor()
 {
-  // Do nothing.
+  stop();
 }
 
 //==============================================================================
@@ -40,9 +44,12 @@ void InstantaneousTrajectoryExecutor::validate(
     throw std::invalid_argument(
         "Trajectory is not in a MetaSkeletonStateSpace.");
 
-  // TODO: Delete this line once the skeleton is locked by isCompatible
-  std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
-  space->checkIfContained(mSkeleton.get());
+  // Check that traj space is compatible with metaskeleton
+  if (!space->isCompatible(mMetaSkeleton.get()))
+  {
+    throw std::invalid_argument(
+        "Trajectory StateSpace incompatible with MetaSkeleton");
+  }
 
   mValidatedTrajectories.emplace(traj);
 }
@@ -63,7 +70,7 @@ std::future<void> InstantaneousTrajectoryExecutor::execute(
 
     auto state = space->createState();
     traj->evaluate(traj->getEndTime(), state);
-    space->setState(mSkeleton.get(), state);
+    space->setState(mMetaSkeleton.get(), state);
     mPromise->set_value();
   }
 

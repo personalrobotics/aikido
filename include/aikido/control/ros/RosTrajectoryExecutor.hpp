@@ -25,7 +25,8 @@ public:
   /// \param[in] node ROS node handle for action client.
   /// \param[in] serverName Name of the server to send trajectory to.
   /// \param[in] waypointTimestep Step size for interpolating trajectories.
-  /// \param[in] goalTimeTolerance
+  /// \param[in] goalTimeTolerance Wait time for robot to settle at goal
+  /// \param[in] dofs The Degrees of Freedom this executor acts upon
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosTrajectoryExecutor(
@@ -33,6 +34,7 @@ public:
       const std::string& serverName,
       double waypointTimestep,
       double goalTimeTolerance,
+      const ::dart::dynamics::MetaSkeletonPtr metaskeleton,
       const std::chrono::milliseconds& connectionTimeout
       = std::chrono::milliseconds{1000},
       const std::chrono::milliseconds& connectionPollingPeriod
@@ -69,6 +71,10 @@ private:
   using GoalHandle = TrajectoryActionClient::GoalHandle;
 
   void transitionCallback(GoalHandle handle);
+
+  /// MetaSkeleton to execute trajectories on
+  /// For trajectory-validation purposes only
+  const ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 
   ::ros::NodeHandle mNode;
   ::ros::CallbackQueue mCallbackQueue;

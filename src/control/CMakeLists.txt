@@ -1,8 +1,10 @@
 set(sources
-  TrajectoryRunningException.cpp
+  Executor.cpp
   InstantaneousTrajectoryExecutor.cpp
+  KinematicSimulationJointCommandExecutor.cpp
   KinematicSimulationTrajectoryExecutor.cpp
   QueuedTrajectoryExecutor.cpp
+  TrajectoryRunningException.cpp
 )
 
 add_library("${PROJECT_NAME}_control" SHARED ${sources})
