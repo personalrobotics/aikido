@@ -34,7 +34,7 @@ public:
       const std::string& serverName,
       double waypointTimestep,
       double goalTimeTolerance,
-      const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
+      const ::dart::dynamics::MetaSkeletonPtr metaskeleton,
       const std::chrono::milliseconds& connectionTimeout
       = std::chrono::milliseconds{1000},
       const std::chrono::milliseconds& connectionPollingPeriod
@@ -71,6 +71,10 @@ private:
   using GoalHandle = TrajectoryActionClient::GoalHandle;
 
   void transitionCallback(GoalHandle handle);
+
+  /// MetaSkeleton to execute trajectories on
+  /// For trajectory-validation purposes only
+  const ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 
   ::ros::NodeHandle mNode;
   ::ros::CallbackQueue mCallbackQueue;

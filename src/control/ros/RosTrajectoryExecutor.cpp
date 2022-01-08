@@ -56,11 +56,14 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
     const std::string& serverName,
     double waypointTimestep,
     double goalTimeTolerance,
-    const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
+    const ::dart::dynamics::MetaSkeletonPtr metaskeleton,
     const std::chrono::milliseconds& connectionTimeout,
     const std::chrono::milliseconds& connectionPollingPeriod)
   // Does not update DoF values diretly
-  : TrajectoryExecutor(dofs, std::set<ExecutorType>{ExecutorType::READONLY})
+  : TrajectoryExecutor(
+      checkNull(metaskeleton)->getDofs(),
+      std::set<ExecutorType>{ExecutorType::READONLY})
+  , mMetaSkeleton{metaskeleton}
   , mNode{std::move(node)}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
@@ -112,9 +115,8 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
         "Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
-  dart::dynamics::MetaSkeletonPtr metaSkeleton
-      = dart::dynamics::Group::create("check", getDofs());
-  if (!space->isCompatible(metaSkeleton.get()))
+  // Check that traj space is compatible with metaskeleton
+  if (!space->isCompatible(mMetaSkeleton.get()))
   {
     throw std::invalid_argument(
         "Trajectory StateSpace incompatible with MetaSkeleton");
