@@ -42,16 +42,20 @@ std::vector<Eigen::VectorXd> GradientDescentIk::getSolutions(
 
   for (size_t i = 0; i < maxSolutions; i++)
   {
-    // TODO: What to do if we can't sample a seed config?
+    if (!ikSeedGenerator->canSample())
+      break;
+
     if (!ikSeedGenerator->sample(seedState))
       continue;
 
     mArmSpace->setState(mArm.get(), seedState);
     mDartIkSolver->getTarget()->setTransform(targetPose);
-    bool withinTol = mDartIkSolver->solveAndApply(true);
+
+    Eigen::VectorXd curSolution;
+    bool withinTol = mDartIkSolver->solve(curSolution, /*applySolution*/ true);
 
     if (withinTol)
-      solutions.push_back(mArm->getPositions());
+      solutions.push_back(curSolution);
   }
 
   return solutions;
