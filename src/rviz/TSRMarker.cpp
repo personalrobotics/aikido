@@ -6,7 +6,7 @@ namespace aikido {
 namespace rviz {
 
 //==============================================================================
-TSRMarker::TSRMarker(std::vector<std::unique_ptr<SimpleFrame>> tsrFrames)
+TSRMarker::TSRMarker(std::vector<std::shared_ptr<SimpleFrame>> tsrFrames)
   : mTsrFrames(std::move(tsrFrames))
 {
   // Do nothing

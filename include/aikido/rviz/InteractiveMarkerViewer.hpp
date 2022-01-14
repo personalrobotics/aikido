@@ -56,7 +56,7 @@ public:
   /// \param[in] alpha Opacity.
   /// \return Frame marker added to this viewer.
   FrameMarkerPtr addFrameMarker(
-      dart::dynamics::Frame* frame,
+      std::shared_ptr<const dart::dynamics::Frame> frame,
       double length = 0.25,
       double thickness = 0.02,
       double alpha = 1.0);
