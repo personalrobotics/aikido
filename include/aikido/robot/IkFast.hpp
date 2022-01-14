@@ -31,6 +31,8 @@ private:
   ::dart::dynamics::MetaSkeletonPtr mArm;
   ::dart::dynamics::BodyNodePtr mEndEffector;
   statespace::dart::ConstMetaSkeletonStateSpacePtr mArmSpace;
+
+  dart::dynamics::SharedLibraryIkFast* mIkFastSolverPtr;
 };
 
 } // namespace robot
