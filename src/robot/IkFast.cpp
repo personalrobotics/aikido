@@ -47,11 +47,25 @@ std::vector<Eigen::VectorXd> IkFast::getSolutions(
       mArm, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
-  std::vector<Eigen::VectorXd> solutions;
+  std::vector<Eigen::VectorXd> finalConfigs;
 
-  // TODO.
+  // Generates a whole *bunch* of solutions using analytic methods.
+  auto solutions = mIkFastSolverPtr->getSolutions(targetPose);
 
-  return solutions;
+  for (size_t solIndex = 0; solIndex < std::min(maxSolutions, solutions.size());
+       solIndex++)
+  {
+    const auto solution = solutions[solIndex];
+
+    // Ignores any ikFast solutions that are out of limits.
+    if (solution.mValidity
+        != dart::dynamics::InverseKinematics::Analytical::VALID)
+      continue;
+
+    finalConfigs.push_back(solution.mConfig);
+  }
+
+  return finalConfigs;
 }
 
 } // namespace robot
