@@ -12,6 +12,7 @@
 
 * RViz
 
+  * Fix addTSRMarker Bug: [#618](https://github.com/personalrobotics/aikido/pull/618)
   * Propogate removal of WorldInteractiveMarkerViewer to Aikidopy: [#599](https://github.com/personalrobotics/aikido/pull/599)
 
 * Planner
