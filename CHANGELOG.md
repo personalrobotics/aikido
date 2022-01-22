@@ -7,6 +7,9 @@
   * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
   * Added generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
 
+* IO
+  * Fix CI Issue Due to Deprecated DART parseSkeleton function [#619](https://github.com/personalrobotics/aikido/pull/619)
+
 * Robot
   * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
 
