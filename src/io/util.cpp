@@ -13,9 +13,16 @@ dart::dynamics::SkeletonPtr loadSkeletonFromURDF(
     const dart::common::Uri& uri,
     const Eigen::Isometry3d& transform)
 {
+#if DART_VERSION_AT_LEAST(6, 12, 0)
+  dart::utils::DartLoader::Options options;
+  options.mResourceRetreiver = retriever;
+  dart::utils::DartLoader urdfLoader(options);
+  const dart::dynamics::SkeletonPtr skeleton = urdfLoader.parseSkeleton(uri);
+#else
   dart::utils::DartLoader urdfLoader;
   const dart::dynamics::SkeletonPtr skeleton
       = urdfLoader.parseSkeleton(uri, retriever);
+#endif
 
   if (!skeleton)
     throw std::runtime_error("Unable to load '" + uri.toString() + "'");
