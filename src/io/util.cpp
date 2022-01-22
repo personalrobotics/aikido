@@ -15,7 +15,7 @@ dart::dynamics::SkeletonPtr loadSkeletonFromURDF(
 {
 #if DART_VERSION_AT_LEAST(6, 12, 0)
   dart::utils::DartLoader::Options options;
-  options.mResourceRetreiver = retriever;
+  options.mResourceRetriever = retriever;
   dart::utils::DartLoader urdfLoader(options);
   const dart::dynamics::SkeletonPtr skeleton = urdfLoader.parseSkeleton(uri);
 #else
