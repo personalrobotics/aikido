@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <dart/utils/urdf/urdf.hpp>
+#include "aikido/common/parseSkeleton.hpp"
 #include <aikido/io.hpp>
 #include <aikido/planner.hpp>
 #include "utils.hpp"
@@ -20,10 +21,9 @@ void World(py::module& m)
   {
     auto transform = vectorToIsometry(objectPose);
 
-    dart::utils::DartLoader urdfLoader;
     const auto resourceRetriever
         = std::make_shared<aikido::io::CatkinResourceRetriever>();
-    const auto skeleton = urdfLoader.parseSkeleton(uri, resourceRetriever);
+    const auto skeleton = common::parseSkeleton(uri, resourceRetriever);
 
     if (!skeleton)
       throw std::runtime_error("unable to load '" + uri + "'");

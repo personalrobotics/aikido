@@ -6,6 +6,7 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
+#include "aikido/common/parseSkeleton.hpp"
 #include "aikido/perception/shape_conversions.hpp"
 
 namespace aikido {
@@ -58,8 +59,6 @@ bool PoseEstimatorModule::detectObjects(
            << mMarkerTopic << std::endl;
     return false;
   }
-
-  dart::utils::DartLoader urdfLoader;
 
   for (const auto& markerTransform : markerMessage->markers)
   {
@@ -173,7 +172,7 @@ bool PoseEstimatorModule::detectObjects(
     if (!envSkeleton)
     {
       isNewObj = true;
-      objSkeleton = urdfLoader.parseSkeleton(objResource, mResourceRetriever);
+      objSkeleton = common::parseSkeleton(objResource, mResourceRetriever);
 
       if (!objSkeleton)
       {
