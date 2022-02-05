@@ -6,7 +6,6 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
-#include "aikido/common/parseSkeleton.hpp"
 #include "aikido/perception/shape_conversions.hpp"
 
 namespace aikido {
@@ -172,7 +171,7 @@ bool PoseEstimatorModule::detectObjects(
     if (!envSkeleton)
     {
       isNewObj = true;
-      objSkeleton = common::parseSkeleton(objResource, mResourceRetriever);
+      objSkeleton = io::loadSkeletonFromURDF(mResourceRetriever, objResource);
 
       if (!objSkeleton)
       {

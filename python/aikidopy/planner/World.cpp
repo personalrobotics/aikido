@@ -1,6 +1,5 @@
 #include <pybind11/pybind11.h>
 #include <dart/utils/urdf/urdf.hpp>
-#include "aikido/common/parseSkeleton.hpp"
 #include <aikido/io.hpp>
 #include <aikido/planner.hpp>
 #include "utils.hpp"
@@ -23,13 +22,7 @@ void World(py::module& m)
 
     const auto resourceRetriever
         = std::make_shared<aikido::io::CatkinResourceRetriever>();
-    const auto skeleton = common::parseSkeleton(uri, resourceRetriever);
-
-    if (!skeleton)
-      throw std::runtime_error("unable to load '" + uri + "'");
-
-    dynamic_cast<dart::dynamics::FreeJoint*>(skeleton->getJoint(0))
-        ->setTransform(transform);
+    const auto skeleton = io::loadSkeletonFromURDF(resourceRetriever, uri, transform);
 
     self->addSkeleton(skeleton);
     return skeleton;
