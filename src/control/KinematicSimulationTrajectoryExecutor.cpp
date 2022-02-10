@@ -4,6 +4,7 @@
 
 #include "aikido/common/memory.hpp"
 #include "aikido/control/TrajectoryRunningException.hpp"
+#include "aikido/control/util.hpp"
 
 using aikido::statespace::dart::MetaSkeletonStateSpace;
 
@@ -12,16 +13,20 @@ namespace control {
 
 //==============================================================================
 KinematicSimulationTrajectoryExecutor::KinematicSimulationTrajectoryExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton)
-  : mSkeleton{std::move(skeleton)}
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton)
+  // Edits MetaSkeleton DoFs directly
+  : TrajectoryExecutor(
+      checkNull(metaskeleton)->getDofs(),
+      std::set<ExecutorType>{ExecutorType::STATE})
+  , mMetaSkeleton{metaskeleton}
   , mTraj{nullptr}
   , mStateSpace{nullptr}
   , mInProgress{false}
   , mPromise{nullptr}
   , mMutex{}
 {
-  if (!mSkeleton)
-    throw std::invalid_argument("Skeleton is null.");
+  // Skeleton checked by checkNull already
+  stop();
 }
 
 //==============================================================================
@@ -37,6 +42,7 @@ KinematicSimulationTrajectoryExecutor::~KinematicSimulationTrajectoryExecutor()
       mPromise->set_exception(
           std::make_exception_ptr(std::runtime_error("Trajectory canceled.")));
     }
+    stop();
   }
 }
 
@@ -59,9 +65,12 @@ void KinematicSimulationTrajectoryExecutor::validate(
         "Trajectory is not in a MetaSkeletonStateSpace.");
   }
 
-  // TODO: Delete this line once the skeleton is locked by isCompatible
-  std::lock_guard<std::mutex> lock(mSkeleton->getMutex());
-  space->checkIfContained(mSkeleton.get());
+  // Check that traj space is compatible with metaskeleton
+  if (!space->isCompatible(mMetaSkeleton.get()))
+  {
+    throw std::invalid_argument(
+        "Trajectory StateSpace incompatible with MetaSkeleton");
+  }
 
   mValidatedTrajectories.emplace(traj);
 }
@@ -88,10 +97,6 @@ std::future<void> KinematicSimulationTrajectoryExecutor::execute(
         mTraj->getStateSpace());
     mInProgress = true;
     mExecutionStartTime = std::chrono::system_clock::now();
-    mMetaSkeleton = mStateSpace->getControlledMetaSkeleton(mSkeleton);
-
-    if (!mMetaSkeleton)
-      throw std::invalid_argument("Failed to create MetaSkeleton");
   }
 
   return mPromise->get_future();
@@ -111,13 +116,11 @@ void KinematicSimulationTrajectoryExecutor::step(
     mPromise->set_exception(std::make_exception_ptr(
         std::runtime_error("Trajectory terminated while in execution.")));
     mTraj.reset();
-    mMetaSkeleton.reset();
   }
   else if (mInProgress && !mTraj)
   {
     mPromise->set_exception(std::make_exception_ptr(std::runtime_error(
         "Set for execution but no trajectory is provided.")));
-    mMetaSkeleton.reset();
     mInProgress = false;
   }
 
@@ -140,7 +143,6 @@ void KinematicSimulationTrajectoryExecutor::step(
   {
     mTraj.reset();
     mStateSpace.reset();
-    mMetaSkeleton.reset();
     mInProgress = false;
     mPromise->set_value();
   }
@@ -155,7 +157,6 @@ void KinematicSimulationTrajectoryExecutor::cancel()
   {
     mTraj.reset();
     mStateSpace.reset();
-    mMetaSkeleton.reset();
     mInProgress = false;
     mPromise->set_exception(
         std::make_exception_ptr(std::runtime_error("Trajectory canceled.")));

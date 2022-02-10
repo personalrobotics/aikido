@@ -20,16 +20,9 @@ void World(py::module& m)
   {
     auto transform = vectorToIsometry(objectPose);
 
-    dart::utils::DartLoader urdfLoader;
     const auto resourceRetriever
         = std::make_shared<aikido::io::CatkinResourceRetriever>();
-    const auto skeleton = urdfLoader.parseSkeleton(uri, resourceRetriever);
-
-    if (!skeleton)
-      throw std::runtime_error("unable to load '" + uri + "'");
-
-    dynamic_cast<dart::dynamics::FreeJoint*>(skeleton->getJoint(0))
-        ->setTransform(transform);
+    const auto skeleton = io::loadSkeletonFromURDF(resourceRetriever, uri, transform);
 
     self->addSkeleton(skeleton);
     return skeleton;

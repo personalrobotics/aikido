@@ -59,8 +59,6 @@ bool PoseEstimatorModule::detectObjects(
     return false;
   }
 
-  dart::utils::DartLoader urdfLoader;
-
   for (const auto& markerTransform : markerMessage->markers)
   {
     // TODO: Add DELETE_ALL Functionality
@@ -173,7 +171,7 @@ bool PoseEstimatorModule::detectObjects(
     if (!envSkeleton)
     {
       isNewObj = true;
-      objSkeleton = urdfLoader.parseSkeleton(objResource, mResourceRetriever);
+      objSkeleton = io::loadSkeletonFromURDF(mResourceRetriever, objResource);
 
       if (!objSkeleton)
       {

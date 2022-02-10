@@ -4,7 +4,7 @@
 #include <future>
 #include <mutex>
 
-#include <dart/dynamics/Skeleton.hpp>
+#include <dart/dynamics/MetaSkeleton.hpp>
 
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
@@ -22,7 +22,7 @@ public:
   /// \param skeleton Skeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
   explicit InstantaneousTrajectoryExecutor(
-      ::dart::dynamics::SkeletonPtr skeleton);
+      ::dart::dynamics::MetaSkeletonPtr metaskeleton);
 
   virtual ~InstantaneousTrajectoryExecutor();
 
@@ -49,7 +49,7 @@ public:
 
 private:
   /// Skeleton to execute trajectories on
-  ::dart::dynamics::SkeletonPtr mSkeleton;
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 
   /// Promise whose future is returned by execute()
   std::unique_ptr<std::promise<void>> mPromise;
