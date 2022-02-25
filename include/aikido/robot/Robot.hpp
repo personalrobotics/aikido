@@ -20,6 +20,7 @@
 #include "aikido/planner/World.hpp"
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffsetPlanner.hpp"
 #include "aikido/planner/kunzretimer/KunzRetimer.hpp"
+#include "aikido/robot/util.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
@@ -229,8 +230,11 @@ public:
   /// \param[in] tsr \see constraint::dart::TSR
   /// \param[in] testableConstraint Planning (e.g. collision) constraints,
   /// set to nullptr for no constraints (not recommended)
-  /// \param[in] maxSamples Maximum number of TSR samples
-  /// to plan to (defaults to 1)
+  /// \param[in] maxSamplingTries Maximum number of times for the sample
+  /// generator to retry sampling from the TSR.
+  /// \param[in] batchSize Number of TSR samples to include per ranked batch.
+  /// \param[in] maxBatches Maximum number of ranked batches to run when
+  /// planning to TSR samples.
   /// \param[in] planner Base configuration planner, defaults to Snap Planner
   /// \param[in] ranker Ranker to rank the sampled configurations. If nullptr,
   /// NominalConfigurationRanker is used with the current metaSkeleton pose.
@@ -239,7 +243,7 @@ public:
       const std::string bodyNodeName,
       const constraint::dart::TSRPtr& tsr,
       const constraint::TestablePtr& testableConstraint,
-      std::size_t maxSamples = 1,
+      const util::PlanToTSRParameters& params = util::PlanToTSRParameters(),
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
       = nullptr,
@@ -252,7 +256,7 @@ public:
   trajectory::TrajectoryPtr planToTSR(
       const std::string bodyNodeName,
       const constraint::dart::TSRPtr& tsr,
-      std::size_t maxSamples = 1,
+      const util::PlanToTSRParameters& params = util::PlanToTSRParameters(),
       const std::shared_ptr<planner::ConfigurationToConfigurationPlanner>&
           planner
       = nullptr,
