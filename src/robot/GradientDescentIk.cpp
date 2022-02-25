@@ -52,7 +52,8 @@ std::vector<Eigen::VectorXd> GradientDescentIk::getSolutions(
     mDartIkSolver->getTarget()->setTransform(targetPose);
 
     Eigen::VectorXd curSolution;
-    bool withinTol = mDartIkSolver->solve(curSolution, /*applySolution*/ false);
+    bool withinTol
+        = mDartIkSolver->solveAndapply(curSolution, /*applySolution*/ false);
 
     if (withinTol)
       solutions.push_back(curSolution);
