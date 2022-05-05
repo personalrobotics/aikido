@@ -26,7 +26,7 @@ class FrameMarker
 public:
   FrameMarker(
       interactive_markers::InteractiveMarkerServer* markerServer,
-      dart::dynamics::Frame* frame,
+      std::shared_ptr<const dart::dynamics::Frame> frame,
       const std::string& frameId,
       double length = 0.25,
       double thickness = 0.02,
@@ -39,7 +39,7 @@ private:
   interactive_markers::InteractiveMarkerServer* mMarkerServer;
   visualization_msgs::InteractiveMarker mInteractiveMarker;
 
-  dart::dynamics::Frame* mFrame;
+  std::shared_ptr<const dart::dynamics::Frame> mFrame;
   std::string mFrameId;
 };
 

@@ -2,6 +2,8 @@
 
 #include <chrono>
 
+#include "aikido/control/util.hpp"
+
 namespace aikido {
 namespace control {
 
@@ -17,19 +19,21 @@ static std::vector<std::string> checkNull(
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : TrajectoryExecutor(checkNull(executor))
-  , mExecutor{std::move(executor)}
+  : TrajectoryExecutor(
+      checkNull(executor)->getDofs(), checkNull(executor)->getTypes())
+  , mExecutor{executor}
   , mInProgress{false}
   , mMutex{}
 {
-  if (!mExecutor)
-  {
-    stop();
-    throw std::invalid_argument("Executor is null.");
-  }
+  // Executor already check with checkNull
+  stop();
 
   // Use our thread instead
   mExecutor->stop();
+
+  // register Dofs from here instead
+  mExecutor->releaseDofs();
+  registerDofs();
 }
 
 //==============================================================================

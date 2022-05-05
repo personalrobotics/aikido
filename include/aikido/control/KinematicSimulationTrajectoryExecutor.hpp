@@ -20,10 +20,10 @@ class KinematicSimulationTrajectoryExecutor : public TrajectoryExecutor
 public:
   /// Constructor.
   ///
-  /// \param skeleton Skeleton to execute trajectories on.
+  /// \param metaskeleton MetaSkeleton to execute trajectories on.
   ///        All trajectories must have dofs only in this skeleton.
   explicit KinematicSimulationTrajectoryExecutor(
-      ::dart::dynamics::SkeletonPtr skeleton);
+      ::dart::dynamics::MetaSkeletonPtr metaskeleton);
 
   virtual ~KinematicSimulationTrajectoryExecutor();
 
@@ -52,17 +52,14 @@ public:
   void cancel() override;
 
 private:
-  /// Skeleton to execute trajectories on
-  ::dart::dynamics::SkeletonPtr mSkeleton;
+  /// MetaSkeleton to execute trajectories on
+  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 
   /// Trajectory being executed
   trajectory::ConstTrajectoryPtr mTraj;
 
   /// Trajectory's MetaSkeletonStateSpace
   statespace::dart::ConstMetaSkeletonStateSpacePtr mStateSpace;
-
-  /// The controlled subset of mSkeleton for the currently executing trajectory.
-  ::dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
 
   /// Whether a trajectory is being executed
   bool mInProgress;

@@ -1,3 +1,8 @@
+aikido_add_test(test_ControlExecutor
+  test_ControlExecutor.cpp)
+target_link_libraries(test_ControlExecutor
+  "${PROJECT_NAME}_control")
+
 aikido_add_test(test_InstantaneousTrajectoryExecutor
   test_InstantaneousTrajectoryExecutor.cpp)
 target_link_libraries(test_InstantaneousTrajectoryExecutor

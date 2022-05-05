@@ -9,23 +9,37 @@ extern template class RosJointCommandExecutor<ExecutorType::VELOCITY>;
 
 extern template class RosJointCommandExecutor<ExecutorType::EFFORT>;
 
+// Convert Dof List to Joint name List
+static std::vector<std::string> jointNamesFromDofs(
+    const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs)
+{
+  std::vector<std::string> jointNames;
+  for (const auto& dof : dofs)
+  {
+    jointNames.push_back(dof->getName());
+  }
+  return jointNames;
+}
+
 //==============================================================================
 template <ExecutorType T>
 RosJointCommandExecutor<T>::RosJointCommandExecutor(
     ::ros::NodeHandle node,
     const std::string& controllerName,
-    std::vector<std::string> jointNames,
+    const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
     const std::chrono::milliseconds connectionTimeout,
     const std::chrono::milliseconds connectionPollingPeriod)
-  : aikido::control::JointCommandExecutor<T>(jointNames)
+  // Does not update DoF values directly
+  : aikido::control::JointCommandExecutor<T>(
+      dofs, std::set<ExecutorType>{ExecutorType::READONLY})
   , mClient{
         node,
         controllerName + "/joint_group_command",
-        jointNames,
+        jointNamesFromDofs(dofs),
         connectionTimeout,
         connectionPollingPeriod}
 {
-  // Do nothing.
+  // Do nothing
 }
 
 //==============================================================================
@@ -38,15 +52,16 @@ RosJointCommandExecutor<T>::~RosJointCommandExecutor()
 //==============================================================================
 template <ExecutorType T>
 std::future<int> RosJointCommandExecutor<T>::execute(
-    const std::vector<double> command,
+    const std::vector<double>& command,
     const std::chrono::duration<double>& timeout)
 {
   ::ros::Duration duration;
-  duration.sec
-      = std::chrono::duration_cast<std::chrono::seconds>(timeout).count();
-  duration.nsec
-      = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count()
-        % 1000000000UL;
+  // Rounds to floor(seconds)
+  auto timeoutSecs = std::chrono::duration_cast<std::chrono::seconds>(timeout);
+  duration.sec = timeoutSecs.count();
+  duration.nsec = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      timeout - timeoutSecs)
+                      .count();
   return mClient.execute(T, command, duration);
 }
 

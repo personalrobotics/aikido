@@ -45,9 +45,10 @@ public:
   /// \param[in] timeout How long until command should expire
   std::future<int> execute(
       ExecutorType type,
-      const std::vector<double> goal,
+      const std::vector<double>& goal,
       ::ros::Duration timeout);
 
+  /// \copydoc JointCommandExecutor::step()
   /// To be executed on a separate thread.
   /// Regularly checks for the completion of a sent command.
   void step();

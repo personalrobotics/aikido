@@ -5,8 +5,11 @@
 #include <future>
 #include <set>
 
+#include <dart/dart.hpp>
+
 #include "aikido/common/pointers.hpp"
 #include "aikido/control/Executor.hpp"
+#include "aikido/control/util.hpp"
 #include "aikido/trajectory/Trajectory.hpp"
 
 namespace aikido {
@@ -18,8 +21,19 @@ AIKIDO_DECLARE_POINTERS(TrajectoryExecutor)
 class TrajectoryExecutor : public Executor
 {
 public:
-  TrajectoryExecutor(std::vector<std::string> joints)
-    : Executor(ExecutorType::TRAJECTORY, joints)
+  /// Constructor
+  /// Documentation Inherited
+  /// \param[in] otherTypes Other resources this executor needs beyond
+  /// TRAJECTORY
+  TrajectoryExecutor(
+      const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
+      const std::set<ExecutorType> otherTypes = std::set<ExecutorType>(),
+      const std::chrono::milliseconds threadRate = defaultThreadRate)
+    : Executor(
+        concatenateTypes(
+            std::set<ExecutorType>{ExecutorType::TRAJECTORY}, otherTypes),
+        dofs,
+        threadRate)
   {
   }
   virtual ~TrajectoryExecutor() = default;
