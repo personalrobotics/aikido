@@ -3,10 +3,7 @@
 
 #include <chrono>
 #include <future>
-<<<<<<< HEAD
-=======
 #include <set>
->>>>>>> master
 
 #include "aikido/control/JointCommandExecutor.hpp"
 #include "aikido/control/ros/RosJointGroupCommandClient.hpp"

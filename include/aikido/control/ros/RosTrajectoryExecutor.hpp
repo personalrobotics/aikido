@@ -34,11 +34,7 @@ public:
       const std::string& serverName,
       double waypointTimestep,
       double goalTimeTolerance,
-<<<<<<< HEAD
-      std::vector<std::string> jointNames,
-=======
       const ::dart::dynamics::MetaSkeletonPtr metaskeleton,
->>>>>>> master
       const std::chrono::milliseconds& connectionTimeout
       = std::chrono::milliseconds{1000},
       const std::chrono::milliseconds& connectionPollingPeriod
