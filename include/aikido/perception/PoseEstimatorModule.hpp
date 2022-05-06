@@ -7,6 +7,7 @@
 #include <tf/transform_listener.h>
 
 #include "aikido/io/CatkinResourceRetriever.hpp"
+#include "aikido/io/util.hpp"
 #include "aikido/io/yaml.hpp"
 #include "aikido/perception/AssetDatabase.hpp"
 #include "aikido/perception/DetectedObject.hpp"

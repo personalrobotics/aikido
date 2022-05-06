@@ -12,7 +12,7 @@
 namespace aikido {
 namespace control {
 
-// Init static membres
+// Init static members
 std::unordered_map<ExecutorType, std::set<dart::dynamics::DegreeOfFreedom*>>
     Executor::mDofManager = std::unordered_map<
         ExecutorType,

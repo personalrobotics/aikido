@@ -12,6 +12,8 @@ set(CMAKE_REQUIRED_FLAGS "")
 #
 set(sources
   GrabMetadata.cpp
+  GradientDescentIk.cpp
+  IkFast.cpp
   Robot.cpp
   util.cpp
 )

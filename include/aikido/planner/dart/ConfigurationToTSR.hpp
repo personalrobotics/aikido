@@ -24,7 +24,12 @@ public:
   /// current state of when called.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.
-  /// \param[in] maxSamples Maximum number of TSR samples to plan to.
+  /// \param[in] maxSamplingTries Maximum number of times for the sample
+  /// generator to retry sampling from the TSR.
+  /// \param[in] batchSize Number of TSR samples to include per ranked batch.
+  /// \param[in] maxBatches Maximum number of ranked batches to run when
+  /// planning to TSR samples.
+  /// \param[in] numMaxIterations Maximum number of iterations for the IK Solver
   /// \param[in] goalTSR Goal TSR.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
@@ -33,7 +38,10 @@ public:
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       ::dart::dynamics::ConstMetaSkeletonPtr metaSkeleton,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      std::size_t maxSamples,
+      std::size_t maxSamplingTries,
+      std::size_t batchSize,
+      std::size_t maxBatches,
+      std::size_t numMaxIterations,
       constraint::dart::ConstTSRPtr goalTSR,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -44,7 +52,12 @@ public:
   /// \param[in] startState Start state to plan from.
   /// \param[in] endEffectorBodyNode BodyNode to be planned to move to a desired
   /// TSR.
-  /// \param[in] maxSamples Maximum number of TSR samples to plan to.
+  /// \param[in] maxSamplingTries Maximum number of times for the sample
+  /// generator to retry sampling from the TSR
+  /// \param[in] batchSize Number of TSR samples to include per ranked batch.
+  /// \param[in] maxBatches Maximum number of ranked batches to run when
+  /// planning to TSR samples.
+  /// \param[in] numMaxIterations Maximum number of iterations for the IK Solver
   /// \param[in] goalTSR Goal TSR.
   /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
   /// \throw If \c stateSpace is not compatible with \c constraint's state
@@ -53,7 +66,10 @@ public:
       statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
       const statespace::dart::MetaSkeletonStateSpace::State* startState,
       ::dart::dynamics::ConstBodyNodePtr endEffectorBodyNode,
-      std::size_t maxSamples,
+      std::size_t maxSamplingTries,
+      std::size_t batchSize,
+      std::size_t maxBatches,
+      std::size_t numMaxIterations,
       constraint::dart::ConstTSRPtr goalTSR,
       constraint::ConstTestablePtr constraint = nullptr);
 
@@ -66,8 +82,17 @@ public:
   /// Returns the end-effector BodyNode to be planned to move to a desired TSR.
   ::dart::dynamics::ConstBodyNodePtr getEndEffectorBodyNode() const;
 
-  /// Returns the maximum number of TSR samples to plan to.
-  std::size_t getMaxSamples() const;
+  /// Returns the maximum number of times to try when sampling from the TSR.
+  std::size_t getMaxSamplingTries() const;
+
+  /// Returns the number of samples from the TSR to include per batch.
+  std::size_t getBatchSize() const;
+
+  /// Returns the maximum number of batches to run when planning to TSR samples.
+  std::size_t getMaxBatches() const;
+
+  /// Returns the maximum number of iterations for the IK Solver.
+  std::size_t getNumMaxIterations() const;
 
   /// Returns the start state to plan from, either set on construction or
   /// taken from the current state of the MetaSkeleton.
@@ -90,8 +115,17 @@ protected:
   /// End-effector body node.
   const ::dart::dynamics::ConstBodyNodePtr mEndEffectorBodyNode;
 
-  /// Maximum number of TSR samples to plan to.
-  std::size_t mMaxSamples;
+  /// Maximum number of times to try when sampling from the TSR.
+  std::size_t mMaxSamplingTries;
+
+  /// Number of TSR samples to include per batch.
+  std::size_t mBatchSize;
+
+  /// Maximum number of batches to run when planning to TSR samples.
+  std::size_t mMaxBatches;
+
+  /// Maximum number of iterations for the IK Solver.
+  std::size_t mNumMaxIterations;
 
   /// Goal TSR.
   const constraint::dart::ConstTSRPtr mGoalTSR;

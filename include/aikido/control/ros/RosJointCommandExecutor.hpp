@@ -12,6 +12,12 @@ namespace aikido {
 namespace control {
 namespace ros {
 
+/// Default actionlib client connection timeout (ms)
+constexpr int DEFAULT_CON_TIMEOUT_MS{1000};
+
+/// Default actionlib client polling period (ms)
+constexpr int DEFAULT_POLL_PERIOD_MS{20};
+
 /// This Executor uses pr_control_msgs/JointGroupCommandAction to
 /// execute joint-wise commands.
 /// \see RosJointGroupCommandClient
@@ -30,9 +36,9 @@ public:
       const std::string& controllerName,
       const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
       std::chrono::milliseconds connectionTimeout
-      = std::chrono::milliseconds{1000},
+      = std::chrono::milliseconds{DEFAULT_CON_TIMEOUT_MS},
       std::chrono::milliseconds connectionPollingPeriod
-      = std::chrono::milliseconds{20});
+      = std::chrono::milliseconds{DEFAULT_POLL_PERIOD_MS});
 
   virtual ~RosJointCommandExecutor();
 

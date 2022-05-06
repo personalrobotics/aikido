@@ -48,6 +48,7 @@ public:
       const std::vector<double>& goal,
       ::ros::Duration timeout);
 
+  /// \copydoc JointCommandExecutor::step()
   /// To be executed on a separate thread.
   /// Regularly checks for the completion of a sent command.
   void step();

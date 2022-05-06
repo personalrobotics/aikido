@@ -5,16 +5,17 @@
 * Control
 
   * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
-  * Add generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
+  * Added generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
 
-* Robot
-  * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
+* IO
+  * Updated DartLoader usage, previously deprecated by DART 6.12 [#619](https://github.com/personalrobotics/aikido/pull/619)
 
 * Robot
   * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
 
 * RViz
 
+  * Fix addTSRMarker Bug: [#618](https://github.com/personalrobotics/aikido/pull/618)
   * Propogate removal of WorldInteractiveMarkerViewer to Aikidopy: [#599](https://github.com/personalrobotics/aikido/pull/599)
 
 * Planner
@@ -22,6 +23,7 @@
   * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
   * Added ConfigurationToConfigurations planner adapter: [#587](https://github.com/personalrobotics/aikido/pull/587)
   * Cleaned up planning methods in robot/util: [#588](https://github.com/personalrobotics/aikido/pull/588)
+  * Added batches to ConcreteRobot's planToTSR: [#607](https://github.com/personalrobotics/aikido/pull/607)
 
 * Build & Testing & ETC
 

@@ -21,8 +21,7 @@ template <ExecutorType T>
 class JointCommandExecutor : public Executor
 {
 public:
-  /// Constructor
-  /// Documentation inherited.
+  /// \copydoc Executor::Executor
   /// \param[in] otherTypes Other resources this executor needs beyond the
   /// primary
   JointCommandExecutor(
