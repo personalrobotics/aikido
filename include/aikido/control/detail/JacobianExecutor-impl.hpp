@@ -1,11 +1,10 @@
-#include "aikido/control/KinematicSimulationJointCommandExecutor.hpp"
-#include "aikido/control/util.hpp"
-
 #include <Eigen/Dense>
 #include <dart/common/Console.hpp>
 #include <dart/dynamics/dynamics.hpp>
 
 #include "aikido/common/memory.hpp"
+#include "aikido/control/KinematicSimulationJointCommandExecutor.hpp"
+#include "aikido/control/util.hpp"
 
 namespace aikido {
 namespace control {
@@ -18,12 +17,13 @@ extern template class JacobianExecutor<ExecutorType::VELOCITY>;
 //==============================================================================
 template <ExecutorType T>
 JacobianExecutor<T>::JacobianExecutor(
-      ::dart::dynamics::BodyNode* eeNode,
-      std::shared_ptr<JointCommandExecutor<T>> executor,
-      double lambda)
+    ::dart::dynamics::BodyNode* eeNode,
+    std::shared_ptr<JointCommandExecutor<T>> executor,
+    double lambda)
   : JointCommandExecutor<T>(
-    executor ? executor->getDofs() : checkNull(eeNode)->getDependentDofs(), 
-    executor ? executor->getTypes() : std::set<ExecutorType>{ExecutorType::STATE})
+      executor ? executor->getDofs() : checkNull(eeNode)->getDependentDofs(),
+      executor ? executor->getTypes()
+               : std::set<ExecutorType>{ExecutorType::STATE})
   , mEENode{checkNull(eeNode)}
   , mExecutor{executor}
   , mLambda{lambda}
@@ -35,7 +35,8 @@ JacobianExecutor<T>::JacobianExecutor(
   {
     this->releaseDofs();
     // Null executor, create as KinematicSimulationJointCommandExecutor
-    mExecutor = std::make_shared<KinematicSimulationJointCommandExecutor<T>>(mEENode->getDependentDofs());
+    mExecutor = std::make_shared<KinematicSimulationJointCommandExecutor<T>>(
+        mEENode->getDependentDofs());
   }
 
   // Release sub-executor DoFs, this class owns them now
@@ -65,8 +66,7 @@ JacobianExecutor<T>::~JacobianExecutor()
 //==============================================================================
 template <ExecutorType T>
 std::future<int> JacobianExecutor<T>::execute(
-    const Eigen::Vector6d command,
-    const std::chrono::duration<double>& timeout)
+    const Eigen::Vector6d command, const std::chrono::duration<double>& timeout)
 {
 
   {
@@ -111,9 +111,12 @@ std::vector<double> JacobianExecutor<T>::SE3ToJoint(
     Eigen::MatrixXd fullJ = mEENode->getWorldJacobian();
     Eigen::MatrixXd J(SE3_SIZE, this->mDofs.size());
     auto fullDofs = mEENode->getDependentDofs();
-    for(size_t fullIndex = 0; fullIndex < fullDofs.size(); fullIndex++) {
-      auto it = std::find(this->mDofs.begin(), this->mDofs.end(), fullDofs[fullIndex]);
-      if (it != this->mDofs.end()) {
+    for (size_t fullIndex = 0; fullIndex < fullDofs.size(); fullIndex++)
+    {
+      auto it = std::find(
+          this->mDofs.begin(), this->mDofs.end(), fullDofs[fullIndex]);
+      if (it != this->mDofs.end())
+      {
         int index = it - this->mDofs.begin();
         J.col(index) = fullJ.col(fullIndex);
       }
@@ -121,7 +124,8 @@ std::vector<double> JacobianExecutor<T>::SE3ToJoint(
 
     // Calculate joint command
     Eigen::MatrixXd JtJ = J.transpose() * J;
-    JtJ += mLambda*mLambda * Eigen::MatrixXd::Identity(JtJ.rows(), JtJ.cols());
+    JtJ += mLambda * mLambda
+           * Eigen::MatrixXd::Identity(JtJ.rows(), JtJ.cols());
     jointCmd = JtJ.inverse() * J.transpose() * refCmd;
   }
 
@@ -194,10 +198,11 @@ void JacobianExecutor<T>::step(
 //==============================================================================
 template <ExecutorType T>
 std::future<int> JacobianExecutor<T>::execute(
-      const std::vector<double>& command,
-      const std::chrono::duration<double>& timeout)
+    const std::vector<double>& command,
+    const std::chrono::duration<double>& timeout)
 {
-  if (mInProgress) {
+  if (mInProgress)
+  {
     this->cancel();
   }
 

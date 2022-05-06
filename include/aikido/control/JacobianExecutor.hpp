@@ -15,7 +15,7 @@ namespace control {
 
 /// Executes end-effector SE3 command.
 /// Uses local Jacobian to translate to joint command.
-/// 
+///
 template <ExecutorType T>
 class JacobianExecutor : public JointCommandExecutor<T>
 {
@@ -26,8 +26,8 @@ public:
   /// Constructor.
   ///
   /// \param eeNode End effector body node.
-  /// \param lambda Damped Jacobian pseudo-inverse calculation: (JtJ + lambda^2 I)^{-1}
-  /// \param executor Base joint executor for converted joint commands.
+  /// \param lambda Damped Jacobian pseudo-inverse calculation: (JtJ + lambda^2
+  /// I)^{-1} \param executor Base joint executor for converted joint commands.
   ///                 Default: KinematicSimulationJointCommandExecutor
   explicit JacobianExecutor(
       ::dart::dynamics::BodyNode* eeNode,
@@ -101,10 +101,8 @@ private:
 };
 
 // Define common template arguments
-using JacobianVelocityExecutor
-    = JacobianExecutor<ExecutorType::VELOCITY>;
-using JacobianEffortExecutor
-    = JacobianExecutor<ExecutorType::EFFORT>;
+using JacobianVelocityExecutor = JacobianExecutor<ExecutorType::VELOCITY>;
+using JacobianEffortExecutor = JacobianExecutor<ExecutorType::EFFORT>;
 // Note: No position, as jacobian should only be used with derivatives.
 
 } // namespace control
