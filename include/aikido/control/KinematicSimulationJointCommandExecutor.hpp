@@ -24,6 +24,12 @@ public:
   explicit KinematicSimulationJointCommandExecutor(
       ::dart::dynamics::MetaSkeletonPtr metaskeleton);
 
+  /// DoF-only Constructor
+  ///
+  /// \param dofs DoFs to execute commands on.
+  explicit KinematicSimulationJointCommandExecutor(
+      std::vector<::dart::dynamics::DegreeOfFreedom*> dofs);
+
   virtual ~KinematicSimulationJointCommandExecutor();
 
   // Documentation inherited
@@ -73,7 +79,9 @@ using KinematicSimulationPositionExecutor
     = KinematicSimulationJointCommandExecutor<ExecutorType::POSITION>;
 using KinematicSimulationVelocityExecutor
     = KinematicSimulationJointCommandExecutor<ExecutorType::VELOCITY>;
-// Note: No effort simulation without dynamics
+// Note: No effort simulation without dynamics, treat like velocity.
+using KinematicSimulationEffortExecutor
+    = KinematicSimulationJointCommandExecutor<ExecutorType::EFFORT>;
 
 } // namespace control
 } // namespace aikido

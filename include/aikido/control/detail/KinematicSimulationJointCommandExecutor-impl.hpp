@@ -12,6 +12,9 @@ extern template class KinematicSimulationJointCommandExecutor<
 extern template class KinematicSimulationJointCommandExecutor<
     ExecutorType::VELOCITY>;
 
+extern template class KinematicSimulationJointCommandExecutor<
+    ExecutorType::EFFORT>;
+
 //==============================================================================
 template <ExecutorType T>
 KinematicSimulationJointCommandExecutor<T>::
@@ -19,6 +22,19 @@ KinematicSimulationJointCommandExecutor<T>::
         ::dart::dynamics::MetaSkeletonPtr metaskeleton)
   : JointCommandExecutor<T>(
       checkNull(metaskeleton)->getDofs(),
+      std::set<ExecutorType>{ExecutorType::STATE})
+  , mInProgress{false}
+  , mPromise{nullptr}
+  , mMutex{}
+{
+}
+
+template <ExecutorType T>
+KinematicSimulationJointCommandExecutor<T>::
+    KinematicSimulationJointCommandExecutor(
+        std::vector<::dart::dynamics::DegreeOfFreedom*> dofs)
+  : JointCommandExecutor<T>(
+      dofs,
       std::set<ExecutorType>{ExecutorType::STATE})
   , mInProgress{false}
   , mPromise{nullptr}
@@ -86,6 +102,9 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
   }
   switch (T)
   {
+    case ExecutorType::EFFORT:
+      dtwarn << "[KinematicSimulationEffortExecutor::execute] No Dynamics; "
+           << "executor will mimic velocity behavior.\n";
     case ExecutorType::VELOCITY:
 
       for (std::size_t i = 0; i < this->mDofs.size(); ++i)
@@ -142,6 +161,7 @@ void KinematicSimulationJointCommandExecutor<T>::step(
   // Set joint states
   switch (T)
   {
+    case ExecutorType::EFFORT:
     case ExecutorType::VELOCITY: {
       for (size_t i = 0; i < this->mDofs.size(); ++i)
       {

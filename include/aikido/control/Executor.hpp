@@ -74,7 +74,7 @@ public:
   std::set<ExecutorType> getTypes() const;
 
   /// Get list of dofs needed by this Executor
-  std::vector<dart::dynamics::DegreeOfFreedom*> getDofs() const;
+  const std::vector<dart::dynamics::DegreeOfFreedom*> getDofs() const;
 
   /// Step to a point in time.
   /// \note \c timepoint can be a time in the future to enable faster than

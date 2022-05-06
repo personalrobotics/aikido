@@ -1,4 +1,5 @@
-#include "aikido/control/JacobianVelocityExecutor.hpp"
+#include "aikido/control/KinematicSimulationJointCommandExecutor.hpp"
+#include "aikido/control/util.hpp"
 
 #include <Eigen/Dense>
 #include <dart/common/Console.hpp>
@@ -6,52 +7,45 @@
 
 #include "aikido/common/memory.hpp"
 
-#define SE3_SIZE 6
-
 namespace aikido {
 namespace control {
 
-static std::vector<std::string> checkNull(VelocityExecutor* executor)
-{
-  if (!executor)
-    throw std::invalid_argument("VelocityExecutor is null.");
+//==============================================================================
+extern template class JacobianExecutor<ExecutorType::VELOCITY>;
 
-  return executor->getJoints();
-}
+extern template class JacobianExecutor<ExecutorType::VELOCITY>;
 
 //==============================================================================
-JacobianVelocityExecutor::JacobianVelocityExecutor(
-    ::dart::dynamics::SkeletonPtr skeleton,
-    std::string eeName,
-    std::shared_ptr<VelocityExecutor> executor)
-  : Executor(ExecutorType::VELOCITY, checkNull(executor.get()))
-  , mSkeleton{std::move(skeleton)}
-  , mEEName{eeName}
-  , mExecutor{std::move(executor)}
+template <ExecutorType T>
+JacobianExecutor<T>::JacobianExecutor(
+      ::dart::dynamics::BodyNode* eeNode,
+      std::shared_ptr<JointCommandExecutor<T>> executor,
+      double lambda)
+  : JointCommandExecutor<T>(
+    executor ? executor->getDofs() : checkNull(eeNode)->getDependentDofs(), 
+    executor ? executor->getTypes() : std::set<ExecutorType>{ExecutorType::STATE})
+  , mEENode{checkNull(eeNode)}
+  , mExecutor{executor}
+  , mLambda{lambda}
   , mInProgress{false}
   , mPromise{nullptr}
   , mMutex{}
 {
-  if (!mSkeleton)
+  if (!mExecutor)
   {
-    throw std::invalid_argument("Skeleton is null.");
+    this->releaseDofs();
+    // Null executor, create as KinematicSimulationJointCommandExecutor
+    mExecutor = std::make_shared<KinematicSimulationJointCommandExecutor<T>>(mEENode->getDependentDofs());
   }
 
-  if (executor->getJoints() != skeletonToJointNames(mSkeleton))
-  {
-    throw std::invalid_argument(
-        "Executor DOF doesn't match provided Skeleton DOF.");
-  }
-
-  if (!mSkeleton->getBodyNode(mEEName))
-  {
-    throw std::invalid_argument(
-        "eeName not present as BodyNode in provided Skeleton.");
-  }
+  // Release sub-executor DoFs, this class owns them now
+  mExecutor->releaseDofs();
+  this->registerDofs();
 }
 
 //==============================================================================
-JacobianVelocityExecutor::~JacobianVelocityExecutor()
+template <ExecutorType T>
+JacobianExecutor<T>::~JacobianExecutor()
 {
   {
     std::lock_guard<std::mutex> lock(mMutex);
@@ -63,32 +57,26 @@ JacobianVelocityExecutor::~JacobianVelocityExecutor()
       mPromise->set_exception(
           std::make_exception_ptr(std::runtime_error("Command canceled.")));
     }
-    stop();
+    mExecutor->stop();
+    this->stop();
   }
 }
 
 //==============================================================================
-std::future<int> JacobianVelocityExecutor::execute(
-    const std::vector<double> command,
+template <ExecutorType T>
+std::future<int> JacobianExecutor<T>::execute(
+    const Eigen::Vector6d command,
     const std::chrono::duration<double>& timeout)
 {
 
   {
     std::lock_guard<std::mutex> lock(mMutex);
     DART_UNUSED(lock); // Suppress unused variable warning
-    auto promise = std::promise<int>();
-
-    if (command.size() != SE3_SIZE)
-    {
-      promise.set_exception(std::make_exception_ptr(
-          std::runtime_error("Command is not in SE3 (6d)")));
-      return promise.get_future();
-    }
 
     if (mInProgress)
     {
       // Overwrite previous velocity command
-      mCommand.clear();
+      mCommand = Eigen::Vector6d::Zero();
       mPromise->set_exception(
           std::make_exception_ptr(std::runtime_error("Command canceled.")));
     }
@@ -106,40 +94,48 @@ std::future<int> JacobianVelocityExecutor::execute(
 }
 
 //==============================================================================
-std::vector<double> JacobianVelocityExecutor::SE3ToJoint(
-    std::vector<double> cmd)
+template <ExecutorType T>
+std::vector<double> JacobianExecutor<T>::SE3ToJoint(
+    const Eigen::Vector6d command)
 {
 
   // Command value (as Eigen)
-  Eigen::Vector6d setVelocity(cmd.data());
+  Eigen::Vector6d refCmd = command;
   // Return value (as Eigen)
-  Eigen::VectorXd jointVels(mSkeleton->getNumDofs());
-  jointVels.setZero();
+  Eigen::VectorXd jointCmd(this->mDofs.size());
+  jointCmd.setZero();
 
-  if (setVelocity.norm() != 0)
+  if (refCmd.norm() != 0)
   {
-    Eigen::MatrixXd J = mSkeleton->getBodyNode(mEEName)->getWorldJacobian();
+    // Get Jacobian relative only to controlled joints
+    Eigen::MatrixXd fullJ = mEENode->getWorldJacobian();
+    Eigen::MatrixXd J(SE3_SIZE, this->mDofs.size());
+    auto fullDofs = mEENode->getDependentDofs();
+    for(size_t fullIndex = 0; fullIndex < fullDofs.size(); fullIndex++) {
+      auto it = std::find(this->mDofs.begin(), this->mDofs.end(), fullDofs[fullIndex]);
+      if (it != this->mDofs.end()) {
+        int index = it - this->mDofs.begin();
+        J.col(index) = fullJ.col(fullIndex);
+      }
+    }
+
+    // Calculate joint command
     Eigen::MatrixXd JtJ = J.transpose() * J;
-    if (JtJ.determinant() != 0)
-    {
-      jointVels = JtJ.inverse() * J.transpose() * setVelocity;
-    }
-    else
-    {
-      throw std::runtime_error(
-          "Error: at singularity. Cartesian control impossible.");
-    }
+    JtJ += mLambda*mLambda * Eigen::MatrixXd::Identity(JtJ.rows(), JtJ.cols());
+    jointCmd = JtJ.inverse() * J.transpose() * refCmd;
   }
 
   return std::vector<double>(
-      jointVels.data(), jointVels.data() + jointVels.size());
+      jointCmd.data(), jointCmd.data() + jointCmd.size());
 }
 
 //==============================================================================
-void JacobianVelocityExecutor::step(
+template <ExecutorType T>
+void JacobianExecutor<T>::step(
     const std::chrono::system_clock::time_point& timepoint)
 {
   std::lock_guard<std::mutex> lock(mMutex);
+  mExecutor->step(timepoint);
 
   if (!mInProgress)
     return;
@@ -165,7 +161,7 @@ void JacobianVelocityExecutor::step(
     }
     if (fail)
     {
-      mCommand.clear();
+      mCommand = Eigen::Vector6d::Zero();
       mExecutor->cancel();
       mInProgress = false;
       return;
@@ -184,7 +180,7 @@ void JacobianVelocityExecutor::step(
   // Check if command has timed out
   if (mTimeout.count() > 0.0 && executionTime >= mTimeout.count())
   {
-    mCommand.clear();
+    mCommand = Eigen::Vector6d::Zero();
     mExecutor->cancel();
     mInProgress = false;
     mPromise->set_value(0);
@@ -192,16 +188,32 @@ void JacobianVelocityExecutor::step(
 
   // Update underlying velocity command
   mFuture = mExecutor->execute(SE3ToJoint(mCommand), mTimeout);
+  mExecutor->step(timepoint);
 }
 
 //==============================================================================
-void JacobianVelocityExecutor::cancel()
+template <ExecutorType T>
+std::future<int> JacobianExecutor<T>::execute(
+      const std::vector<double>& command,
+      const std::chrono::duration<double>& timeout)
+{
+  if (mInProgress) {
+    this->cancel();
+  }
+
+  return mExecutor->execute(command, timeout);
+}
+
+//==============================================================================
+template <ExecutorType T>
+void JacobianExecutor<T>::cancel()
 {
   std::lock_guard<std::mutex> lock(mMutex);
+  mExecutor->cancel();
 
   if (mInProgress)
   {
-    mCommand.clear();
+    mCommand = Eigen::Vector6d::Zero();
     mInProgress = false;
     mExecutor->cancel();
     mPromise->set_exception(
@@ -209,7 +221,7 @@ void JacobianVelocityExecutor::cancel()
   }
   else
   {
-    dtwarn << "[JacobianVelocityExecutor::cancel] Attempting to "
+    dtwarn << "[JacobianExecutor::cancel] Attempting to "
            << "cancel command, but no command in progress.\n";
   }
 }
