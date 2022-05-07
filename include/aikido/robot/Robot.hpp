@@ -12,7 +12,9 @@
 
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
+#include "aikido/control/Executor.hpp"
 #include "aikido/control/KinematicSimulationTrajectoryExecutor.hpp"
+#include "aikido/control/KinematicSimulationJointCommandExecutor.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
@@ -39,13 +41,20 @@ public:
   ///
   /// \param[in] skeleton The skeleton defining the robot.
   /// \param[in] name The name of the robot.
-  Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name = "robot");
+  /// \param[in] addDefaultExecutors if true, adds the following:
+  ///             KinematicSimulationTrajectoryExecutor (active)
+  ///             KinematicSimulationPositionExecutor (inactive)
+  ///             KinematicSimulationVelocityExecutor (inactive)
+  Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name = "robot", bool addDefaultExecutors = true);
 
   ///
   /// Construct a new Robot as subrobot.
   ///
-  /// \param[in] skeleton The skeleton defining the robot.
-  /// \param[in] name The name of the robot.
+  /// \param[in] refSkeleton The metaskeleton defining the robot.
+  /// \param[in] rootRobot Pointer to parent robot
+  /// \param[in] collisionDetector Parent robot's collision detector
+  /// \param[in] collisionFilter Parent robot's collision filter
+  /// \param[in] name Unique Name of sub-robot
   Robot(
       dart::dynamics::ReferentialSkeletonPtr refSkeleton,
       Robot* rootRobot,
@@ -93,7 +102,7 @@ public:
       const constraint::dart::CollisionFreePtr& collisionFree) const;
 
   ///
-  /// Get the collission constraint between the root robot
+  /// Get the collission constraint between this (sub)robot
   /// and selected bodies within its World, combined with
   /// its self-collision constraint.
   /// \param[in] bodyNames Names of the bodies in
@@ -236,60 +245,70 @@ public:
   /////////////// Executor Management //////////////////
 
   ///
+  /// Deactivates the active executor.
   /// Clears the inactive executor list.
-  /// Forgets all unique names.
+  /// Forgets all unique id.
   /// 
-  virtual void clearInactiveExecutors();
+  virtual void clearExecutors();
 
   ///
-  /// Add an executor to the inactive exectuors list.
+  /// Deactivates the active executor.
+  /// 
+  virtual void deactivateExecutor();
+
+  ///
+  /// Retrieves the active executor.
+  /// 
+  virtual aikido::control::ExecutorPtr getActiveExecutor();
+
+  ///
+  /// Add an executor to the inactive executors list.
   /// Releases DoFs held by executor if held.
   ///
   /// \param[in] executor The Executor to add to the inactive list.
-  /// \param[in] desiredName Desired unique name fo the executor.
-  /// \return A robot-unique name for the executor to use for reference.
-  virtual std::string registerExecutor(
-      aikido::control::ExecutorPtr executor, const std::string& desiredName);
+  /// \return A robot-unique non-negative ID (negative implies failure)
+  virtual int registerExecutor(aikido::control::ExecutorPtr executor);
 
   ///
+  /// Deactivates the current active executor.
   /// Sets an executor from the inactive executor list to be the
-  /// active executor. Holds and releases DoFs as appropriate
+  /// active executor.
+  /// Holds and releases DoFs as needed.
   ///
-  /// \param[in] executorName Name of executor on inactive executor list.
-  /// \return True if successful.
-  virtual bool swapActiveExecutor(const std::string& executorName);
+  /// \param[in] id of executor on executor list
+  /// \return True if successful. If false, all executors are inactive.
+  virtual bool activateExecutor(int id);
 
   ///
-  /// Utility: calls registerExecutor and swapActiveExecutor on
-  /// the provided executor
+  /// Convenience:
+  /// Deactivates the current active executor.
+  /// Activates the *most recently registered* executor
+  /// of the given type.
   ///
-  /// \param[in] executor The Executor to set as active executor
-  /// \param[in] desiredName Desired unique name fo the executor.
-  /// \return A robot-unique name for the executor to use for reference.
-  virtual std::string registerActiveExecutor(
-      aikido::control::ExecutorPtr executor, const std::string& desiredName);
+  /// \param[in] type of executor to activate.
+  /// \return True if successful. If false, all executors are inactive.
+  virtual bool activateExecutor(const aikido::control::ExecutorType type);
 
   ///
-  /// Utility: executes given joint command on the robot.
-  /// Throws runtime_error if active executor is not of the
-  /// appropriate type.
-  /// Note: cancels all running commands on root and sub robot(s)
+  /// Convenience: executes given joint command on the robot.
+  /// future will have exception if active executor is not
+  /// of the appropriate type.
   ///
+  /// \param[in] type Type of JointCommandExecutor to look for.
   /// \param[in] command The joint command to execute.
   /// \param[in] timeout Timeout for the joint command
-  /// \param[in] type Type of JointCommandExecutor to look for.
-  virtual std::future<int> executeJointCommand(
-      const Eigen::VectorXd& command, const std::chrono::duration<double>& timeout, 
-      const aikido::control::ExecutorType type = aikido::control::ExecutorType::VELOCITY);
+  template<aikido::control::ExecutorType T>
+  std::future<int> executeJointCommand(
+      const std::vector<double>& command, 
+      const std::chrono::duration<double>& timeout);
 
   ///
-  /// Utility: executes given trajectory on the robot.
-  /// Throws runtime_error if active executor is not a Trajectory
-  /// Executor.
-  /// Note: cancels all running commands on root and sub robot(s)
+  /// Convenience: executes given trajectory on the robot.
+  /// future will have exception if active executor is not
+  /// of type TrajectoryExecutor
   ///
   /// \param[in] trajectory The trajectory to execute.
-  virtual std::future<void> executeTrajectory(
+  std::future<void> executeTrajectory(
       const trajectory::TrajectoryPtr& trajectory);
 
   ///
@@ -361,8 +380,8 @@ protected:
   std::string mName;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
-  std::pair<std::string, aikido::control::ExecutorPtr> mActiveExecutor{"", nullptr};
-  std::vector<std::pair<std::string, aikido::control::ExecutorPtr>> mInactiveExecutors;
+  int mActiveExecutor{-1};
+  std::vector<aikido::control::ExecutorPtr> mExecutors;
 
   // Subrobot and Joint Management
   Robot* mParentRobot{nullptr};
@@ -395,5 +414,7 @@ protected:
 
 } // namespace robot
 } // namespace aikido
+
+#include "detail/Robot-impl.hpp"
 
 #endif // AIKIDO_ROBOT_ROBOT_HPP_
