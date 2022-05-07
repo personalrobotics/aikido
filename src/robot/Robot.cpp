@@ -44,15 +44,19 @@ Robot::Robot(
       rngSeed);
 
   // Add default executors if requested
-  if(addDefaultExecutors) {
+  if (addDefaultExecutors)
+  {
     auto trajExecName = registerExecutor(
-      std::make_shared<aikido::control::KinematicSimulationTrajectoryExecutor>(skeleton));
+        std::make_shared<
+            aikido::control::KinematicSimulationTrajectoryExecutor>(skeleton));
     activateExecutor(trajExecName);
 
     registerExecutor(
-      std::make_shared<aikido::control::KinematicSimulationPositionExecutor>(skeleton));
+        std::make_shared<aikido::control::KinematicSimulationPositionExecutor>(
+            skeleton));
     registerExecutor(
-      std::make_shared<aikido::control::KinematicSimulationVelocityExecutor>(skeleton));
+        std::make_shared<aikido::control::KinematicSimulationVelocityExecutor>(
+            skeleton));
   }
 }
 
@@ -108,30 +112,37 @@ void Robot::enforceSelfCollisionPairs(
 }
 
 //==============================================================================
-void Robot::clearExecutors() {
+void Robot::clearExecutors()
+{
   deactivateExecutor();
   mExecutors.clear();
 }
 
 //==============================================================================
-void Robot::deactivateExecutor() {
-  if(mActiveExecutor >= 0) {
+void Robot::deactivateExecutor()
+{
+  if (mActiveExecutor >= 0)
+  {
     mExecutors[mActiveExecutor]->releaseDofs();
     mActiveExecutor = -1;
   }
 }
 
 //==============================================================================
-aikido::control::ExecutorPtr Robot::getActiveExecutor() {
-  if(mActiveExecutor >= 0) {
+aikido::control::ExecutorPtr Robot::getActiveExecutor()
+{
+  if (mActiveExecutor >= 0)
+  {
     return mExecutors[mActiveExecutor];
   }
   return nullptr;
 }
 
 //==============================================================================
-int Robot::registerExecutor(aikido::control::ExecutorPtr executor) {
-  if(!executor) {
+int Robot::registerExecutor(aikido::control::ExecutorPtr executor)
+{
+  if (!executor)
+  {
     return -1;
   }
 
@@ -141,17 +152,20 @@ int Robot::registerExecutor(aikido::control::ExecutorPtr executor) {
 }
 
 //==============================================================================
-bool Robot::activateExecutor(int id) {
+bool Robot::activateExecutor(int id)
+{
   // Deactivate active executor
   deactivateExecutor();
 
   // Validate input
-  if(id < 0 || (size_t)id >= mExecutors.size()) {
+  if (id < 0 || (size_t)id >= mExecutors.size())
+  {
     return false;
   }
 
   // If we can register the executor, activate it
-  if(mExecutors[id]->registerDofs()) {
+  if (mExecutors[id]->registerDofs())
+  {
     mActiveExecutor = (int)id;
     return true;
   }
@@ -159,11 +173,14 @@ bool Robot::activateExecutor(int id) {
 }
 
 //==============================================================================
-bool Robot::activateExecutor(const aikido::control::ExecutorType type) {
+bool Robot::activateExecutor(const aikido::control::ExecutorType type)
+{
   // Search for last added executor of given type
-  for(int i = mExecutors.size() - 1; i >= 0; i--) {
+  for (int i = mExecutors.size() - 1; i >= 0; i--)
+  {
     auto types = mExecutors[i]->getTypes();
-    if(types.find(type) != types.end()) {
+    if (types.find(type) != types.end())
+    {
       return activateExecutor(i);
     }
   }
@@ -172,28 +189,37 @@ bool Robot::activateExecutor(const aikido::control::ExecutorType type) {
 
 //==============================================================================
 // Explicit Instantiation of Joint Commnd Functions
-template std::future<int> Robot::executeJointCommand<aikido::control::ExecutorType::POSITION>(
-      const std::vector<double>& command, 
-      const std::chrono::duration<double>& timeout);
-template std::future<int> Robot::executeJointCommand<aikido::control::ExecutorType::VELOCITY>(
-      const std::vector<double>& command, 
-      const std::chrono::duration<double>& timeout);
-template std::future<int> Robot::executeJointCommand<aikido::control::ExecutorType::EFFORT>(
-      const std::vector<double>& command, 
-      const std::chrono::duration<double>& timeout);
+template std::future<int>
+Robot::executeJointCommand<aikido::control::ExecutorType::POSITION>(
+    const std::vector<double>& command,
+    const std::chrono::duration<double>& timeout);
+template std::future<int>
+Robot::executeJointCommand<aikido::control::ExecutorType::VELOCITY>(
+    const std::vector<double>& command,
+    const std::chrono::duration<double>& timeout);
+template std::future<int>
+Robot::executeJointCommand<aikido::control::ExecutorType::EFFORT>(
+    const std::vector<double>& command,
+    const std::chrono::duration<double>& timeout);
 
 //==============================================================================
 std::future<void> Robot::executeTrajectory(
     const trajectory::TrajectoryPtr& trajectory)
 {
   // Retrieve active executor
-  if(mActiveExecutor < 0) {
-    return util::make_exceptional_future<void>("executeTrajectory: No active executor");
+  if (mActiveExecutor < 0)
+  {
+    return util::make_exceptional_future<void>(
+        "executeTrajectory: No active executor");
   }
   aikido::control::TrajectoryExecutorPtr trajectoryExecutor;
-  trajectoryExecutor = std::dynamic_pointer_cast<aikido::control::TrajectoryExecutor>(mExecutors[mActiveExecutor]);
-  if(!trajectoryExecutor) {
-    return util::make_exceptional_future<void>("executeTrajectory: Active executor not a TrajectoryExecutor");
+  trajectoryExecutor
+      = std::dynamic_pointer_cast<aikido::control::TrajectoryExecutor>(
+          mExecutors[mActiveExecutor]);
+  if (!trajectoryExecutor)
+  {
+    return util::make_exceptional_future<void>(
+        "executeTrajectory: Active executor not a TrajectoryExecutor");
   }
 
   return trajectoryExecutor->execute(trajectory);
@@ -206,7 +232,8 @@ void Robot::cancelAllCommands(
     const std::vector<std::string> excludedSubrobots)
 {
   // Cancel this trajectory
-  if (mActiveExecutor >= 0) {
+  if (mActiveExecutor >= 0)
+  {
     mExecutors[mActiveExecutor]->cancel();
   }
 

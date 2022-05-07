@@ -201,8 +201,8 @@ template <typename T>
 inline std::future<T> make_exceptional_future(std::string error_message)
 {
   auto promise = std::promise<T>();
-  promise.set_exception(std::make_exception_ptr(
-        std::runtime_error(error_message)));
+  promise.set_exception(
+      std::make_exception_ptr(std::runtime_error(error_message)));
   return promise.get_future();
 }
 

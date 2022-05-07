@@ -13,8 +13,8 @@
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/Executor.hpp"
-#include "aikido/control/KinematicSimulationTrajectoryExecutor.hpp"
 #include "aikido/control/KinematicSimulationJointCommandExecutor.hpp"
+#include "aikido/control/KinematicSimulationTrajectoryExecutor.hpp"
 #include "aikido/control/TrajectoryExecutor.hpp"
 #include "aikido/distance/ConfigurationRanker.hpp"
 #include "aikido/planner/ConfigurationToConfigurationPlanner.hpp"
@@ -45,7 +45,10 @@ public:
   ///             KinematicSimulationTrajectoryExecutor (active)
   ///             KinematicSimulationPositionExecutor (inactive)
   ///             KinematicSimulationVelocityExecutor (inactive)
-  Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name = "robot", bool addDefaultExecutors = true);
+  Robot(
+      dart::dynamics::SkeletonPtr skeleton,
+      const std::string name = "robot",
+      bool addDefaultExecutors = true);
 
   ///
   /// Construct a new Robot as subrobot.
@@ -248,17 +251,17 @@ public:
   /// Deactivates the active executor.
   /// Clears the inactive executor list.
   /// Forgets all unique id.
-  /// 
+  ///
   virtual void clearExecutors();
 
   ///
   /// Deactivates the active executor.
-  /// 
+  ///
   virtual void deactivateExecutor();
 
   ///
   /// Retrieves the active executor.
-  /// 
+  ///
   virtual aikido::control::ExecutorPtr getActiveExecutor();
 
   ///
@@ -297,9 +300,9 @@ public:
   /// \param[in] type Type of JointCommandExecutor to look for.
   /// \param[in] command The joint command to execute.
   /// \param[in] timeout Timeout for the joint command
-  template<aikido::control::ExecutorType T>
+  template <aikido::control::ExecutorType T>
   std::future<int> executeJointCommand(
-      const std::vector<double>& command, 
+      const std::vector<double>& command,
       const std::chrono::duration<double>& timeout);
 
   ///
