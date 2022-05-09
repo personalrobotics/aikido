@@ -184,6 +184,9 @@ bool Robot::activateExecutor(const aikido::control::ExecutorType type)
       return activateExecutor(i);
     }
   }
+
+  // Deactivate active executor
+  deactivateExecutor();
   return false;
 }
 

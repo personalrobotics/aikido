@@ -102,7 +102,10 @@ public:
   void releaseDofs();
 
   /// Cancel the current command.
-  virtual void cancel() = 0;
+  virtual void cancel()
+  {
+    // Do nothing
+  }
 
 private:
   /// Call to spin first to pass current time to step
