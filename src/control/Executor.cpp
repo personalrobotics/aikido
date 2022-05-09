@@ -80,7 +80,7 @@ std::set<ExecutorType> Executor::getTypes() const
 }
 
 //==============================================================================
-std::vector<dart::dynamics::DegreeOfFreedom*> Executor::getDofs() const
+const std::vector<dart::dynamics::DegreeOfFreedom*> Executor::getDofs() const
 {
   return mDofs;
 }
