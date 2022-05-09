@@ -106,8 +106,10 @@ using JacobianEffortExecutor = JacobianExecutor<ExecutorType::EFFORT>;
 // Note: No position, as jacobian should only be used with derivatives.
 
 // Define constexprs (required for linking)
-template <ExecutorType T> constexpr size_t JacobianExecutor<T>::SE3_SIZE;
-template <ExecutorType T> constexpr double JacobianExecutor<T>::DEFAULT_LAMBDA;
+template <ExecutorType T>
+constexpr size_t JacobianExecutor<T>::SE3_SIZE;
+template <ExecutorType T>
+constexpr double JacobianExecutor<T>::DEFAULT_LAMBDA;
 
 } // namespace control
 } // namespace aikido
