@@ -101,6 +101,12 @@ public:
   /// Unlock any resources required by the DoFs
   void releaseDofs();
 
+  /// Cancel the current command.
+  virtual void cancel()
+  {
+    // Do nothing
+  }
+
 private:
   /// Call to spin first to pass current time to step
   /// Necessary for real-time execution via mThread.

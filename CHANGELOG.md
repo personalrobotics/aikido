@@ -6,7 +6,7 @@
 
   * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
   * Add generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
-  * Add JacobianVelocityExecutor wrapping any VelocityExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
+  * Add JacobianExecutor wrapping any Velocity/EffortExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
 
 * IO
   * Updated DartLoader usage, previously deprecated by DART 6.12 [#619](https://github.com/personalrobotics/aikido/pull/619)

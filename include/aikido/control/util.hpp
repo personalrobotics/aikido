@@ -35,7 +35,7 @@ inline std::set<ExecutorType> concatenateTypes(
   return ret;
 }
 
-/// Check if MetaSkeletonPtr is null
+/// Check if Ptr is null
 /// Useful for initializer Lists
 template <typename T>
 inline T checkNull(T obj)
