@@ -46,8 +46,15 @@ public:
   /// \param timeout How long until command expires
   virtual std::future<int> execute(
       const std::vector<double>& command,
-      const std::chrono::duration<double>& timeout)
+      const std::chrono::duration<double>& timeout,
+      const std::chrono::system_clock::time_point& timepoint)
       = 0;
+  virtual std::future<int> execute(
+      const std::vector<double>& command,
+      const std::chrono::duration<double>& timeout)
+  {
+    return this->execute(command, timeout, std::chrono::system_clock::now());
+  }
 
   // Documentation inherited.
   virtual void step(

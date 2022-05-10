@@ -44,7 +44,14 @@ public:
   virtual std::future<int> execute(
       const Eigen::Vector6d command,
       const std::chrono::duration<double>& timeout
-      = std::chrono::duration<double>(1));
+      = std::chrono::duration<double>(1))
+  {
+    return this->execute(command, timeout, std::chrono::system_clock::now());
+  }
+  virtual std::future<int> execute(
+      const Eigen::Vector6d command,
+      const std::chrono::duration<double>& timeout,
+      const std::chrono::system_clock::time_point& timepoint);
 
   /// \copydoc JointCommandExecutor::execute()
   ///
@@ -53,7 +60,14 @@ public:
   virtual std::future<int> execute(
       const std::vector<double>& command,
       const std::chrono::duration<double>& timeout
-      = std::chrono::duration<double>(1));
+      = std::chrono::duration<double>(1))
+  {
+    return this->execute(command, timeout, std::chrono::system_clock::now());
+  }
+  virtual std::future<int> execute(
+      const std::vector<double>& command,
+      const std::chrono::duration<double>& timeout,
+      const std::chrono::system_clock::time_point& timepoint);
 
   /// \copydoc Executor::step()
   ///

@@ -63,7 +63,8 @@ KinematicSimulationJointCommandExecutor<
 template <ExecutorType T>
 std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
     const std::vector<double>& command,
-    const std::chrono::duration<double>& timeout)
+    const std::chrono::duration<double>& timeout,
+    const std::chrono::system_clock::time_point& timepoint)
 {
   auto promise = std::promise<int>();
 
@@ -88,7 +89,7 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
 
   mCommand = command;
   mInProgress = true;
-  mExecutionStartTime = std::chrono::system_clock::now();
+  mExecutionStartTime = timepoint;
   mTimeout = timeout;
 
   // Set start positions

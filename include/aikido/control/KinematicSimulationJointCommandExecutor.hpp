@@ -35,8 +35,15 @@ public:
   // Documentation inherited
   virtual std::future<int> execute(
       const std::vector<double>& command,
+      const std::chrono::duration<double>& timeout,
+      const std::chrono::system_clock::time_point& timepoint) override;
+  virtual std::future<int> execute(
+      const std::vector<double>& command,
       const std::chrono::duration<double>& timeout
-      = std::chrono::duration<double>(1)) override;
+      = std::chrono::duration<double>(1.0)) override
+  {
+    return this->execute(command, timeout, std::chrono::system_clock::now());
+  }
 
   /// \copydoc Executor::step()
   ///

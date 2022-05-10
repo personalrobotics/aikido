@@ -23,7 +23,7 @@ JacobianExecutor<T>::JacobianExecutor(
   : JointCommandExecutor<T>(
       executor ? executor->getDofs() : checkNull(eeNode)->getDependentDofs(),
       executor ? executor->getTypes()
-               : std::set<ExecutorType>{ExecutorType::STATE})
+               : std::set<ExecutorType>{T, ExecutorType::STATE})
   , mEENode{checkNull(eeNode)}
   , mExecutor{executor}
   , mLambda{lambda}
@@ -41,7 +41,6 @@ JacobianExecutor<T>::JacobianExecutor(
 
   // Release sub-executor DoFs, this class owns them now
   mExecutor->releaseDofs();
-  this->registerDofs();
 }
 
 //==============================================================================
@@ -66,7 +65,9 @@ JacobianExecutor<T>::~JacobianExecutor()
 //==============================================================================
 template <ExecutorType T>
 std::future<int> JacobianExecutor<T>::execute(
-    const Eigen::Vector6d command, const std::chrono::duration<double>& timeout)
+    const Eigen::Vector6d command,
+    const std::chrono::duration<double>& timeout,
+    const std::chrono::system_clock::time_point& timepoint)
 {
 
   {
@@ -86,7 +87,7 @@ std::future<int> JacobianExecutor<T>::execute(
     mCommand = command;
     mExecutionStartTime = std::chrono::system_clock::now();
     mTimeout = timeout;
-    mFuture = mExecutor->execute(SE3ToJoint(mCommand), mTimeout);
+    mFuture = mExecutor->execute(SE3ToJoint(mCommand), mTimeout, timepoint);
     mInProgress = true;
   }
 
@@ -191,7 +192,7 @@ void JacobianExecutor<T>::step(
   }
 
   // Update underlying velocity command
-  mFuture = mExecutor->execute(SE3ToJoint(mCommand), mTimeout);
+  mFuture = mExecutor->execute(SE3ToJoint(mCommand), mTimeout, timepoint);
   mExecutor->step(timepoint);
 }
 
@@ -199,14 +200,15 @@ void JacobianExecutor<T>::step(
 template <ExecutorType T>
 std::future<int> JacobianExecutor<T>::execute(
     const std::vector<double>& command,
-    const std::chrono::duration<double>& timeout)
+    const std::chrono::duration<double>& timeout,
+    const std::chrono::system_clock::time_point& timepoint)
 {
   if (mInProgress)
   {
     this->cancel();
   }
 
-  return mExecutor->execute(command, timeout);
+  return mExecutor->execute(command, timeout, timepoint);
 }
 
 //==============================================================================
