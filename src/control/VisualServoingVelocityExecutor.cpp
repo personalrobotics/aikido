@@ -10,6 +10,19 @@ namespace aikido {
 namespace control {
 
 //==============================================================================
+// Explicit Declaration of static constexpr vars
+// See:
+// https://stackoverflow.com/questions/8016780/undefined-reference-to-static-constexpr-char
+// TODO: Fix this when upgrading to C++17
+constexpr double
+    VisualServoingVelocityExecutor::Properties::DEFAULT_GOAL_TOLERANCE;
+constexpr double
+    VisualServoingVelocityExecutor::Properties::DEFAULT_APPROACH_VEL;
+constexpr double VisualServoingVelocityExecutor::Properties::DEFAULT_TIMEOUT;
+constexpr long
+    VisualServoingVelocityExecutor::Properties::DEFAULT_THREAD_PERIOD;
+
+//==============================================================================
 VisualServoingVelocityExecutor::VisualServoingVelocityExecutor(
     ::dart::dynamics::BodyNode* eeNode,
     std::shared_ptr<JacobianVelocityExecutor> executor,
@@ -26,6 +39,10 @@ VisualServoingVelocityExecutor::VisualServoingVelocityExecutor(
   , mMutex{}
   , mProperties{properties}
 {
+  if (mProperties.mApproachVelocity <= 0.0)
+  {
+    throw std::invalid_argument("Approach Velocity must be positive.");
+  }
   if (!mExecutor)
   {
     this->releaseDofs();
@@ -148,7 +165,12 @@ void VisualServoingVelocityExecutor::step(
     // Update underlying velocity command
     Eigen::Vector6d command = Eigen::Vector6d::Zero();
     command.tail<3>() = error.normalized() * mProperties.mApproachVelocity;
-    mFuture = mExecutor->execute(command, mProperties.mTimeout, timepoint);
+    // Don't command past the goal
+    auto timeout = std::min(
+        mProperties.mTimeout,
+        std::chrono::duration<double>(
+            error.norm() / mProperties.mApproachVelocity));
+    mFuture = mExecutor->execute(command, timeout, timepoint);
     mExecutor->step(timepoint);
   }
 
