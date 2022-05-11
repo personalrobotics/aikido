@@ -9,28 +9,6 @@ namespace ros {
 
 using std::chrono::milliseconds;
 
-inline int intFromMode(hardware_interface::JointCommandModes mode) {
-  switch(mode) {
-    case hardware_interface::JointCommandModes::BEGIN:
-      return -1;
-    case hardware_interface::JointCommandModes::MODE_POSITION:
-      return 0;
-    case hardware_interface::JointCommandModes::MODE_VELOCITY:
-      return 1;
-    case hardware_interface::JointCommandModes::MODE_EFFORT:
-      return 2;
-    case hardware_interface::JointCommandModes::NOMODE:
-      return 3;
-    case hardware_interface::JointCommandModes::EMERGENCY_STOP:
-      return 4;
-    case hardware_interface::JointCommandModes::SWITCHING:
-      return 5;
-    default:
-      ROS_WARN_STREAM("Setting error mode to'" <<6<< "'.");
-      return 6;
-  }
-}
-
 //==============================================================================
 RosJointModeCommandClient::RosJointModeCommandClient(
     ::ros::NodeHandle node,

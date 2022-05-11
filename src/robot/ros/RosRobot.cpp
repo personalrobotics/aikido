@@ -57,7 +57,8 @@ RosRobot::RosRobot(
 
 //=============================================================================
 RobotPtr RosRobot::registerSubRobot(
-    dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name)
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton, 
+    const std::string& name)
 {
   // Ensure name is unique
   if (mSubRobots.find(name) != mSubRobots.end())
@@ -81,8 +82,7 @@ RobotPtr RosRobot::registerSubRobot(
   // Ensure subrobot DoFs are disjoint
   for (const auto& subrobot : mSubRobots)
   {
-    std::shared_ptr<RosRobot> subrosrobotptr = std::dynamic_pointer_cast<RosRobot>(subrobot.second); //Downcast to rosRobot
-    auto dofs = subrosrobotptr->mDofs;
+    auto dofs = std::dynamic_pointer_cast<RosRobot>(subrobot.second)->mDofs; //Downcast to RosRobot for access to protected members
     for (std::string dofName : util::dofNamesFromSkeleton(refSkeleton))
     {
       if (dofs.find(dofName) != dofs.end())
@@ -94,53 +94,87 @@ RobotPtr RosRobot::registerSubRobot(
     }
   }
 
-  // Create the subrobot.
+  // Create the sub RosRobot.
   auto subRosRobot = std::make_shared<RosRobot>(
       refSkeleton, this, mCollisionDetector, mSelfCollisionFilter, name);
-  // std::shared_ptr<Robot> subRobot = std::dynamic_pointer_cast<Robot>(subRosRobot); // Upcast to Robot (do we require this?)
   mSubRobots[name] = subRosRobot;
   return subRosRobot;
 }
 
+//=============================================================================
 void RosRobot::deactivateExecutor()
 {
   if (mActiveExecutor >= 0)
   {
-    stopController(mRosControllerNames[mActiveExecutor]); // Rajat TODO: What if stop controller fails?
+    if(mRosControllerNames[mActiveExecutor] != "" && !stopController(mRosControllerNames[mActiveExecutor])) 
+    {
+      throw std::runtime_error("Could not stop controller: " + mRosControllerNames[mActiveExecutor]);
+    }
     Robot::deactivateExecutor();
   }
 }
 
+//=============================================================================
 int RosRobot::registerExecutor(
     aikido::control::ExecutorPtr executor, 
-    std::string controller_name, 
-    hardware_interface::JointCommandModes controller_mode)
+    std::string controllerName, 
+    hardware_interface::JointCommandModes controllerMode)
 {
-  int id = Robot::registerExecutor(executor);
-  if(id != -1 && loadController(controller_name))
+  if(controllerName != "" && !loadController(controllerName))
   {
-    mRosControllerNames.push_back(controller_name);
-    mRosControllerModes.push_back(controller_mode);
+    throw std::runtime_error("Could not load controller: " + controllerName);
+  }
+  int id = Robot::registerExecutor(executor);
+  if(id != -1)
+  {
+    mRosControllerNames.push_back(controllerName);
+    mRosControllerModes.push_back(controllerMode);
   }
   return id;
 }
 
+int RosRobot::registerExecutor(
+    aikido::control::ExecutorPtr executor, 
+    std::string controllerName)
+{
+  if(!mRosJointModeCommandClient)
+  {
+    dtwarn<<"Could not register executor as controller mode has not been specified. "<<std::endl;
+    return -1;
+  }
+  return registerExecutor(executor,controllerName,hardware_interface::JointCommandModes::ERROR);
+} 
+
+//=============================================================================
 int RosRobot::registerExecutor(aikido::control::ExecutorPtr executor)
 {
+  if(!mRosControllerServiceClient)
+  {
+    dtwarn<<"Could not register executor as controller has not been specified. "<<std::endl;
+    return -1;
+  }
   return registerExecutor(executor,"",hardware_interface::JointCommandModes::ERROR);
 }
 
+//=============================================================================
 bool RosRobot::activateExecutor(int id)
 {
   // Deactivate active executor
   deactivateExecutor();
-  if(Robot::activateExecutor(id))
+  if(mRosControllerNames[mActiveExecutor] != "" && !startController(mRosControllerNames[mActiveExecutor]))
   {
-    return startController(mRosControllerNames[mActiveExecutor]) && switchControllerMode(mRosControllerModes[mActiveExecutor]);
+    throw std::runtime_error("Could not start controller: " + mRosControllerNames[mActiveExecutor]);
   }
-  return false;
+
+  if(mRosControllerModes[mActiveExecutor] != hardware_interface::JointCommandModes::ERROR && !switchControllerMode(mRosControllerModes[mActiveExecutor]))
+  {  
+    throw std::runtime_error("Could not switch controller mode to: " + aikido::control::ros::intFromMode(mRosControllerModes[mActiveExecutor]));
+  }
+
+  return Robot::activateExecutor(id);
 }
 
+//=============================================================================
 bool RosRobot::activateExecutor(const aikido::control::ExecutorType type)
 {
   for (int i = mExecutors.size() - 1; i >= 0; i--)
@@ -156,21 +190,42 @@ bool RosRobot::activateExecutor(const aikido::control::ExecutorType type)
   return false;  
 }
 
+//=============================================================================
+bool RosRobot::loadController(const std::string loadControllerName)
+{
+  if (!mRosControllerServiceClient)
+  {
+    throw std::runtime_error("ROS controller manager service client not instantiated.");
+  }
+
+  controller_manager_msgs::LoadController srv;
+  srv.request.name = loadControllerName; 
+
+  return mRosControllerServiceClient->call(srv) && srv.response.ok;
+}
+
+//=============================================================================
 bool RosRobot::startController(const std::string startControllerName)
 {
   return switchController(startControllerName, std::string());
 }
 
+//=============================================================================
 bool RosRobot::stopController(const std::string stopControllerName)
 {
   cancelAllCommands();
   return switchController(std::string(), stopControllerName);
 }
 
-bool RosRobot::switchController(const std::string startControllerName, const std::string stopControllerName)
+//=============================================================================
+bool RosRobot::switchController(
+    const std::string startControllerName, 
+    const std::string stopControllerName)
 {
   if (!mRosControllerServiceClient)
-    throw std::runtime_error("ServiceClient not instantiated.");
+  {
+    throw std::runtime_error("ROS controller manager service client not instantiated.");
+  }
 
   controller_manager_msgs::SwitchController srv;
   // First try stopping the started controllers
@@ -187,23 +242,16 @@ bool RosRobot::switchController(const std::string startControllerName, const std
   return mRosControllerServiceClient->call(srv) && srv.response.ok;
 }
 
-bool RosRobot::loadController(const std::string loadControllerName)
+//=============================================================================
+bool RosRobot::switchControllerMode(const hardware_interface::JointCommandModes jointMode)
 {
-  if(loadControllerName == "")
-    return true; // no controller to load
-
-  controller_manager_msgs::LoadController srv;
-  srv.request.name = loadControllerName; // Rajat ToDo: handle cases when this can fail
-
-  return mRosControllerServiceClient->call(srv) && srv.response.ok;
-}
-
-bool RosRobot::switchControllerMode(const hardware_interface::JointCommandModes joint_mode)
-{
-  if(joint_mode == hardware_interface::JointCommandModes::ERROR)
-    return false;
+  if (!mRosJointModeCommandClient)
+  {
+    throw std::runtime_error("ROS joint mode controller actionlib client not instantiated.");
+  }
   
-  auto future = mRosJointModeCommandClient->execute(std::vector<hardware_interface::JointCommandModes>(mMetaSkeleton->getDofs().size(),joint_mode));
+  // Currently we only send the same control mode to each joint
+  auto future = mRosJointModeCommandClient->execute(std::vector<hardware_interface::JointCommandModes>(mMetaSkeleton->getDofs().size(),jointMode));
   try 
   {
     future.get();
