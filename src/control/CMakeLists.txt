@@ -6,6 +6,7 @@ set(sources
   QueuedTrajectoryExecutor.cpp
   JacobianExecutor.cpp
   TrajectoryRunningException.cpp
+  VisualServoingVelocityExecutor.cpp
 )
 
 add_library("${PROJECT_NAME}_control" SHARED ${sources})
