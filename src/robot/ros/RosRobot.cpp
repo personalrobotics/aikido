@@ -55,6 +55,53 @@ RosRobot::RosRobot(
   }
 }
 
+//=============================================================================
+RobotPtr RosRobot::registerSubRobot(
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name)
+{
+  // Ensure name is unique
+  if (mSubRobots.find(name) != mSubRobots.end())
+  {
+    dtwarn << "Subrobot '" << name << "' already exists." << std::endl;
+    return nullptr;
+  }
+
+  // Ensure all body nodes in skeleton are owned by this robot
+  for (auto bodyNode : refSkeleton->getBodyNodes())
+  {
+    if (!mMetaSkeleton->hasBodyNode(bodyNode))
+    {
+      dtwarn << "Subrobot '" << name << "'' contains body node "
+             << bodyNode->getName() << " not in parent MetaSkeleton."
+             << std::endl;
+      return nullptr;
+    }
+  }
+
+  // Ensure subrobot DoFs are disjoint
+  for (const auto& subrobot : mSubRobots)
+  {
+    std::shared_ptr<RosRobot> subrosrobotptr = std::dynamic_pointer_cast<RosRobot>(subrobot.second); //Downcast to rosRobot
+    auto dofs = subrosrobotptr->mDofs;
+    for (std::string dofName : util::dofNamesFromSkeleton(refSkeleton))
+    {
+      if (dofs.find(dofName) != dofs.end())
+      {
+        dtwarn << "Subrobot '" << name << "'' overlaps existing subrobot "
+               << subrobot.first << " at DoF " << dofName << "." << std::endl;
+        return nullptr;
+      }
+    }
+  }
+
+  // Create the subrobot.
+  auto subRosRobot = std::make_shared<RosRobot>(
+      refSkeleton, this, mCollisionDetector, mSelfCollisionFilter, name);
+  // std::shared_ptr<Robot> subRobot = std::dynamic_pointer_cast<Robot>(subRosRobot); // Upcast to Robot (do we require this?)
+  mSubRobots[name] = subRosRobot;
+  return subRosRobot;
+}
+
 void RosRobot::deactivateExecutor()
 {
   if (mActiveExecutor >= 0)

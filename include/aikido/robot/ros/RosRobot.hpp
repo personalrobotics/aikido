@@ -36,8 +36,35 @@ public:
     const std::string rosControllerManagerServerName = "",
     const std::string rosJointModeServerName = "");
 
+  ///
+  /// Construct a new Robot as subrobot.
+  ///
+  /// \param[in] refSkeleton The metaskeleton defining the robot.
+  /// \param[in] rootRobot Pointer to parent robot
+  /// \param[in] collisionDetector Parent robot's collision detector
+  /// \param[in] collisionFilter Parent robot's collision filter
+  /// \param[in] name Unique Name of sub-robot
+  RosRobot(
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton,
+    Robot* rootRobot,
+    dart::collision::CollisionDetectorPtr collisionDetector,
+    std::shared_ptr<dart::collision::BodyNodeCollisionFilter> collisionFilter,
+    const std::string name)
+  : Robot(refSkeleton, rootRobot,collisionDetector, collisionFilter, name)
+  {} 
+
   /// Destructor.
   virtual ~RosRobot() = default;
+
+  ///
+  /// Registers a subset of the joints of the skeleton as a new robot.
+  /// Must be disjoint from other subrobots.
+  ///
+  /// \param[in] metaSkeleton The referential skeleton corresponding to the
+  /// subrobot. \param[in] name Name of the subrobot.
+  RobotPtr registerSubRobot(
+      dart::dynamics::ReferentialSkeletonPtr refSkeleton,
+      const std::string& name) override;
 
   //==============================================================================
   void deactivateExecutor() override;
