@@ -21,7 +21,7 @@ class JacobianExecutor : public JointCommandExecutor<T>
 {
 public:
   static constexpr size_t SE3_SIZE = 6;
-  static constexpr double DEFAULT_LAMBDA = 1E-1;
+  static constexpr double DEFAULT_LAMBDA = 1E-8;
 
   /// Constructor.
   ///
