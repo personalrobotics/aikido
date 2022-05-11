@@ -31,6 +31,7 @@ set(sources
   Conversions.cpp
   RosJointStateClient.cpp
   RosJointGroupCommandClient.cpp
+  RosJointModeCommandClient.cpp
   RosJointCommandExecutor.cpp
 )
 

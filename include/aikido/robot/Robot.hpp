@@ -358,7 +358,7 @@ public:
   // Sets the Trajectory Executor
   // TODO(egordon) Later: ensure trajectory executor joints match managed DoFs
   void setTrajectoryExecutor(
-      const aikido::control::TrajectoryExecutorPtr& trajExecutor);
+      const aikido::control::TrajectoryExecutorPtr& trajExecutor); // Rajat doubt: should this be removed ?
 
   // Sets the default trajectory post-processor.
   // Also enables automatic post-processing for all planning functions.

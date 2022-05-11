@@ -6,11 +6,14 @@
 #include <mutex>
 
 #include <actionlib/client/action_client.h>
+#include <pr_control_msgs/JointGroupCommandAction.h>
 #include <pr_control_msgs/JointModeCommandAction.h>
+
 #include <ros/callback_queue.h>
 #include <ros/ros.h>
 
-// #include "aikido/control/Executor.hpp"
+// ros_controls
+#include <hardware_interface/joint_mode_interface.h>
 
 namespace aikido {
 namespace control {
@@ -42,9 +45,7 @@ public:
   /// Send command to ROS server for execution.
   /// \param[in] goal target joint command mode of target positions for each joint
   /// \param[in] timeout How long until command should expire
-  std::future<int> execute(
-      const std::vector<hardware_interface::JointCommandModes>& goal,
-      ::ros::Duration timeout);
+  std::future<int> execute(const std::vector<hardware_interface::JointCommandModes>& goal);
 
   /// \copydoc JointModeCommandExecutor::step()
   /// To be executed on a separate thread.

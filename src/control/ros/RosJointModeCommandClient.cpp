@@ -9,6 +9,28 @@ namespace ros {
 
 using std::chrono::milliseconds;
 
+inline int intFromMode(hardware_interface::JointCommandModes mode) {
+  switch(mode) {
+    case hardware_interface::JointCommandModes::BEGIN:
+      return -1;
+    case hardware_interface::JointCommandModes::MODE_POSITION:
+      return 0;
+    case hardware_interface::JointCommandModes::MODE_VELOCITY:
+      return 1;
+    case hardware_interface::JointCommandModes::MODE_EFFORT:
+      return 2;
+    case hardware_interface::JointCommandModes::NOMODE:
+      return 3;
+    case hardware_interface::JointCommandModes::EMERGENCY_STOP:
+      return 4;
+    case hardware_interface::JointCommandModes::SWITCHING:
+      return 5;
+    default:
+      ROS_WARN_STREAM("Setting error mode to'" <<6<< "'.");
+      return 6;
+  }
+}
+
 //==============================================================================
 RosJointModeCommandClient::RosJointModeCommandClient(
     ::ros::NodeHandle node,
@@ -36,8 +58,7 @@ RosJointModeCommandClient::~RosJointModeCommandClient()
 }
 
 //==============================================================================
-std::future<int> RosJointModeCommandClient::execute(
-    const std::vector<hardware_interface::JointCommandModes>& goal, ::ros::Duration timeout);
+std::future<int> RosJointModeCommandClient::execute(const std::vector<hardware_interface::JointCommandModes>& goal)
 {
   auto promise = new std::promise<int>();
 
@@ -45,8 +66,11 @@ std::future<int> RosJointModeCommandClient::execute(
   // Will check for size matching in the positionsToJointState function
   pr_control_msgs::JointModeCommandGoal commandGoal;
   commandGoal.joint_names = mJointNames;
-  commandGoal.command.time_from_start = timeout;
-  commandGoal.command.modes = goal;
+
+  std::vector<int> goal_modes;
+  for(auto mode: goal)
+    goal_modes.push_back(intFromMode(mode));
+  commandGoal.modes = goal_modes;
 
   bool waitForServer = waitForActionServer<
       pr_control_msgs::JointModeCommandAction,
@@ -88,7 +112,7 @@ std::future<int> RosJointModeCommandClient::execute(
 //==============================================================================
 void RosJointModeCommandClient::transitionCallback(GoalHandle handle)
 {
-  int error_code = 0;
+  int success = 0;
 
   if (handle != mGoalHandle)
   {
@@ -108,10 +132,10 @@ void RosJointModeCommandClient::transitionCallback(GoalHandle handle)
     if (result)
     {
       // Communicate error code
-      error_code = result->error_code;
-      if (result->error_code)
+      success = result->success;
+      if (!success)
       {
-        message << result->error_string;
+        message << result->message;
         ROS_WARN_STREAM_NAMED("RosJointModeCommandClient", message.str());
       }
     }
@@ -123,7 +147,7 @@ void RosJointModeCommandClient::transitionCallback(GoalHandle handle)
 
     if (isSuccessful)
     {
-      mPromise->set_value(error_code);
+      mPromise->set_value(success);
     }
     else
     {

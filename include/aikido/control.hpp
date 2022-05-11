@@ -10,6 +10,7 @@
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/RosJointCommandExecutor.hpp"
 #include "aikido/control/ros/RosJointGroupCommandClient.hpp"
+#include "aikido/control/ros/RosJointModeCommandClient.hpp"
 #include "aikido/control/ros/RosJointStateClient.hpp"
 #include "aikido/control/ros/RosTrajectoryExecutionException.hpp"
 #include "aikido/control/ros/RosTrajectoryExecutor.hpp"
