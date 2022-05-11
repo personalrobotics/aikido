@@ -15,10 +15,21 @@ RosRobot::RosRobot(
     const dart::common::Uri& srdf,
     const std::string name,
     const dart::common::ResourceRetrieverPtr& retriever,
+    const ::ros::NodeHandle* node,
     const std::string rosControllerManagerServerName,
     const std::string rosJointModeServerName)
   : Robot(aikido::io::loadSkeletonFromURDF(retriever, urdf), name)
 {
+  // Set up ROS Node
+  if (!node)
+  {
+    mNode = std::make_unique<::ros::NodeHandle>();
+  }
+  else
+  {
+    mNode = std::make_unique<::ros::NodeHandle>(*node);
+  }
+  
   // Read the SRDF for disabled collision pairs.
   urdf::Model urdfModel;
   std::string urdfAsString = retriever->readAll(urdf);

@@ -35,6 +35,7 @@ public:
     const std::string name,
     const dart::common::ResourceRetrieverPtr& retriever
       = std::make_shared<aikido::io::CatkinResourceRetriever>(),
+    const ::ros::NodeHandle* node = nullptr,
     const std::string rosControllerManagerServerName = "",
     const std::string rosJointModeServerName = "");
 
