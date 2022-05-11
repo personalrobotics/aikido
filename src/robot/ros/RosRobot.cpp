@@ -82,7 +82,7 @@ RobotPtr RosRobot::registerSubRobot(
   // Ensure subrobot DoFs are disjoint
   for (const auto& subrobot : mSubRobots)
   {
-    auto dofs = std::dynamic_pointer_cast<RosRobot>(subrobot.second)->mDofs; //Downcast to RosRobot for access to protected members
+    auto dofs = subrobot.second->getDofs();
     for (std::string dofName : util::dofNamesFromSkeleton(refSkeleton))
     {
       if (dofs.find(dofName) != dofs.end())
@@ -251,7 +251,7 @@ bool RosRobot::switchControllerMode(const hardware_interface::JointCommandModes 
   }
   
   // Currently we only send the same control mode to each joint
-  auto future = mRosJointModeCommandClient->execute(std::vector<hardware_interface::JointCommandModes>(mMetaSkeleton->getDofs().size(),jointMode));
+  auto future = mRosJointModeCommandClient->execute(std::vector<hardware_interface::JointCommandModes>(getDofs().size(),jointMode));
   try 
   {
     future.get();

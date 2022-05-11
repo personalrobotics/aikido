@@ -738,6 +738,12 @@ std::string Robot::getName() const
 }
 
 //=============================================================================
+std::set<std::string> Robot::getDofs() const
+{
+  return mDofs;
+}
+
+//=============================================================================
 dart::dynamics::MetaSkeletonPtr Robot::getMetaSkeletonClone() const
 {
   return mMetaSkeleton->cloneMetaSkeleton();

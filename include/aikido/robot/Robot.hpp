@@ -332,6 +332,9 @@ public:
   // Gets the (sub)robot's name
   std::string getName() const;
 
+  // Gets the (sub)robot's name
+  std::set<std::string> getDofs() const;
+
   // Gets a copy of the (sub)robot's metaskeleton at the current state
   dart::dynamics::MetaSkeletonPtr getMetaSkeletonClone() const;
 
