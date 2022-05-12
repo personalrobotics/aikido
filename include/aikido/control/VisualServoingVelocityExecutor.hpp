@@ -69,6 +69,12 @@ public:
 
   virtual ~VisualServoingVelocityExecutor();
 
+  /// Cancel current command and update properties
+  void resetProperties(Properties properties = Properties());
+
+  /// Get current properties
+  Properties getProperties() const;
+
   /// Execute a Visual Servoing Command, setting future upon completion
   /// \note Future should return 0 on success or timeout.
   ///

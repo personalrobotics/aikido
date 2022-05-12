@@ -73,6 +73,23 @@ VisualServoingVelocityExecutor::~VisualServoingVelocityExecutor()
 }
 
 //==============================================================================
+void VisualServoingVelocityExecutor::resetProperties(Properties properties)
+{
+  if (mPerception)
+  {
+    cancel();
+  }
+  mProperties = properties;
+}
+
+//==============================================================================
+VisualServoingVelocityExecutor::Properties
+VisualServoingVelocityExecutor::getProperties() const
+{
+  return mProperties;
+}
+
+//==============================================================================
 std::future<int> VisualServoingVelocityExecutor::execute(
     std::function<std::shared_ptr<Eigen::Isometry3d>(void)> perception,
     const std::chrono::system_clock::time_point& timepoint)
