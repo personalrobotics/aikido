@@ -29,7 +29,7 @@ public:
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosJointGroupCommandClient(
-      ::ros::NodeHandle node,
+      const ::ros::NodeHandle& node,
       const std::string& serverName,
       std::vector<std::string> jointNames,
       std::chrono::milliseconds connectionTimeout
