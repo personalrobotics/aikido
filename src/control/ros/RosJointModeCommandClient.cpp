@@ -36,7 +36,8 @@ RosJointModeCommandClient::~RosJointModeCommandClient()
 }
 
 //==============================================================================
-std::future<int> RosJointModeCommandClient::execute(const std::vector<hardware_interface::JointCommandModes>& goal)
+std::future<int> RosJointModeCommandClient::execute(
+    const std::vector<hardware_interface::JointCommandModes>& goal)
 {
   auto promise = new std::promise<int>();
 
@@ -46,7 +47,7 @@ std::future<int> RosJointModeCommandClient::execute(const std::vector<hardware_i
   commandGoal.joint_names = mJointNames;
 
   std::vector<int> goal_modes;
-  for(auto mode: goal)
+  for (auto mode : goal)
     goal_modes.push_back(intFromMode(mode));
   commandGoal.modes = goal_modes;
 

@@ -8,7 +8,6 @@
 #include <actionlib/client/action_client.h>
 #include <pr_control_msgs/JointGroupCommandAction.h>
 #include <pr_control_msgs/JointModeCommandAction.h>
-
 #include <ros/callback_queue.h>
 #include <ros/ros.h>
 
@@ -19,8 +18,10 @@ namespace aikido {
 namespace control {
 namespace ros {
 
-inline int intFromMode(hardware_interface::JointCommandModes mode) {
-  switch(mode) {
+inline int intFromMode(hardware_interface::JointCommandModes mode)
+{
+  switch (mode)
+  {
     case hardware_interface::JointCommandModes::BEGIN:
       return -1;
     case hardware_interface::JointCommandModes::MODE_POSITION:
@@ -36,7 +37,7 @@ inline int intFromMode(hardware_interface::JointCommandModes mode) {
     case hardware_interface::JointCommandModes::SWITCHING:
       return 5;
     default:
-      ROS_WARN_STREAM("Setting error mode to'" <<6<< "'.");
+      ROS_WARN_STREAM("Setting error mode to'" << 6 << "'.");
       return 6;
   }
 }
@@ -65,9 +66,10 @@ public:
   virtual ~RosJointModeCommandClient();
 
   /// Send command to ROS server for execution.
-  /// \param[in] goal target joint command mode of target positions for each joint
-  /// \param[in] timeout How long until command should expire
-  std::future<int> execute(const std::vector<hardware_interface::JointCommandModes>& goal);
+  /// \param[in] goal target joint command mode of target positions for each
+  /// joint \param[in] timeout How long until command should expire
+  std::future<int> execute(
+      const std::vector<hardware_interface::JointCommandModes>& goal);
 
   /// \copydoc JointModeCommandExecutor::step()
   /// To be executed on a separate thread.
