@@ -15,7 +15,7 @@ RosRobot::RosRobot(
     const dart::common::Uri& srdf,
     const std::string name,
     const dart::common::ResourceRetrieverPtr& retriever,
-    const ::ros::NodeHandle* node,
+    std::shared_ptr<::ros::NodeHandle> node,
     const std::string rosControllerManagerServerName,
     const std::string rosJointModeServerName)
   : Robot(aikido::io::loadSkeletonFromURDF(retriever, urdf), name, false)
@@ -23,11 +23,11 @@ RosRobot::RosRobot(
   // Set up ROS Node
   if (!node)
   {
-    mNode = std::make_unique<::ros::NodeHandle>();
+    mNode = std::make_shared<::ros::NodeHandle>();
   }
   else
   {
-    mNode = std::make_unique<::ros::NodeHandle>(*node);
+    mNode = node;
   }
 
   // Read the SRDF for disabled collision pairs.

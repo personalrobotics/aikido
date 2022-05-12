@@ -36,7 +36,7 @@ public:
       const std::string name,
       const dart::common::ResourceRetrieverPtr& retriever
       = std::make_shared<aikido::io::CatkinResourceRetriever>(),
-      const ::ros::NodeHandle* node = nullptr,
+      std::shared_ptr<::ros::NodeHandle> node = nullptr,
       const std::string rosControllerManagerServerName = "",
       const std::string rosJointModeServerName = "");
 
@@ -179,7 +179,7 @@ protected:
   std::vector<std::string> mRosControllerNames;
 
   // Ros node associated with this robot.
-  std::unique_ptr<::ros::NodeHandle> mNode;
+  std::shared_ptr<::ros::NodeHandle> mNode;
 
   // Ros controller service client.
   std::unique_ptr<::ros::ServiceClient> mRosControllerServiceClient;
