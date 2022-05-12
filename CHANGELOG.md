@@ -13,6 +13,8 @@
 
 * Robot
   * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
+  * Implement generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
+  * Add controller switching to RosRobot [#621](https://github.com/personalrobotics/aikido/pull/621)
 
 * RViz
 
