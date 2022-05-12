@@ -107,7 +107,7 @@ public:
 
   ///
   /// Add an executor to the inactive executors list.
-  /// Operations on this executor do not afffect the controller or control mode.
+  /// Operations on this executor do not affect the controller or control mode.
   /// Releases DoFs held by executor if held.
   ///
   /// \param[in] executor The Executor to add to the inactive list.
