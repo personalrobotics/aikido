@@ -27,8 +27,9 @@ public:
   /// \param[in] name The name of the robot.
   /// \param[in] retriever Retriever to access resources (urdf/srdf).
   /// \param[in] rosControllerManagerServerName The name of the controller
-  /// manager server. \param[in] rosJointModeServerName The name of the joint
-  /// mode controller actionlib client.
+  ///            manager server.
+  /// \param[in] rosJointModeServerName The name of the joint
+  ///            mode controller actionlib client.
   RosRobot(
       const dart::common::Uri& urdf,
       const dart::common::Uri& srdf,
@@ -95,7 +96,7 @@ public:
   /// Loads the controller. Throws a runtime_error if controller cannot be
   /// loaded. Add an (executor, controller) to the inactive (executor,
   /// controller, control mode) list Operations on this executor do not affect
-  /// the control mode Releases DoFs held by executor if held.
+  /// the control mode. Releases DoFs held by executor if held.
   ///
   /// \param[in] executor The Executor to add to the inactive list.
   /// \param[in] controllerName The corresponding controller to load and add to

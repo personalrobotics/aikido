@@ -18,7 +18,7 @@ RosRobot::RosRobot(
     const ::ros::NodeHandle* node,
     const std::string rosControllerManagerServerName,
     const std::string rosJointModeServerName)
-  : Robot(aikido::io::loadSkeletonFromURDF(retriever, urdf), name)
+  : Robot(aikido::io::loadSkeletonFromURDF(retriever, urdf), name, false)
 {
   // Set up ROS Node
   if (!node)
