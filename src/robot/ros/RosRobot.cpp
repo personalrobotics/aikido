@@ -15,10 +15,10 @@ RosRobot::RosRobot(
     const dart::common::Uri& srdf,
     const std::string name,
     const dart::common::ResourceRetrieverPtr& retriever,
-    std::shared_ptr<::ros::NodeHandle> node,
-    const std::string rosControllerManagerServerName,
-    const std::string rosJointModeServerName)
+    std::shared_ptr<::ros::NodeHandle> node)
   : Robot(aikido::io::loadSkeletonFromURDF(retriever, urdf), name, false)
+  , mRosControllerServiceClient(nullptr)
+  , mRosJointModeCommandClient(nullptr)
 {
   // Set up ROS Node
   if (!node)
@@ -44,26 +44,6 @@ RosRobot::RosRobot(
     auto body0 = mMetaSkeleton->getBodyNode(disabledPair.link1_);
     auto body1 = mMetaSkeleton->getBodyNode(disabledPair.link2_);
     mSelfCollisionFilter->addBodyNodePairToBlackList(body0, body1);
-  }
-
-  if (!rosControllerManagerServerName.empty())
-  {
-    mRosControllerServiceClient = std::make_unique<::ros::ServiceClient>(
-        mNode->serviceClient<controller_manager_msgs::SwitchController>(
-            rosControllerManagerServerName));
-  }
-
-  if (!rosJointModeServerName.empty())
-  {
-    std::vector<std::string> jointNames;
-    for (auto joint : mMetaSkeleton->getDofs())
-    {
-      jointNames.push_back(joint->getName());
-    }
-
-    mRosJointModeCommandClient
-        = std::make_unique<aikido::control::ros::RosJointModeCommandClient>(
-            *mNode, rosJointModeServerName, jointNames);
   }
 }
 
@@ -152,13 +132,6 @@ std::string RosRobot::registerExecutor(
     std::string controllerName,
     std::string desiredName)
 {
-  if (!mRosJointModeCommandClient)
-  {
-    dtwarn << "Could not register executor as controller mode has not been "
-              "specified. "
-           << std::endl;
-    return std::string();
-  }
   return registerExecutor(
       executor, controllerName, hardware_interface::JointCommandModes::ERROR, desiredName);
 }
@@ -166,13 +139,6 @@ std::string RosRobot::registerExecutor(
 //=============================================================================
 std::string RosRobot::registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName)
 {
-  if (!mRosControllerServiceClient)
-  {
-    dtwarn
-        << "Could not register executor as controller has not been specified. "
-        << std::endl;
-    return std::string();
-  }
   return registerExecutor(
       executor, std::string(), hardware_interface::JointCommandModes::ERROR,desiredName);
 }
@@ -200,6 +166,20 @@ bool RosRobot::activateExecutor(std::string id)
   }
 
   return Robot::activateExecutor(id);
+}
+
+//=============================================================================
+void RosRobot::setRosControllerServiceClient(
+      const std::shared_ptr<::ros::ServiceClient>& rosControllerServiceClient)
+{
+  mRosControllerServiceClient = rosControllerServiceClient;
+}
+
+//=============================================================================
+void RosRobot::setRosJointModeCommandClient(
+      const std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>& rosJointModeCommandClient)
+{
+  mRosJointModeCommandClient = rosJointModeCommandClient;
 }
 
 //=============================================================================
@@ -270,7 +250,7 @@ bool RosRobot::switchControllerMode(
   // Currently we only send the same control mode to each joint
   auto future = mRosJointModeCommandClient->execute(
       std::vector<hardware_interface::JointCommandModes>(
-          getDofs().size(), jointMode));
+          1, jointMode));
   try
   {
     future.get();

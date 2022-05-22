@@ -36,9 +36,7 @@ public:
       const std::string name,
       const dart::common::ResourceRetrieverPtr& retriever
       = std::make_shared<aikido::io::CatkinResourceRetriever>(),
-      std::shared_ptr<::ros::NodeHandle> node = nullptr,
-      const std::string rosControllerManagerServerName = "",
-      const std::string rosJointModeServerName = "");
+      std::shared_ptr<::ros::NodeHandle> node = nullptr);
 
   ///
   /// Construct a new RosRobot as subrobot.
@@ -128,6 +126,20 @@ public:
   bool activateExecutor(std::string id) override;
 
   ///
+  /// Sets the ros controller service client which enables controller switching.
+  ///
+  /// \param[in] rosControllerServiceClient ros controller service client.
+  void setRosControllerServiceClient(
+      const std::shared_ptr<::ros::ServiceClient>& rosControllerServiceClient); // Rajat doubt: should we rather use the parents robot service client (and activate it instead of setting it)?
+
+  ///
+  /// Sets the ros joint mode command client which enables controller mode switching.
+  ///
+  /// \param[in] rosJointModeCommandClient ros joint mode command client.
+  void setRosJointModeCommandClient(
+      const std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>& rosJointModeCommandClient);
+
+  ///
   /// Starts the controller with name startControllerName.
   ///
   /// \param[in] startControllerName name of controller to start.
@@ -175,12 +187,12 @@ protected:
   std::shared_ptr<::ros::NodeHandle> mNode;
 
   // Ros controller service client.
-  std::unique_ptr<::ros::ServiceClient> mRosControllerServiceClient;
+  std::shared_ptr<::ros::ServiceClient> mRosControllerServiceClient;
 
   // Ros joint mode command client.
-  std::unique_ptr<aikido::control::ros::RosJointModeCommandClient>
+  std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>
       mRosJointModeCommandClient; // default is null ptr so mode switching is
-                                  // impossible
+                                    // impossible
 };
 
 } // namespace ros
