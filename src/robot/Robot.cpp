@@ -121,17 +121,17 @@ void Robot::clearExecutors()
 //==============================================================================
 void Robot::deactivateExecutor()
 {
-  if (mActiveExecutor >= 0)
+  if (!mActiveExecutor.empty())
   {
     mExecutors[mActiveExecutor]->releaseDofs();
-    mActiveExecutor = -1;
+    mActiveExecutor.clear();
   }
 }
 
 //==============================================================================
 aikido::control::ExecutorPtr Robot::getActiveExecutor()
 {
-  if (mActiveExecutor >= 0)
+  if (!mActiveExecutor.empty())
   {
     return mExecutors[mActiveExecutor];
   }
@@ -139,26 +139,44 @@ aikido::control::ExecutorPtr Robot::getActiveExecutor()
 }
 
 //==============================================================================
-int Robot::registerExecutor(aikido::control::ExecutorPtr executor)
+std::string Robot::registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName)
 {
   if (!executor)
   {
-    return -1;
+    return std::string();
+  }
+
+  if(!desiredName.empty() || mExecutors.find(desiredName) != mExecutors.end())
+  {
+    return std::string();
+  }
+
+  std::string name;
+
+  if(desiredName.empty())
+  {
+    name = std::to_string(mExecutors.size());
+  }
+  else
+  {
+    name = desiredName;
   }
 
   executor->releaseDofs();
-  mExecutors.push_back(executor);
-  return mExecutors.size() - 1;
+  mExecutors[name] = executor;
+  mExecutorsInsertionOrder.push_back(name);
+  
+  return name;
 }
 
 //==============================================================================
-bool Robot::activateExecutor(int id)
+bool Robot::activateExecutor(std::string id)
 {
   // Deactivate active executor
   deactivateExecutor();
 
   // Validate input
-  if (id < 0 || (size_t)id >= mExecutors.size())
+  if (mExecutors.find(id) == mExecutors.end())
   {
     return false;
   }
@@ -166,7 +184,7 @@ bool Robot::activateExecutor(int id)
   // If we can register the executor, activate it
   if (mExecutors[id]->registerDofs())
   {
-    mActiveExecutor = (int)id;
+    mActiveExecutor = id;
     return true;
   }
   return false;
@@ -176,12 +194,12 @@ bool Robot::activateExecutor(int id)
 bool Robot::activateExecutor(const aikido::control::ExecutorType type)
 {
   // Search for last added executor of given type
-  for (int i = mExecutors.size() - 1; i >= 0; i--)
+  for (auto id = mExecutorsInsertionOrder.rbegin(); id != mExecutorsInsertionOrder.rend(); id++)
   {
-    auto types = mExecutors[i]->getTypes();
+    auto types = mExecutors[*id]->getTypes();
     if (types.find(type) != types.end())
     {
-      return activateExecutor(i);
+      return activateExecutor(*id);
     }
   }
 
@@ -210,7 +228,7 @@ std::future<void> Robot::executeTrajectory(
     const trajectory::TrajectoryPtr& trajectory)
 {
   // Retrieve active executor
-  if (mActiveExecutor < 0)
+  if (mActiveExecutor.empty())
   {
     return util::make_exceptional_future<void>(
         "executeTrajectory: No active executor");
@@ -235,7 +253,7 @@ void Robot::cancelAllCommands(
     const std::vector<std::string> excludedSubrobots)
 {
   // Cancel this trajectory
-  if (mActiveExecutor >= 0)
+  if (!mActiveExecutor.empty())
   {
     mExecutors[mActiveExecutor]->cancel();
   }
@@ -273,7 +291,7 @@ void Robot::step(const std::chrono::system_clock::time_point& timepoint)
         getRootSkeleton()->getMutex());
   }
 
-  if (mActiveExecutor >= 0)
+  if (!mActiveExecutor.empty())
   {
     mExecutors[mActiveExecutor]->step(timepoint);
   }

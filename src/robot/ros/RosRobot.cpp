@@ -46,14 +46,14 @@ RosRobot::RosRobot(
     mSelfCollisionFilter->addBodyNodePairToBlackList(body0, body1);
   }
 
-  if (rosControllerManagerServerName != "")
+  if (!rosControllerManagerServerName.empty())
   {
     mRosControllerServiceClient = std::make_unique<::ros::ServiceClient>(
         mNode->serviceClient<controller_manager_msgs::SwitchController>(
             rosControllerManagerServerName));
   }
 
-  if (rosJointModeServerName != "")
+  if (!rosJointModeServerName.empty())
   {
     std::vector<std::string> jointNames;
     for (auto joint : mMetaSkeleton->getDofs())
@@ -115,9 +115,9 @@ RobotPtr RosRobot::registerSubRobot(
 //=============================================================================
 void RosRobot::deactivateExecutor()
 {
-  if (mActiveExecutor >= 0)
+  if (!mActiveExecutor.empty())
   {
-    if (mRosControllerNames[mActiveExecutor] != ""
+    if (!mRosControllerNames[mActiveExecutor].empty()
         && !stopController(mRosControllerNames[mActiveExecutor]))
     {
       throw std::runtime_error(
@@ -128,58 +128,61 @@ void RosRobot::deactivateExecutor()
 }
 
 //=============================================================================
-int RosRobot::registerExecutor(
+std::string RosRobot::registerExecutor(
     aikido::control::ExecutorPtr executor,
     std::string controllerName,
-    hardware_interface::JointCommandModes controllerMode)
+    hardware_interface::JointCommandModes controllerMode,
+    std::string desiredName)
 {
-  if (controllerName != "" && !loadController(controllerName))
+  if (!controllerName.empty() && !loadController(controllerName))
   {
     throw std::runtime_error("Could not load controller: " + controllerName);
   }
-  int id = Robot::registerExecutor(executor);
-  if (id != -1)
+  std::string id = Robot::registerExecutor(executor,desiredName);
+  if (!id.empty())
   {
-    mRosControllerNames.push_back(controllerName);
-    mRosControllerModes.push_back(controllerMode);
+    mRosControllerNames[id] = controllerName;
+    mRosControllerModes[id] = controllerMode;
   }
   return id;
 }
 
-int RosRobot::registerExecutor(
-    aikido::control::ExecutorPtr executor, std::string controllerName)
+std::string RosRobot::registerExecutor(
+    aikido::control::ExecutorPtr executor, 
+    std::string controllerName,
+    std::string desiredName)
 {
   if (!mRosJointModeCommandClient)
   {
     dtwarn << "Could not register executor as controller mode has not been "
               "specified. "
            << std::endl;
-    return -1;
+    return std::string();
   }
   return registerExecutor(
-      executor, controllerName, hardware_interface::JointCommandModes::ERROR);
+      executor, controllerName, hardware_interface::JointCommandModes::ERROR, desiredName);
 }
 
 //=============================================================================
-int RosRobot::registerExecutor(aikido::control::ExecutorPtr executor)
+std::string RosRobot::registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName)
 {
   if (!mRosControllerServiceClient)
   {
     dtwarn
         << "Could not register executor as controller has not been specified. "
         << std::endl;
-    return -1;
+    return std::string();
   }
   return registerExecutor(
-      executor, "", hardware_interface::JointCommandModes::ERROR);
+      executor, std::string(), hardware_interface::JointCommandModes::ERROR,desiredName);
 }
 
 //=============================================================================
-bool RosRobot::activateExecutor(int id)
+bool RosRobot::activateExecutor(std::string id)
 {
   // Deactivate active executor
   deactivateExecutor();
-  if (mRosControllerNames[mActiveExecutor] != ""
+  if (!mRosControllerNames[mActiveExecutor].empty()
       && !startController(mRosControllerNames[mActiveExecutor]))
   {
     throw std::runtime_error(
@@ -197,22 +200,6 @@ bool RosRobot::activateExecutor(int id)
   }
 
   return Robot::activateExecutor(id);
-}
-
-//=============================================================================
-bool RosRobot::activateExecutor(const aikido::control::ExecutorType type)
-{
-  for (int i = mExecutors.size() - 1; i >= 0; i--)
-  {
-    auto types = mExecutors[i]->getTypes();
-    if (types.find(type) != types.end())
-    {
-      return activateExecutor(i);
-    }
-  }
-
-  deactivateExecutor();
-  return false;
 }
 
 //=============================================================================

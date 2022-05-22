@@ -87,10 +87,11 @@ public:
   /// the inactive list. \param[in] controllerMode The corresponding control
   /// mode to add to the inactive list. \return A robot-unique non-negative ID
   /// (negative implies failure)
-  int registerExecutor(
+  std::string registerExecutor(
       aikido::control::ExecutorPtr executor,
       std::string controllerName,
-      hardware_interface::JointCommandModes controllerMode);
+      hardware_interface::JointCommandModes controllerMode,
+      std::string desiredName);
 
   ///
   /// Loads the controller. Throws a runtime_error if controller cannot be
@@ -102,8 +103,10 @@ public:
   /// \param[in] controllerName The corresponding controller to load and add to
   /// the inactive list. \return A robot-unique non-negative ID (negative
   /// implies failure)
-  int registerExecutor(
-      aikido::control::ExecutorPtr executor, std::string controllerName);
+  std::string registerExecutor(
+      aikido::control::ExecutorPtr executor, 
+      std::string controllerName,
+      std::string desiredName);
 
   ///
   /// Add an executor to the inactive executors list.
@@ -112,7 +115,7 @@ public:
   ///
   /// \param[in] executor The Executor to add to the inactive list.
   /// \return A robot-unique non-negative ID (negative implies failure)
-  int registerExecutor(aikido::control::ExecutorPtr executor) override;
+  std::string registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName = "") override;
 
   ///
   /// Deactivates the current active executor.
@@ -122,17 +125,7 @@ public:
   ///
   /// \param[in] id of executor on executor list
   /// \return True if successful. If false, all executors are inactive.
-  bool activateExecutor(int id) override;
-
-  ///
-  /// Convenience:
-  /// Activates the *most recently registered* executor
-  /// of the given type.
-  ///
-  /// \param[in] type of executor to activate.
-  /// \return True if successful. If false, all executors are inactive.
-  bool activateExecutor(const aikido::control::ExecutorType type)
-      override; // Rajat doubt: is this required?
+  bool activateExecutor(std::string id) override;
 
   ///
   /// Starts the controller with name startControllerName.
@@ -175,8 +168,8 @@ public:
       const hardware_interface::JointCommandModes jointMode);
 
 protected:
-  std::vector<hardware_interface::JointCommandModes> mRosControllerModes;
-  std::vector<std::string> mRosControllerNames;
+  std::unordered_map<std::string, hardware_interface::JointCommandModes> mRosControllerModes;
+  std::unordered_map<std::string, std::string> mRosControllerNames;
 
   // Ros node associated with this robot.
   std::shared_ptr<::ros::NodeHandle> mNode;

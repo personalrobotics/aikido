@@ -269,8 +269,9 @@ public:
   /// Releases DoFs held by executor if held.
   ///
   /// \param[in] executor The Executor to add to the inactive list.
-  /// \return A robot-unique non-negative ID (negative implies failure)
-  virtual int registerExecutor(aikido::control::ExecutorPtr executor);
+  /// \param[in] desiredName The desired name for the executor.
+  /// \return A robot-unique non-empty string ID (empty implies failure)
+  virtual std::string registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName = "");
 
   ///
   /// Deactivates the current active executor.
@@ -280,7 +281,7 @@ public:
   ///
   /// \param[in] id of executor on executor list
   /// \return True if successful. If false, all executors are inactive.
-  virtual bool activateExecutor(int id);
+  virtual bool activateExecutor(std::string id);
 
   ///
   /// Convenience:
@@ -387,8 +388,13 @@ protected:
   std::string mName;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
-  int mActiveExecutor{-1};
-  std::vector<aikido::control::ExecutorPtr> mExecutors;
+  
+  // Currently active executor
+  std::string mActiveExecutor{std::string()};
+  // Executors indexed by name
+  std::unordered_map<std::string, aikido::control::ExecutorPtr> mExecutors;
+  // Keeps track of order of addition of Executors
+  std::vector<std::string> mExecutorsInsertionOrder;
 
   // Subrobot and Joint Management
   Robot* mParentRobot{nullptr};
