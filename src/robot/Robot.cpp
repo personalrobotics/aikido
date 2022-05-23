@@ -146,7 +146,7 @@ std::string Robot::registerExecutor(aikido::control::ExecutorPtr executor, std::
     return std::string();
   }
 
-  if(!desiredName.empty() || mExecutors.find(desiredName) != mExecutors.end())
+  if(!desiredName.empty() && mExecutors.find(desiredName) != mExecutors.end())
   {
     return std::string();
   }

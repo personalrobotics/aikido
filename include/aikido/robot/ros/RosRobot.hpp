@@ -60,6 +60,13 @@ public:
   virtual ~RosRobot() = default;
 
   ///
+  /// Steps the ros robot (and underlying executors and subrobots) through time.
+  /// Call regularly to update the state of the ros robot.
+  ///
+  /// \param[in] timepoint The point in time to step to.
+  void step(const std::chrono::system_clock::time_point& timepoint) override;
+
+  ///
   /// Registers a subset of the joints of the skeleton as a new RosRobot.
   /// Must be disjoint from other subrobots.
   ///
@@ -129,11 +136,18 @@ public:
   using Robot::activateExecutor; // This un-hides Robot::activateExecutor(const aikido::control::ExecutorType type)
 
   ///
+  /// Sets the ros controller service client which enables controller loading.
+  ///
+  /// \param[in] rosControllerServiceClient ros controller service client.
+  void setRosLoadControllerServiceClient(
+      const std::shared_ptr<::ros::ServiceClient>& rosLoadControllerServiceClient); // Rajat doubt: should we rather use the parents robot service client (and activate it instead of setting it)?
+
+  ///
   /// Sets the ros controller service client which enables controller switching.
   ///
   /// \param[in] rosControllerServiceClient ros controller service client.
-  void setRosControllerServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosControllerServiceClient); // Rajat doubt: should we rather use the parents robot service client (and activate it instead of setting it)?
+  void setRosSwitchControllerServiceClient(
+      const std::shared_ptr<::ros::ServiceClient>& rosSwitchControllerServiceClient); // Rajat doubt: should we rather use the parents robot service client (and activate it instead of setting it)?
 
   ///
   /// Sets the ros joint mode command client which enables controller mode switching.
@@ -160,12 +174,12 @@ public:
   /// Stops the controller with name stopControllerName and starts the
   /// controller with name startControllerName.
   ///
-  /// \param[in] startControllerName name of controller to start.
-  /// \param[in] stopControllerName name of controller to stop.
+  /// \param[in] startControllersNames list of names of controllers to start.
+  /// \param[in] stopControllersNames list of names of controllers to stop.
   /// \return True if successful. Otherwise false.
-  bool switchController(
-      const std::string startControllerName,
-      const std::string stopControllerName);
+  bool switchControllers(
+      const std::vector<std::string> startControllersNames, 
+      const std::vector<std::string> stopControllersNames);
 
   ///
   /// Loads the controller with name loadControllerName.
@@ -189,8 +203,11 @@ protected:
   // Ros node associated with this robot.
   std::shared_ptr<::ros::NodeHandle> mNode;
 
-  // Ros controller service client.
-  std::shared_ptr<::ros::ServiceClient> mRosControllerServiceClient;
+  // Ros load controller service client.
+  std::shared_ptr<::ros::ServiceClient> mRosLoadControllerServiceClient;
+
+  // Ros switch controller service client.
+  std::shared_ptr<::ros::ServiceClient> mRosSwitchControllerServiceClient;
 
   // Ros joint mode command client.
   std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>
