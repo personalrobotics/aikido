@@ -123,7 +123,10 @@ public:
   ///
   /// \param[in] id of executor on executor list
   /// \return True if successful. If false, all executors are inactive.
-  bool activateExecutor(std::string id) override;
+  bool activateExecutor(std::string id) override; 
+
+  // Rajat doubt: should we explicitly define an override just to make this more coherent?
+  using Robot::activateExecutor; // This un-hides Robot::activateExecutor(const aikido::control::ExecutorType type)
 
   ///
   /// Sets the ros controller service client which enables controller switching.
