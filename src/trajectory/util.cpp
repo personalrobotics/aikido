@@ -42,7 +42,7 @@ namespace {
 
 bool checkStateSpace(const statespace::StateSpace* _stateSpace)
 {
-  // Only supports single-DOF joint spaces, namely R1 and SO2.
+  // Only supports single-DOF joint spaces, namely R1 and SO2 (and R0).
   if (dynamic_cast<const R1*>(_stateSpace) != nullptr)
   {
     return true;
