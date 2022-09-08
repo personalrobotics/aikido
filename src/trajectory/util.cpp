@@ -21,6 +21,7 @@ using aikido::statespace::CartesianProduct;
 using aikido::statespace::ConstStateSpacePtr;
 using aikido::statespace::GeodesicInterpolator;
 using aikido::statespace::R;
+using aikido::statespace::R0;
 using aikido::statespace::R1;
 using aikido::statespace::SO2;
 using aikido::statespace::StateSpace;
@@ -47,6 +48,10 @@ bool checkStateSpace(const statespace::StateSpace* _stateSpace)
     return true;
   }
   else if (dynamic_cast<const SO2*>(_stateSpace) != nullptr)
+  {
+    return true;
+  }
+  else if (dynamic_cast<const R0*>(_stateSpace) != nullptr)
   {
     return true;
   }
@@ -266,7 +271,7 @@ UniqueInterpolatedPtr toR1JointTrajectory(const Interpolated& trajectory)
 {
   if (!checkStateSpace(trajectory.getStateSpace().get()))
     throw std::invalid_argument(
-        "toR1JointTrajectory only supports R1 and SO2 joint spaces");
+        "toR1JointTrajectory only supports R1, SO2, and R0 joint spaces");
 
   auto interpolator = std::dynamic_pointer_cast<const GeodesicInterpolator>(
       trajectory.getInterpolator());
