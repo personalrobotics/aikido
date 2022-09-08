@@ -39,9 +39,6 @@ public:
     /// Return the name of the MetaSkeleton.
     const std::string& getName() const;
 
-    /// Return the number of joints in the MetaSkeleton.
-    std::size_t getNumJoints() const;
-
     /// Return the number of DOFs in the MetaSkeleton.
     std::size_t getNumDofs() const;
 
@@ -78,8 +75,8 @@ public:
     /// Name of the MetaSkeleton
     std::string mName;
 
-    /// Number of joints in the MetaSkeleton
-    std::size_t mNumJoints;
+    /// Number of dofs in the MetaSkeleton
+    std::size_t mNumDofs;
 
     /// Names of DOFs in the MetaSkeleton
     std::vector<std::string> mDofNames;

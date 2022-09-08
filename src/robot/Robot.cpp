@@ -45,10 +45,8 @@ Robot::Robot(
   , mSelfCollisionFilter(
         std::make_shared<dart::collision::BodyNodeCollisionFilter>())
 {
-  auto controlledMetaSkeleton
-      = dart::dynamics::Group::create(name, mMetaSkeleton->getDofs());
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
-      controlledMetaSkeleton.get());
+      mMetaSkeleton.get());
 
   auto skeletonObj = getRootSkeleton();
   skeletonObj->enableSelfCollisionCheck();
@@ -81,10 +79,8 @@ Robot::Robot(
   , mSelfCollisionFilter(collisionFilter)
   , mWorld(nullptr)
 {
-  auto controlledMetaSkeleton
-      = dart::dynamics::Group::create(name, mMetaSkeleton->getDofs());
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
-      controlledMetaSkeleton.get());
+      mMetaSkeleton.get());
 }
 
 //==============================================================================
