@@ -8,15 +8,21 @@
   * Added generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
 
 * IO
+
   * Updated DartLoader usage, previously deprecated by DART 6.12 [#619](https://github.com/personalrobotics/aikido/pull/619)
 
 * Robot
+
   * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
 
 * RViz
 
   * Fix addTSRMarker Bug: [#618](https://github.com/personalrobotics/aikido/pull/618)
   * Propogate removal of WorldInteractiveMarkerViewer to Aikidopy: [#599](https://github.com/personalrobotics/aikido/pull/599)
+
+* State Space
+
+  * Handle R0 (i.e. Weld) Joints in MetaSkeletonStatespace: [#622](https://github.com/personalrobotics/aikido/pull/622)
 
 * Planner
 
