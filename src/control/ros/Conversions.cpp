@@ -568,7 +568,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 
     if (properties.getNumDofs() == 0)
     {
-      continue;  // Ignore R0 joints
+      continue; // Ignore R0 joints
     }
     else if (!r1Joint && !so2Joint)
     {
@@ -600,7 +600,7 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
 
     if (jointDofNames.size() == 0)
     {
-      continue;  // Ignore R0 joints
+      continue; // Ignore R0 joints
     }
 
     else if (jointDofNames.size() != 1)
