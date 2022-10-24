@@ -365,7 +365,11 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
     auto so2Joint = std::dynamic_pointer_cast<const SO2Joint>(jointSpace);
 
-    if (properties.getNumDofs() != 1 || (!r1Joint && !so2Joint))
+    if (properties.getNumDofs() == 0)
+    {
+      continue;
+    }
+    else if (properties.getNumDofs() != 1 || (!r1Joint && !so2Joint))
     {
       std::stringstream message;
       message << "Only R1Joint and SO2Joint are supported. Joint "
@@ -556,11 +560,17 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
   for (std::size_t i = 0; i < space->getNumSubspaces(); ++i)
   {
     auto jointSpace = space->getJointSpace(i);
+    auto properties = jointSpace->getProperties();
 
     // Supports only R1Joints and SO2Joints.
     auto r1Joint = std::dynamic_pointer_cast<const R1Joint>(jointSpace);
     auto so2Joint = std::dynamic_pointer_cast<const SO2Joint>(jointSpace);
-    if (!r1Joint && !so2Joint)
+
+    if (properties.getNumDofs() == 0)
+    {
+      continue;  // Ignore R0 joints
+    }
+    else if (!r1Joint && !so2Joint)
     {
       throw std::invalid_argument(
           "MetaSkeletonStateSpace must contain only R1Joints and SO2Joints.");
@@ -588,7 +598,12 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
     const auto jointProperties = space->getJointSpace(i)->getProperties();
     const auto jointDofNames = jointProperties.getDofNames();
 
-    if (jointDofNames.size() != 1)
+    if (jointDofNames.size() == 0)
+    {
+      continue;  // Ignore R0 joints
+    }
+
+    else if (jointDofNames.size() != 1)
     {
       std::stringstream message;
       message << "Joint " << jointProperties.getName() << " of type "
