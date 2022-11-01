@@ -79,7 +79,8 @@ MoveEndEffectorOffsetVectorField::evaluateCartesianStatus(
 
   if (fabs(orientationError) > mAngularTolerance)
   {
-    dtwarn << "Deviated from orientation constraint.";
+    dtwarn << "Deviated from orientation constraint: ("
+           << fabs(orientationError) << " > " << mAngularTolerance << ")";
     return VectorFieldPlannerStatus::TERMINATE;
   }
 

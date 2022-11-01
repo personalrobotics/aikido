@@ -29,7 +29,7 @@ namespace util {
 const std::vector<double> defaultVFParams{
     0.03,  // distanceTolerance
     0.004, // positionTolerance
-    0.004, // angularTolerance
+    0.01,  // angularTolerance
     0.01,  // initialStepSize
     1e-3,  // jointlimitTolerance
     1e-3,  // constraintCheckResolution

@@ -71,6 +71,7 @@ std::vector<std::shared_ptr<const JointStateSpace>> createStateSpace(
       }
     }
 
+    // Do not add R0 spaces
     spaces.emplace_back(createJointStateSpace(joint).release());
   }
 
@@ -83,7 +84,7 @@ std::vector<std::shared_ptr<const JointStateSpace>> createStateSpace(
 MetaSkeletonStateSpace::Properties::Properties(
     const ::dart::dynamics::MetaSkeleton* metaskeleton)
   : mName(metaskeleton->getName())
-  , mNumJoints(metaskeleton->getNumJoints())
+  , mNumDofs(metaskeleton->getNumDofs())
   , mDofNames(metaskeleton->getNumDofs())
   , mPositionLowerLimits(metaskeleton->getPositionLowerLimits())
   , mPositionUpperLimits(metaskeleton->getPositionUpperLimits())
@@ -124,15 +125,9 @@ const std::string& MetaSkeletonStateSpace::Properties::getName() const
 }
 
 //==============================================================================
-std::size_t MetaSkeletonStateSpace::Properties::getNumJoints() const
-{
-  return mNumJoints;
-}
-
-//==============================================================================
 std::size_t MetaSkeletonStateSpace::Properties::getNumDofs() const
 {
-  return mDofNames.size();
+  return mNumDofs;
 }
 
 //==============================================================================
@@ -216,7 +211,7 @@ bool MetaSkeletonStateSpace::Properties::operator==(
   if (mName != otherProperties.mName)
     return false;
 
-  if (mNumJoints != otherProperties.mNumJoints)
+  if (mNumDofs != otherProperties.mNumDofs)
     return false;
 
   if (mDofNames != otherProperties.mDofNames)
@@ -225,7 +220,7 @@ bool MetaSkeletonStateSpace::Properties::operator==(
   if (mIndexMap != otherProperties.mIndexMap)
     return false;
 
-  for (std::size_t i = 0; i < mNumJoints; ++i)
+  for (std::size_t i = 0; i < mNumDofs; ++i)
   {
     if (mPositionLowerLimits[i] != otherProperties.mPositionLowerLimits[i])
       return false;
