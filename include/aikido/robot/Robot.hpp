@@ -355,11 +355,6 @@ public:
   // Adds robot to world if not already present
   void setWorld(aikido::planner::WorldPtr world);
 
-  // Sets the Trajectory Executor
-  // TODO(egordon) Later: ensure trajectory executor joints match managed DoFs
-  void setTrajectoryExecutor(
-      const aikido::control::TrajectoryExecutorPtr& trajExecutor);
-
   // Sets the default trajectory post-processor.
   // Also enables automatic post-processing for all planning functions.
   void setDefaultPostProcessor(
