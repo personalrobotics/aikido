@@ -49,13 +49,6 @@ Executor::Executor(
     throw std::invalid_argument(
         "Cannot declare types STATE and READONLY simultaneously.");
   }
-
-  registerDofs();
-  if (!mDofsRegistered)
-  {
-    dtwarn << "Could not register DoFs, resources locked by another executor."
-           << std::endl;
-  }
 }
 
 //==============================================================================
@@ -92,6 +85,11 @@ void Executor::start()
   {
     mThread = std::make_unique<aikido::common::ExecutorThread>(
         std::bind(&Executor::spin, this), mThreadRate);
+  }
+  else if (!mDofsRegistered)
+  {
+    dtwarn << "Could not start Executor Thread, must register DoFs first."
+           << std::endl;
   }
 }
 
