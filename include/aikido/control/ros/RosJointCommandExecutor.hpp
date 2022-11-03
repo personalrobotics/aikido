@@ -45,7 +45,8 @@ public:
   // Documentation inherited.
   std::future<int> execute(
       const std::vector<double>& command,
-      const std::chrono::duration<double>& timeout) override;
+      const std::chrono::duration<double>& timeout,
+      const std::chrono::system_clock::time_point& timepoint) override;
 
   // Documentation inherited.
   void step(const std::chrono::system_clock::time_point& timepoint) override;

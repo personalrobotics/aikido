@@ -4,6 +4,7 @@ set(sources
   KinematicSimulationJointCommandExecutor.cpp
   KinematicSimulationTrajectoryExecutor.cpp
   QueuedTrajectoryExecutor.cpp
+  JacobianExecutor.cpp
   TrajectoryRunningException.cpp
 )
 

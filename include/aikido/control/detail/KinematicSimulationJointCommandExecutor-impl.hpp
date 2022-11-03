@@ -12,6 +12,9 @@ extern template class KinematicSimulationJointCommandExecutor<
 extern template class KinematicSimulationJointCommandExecutor<
     ExecutorType::VELOCITY>;
 
+extern template class KinematicSimulationJointCommandExecutor<
+    ExecutorType::EFFORT>;
+
 //==============================================================================
 template <ExecutorType T>
 KinematicSimulationJointCommandExecutor<T>::
@@ -20,6 +23,17 @@ KinematicSimulationJointCommandExecutor<T>::
   : JointCommandExecutor<T>(
       checkNull(metaskeleton)->getDofs(),
       std::set<ExecutorType>{ExecutorType::STATE})
+  , mInProgress{false}
+  , mPromise{nullptr}
+  , mMutex{}
+{
+}
+
+template <ExecutorType T>
+KinematicSimulationJointCommandExecutor<T>::
+    KinematicSimulationJointCommandExecutor(
+        std::vector<::dart::dynamics::DegreeOfFreedom*> dofs)
+  : JointCommandExecutor<T>(dofs, std::set<ExecutorType>{ExecutorType::STATE})
   , mInProgress{false}
   , mPromise{nullptr}
   , mMutex{}
@@ -49,7 +63,8 @@ KinematicSimulationJointCommandExecutor<
 template <ExecutorType T>
 std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
     const std::vector<double>& command,
-    const std::chrono::duration<double>& timeout)
+    const std::chrono::duration<double>& timeout,
+    const std::chrono::system_clock::time_point& timepoint)
 {
   auto promise = std::promise<int>();
 
@@ -74,7 +89,7 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
 
   mCommand = command;
   mInProgress = true;
-  mExecutionStartTime = std::chrono::system_clock::now();
+  mExecutionStartTime = timepoint;
   mTimeout = timeout;
 
   // Set start positions
@@ -86,6 +101,9 @@ std::future<int> KinematicSimulationJointCommandExecutor<T>::execute(
   }
   switch (T)
   {
+    case ExecutorType::EFFORT:
+      dtwarn << "[KinematicSimulationEffortExecutor::execute] No Dynamics; "
+             << "executor will mimic velocity behavior.\n";
     case ExecutorType::VELOCITY:
 
       for (std::size_t i = 0; i < this->mDofs.size(); ++i)
@@ -142,6 +160,7 @@ void KinematicSimulationJointCommandExecutor<T>::step(
   // Set joint states
   switch (T)
   {
+    case ExecutorType::EFFORT:
     case ExecutorType::VELOCITY: {
       for (size_t i = 0; i < this->mDofs.size(); ++i)
       {

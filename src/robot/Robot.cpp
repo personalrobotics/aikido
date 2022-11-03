@@ -226,7 +226,7 @@ std::future<void> Robot::executeTrajectory(
 
 //==============================================================================
 void Robot::cancelAllCommands(
-    bool incluldeSubrobots,
+    bool includeSubrobots,
     bool includeParents,
     const std::vector<std::string> excludedSubrobots)
 {
@@ -243,7 +243,7 @@ void Robot::cancelAllCommands(
   }
 
   // Cancel children's trajectories (if requested)
-  if (incluldeSubrobots)
+  if (includeSubrobots)
   {
     for (const auto& subrobot : mSubRobots)
     {
