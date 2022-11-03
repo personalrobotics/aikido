@@ -105,7 +105,7 @@ public:
       const constraint::dart::CollisionFreePtr& collisionFree) const;
 
   ///
-  /// Get the collission constraint between this (sub)robot
+  /// Get the collision constraint between this (sub)robot
   /// and selected bodies within its World, combined with
   /// its self-collision constraint.
   /// \param[in] bodyNames Names of the bodies in

@@ -37,6 +37,8 @@ public:
       const std::vector<double>& command,
       const std::chrono::duration<double>& timeout,
       const std::chrono::system_clock::time_point& timepoint) override;
+
+  // Documentation inherited
   virtual std::future<int> execute(
       const std::vector<double>& command,
       const std::chrono::duration<double>& timeout
