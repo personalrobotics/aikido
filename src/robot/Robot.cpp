@@ -287,18 +287,12 @@ constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
 
-  auto collisionMetaSkeleton = mMetaSkeleton->cloneMetaSkeleton();
-
   // Create the constraint and return.
   auto collisionFreeConstraint
       = std::make_shared<constraint::dart::CollisionFree>(
-          mStateSpace,
-          collisionMetaSkeleton,
-          mCollisionDetector,
-          collisionOption);
+          mStateSpace, mMetaSkeleton, mCollisionDetector, collisionOption);
   collisionFreeConstraint->addSelfCheck(
-      mCollisionDetector->createCollisionGroupAsSharedPtr(
-          collisionMetaSkeleton.get()));
+      mCollisionDetector->createCollisionGroupAsSharedPtr(mMetaSkeleton.get()));
   return collisionFreeConstraint;
 }
 
