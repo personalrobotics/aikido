@@ -81,6 +81,7 @@ const std::vector<dart::dynamics::DegreeOfFreedom*> Executor::getDofs() const
 //==============================================================================
 void Executor::start()
 {
+  registerDofs();
   if (!mThread && mDofsRegistered)
   {
     mThread = std::make_unique<aikido::common::ExecutorThread>(
