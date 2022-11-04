@@ -44,10 +44,25 @@ public:
   ///
   /// \param command Vector of joint commands, parallel with joints vector
   /// \param timeout How long until command expires
+  /// \param timepoint If supplied, time to simulate to
+  virtual std::future<int> execute(
+      const std::vector<double>& command,
+      const std::chrono::duration<double>& timeout,
+      const std::chrono::system_clock::time_point& timepoint)
+      = 0;
+
+  /// Execute a Joint Command, setting future upon completion.
+  /// If applicable, simulate to the current time.
+  /// \note Future should return 0 on success or timeout.
+  ///
+  /// \param command Vector of joint commands, parallel with joints vector
+  /// \param timeout How long until command expires
   virtual std::future<int> execute(
       const std::vector<double>& command,
       const std::chrono::duration<double>& timeout)
-      = 0;
+  {
+    return this->execute(command, timeout, std::chrono::system_clock::now());
+  }
 
   // Documentation inherited.
   virtual void step(
