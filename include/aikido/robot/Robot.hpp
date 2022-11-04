@@ -105,7 +105,7 @@ public:
       const constraint::dart::CollisionFreePtr& collisionFree) const;
 
   ///
-  /// Get the collission constraint between this (sub)robot
+  /// Get the collision constraint between this (sub)robot
   /// and selected bodies within its World, combined with
   /// its self-collision constraint.
   /// \param[in] bodyNames Names of the bodies in
@@ -354,11 +354,6 @@ public:
   // Set's this robot's planning world
   // Adds robot to world if not already present
   void setWorld(aikido::planner::WorldPtr world);
-
-  // Sets the Trajectory Executor
-  // TODO(egordon) Later: ensure trajectory executor joints match managed DoFs
-  void setTrajectoryExecutor(
-      const aikido::control::TrajectoryExecutorPtr& trajExecutor);
 
   // Sets the default trajectory post-processor.
   // Also enables automatic post-processing for all planning functions.

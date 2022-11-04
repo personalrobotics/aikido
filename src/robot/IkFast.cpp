@@ -25,7 +25,7 @@ IkFast::IkFast(
   std::vector<std::size_t> ikFastFreeDofs = {};
 
   // TODO (sniyaz): Add free DOF support!
-  for (size_t i = 0; i < armSpace->getProperties().getNumJoints(); i++)
+  for (size_t i = 0; i < armSpace->getProperties().getNumDofs(); i++)
   {
     ikFastSolveDofs.push_back(i);
   }

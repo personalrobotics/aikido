@@ -30,10 +30,8 @@ Robot::Robot(
   , mSelfCollisionFilter(
         std::make_shared<dart::collision::BodyNodeCollisionFilter>())
 {
-  auto controlledMetaSkeleton
-      = dart::dynamics::Group::create(name, mMetaSkeleton->getDofs());
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
-      controlledMetaSkeleton.get());
+      mMetaSkeleton.get());
 
   auto skeletonObj = getRootSkeleton();
   skeletonObj->enableSelfCollisionCheck();
@@ -75,10 +73,8 @@ Robot::Robot(
   , mSelfCollisionFilter(collisionFilter)
   , mWorld(nullptr)
 {
-  auto controlledMetaSkeleton
-      = dart::dynamics::Group::create(name, mMetaSkeleton->getDofs());
   mStateSpace = std::make_shared<statespace::dart::MetaSkeletonStateSpace>(
-      controlledMetaSkeleton.get());
+      mMetaSkeleton.get());
 }
 
 //==============================================================================
@@ -230,7 +226,7 @@ std::future<void> Robot::executeTrajectory(
 
 //==============================================================================
 void Robot::cancelAllCommands(
-    bool incluldeSubrobots,
+    bool includeSubrobots,
     bool includeParents,
     const std::vector<std::string> excludedSubrobots)
 {
@@ -247,7 +243,7 @@ void Robot::cancelAllCommands(
   }
 
   // Cancel children's trajectories (if requested)
-  if (incluldeSubrobots)
+  if (includeSubrobots)
   {
     for (const auto& subrobot : mSubRobots)
     {
@@ -291,18 +287,12 @@ constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
 
-  auto collisionMetaSkeleton = mMetaSkeleton->cloneMetaSkeleton();
-
   // Create the constraint and return.
   auto collisionFreeConstraint
       = std::make_shared<constraint::dart::CollisionFree>(
-          mStateSpace,
-          collisionMetaSkeleton,
-          mCollisionDetector,
-          collisionOption);
+          mStateSpace, mMetaSkeleton, mCollisionDetector, collisionOption);
   collisionFreeConstraint->addSelfCheck(
-      mCollisionDetector->createCollisionGroupAsSharedPtr(
-          collisionMetaSkeleton.get()));
+      mCollisionDetector->createCollisionGroupAsSharedPtr(mMetaSkeleton.get()));
   return collisionFreeConstraint;
 }
 

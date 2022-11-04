@@ -12,7 +12,7 @@ namespace control {
 //==============================================================================
 extern template class JacobianExecutor<ExecutorType::VELOCITY>;
 
-extern template class JacobianExecutor<ExecutorType::VELOCITY>;
+extern template class JacobianExecutor<ExecutorType::EFFORT>;
 
 //==============================================================================
 template <ExecutorType T>

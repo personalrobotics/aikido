@@ -122,7 +122,6 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
         "Trajectory StateSpace incompatible with MetaSkeleton");
   }
 
-  // TODO(egordon): check joints in traj against this->getJoints()
   mValidatedTrajectories.emplace(traj);
 }
 //==============================================================================
