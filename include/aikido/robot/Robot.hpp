@@ -10,6 +10,7 @@
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/dynamics/dynamics.hpp>
 
+#include "aikido/common/util.hpp"
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/Executor.hpp"
@@ -105,7 +106,7 @@ public:
       const constraint::dart::CollisionFreePtr& collisionFree) const;
 
   ///
-  /// Get the collission constraint between this (sub)robot
+  /// Get the collision constraint between this (sub)robot
   /// and selected bodies within its World, combined with
   /// its self-collision constraint.
   /// \param[in] bodyNames Names of the bodies in
@@ -333,7 +334,7 @@ public:
   // Gets the (sub)robot's name
   std::string getName() const;
 
-  // Gets the (sub)robot's name
+  // Gets the (sub)robot's DoFs
   std::set<std::string> getDofs() const;
 
   // Gets a copy of the (sub)robot's metaskeleton at the current state
@@ -358,12 +359,6 @@ public:
   // Set's this robot's planning world
   // Adds robot to world if not already present
   void setWorld(aikido::planner::WorldPtr world);
-
-  // Sets the Trajectory Executor
-  // TODO(egordon) Later: ensure trajectory executor joints match managed DoFs
-  void setTrajectoryExecutor(
-      const aikido::control::TrajectoryExecutorPtr&
-          trajExecutor); // Rajat doubt: should this be removed ?
 
   // Sets the default trajectory post-processor.
   // Also enables automatic post-processing for all planning functions.

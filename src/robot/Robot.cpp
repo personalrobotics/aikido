@@ -226,7 +226,7 @@ std::future<void> Robot::executeTrajectory(
   // Retrieve active executor
   if (mActiveExecutor.empty())
   {
-    return util::make_exceptional_future<void>(
+    return common::make_exceptional_future<void>(
         "executeTrajectory: No active executor");
   }
   aikido::control::TrajectoryExecutorPtr trajectoryExecutor;
@@ -235,7 +235,7 @@ std::future<void> Robot::executeTrajectory(
           mExecutors[mActiveExecutor]);
   if (!trajectoryExecutor)
   {
-    return util::make_exceptional_future<void>(
+    return common::make_exceptional_future<void>(
         "executeTrajectory: Active executor not a TrajectoryExecutor");
   }
 
@@ -244,7 +244,7 @@ std::future<void> Robot::executeTrajectory(
 
 //==============================================================================
 void Robot::cancelAllCommands(
-    bool incluldeSubrobots,
+    bool includeSubrobots,
     bool includeParents,
     const std::vector<std::string> excludedSubrobots)
 {
@@ -261,7 +261,7 @@ void Robot::cancelAllCommands(
   }
 
   // Cancel children's trajectories (if requested)
-  if (incluldeSubrobots)
+  if (includeSubrobots)
   {
     for (const auto& subrobot : mSubRobots)
     {
@@ -305,18 +305,12 @@ constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
 
-  auto collisionMetaSkeleton = mMetaSkeleton->cloneMetaSkeleton();
-
   // Create the constraint and return.
   auto collisionFreeConstraint
       = std::make_shared<constraint::dart::CollisionFree>(
-          mStateSpace,
-          collisionMetaSkeleton,
-          mCollisionDetector,
-          collisionOption);
+          mStateSpace, mMetaSkeleton, mCollisionDetector, collisionOption);
   collisionFreeConstraint->addSelfCheck(
-      mCollisionDetector->createCollisionGroupAsSharedPtr(
-          collisionMetaSkeleton.get()));
+      mCollisionDetector->createCollisionGroupAsSharedPtr(mMetaSkeleton.get()));
   return collisionFreeConstraint;
 }
 

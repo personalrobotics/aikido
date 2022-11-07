@@ -14,9 +14,13 @@ RosRobot::RosRobot(
     const dart::common::Uri& urdf,
     const dart::common::Uri& srdf,
     const std::string name,
+    const bool addDefaultExecutors,
     const dart::common::ResourceRetrieverPtr& retriever,
     std::shared_ptr<::ros::NodeHandle> node)
-  : Robot(aikido::io::loadSkeletonFromURDF(retriever, urdf), name, false)
+  : Robot(
+      aikido::io::loadSkeletonFromURDF(retriever, urdf),
+      name,
+      addDefaultExecutors)
   , mRosLoadControllerServiceClient(nullptr)
   , mRosSwitchControllerServiceClient(nullptr)
   , mRosJointModeCommandClient(nullptr)

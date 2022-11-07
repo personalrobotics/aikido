@@ -59,8 +59,9 @@ public:
   /// Constructor.
   ///
   /// \param eeNode End effector body node (current position =
-  /// getWorldTransform()) \param executor Base jacobian velocity executor.
-  ///                Default: kinematic, constructed from BodyNode
+  ///               getWorldTransform())
+  /// \param executor Base jacobian velocity executor.
+  ///               Default: kinematic, constructed from BodyNode
   /// \param properties See ::Properties for more info.
   explicit VisualServoingVelocityExecutor(
       ::dart::dynamics::BodyNode* eeNode,

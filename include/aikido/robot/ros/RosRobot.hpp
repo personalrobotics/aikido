@@ -34,6 +34,7 @@ public:
       const dart::common::Uri& urdf,
       const dart::common::Uri& srdf,
       const std::string name,
+      const bool addDefaultExecutors,
       const dart::common::ResourceRetrieverPtr& retriever
       = std::make_shared<aikido::io::CatkinResourceRetriever>(),
       std::shared_ptr<::ros::NodeHandle> node = nullptr);
@@ -132,7 +133,6 @@ public:
   /// \return True if successful. If false, all executors are inactive.
   bool activateExecutor(std::string id) override; 
 
-  // Rajat doubt: should we explicitly define an override just to make this more coherent?
   using Robot::activateExecutor; // This un-hides Robot::activateExecutor(const aikido::control::ExecutorType type)
 
   ///
@@ -140,14 +140,14 @@ public:
   ///
   /// \param[in] rosControllerServiceClient ros controller service client.
   void setRosLoadControllerServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosLoadControllerServiceClient); // Rajat doubt: should we rather use the parents robot service client (and activate it instead of setting it)?
+      const std::shared_ptr<::ros::ServiceClient>& rosLoadControllerServiceClient); 
 
   ///
   /// Sets the ros controller service client which enables controller switching.
   ///
   /// \param[in] rosControllerServiceClient ros controller service client.
   void setRosSwitchControllerServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosSwitchControllerServiceClient); // Rajat doubt: should we rather use the parents robot service client (and activate it instead of setting it)?
+      const std::shared_ptr<::ros::ServiceClient>& rosSwitchControllerServiceClient);
 
   ///
   /// Sets the ros joint mode command client which enables controller mode switching.

@@ -4,6 +4,7 @@
 #include <dart/common/Console.hpp>
 #include <dart/dynamics/dynamics.hpp>
 
+#include "aikido/common/util.hpp"
 #include "aikido/control/util.hpp"
 
 namespace aikido {
@@ -110,7 +111,8 @@ std::future<int> VisualServoingVelocityExecutor::execute(
     // Check that perception is callable
     if (!perception)
     {
-      return make_exceptional_future<int>("Perception function not callable.");
+      return common::make_exceptional_future<int>(
+          "Perception function not callable.");
     }
     mPromise.reset(new std::promise<int>());
     mPerception = perception;

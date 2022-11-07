@@ -30,8 +30,8 @@ AIKIDO_DECLARE_POINTERS(Executor)
 /// EFFORT   - commands effort (i.e. torque) to dofs
 /// TRAJECTORY - commands a trajectory to dofs
 /// MODE - commands a hardware command mode (e.g. position/velocity/effort)
-/// //might be useful when different modes on different joints The following
-/// doesn't update the DoF directly: READONLY
+/// The following doesn't update the DoF directly:
+/// READONLY
 enum class ExecutorType
 {
   STATE = 0,
@@ -140,10 +140,7 @@ protected:
   std::set<ExecutorType> mTypes;
 
   /// Vector of dof names
-  std::vector<dart::dynamics::DegreeOfFreedom*>
-      mDofs; // Rajat doubt: What if we want to send position commands to some
-             // DoFs (robot base) and effort to others (robot arm)? use
-             // subrobot?
+  std::vector<dart::dynamics::DegreeOfFreedom*> mDofs; 
 };
 
 } // namespace control
