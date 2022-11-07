@@ -1,16 +1,14 @@
 ## Aikido 0 (prerelease)
 
-### 0.5.0 (2021-XX-XX)
+### 0.5.0 (2022-XX-XX)
 
 * Control
 
   * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
-  * Add generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
-  * Add JacobianExecutor wrapping any Velocity/EffortExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
   * Added generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
   * Added JacobianExecutor wrapping any Velocity/EffortExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
   * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
-  * Add VisualServoingVelocityExecutor wrapping JacobianExecutor [#620](https://github.com/personalrobotics/aikido/pull/620)
+  * Added VisualServoingVelocityExecutor wrapping JacobianExecutor [#620](https://github.com/personalrobotics/aikido/pull/620)
 
 * IO
 
