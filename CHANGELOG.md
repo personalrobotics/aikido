@@ -1,6 +1,6 @@
 ## Aikido 0 (prerelease)
 
-### 0.5.0 (2021-XX-XX)
+### 0.5.0 (2022-XX-XX)
 
 * Control
 
@@ -8,6 +8,7 @@
   * Added generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
   * Added JacobianExecutor wrapping any Velocity/EffortExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
   * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
+  * Added VisualServoingVelocityExecutor wrapping JacobianExecutor [#620](https://github.com/personalrobotics/aikido/pull/620)
 
 * IO
 

@@ -10,6 +10,7 @@
 #include <dart/collision/CollisionFilter.hpp>
 #include <dart/dynamics/dynamics.hpp>
 
+#include "aikido/common/util.hpp"
 #include "aikido/constraint/dart/CollisionFree.hpp"
 #include "aikido/constraint/dart/TSR.hpp"
 #include "aikido/control/Executor.hpp"

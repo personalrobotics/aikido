@@ -33,5 +33,10 @@ aikido_add_test(test_QueuedTrajectoryExecutor
 target_link_libraries(test_QueuedTrajectoryExecutor
   "${PROJECT_NAME}_control")
 
+aikido_add_test(test_VisualServoingVelocityExecutor
+  test_VisualServoingVelocityExecutor.cpp)
+target_link_libraries(test_VisualServoingVelocityExecutor
+  "${PROJECT_NAME}_control")
+
 add_subdirectory("ros")
 

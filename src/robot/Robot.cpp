@@ -208,7 +208,7 @@ std::future<void> Robot::executeTrajectory(
   // Retrieve active executor
   if (mActiveExecutor < 0)
   {
-    return util::make_exceptional_future<void>(
+    return common::make_exceptional_future<void>(
         "executeTrajectory: No active executor");
   }
   aikido::control::TrajectoryExecutorPtr trajectoryExecutor;
@@ -217,7 +217,7 @@ std::future<void> Robot::executeTrajectory(
           mExecutors[mActiveExecutor]);
   if (!trajectoryExecutor)
   {
-    return util::make_exceptional_future<void>(
+    return common::make_exceptional_future<void>(
         "executeTrajectory: Active executor not a TrajectoryExecutor");
   }
 

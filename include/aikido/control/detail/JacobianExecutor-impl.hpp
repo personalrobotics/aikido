@@ -85,7 +85,7 @@ std::future<int> JacobianExecutor<T>::execute(
     mPromise.reset(new std::promise<int>());
 
     mCommand = command;
-    mExecutionStartTime = std::chrono::system_clock::now();
+    mExecutionStartTime = timepoint;
     mTimeout = timeout;
     mFuture = mExecutor->execute(SE3ToJoint(mCommand), mTimeout, timepoint);
     mInProgress = true;

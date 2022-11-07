@@ -10,7 +10,7 @@ std::future<int> Robot::executeJointCommand(
   // Retrieve active executor
   if (mActiveExecutor < 0)
   {
-    return util::make_exceptional_future<int>(
+    return common::make_exceptional_future<int>(
         "executeJointCommand: No active executor");
   }
 
@@ -20,7 +20,7 @@ std::future<int> Robot::executeJointCommand(
           mExecutors[mActiveExecutor]);
   if (!executor)
   {
-    return util::make_exceptional_future<int>(
+    return common::make_exceptional_future<int>(
         "executeJointCommand: Active executor not correct type.");
   }
 
