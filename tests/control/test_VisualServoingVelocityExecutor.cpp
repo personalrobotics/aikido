@@ -106,7 +106,6 @@ TEST_F(VisualServoingVelocityExecutorTest, execute_PerceptionTimeout)
 
   double timeSpent
       = std::chrono::duration<double>(simulationClock - beginning).count();
-
   EXPECT_NEAR(timeSpent, mProperties.mTimeout.count(), dStepTime.count());
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);

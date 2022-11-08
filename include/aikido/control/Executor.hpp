@@ -140,7 +140,7 @@ protected:
   std::set<ExecutorType> mTypes;
 
   /// Vector of dof names
-  std::vector<dart::dynamics::DegreeOfFreedom*> mDofs; 
+  std::vector<dart::dynamics::DegreeOfFreedom*> mDofs;
 };
 
 } // namespace control
