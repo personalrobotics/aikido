@@ -88,7 +88,7 @@ public:
   TrajectoryMarkerPtr addTrajectoryMarker(
       trajectory::ConstTrajectoryPtr trajectory,
       dart::dynamics::MetaSkeletonPtr skeleton,
-      const dart::dynamics::Frame& frame = *dart::dynamics::Frame::World(),
+      const dart::dynamics::Frame& frame,
       const Eigen::Vector4d& rgba = Eigen::Vector4d::Constant(0.75),
       double thickness = 0.01,
       std::size_t numLineSegments = 16u);
