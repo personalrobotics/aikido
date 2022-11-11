@@ -88,10 +88,16 @@ public:
   TrajectoryMarkerPtr addTrajectoryMarker(
       trajectory::ConstTrajectoryPtr trajectory,
       dart::dynamics::MetaSkeletonPtr skeleton,
-      const dart::dynamics::Frame& frame,
+      const dart::dynamics::Frame& frame = *dart::dynamics::Frame::World(),
       const Eigen::Vector4d& rgba = Eigen::Vector4d::Constant(0.75),
       double thickness = 0.01,
       std::size_t numLineSegments = 16u);
+
+  /// Clears all Frame (and TSR) Markers
+  void clearFrameMarkers();
+
+  /// Clears all Trajectory Markers
+  void clearTrajectoryMarkers();
 
   /// Sets viewer auto-updating to on (true) or off.
   /// \param[in] flag Whether to auto-update the viewer.
