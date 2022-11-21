@@ -246,5 +246,20 @@ void InteractiveMarkerViewer::update()
   mMarkerServer.applyChanges();
 }
 
+//==============================================================================
+void InteractiveMarkerViewer::clearFrameMarkers()
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  mFrameMarkers.clear();
+}
+
+//==============================================================================
+void InteractiveMarkerViewer::clearTrajectoryMarkers()
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  mTrajectoryMarkers.clear();
+  mTrajectoryNameManager.clear();
+}
+
 } // namespace rviz
 } // namespace aikido

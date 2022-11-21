@@ -8,3 +8,4 @@
 #include "aikido/common/metaprogramming.hpp"
 #include "aikido/common/stream.hpp"
 #include "aikido/common/string.hpp"
+#include "aikido/common/util.hpp"

@@ -53,7 +53,8 @@ RosJointCommandExecutor<T>::~RosJointCommandExecutor()
 template <ExecutorType T>
 std::future<int> RosJointCommandExecutor<T>::execute(
     const std::vector<double>& command,
-    const std::chrono::duration<double>& timeout)
+    const std::chrono::duration<double>& timeout,
+    const std::chrono::system_clock::time_point& /* timepoint */)
 {
   ::ros::Duration duration;
   // Rounds to floor(seconds)

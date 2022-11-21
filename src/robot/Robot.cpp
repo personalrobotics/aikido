@@ -18,26 +18,11 @@
 namespace aikido {
 namespace robot {
 
-namespace internal {
-
-inline aikido::control::TrajectoryExecutorPtr trajExecFromSkeleton(
-    const dart::dynamics::SkeletonPtr& skeleton)
-{
-  if (!skeleton)
-  {
-    throw std::invalid_argument("Null MetaskeletonPtr");
-  }
-  return std::make_shared<
-      aikido::control::KinematicSimulationTrajectoryExecutor>(skeleton);
-}
-
-} // namespace internal
-
 //==============================================================================
 Robot::Robot(
     dart::dynamics::SkeletonPtr skeleton,
     const std::string name,
-    const aikido::control::TrajectoryExecutorPtr trajExecutor)
+    bool addDefaultExecutors)
   : mName(name)
   , mMetaSkeleton(skeleton)
   , mDofs(util::dofNamesFromSkeleton(skeleton))
@@ -52,16 +37,25 @@ Robot::Robot(
   skeletonObj->enableSelfCollisionCheck();
   skeletonObj->disableAdjacentBodyCheck();
 
-  setTrajectoryExecutor(trajExecutor);
   auto rngSeed = std::chrono::system_clock::now().time_since_epoch().count();
   mRng = std::make_unique<common::RNGWrapper<std::default_random_engine>>(
       rngSeed);
-}
 
-//==============================================================================
-Robot::Robot(dart::dynamics::SkeletonPtr skeleton, const std::string name)
-  : Robot(skeleton, name, internal::trajExecFromSkeleton(skeleton))
-{
+  // Add default executors if requested
+  if (addDefaultExecutors)
+  {
+    auto trajExecName = registerExecutor(
+        std::make_shared<
+            aikido::control::KinematicSimulationTrajectoryExecutor>(skeleton));
+    activateExecutor(trajExecName);
+
+    registerExecutor(
+        std::make_shared<aikido::control::KinematicSimulationPositionExecutor>(
+            skeleton));
+    registerExecutor(
+        std::make_shared<aikido::control::KinematicSimulationVelocityExecutor>(
+            skeleton));
+  }
 }
 
 //==============================================================================
@@ -114,47 +108,142 @@ void Robot::enforceSelfCollisionPairs(
 }
 
 //==============================================================================
-std::future<void> Robot::executeTrajectory(
-    const trajectory::TrajectoryPtr& trajectory) const
+void Robot::clearExecutors()
 {
-  if (!mTrajectoryExecutor)
-  {
-    throw std::runtime_error(
-        "TrajectoryExecutor is null, cannot execute trajectory.");
-  }
-
-  // Ensure all other executors that could contain these joints are cancelled
-  if (mParentRobot)
-  {
-    mParentRobot->cancelAllTrajectories(false, true);
-  }
-  for (const auto& subrobot : mSubRobots)
-  {
-    subrobot.second->cancelAllTrajectories(true, false);
-  }
-  return mTrajectoryExecutor->execute(trajectory);
+  deactivateExecutor();
+  mExecutors.clear();
 }
 
 //==============================================================================
-void Robot::cancelAllTrajectories(
-    bool incluldeSubrobots,
+void Robot::deactivateExecutor()
+{
+  if (mActiveExecutor >= 0)
+  {
+    mExecutors[mActiveExecutor]->releaseDofs();
+    mActiveExecutor = -1;
+  }
+}
+
+//==============================================================================
+aikido::control::ExecutorPtr Robot::getActiveExecutor()
+{
+  if (mActiveExecutor >= 0)
+  {
+    return mExecutors[mActiveExecutor];
+  }
+  return nullptr;
+}
+
+//==============================================================================
+int Robot::registerExecutor(aikido::control::ExecutorPtr executor)
+{
+  if (!executor)
+  {
+    return -1;
+  }
+
+  executor->releaseDofs();
+  mExecutors.push_back(executor);
+  return mExecutors.size() - 1;
+}
+
+//==============================================================================
+bool Robot::activateExecutor(int id)
+{
+  // Deactivate active executor
+  deactivateExecutor();
+
+  // Validate input
+  if (id < 0 || (size_t)id >= mExecutors.size())
+  {
+    return false;
+  }
+
+  // If we can register the executor, activate it
+  if (mExecutors[id]->registerDofs())
+  {
+    mActiveExecutor = (int)id;
+    return true;
+  }
+  return false;
+}
+
+//==============================================================================
+bool Robot::activateExecutor(const aikido::control::ExecutorType type)
+{
+  // Search for last added executor of given type
+  for (int i = mExecutors.size() - 1; i >= 0; i--)
+  {
+    auto types = mExecutors[i]->getTypes();
+    if (types.find(type) != types.end())
+    {
+      return activateExecutor(i);
+    }
+  }
+
+  // Deactivate active executor
+  deactivateExecutor();
+  return false;
+}
+
+//==============================================================================
+// Explicit Instantiation of Joint Commnd Functions
+template std::future<int>
+Robot::executeJointCommand<aikido::control::ExecutorType::POSITION>(
+    const std::vector<double>& command,
+    const std::chrono::duration<double>& timeout);
+template std::future<int>
+Robot::executeJointCommand<aikido::control::ExecutorType::VELOCITY>(
+    const std::vector<double>& command,
+    const std::chrono::duration<double>& timeout);
+template std::future<int>
+Robot::executeJointCommand<aikido::control::ExecutorType::EFFORT>(
+    const std::vector<double>& command,
+    const std::chrono::duration<double>& timeout);
+
+//==============================================================================
+std::future<void> Robot::executeTrajectory(
+    const trajectory::TrajectoryPtr& trajectory)
+{
+  // Retrieve active executor
+  if (mActiveExecutor < 0)
+  {
+    return common::make_exceptional_future<void>(
+        "executeTrajectory: No active executor");
+  }
+  aikido::control::TrajectoryExecutorPtr trajectoryExecutor;
+  trajectoryExecutor
+      = std::dynamic_pointer_cast<aikido::control::TrajectoryExecutor>(
+          mExecutors[mActiveExecutor]);
+  if (!trajectoryExecutor)
+  {
+    return common::make_exceptional_future<void>(
+        "executeTrajectory: Active executor not a TrajectoryExecutor");
+  }
+
+  return trajectoryExecutor->execute(trajectory);
+}
+
+//==============================================================================
+void Robot::cancelAllCommands(
+    bool includeSubrobots,
     bool includeParents,
     const std::vector<std::string> excludedSubrobots)
 {
   // Cancel this trajectory
-  if (mTrajectoryExecutor)
+  if (mActiveExecutor >= 0)
   {
-    mTrajectoryExecutor->cancel();
+    mExecutors[mActiveExecutor]->cancel();
   }
 
   // Cancel parents' trajectories (if requested)
   if (includeParents && mParentRobot)
   {
-    mParentRobot->cancelAllTrajectories(false, true);
+    mParentRobot->cancelAllCommands(false, true);
   }
 
-  // Cancel children's trajectories
-  if (incluldeSubrobots)
+  // Cancel children's trajectories (if requested)
+  if (includeSubrobots)
   {
     for (const auto& subrobot : mSubRobots)
     {
@@ -163,7 +252,7 @@ void Robot::cancelAllTrajectories(
               excludedSubrobots.end(),
               subrobot.first))
       {
-        subrobot.second->cancelAllTrajectories(true, false);
+        subrobot.second->cancelAllCommands(true, false);
       }
     }
   }
@@ -180,9 +269,9 @@ void Robot::step(const std::chrono::system_clock::time_point& timepoint)
         getRootSkeleton()->getMutex());
   }
 
-  if (mTrajectoryExecutor)
+  if (mActiveExecutor >= 0)
   {
-    mTrajectoryExecutor->step(timepoint);
+    mExecutors[mActiveExecutor]->step(timepoint);
   }
 
   for (const auto& subrobot : mSubRobots)
@@ -198,18 +287,13 @@ constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
   auto collisionOption
       = dart::collision::CollisionOption(false, 1, mSelfCollisionFilter);
 
-  auto collisionMetaSkeleton = mMetaSkeleton->cloneMetaSkeleton();
-
   // Create the constraint and return.
   auto collisionFreeConstraint
       = std::make_shared<constraint::dart::CollisionFree>(
-          mStateSpace,
-          collisionMetaSkeleton,
-          mCollisionDetector,
-          collisionOption);
+          mStateSpace, mMetaSkeleton, mCollisionDetector, collisionOption);
   collisionFreeConstraint->addSelfCheck(
       mCollisionDetector->createCollisionGroupAsSharedPtr(
-          collisionMetaSkeleton.get()));
+          getRootSkeleton().get()));
   return collisionFreeConstraint;
 }
 
@@ -715,17 +799,6 @@ void Robot::setWorld(aikido::planner::WorldPtr world)
       mWorld->addSkeleton(skeleton);
     }
   }
-}
-
-//=============================================================================
-void Robot::setTrajectoryExecutor(
-    const aikido::control::TrajectoryExecutorPtr& trajExecutor)
-{
-  if (mTrajectoryExecutor)
-  {
-    mTrajectoryExecutor->cancel();
-  }
-  mTrajectoryExecutor = trajExecutor;
 }
 
 //=============================================================================

@@ -93,6 +93,12 @@ public:
       double thickness = 0.01,
       std::size_t numLineSegments = 16u);
 
+  /// Clears all Frame (and TSR) Markers
+  void clearFrameMarkers();
+
+  /// Clears all Trajectory Markers
+  void clearTrajectoryMarkers();
+
   /// Sets viewer auto-updating to on (true) or off.
   /// \param[in] flag Whether to auto-update the viewer.
   void setAutoUpdate(bool flag);
