@@ -31,6 +31,7 @@
 * Planner
 
   * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
+  * Make planner_dart component and build all DART planners as planner_dart component: [#567](https://github.com/personalrobotics/aikido/pull/567)
   * Added ConfigurationToConfigurations planner adapter: [#587](https://github.com/personalrobotics/aikido/pull/587)
   * Cleaned up planning methods in robot/util: [#588](https://github.com/personalrobotics/aikido/pull/588)
   * Added batches to ConcreteRobot's planToTSR: [#607](https://github.com/personalrobotics/aikido/pull/607)
