@@ -143,6 +143,7 @@ TEST_F(
     execute_TrajectoryFinished_DoesNotThrow)
 {
   InstantaneousTrajectoryExecutor executor(mSkeleton);
+  executor.start();
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 
@@ -164,4 +165,5 @@ TEST_F(
   future.get();
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 1.0);
+  executor.stop();
 }

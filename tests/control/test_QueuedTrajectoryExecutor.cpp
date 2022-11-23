@@ -110,6 +110,7 @@ TEST_F(QueuedTrajectoryExecutorTest, constructor_Passes)
 TEST_F(QueuedTrajectoryExecutorTest, execute_WaitOnFuture_TrajectoryWasExecuted)
 {
   QueuedTrajectoryExecutor executor(std::move(mExecutor));
+  EXPECT_EQ(executor.registerDofs(), true);
 
   EXPECT_DOUBLE_EQ(mSkeleton->getDof(0)->getPosition(), 0.0);
 

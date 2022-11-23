@@ -25,6 +25,7 @@ IF(EXISTS "${PROJECT_SOURCE_DIR}/tests/googletest/googletest")
   add_subdirectory("control")
   add_subdirectory("distance")
   add_subdirectory("planner")
+  add_subdirectory("robot")
   add_subdirectory("statespace")
   add_subdirectory("trajectory")
 

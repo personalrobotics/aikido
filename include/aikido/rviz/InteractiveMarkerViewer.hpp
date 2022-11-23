@@ -56,7 +56,7 @@ public:
   /// \param[in] alpha Opacity.
   /// \return Frame marker added to this viewer.
   FrameMarkerPtr addFrameMarker(
-      dart::dynamics::Frame* frame,
+      std::shared_ptr<const dart::dynamics::Frame> frame,
       double length = 0.25,
       double thickness = 0.02,
       double alpha = 1.0);
@@ -92,6 +92,12 @@ public:
       const Eigen::Vector4d& rgba = Eigen::Vector4d::Constant(0.75),
       double thickness = 0.01,
       std::size_t numLineSegments = 16u);
+
+  /// Clears all Frame (and TSR) Markers
+  void clearFrameMarkers();
+
+  /// Clears all Trajectory Markers
+  void clearTrajectoryMarkers();
 
   /// Sets viewer auto-updating to on (true) or off.
   /// \param[in] flag Whether to auto-update the viewer.

@@ -2,22 +2,35 @@
 
 #include <chrono>
 
+#include "aikido/control/util.hpp"
+
 namespace aikido {
 namespace control {
 
 //==============================================================================
 QueuedTrajectoryExecutor::QueuedTrajectoryExecutor(
     std::shared_ptr<TrajectoryExecutor> executor)
-  : mExecutor{std::move(executor)}, mInProgress{false}, mMutex{}
+  : TrajectoryExecutor(
+      checkNull(executor)->getDofs(), checkNull(executor)->getTypes())
+  , mExecutor{executor}
+  , mInProgress{false}
+  , mMutex{}
 {
-  if (!mExecutor)
-    throw std::invalid_argument("Executor is null.");
+  // Executor already check with checkNull
+  stop();
+
+  // Use our thread instead
+  mExecutor->stop();
+
+  // register Dofs from here instead
+  mExecutor->releaseDofs();
+  registerDofs();
 }
 
 //==============================================================================
 QueuedTrajectoryExecutor::~QueuedTrajectoryExecutor()
 {
-  // Do nothing.
+  stop();
 }
 
 //==============================================================================

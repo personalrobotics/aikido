@@ -48,7 +48,7 @@ static void CreateAxis(
 //==============================================================================
 FrameMarker::FrameMarker(
     interactive_markers::InteractiveMarkerServer* markerServer,
-    dart::dynamics::Frame* frame,
+    std::shared_ptr<const dart::dynamics::Frame> frame,
     const std::string& frameId,
     double length,
     double thickness,

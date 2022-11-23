@@ -1,20 +1,39 @@
 ## Aikido 0 (prerelease)
 
-### 0.5.0 (2021-XX-XX)
+### 0.5.0 (2022-XX-XX)
 
 * Control
 
   * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
+  * Added generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
+  * Added JacobianExecutor wrapping any Velocity/EffortExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
+  * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
+  * Added VisualServoingVelocityExecutor wrapping JacobianExecutor [#620](https://github.com/personalrobotics/aikido/pull/620)
+
+* IO
+
+  * Updated DartLoader usage, previously deprecated by DART 6.12 [#619](https://github.com/personalrobotics/aikido/pull/619)
+
+* Robot
+
+  * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
 
 * RViz
 
   * Propogate removal of WorldInteractiveMarkerViewer to Aikidopy: [#599](https://github.com/personalrobotics/aikido/pull/599)
+  * Fix addTSRMarker Bug: [#618](https://github.com/personalrobotics/aikido/pull/618)
+  * Implement clear markers in InteractiveMarkerViewer: [#625](https://github.com/personalrobotics/aikido/pull/625)
+
+* State Space
+
+  * Handle R0 (i.e. Weld) Joints in MetaSkeletonStatespace: [#622](https://github.com/personalrobotics/aikido/pull/622)
 
 * Planner
 
   * Fixed key bugs in CRRTs: [#574](https://github.com/personalrobotics/aikido/pull/574)
   * Added ConfigurationToConfigurations planner adapter: [#587](https://github.com/personalrobotics/aikido/pull/587)
   * Cleaned up planning methods in robot/util: [#588](https://github.com/personalrobotics/aikido/pull/588)
+  * Added batches to ConcreteRobot's planToTSR: [#607](https://github.com/personalrobotics/aikido/pull/607)
 
 * Build & Testing & ETC
 

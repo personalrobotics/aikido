@@ -26,7 +26,11 @@ InteractiveMarkerViewer::InteractiveMarkerViewer(
   , mFrameId(frameId)
   , mWorld(std::move(env))
 {
+  // Set the pattern for trajectory names.
   mTrajectoryNameManager.setPattern("Frame[%s(%d)]");
+
+  // Sets the viewer to update by default.
+  setAutoUpdate(true);
 }
 
 //==============================================================================
@@ -100,7 +104,10 @@ void InteractiveMarkerViewer::updateSkeletonMarkers()
 
 //==============================================================================
 FrameMarkerPtr InteractiveMarkerViewer::addFrameMarker(
-    dart::dynamics::Frame* frame, double length, double thickness, double alpha)
+    std::shared_ptr<const dart::dynamics::Frame> frame,
+    double length,
+    double thickness,
+    double alpha)
 {
   std::lock_guard<std::mutex> lock(mMutex);
   const FrameMarkerPtr marker = std::make_shared<FrameMarker>(
@@ -113,7 +120,9 @@ FrameMarkerPtr InteractiveMarkerViewer::addFrameMarker(
 void InteractiveMarkerViewer::updateFrameMarkers()
 {
   for (const auto& marker : mFrameMarkers)
+  {
     marker->update();
+  }
 }
 
 //==============================================================================
@@ -138,7 +147,7 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
     name = basename;
   }
 
-  std::vector<std::unique_ptr<SimpleFrame>> tsrFrames;
+  std::vector<std::shared_ptr<SimpleFrame>> tsrFrames;
   tsrFrames.reserve(nSamples);
 
   for (int i = 0; i < nSamples && sampler->canSample(); ++i)
@@ -150,9 +159,9 @@ TSRMarkerPtr InteractiveMarkerViewer::addTSRMarker(
     std::stringstream ss;
     ss << "TSRMarker[" << name << "].frame[" << i << "]";
 
-    auto tsrFrame = ::aikido::common::make_unique<SimpleFrame>(
+    auto tsrFrame = std::make_shared<SimpleFrame>(
         Frame::World(), ss.str(), state.getIsometry());
-    addFrameMarker(tsrFrame.get());
+    addFrameMarker(tsrFrame);
     tsrFrames.emplace_back(std::move(tsrFrame));
   }
 
@@ -235,6 +244,21 @@ void InteractiveMarkerViewer::update()
 
   // Apply changes anytime a marker has been modified.
   mMarkerServer.applyChanges();
+}
+
+//==============================================================================
+void InteractiveMarkerViewer::clearFrameMarkers()
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  mFrameMarkers.clear();
+}
+
+//==============================================================================
+void InteractiveMarkerViewer::clearTrajectoryMarkers()
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  mTrajectoryMarkers.clear();
+  mTrajectoryNameManager.clear();
 }
 
 } // namespace rviz

@@ -49,14 +49,6 @@ std::unique_ptr<aikido::trajectory::Spline> toSplineJointTrajectory(
 trajectory_msgs::JointTrajectory toRosJointTrajectory(
     const aikido::trajectory::ConstTrajectoryPtr& trajectory, double timestep);
 
-/// Converts Eigen VectorXd and joint names to JointState
-/// \param[in] goalPositions The required positions for the fingers
-/// \param[in] jointNames The corresponding names of the joints
-/// \return The JointState message object
-sensor_msgs::JointState positionsToJointState(
-    const Eigen::VectorXd& goalPositions,
-    const std::vector<std::string>& jointNames);
-
 } // namespace ros
 } // namespace control
 } // namespace aikido
