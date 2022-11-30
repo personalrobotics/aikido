@@ -372,7 +372,7 @@ std::unique_ptr<SplineTrajectory> toSplineJointTrajectory(
     else if (properties.getNumDofs() != 1 || (!r1Joint && !so2Joint))
     {
       std::stringstream message;
-      message << "Only R1Joint and SO2Joint are supported. Joint "
+      message << "Only R1Joint, SO2Joint, and WeldJoint are supported. Joint "
               << properties.getName() << "(index: " << i << ") is a "
               << properties.getType() << " with " << properties.getNumDofs()
               << " DOFs.";
@@ -573,7 +573,8 @@ trajectory_msgs::JointTrajectory toRosJointTrajectory(
     else if (!r1Joint && !so2Joint)
     {
       throw std::invalid_argument(
-          "MetaSkeletonStateSpace must contain only R1Joints and SO2Joints.");
+          "MetaSkeletonStateSpace must contain only R1Joints, SO2Joints, and "
+          "WeldJoints.");
     }
 
     // For RnJoint, supports only 1D.
