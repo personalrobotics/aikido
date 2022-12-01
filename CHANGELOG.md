@@ -10,6 +10,7 @@
   * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
   * Added VisualServoingVelocityExecutor wrapping JacobianExecutor [#620](https://github.com/personalrobotics/aikido/pull/620)
   * Added functionality for controller switching when changing Executor [#621](https://github.com/personalrobotics/aikido/pull/621)
+  * Ignored R0 (i.e. Weld) Joints in Conversions [#623](https://github.com/personalrobotics/aikido/pull/623)
 
 * IO
 
@@ -23,8 +24,9 @@
 
 * RViz
 
-  * Fix addTSRMarker Bug: [#618](https://github.com/personalrobotics/aikido/pull/618)
   * Propogate removal of WorldInteractiveMarkerViewer to Aikidopy: [#599](https://github.com/personalrobotics/aikido/pull/599)
+  * Fix addTSRMarker Bug: [#618](https://github.com/personalrobotics/aikido/pull/618)
+  * Implement clear markers in InteractiveMarkerViewer: [#625](https://github.com/personalrobotics/aikido/pull/625)
 
 * State Space
 

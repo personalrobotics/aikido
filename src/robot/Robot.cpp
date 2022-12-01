@@ -310,7 +310,8 @@ constraint::dart::CollisionFreePtr Robot::getSelfCollisionConstraint() const
       = std::make_shared<constraint::dart::CollisionFree>(
           mStateSpace, mMetaSkeleton, mCollisionDetector, collisionOption);
   collisionFreeConstraint->addSelfCheck(
-      mCollisionDetector->createCollisionGroupAsSharedPtr(mMetaSkeleton.get()));
+      mCollisionDetector->createCollisionGroupAsSharedPtr(
+          getRootSkeleton().get()));
   return collisionFreeConstraint;
 }
 
