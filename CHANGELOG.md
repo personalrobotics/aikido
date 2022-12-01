@@ -9,6 +9,7 @@
   * Added JacobianExecutor wrapping any Velocity/EffortExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
   * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
   * Added VisualServoingVelocityExecutor wrapping JacobianExecutor [#620](https://github.com/personalrobotics/aikido/pull/620)
+  * Ignored R0 (i.e. Weld) Joints in Conversions [#623](https://github.com/personalrobotics/aikido/pull/623)
 
 * IO
 
