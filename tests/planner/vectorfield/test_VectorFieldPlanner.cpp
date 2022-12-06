@@ -6,8 +6,11 @@
 #include <aikido/constraint/Testable.hpp>
 #include <aikido/distance/defaults.hpp>
 #include <aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp>
+#include <aikido/planner/dart/ConfigurationToEndEffectorPose.hpp>
 #include <aikido/planner/vectorfield/MoveEndEffectorOffsetVectorField.hpp>
+#include <aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp>
 #include <aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp>
+#include <aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorPosePlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldPlanner.hpp>
 #include <aikido/planner/vectorfield/VectorFieldUtil.hpp>
 #include <aikido/statespace/GeodesicInterpolator.hpp>
@@ -410,6 +413,102 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorOffsetTest)
   EXPECT_LE(movedDistance, maxDistance);
 }
 
+TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseAsOffsetTest)
+{
+  using aikido::planner::dart::ConfigurationToEndEffectorPose;
+  using aikido::planner::vectorfield::
+      VectorFieldConfigurationToEndEffectorPosePlanner;
+
+  Eigen::Vector3d direction;
+  direction << 1., 1., 0.;
+  direction.normalize();
+  double signedDistance = 0.41;
+  double distanceTolerance = 0.01;
+
+  mSkel->setPositions(mStartConfig);
+  Eigen::Isometry3d startTrans = mBodynode->getTransform();
+  Eigen::VectorXd startVec = startTrans.translation();
+
+  Eigen::Isometry3d goalTrans = Eigen::Isometry3d::Identity();
+  goalTrans.translation() = startVec + (signedDistance * direction);
+
+  double positionTolerance = 0.01;
+  double angularTolerance = 0.15;
+  double initialStepSize = 0.01;
+  double jointLimitTolerance = 1e-3;
+  double constraintCheckResolution = 1e-2;
+  std::chrono::duration<double> timelimit(60.0);
+
+  // Create problem.
+  auto poseProblem = ConfigurationToEndEffectorPose(
+      mStateSpace, mSkel, mBodynode, goalTrans, mPassingConstraint);
+
+  // Create planner.
+  VectorFieldConfigurationToEndEffectorPosePlanner vfPosePlanner(
+      mStateSpace,
+      mSkel,
+      distanceTolerance,
+      angularTolerance / positionTolerance,
+      positionTolerance,
+      angularTolerance,
+      initialStepSize,
+      jointLimitTolerance,
+      constraintCheckResolution,
+      timelimit);
+
+  // Invoke planning method.
+  auto traj = vfPosePlanner.plan(poseProblem);
+
+  EXPECT_FALSE(traj == nullptr) << "Trajectory not found";
+
+  if (traj == nullptr)
+  {
+    return;
+  }
+
+  // Extract and evaluate first waypoint
+  auto firstWayPoint = mStateSpace->createState();
+  traj->evaluate(0.0, firstWayPoint);
+  Eigen::VectorXd testStart(mStateSpace->getDimension());
+  Eigen::VectorXd referenceStart(mStateSpace->getDimension());
+  mStateSpace->convertStateToPositions(firstWayPoint, testStart);
+  EXPECT_LE((testStart - mStartConfig).norm(), mErrorTolerance);
+
+  int stepNum = 10;
+  double timeStep = traj->getDuration() / stepNum;
+
+  double minDistance = signedDistance - distanceTolerance;
+  double maxDistance = signedDistance + distanceTolerance;
+
+  for (double t = traj->getStartTime(); t <= traj->getEndTime(); t += timeStep)
+  {
+    auto waypoint = mStateSpace->createState();
+    traj->evaluate(t, waypoint);
+
+    mStateSpace->setState(mSkel.get(), waypoint);
+    Eigen::Isometry3d waypointTrans = mBodynode->getTransform();
+    Eigen::Vector3d waypointVec = waypointTrans.translation();
+
+    Eigen::Vector3d linear_error
+        = startVec + direction * minDistance - waypointVec;
+    Eigen::Vector3d const linear_orthogonal_error
+        = linear_error - linear_error.dot(direction) * direction;
+    double const linear_orthogonal_magnitude = linear_orthogonal_error.norm();
+    EXPECT_LE(linear_orthogonal_magnitude, positionTolerance);
+  }
+
+  auto endpoint = mStateSpace->createState();
+  traj->evaluate(traj->getEndTime(), endpoint);
+  mStateSpace->setState(mSkel.get(), endpoint);
+  Eigen::Isometry3d endTrans = mBodynode->getTransform();
+  double movedDistance
+      = (endTrans.translation() - startTrans.translation()).norm();
+
+  // Verify the moving distance
+  EXPECT_GE(movedDistance, minDistance);
+  EXPECT_LE(movedDistance, maxDistance);
+}
+
 TEST_F(VectorFieldPlannerTest, DirectionZeroVector)
 {
   using aikido::planner::dart::ConfigurationToEndEffectorOffset;
@@ -445,23 +544,30 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   mSkel->setPositions(goalConfig);
   Eigen::Isometry3d targetPose = mBodynode->getTransform();
 
-  double poseErrorTolerance = 0.01;
+  double goalTolerance = 0.01;
   double initialStepSize = 0.05;
   double r = 1.0;
+  double positionTolerance = 0.01;
+  double angularTolerance = 0.15;
   double jointLimitTolerance = 1e-2;
   double constraintCheckResolution = 1e-2;
   std::chrono::duration<double> timelimit(300.);
 
   mSkel->setPositions(mStartConfig);
+  auto startState = mStateSpace->createState();
+  mStateSpace->getState(mSkel.get(), startState);
 
   auto traj1 = aikido::planner::vectorfield::planToEndEffectorPose(
       mStateSpace,
+      *startState,
       mSkel,
       mBodynode,
       mPassingConstraint,
       targetPose,
-      poseErrorTolerance,
+      goalTolerance,
       r,
+      positionTolerance,
+      angularTolerance,
       initialStepSize,
       jointLimitTolerance,
       constraintCheckResolution,
@@ -489,5 +595,5 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   Eigen::Isometry3d endTrans = mBodynode->getTransform();
 
   double poseError = computeGeodesicDistance(endTrans, targetPose, r);
-  EXPECT_LE(poseError, poseErrorTolerance);
+  EXPECT_LE(poseError, goalTolerance);
 }

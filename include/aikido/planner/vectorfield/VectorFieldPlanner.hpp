@@ -83,11 +83,14 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 /// \param[in] bn Body node of the end-effector.
 /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
 /// \param[in] goalPose Desired end-effector pose.
-/// \param[in] poseErrorTolerance How a planned trajectory is allowed to
+/// \param[in] goalTolerance Distance from goal to stop planning.
+/// \param[in] conversionRatioInGeodesicDistance Conversion ratio from radius to
+/// meter in comparison with goalTolerance.
+/// \param[in] positionTolerance How a planned trajectory is allowed to
 /// deviated from a straight line segment defined by the direction and the
 /// distance.
-/// \param[in] conversionRatioInGeodesicDistance Conversion ratio from radius to
-/// meter in computing geodesic distance.
+/// \param[in] angularTolerance How a planned trajectory is allowed to deviate
+/// from a given direction.
 /// \param[in] initialStepSize Initial step size.
 /// \param[in] jointLimitTolerance If less then this distance to joint
 /// limit, velocity is bounded in that direction to 0.
@@ -96,13 +99,16 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 /// \param[out] result information about success or failure.
 /// \return Trajectory or \c nullptr if planning failed.
 aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const ::dart::dynamics::BodyNodePtr& bn,
-    const aikido::constraint::TestablePtr& constraint,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
-    double poseErrorTolerance,
+    double goalTolerance,
     double conversionRatioInGeodesicDistance,
+    double positionTolerance,
+    double angularTolerance,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,
