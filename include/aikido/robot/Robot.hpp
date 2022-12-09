@@ -206,17 +206,17 @@ public:
 
   ///
   /// Plan a specific body node of the robot to
-  /// a twist (i.e. position offset + rotation).
+  /// a pose offset (i.e. position offset + rotation).
   ///
   /// \param[in] bodyNodeName Bodynode (usually the end effector) to offset
-  /// \param[in] offset Position offset in R^3
-  /// \param[in] rotation Rotation (R^3 vector, norm is rotation amount)
+  /// \param[in] offset Translation in R^3 (world Frame)
+  /// \param[in] rotation Axis in R^3, norm is angle (world Frame)
   /// \param[in] testableConstraint Planning (e.g. collision) constraints, set
   /// to nullptr for no constraints (not recommended)
   /// \param[in] planner Configuration planner, defaults to
   /// VectorFieldConfigurationToEndEffectorOffsetPlanner
   /// with robot::util::defaultVFParams
-  trajectory::TrajectoryPtr planToTwist(
+  trajectory::TrajectoryPtr planToPoseOffset(
       const std::string bodyNodeName,
       const Eigen::Vector3d& offset,
       const Eigen::Vector3d& rotation,
@@ -229,7 +229,7 @@ public:
       = nullptr) const;
 
   /// Default to selfCollisionConstraint
-  trajectory::TrajectoryPtr planToTwist(
+  trajectory::TrajectoryPtr planToPoseOffset(
       const std::string bodyNodeName,
       const Eigen::Vector3d& offset,
       const Eigen::Vector3d& rotation,

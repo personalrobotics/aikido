@@ -18,7 +18,7 @@
 
   * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
   * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
-  * Added planToTwist into Robot class [#628](https://github.com/personalrobotics/aikido/pull/628)
+  * Added planToPoseOffset into Robot class [#628](https://github.com/personalrobotics/aikido/pull/628)
 
 * RViz
 

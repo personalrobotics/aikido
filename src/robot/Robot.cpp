@@ -623,7 +623,7 @@ trajectory::TrajectoryPtr Robot::planToOffset(
 }
 
 //=============================================================================
-trajectory::TrajectoryPtr Robot::planToTwist(
+trajectory::TrajectoryPtr Robot::planToPoseOffset(
     const std::string bodyNodeName,
     const Eigen::Vector3d& offset,
     const Eigen::Vector3d& rotation,
@@ -717,7 +717,7 @@ trajectory::TrajectoryPtr Robot::planToTwist(
 }
 
 //=============================================================================
-trajectory::TrajectoryPtr Robot::planToTwist(
+trajectory::TrajectoryPtr Robot::planToPoseOffset(
     const std::string bodyNodeName,
     const Eigen::Vector3d& offset,
     const Eigen::Vector3d& rotation,
@@ -726,7 +726,7 @@ trajectory::TrajectoryPtr Robot::planToTwist(
     const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
         trajPostProcessor) const
 {
-  return planToTwist(
+  return planToPoseOffset(
       bodyNodeName,
       offset,
       rotation,

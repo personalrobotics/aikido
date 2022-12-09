@@ -1,12 +1,11 @@
 #include "aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp"
 
-#include <cmath>
-
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
 #include <dart/optimizer/Problem.hpp>
 
+#include "aikido/common/util.hpp"
 #include "aikido/planner/vectorfield/VectorFieldUtil.hpp"
 
 #include "detail/VectorFieldPlannerExceptions.hpp"
@@ -16,7 +15,7 @@ namespace planner {
 namespace vectorfield {
 
 // Define whether vector is "near zero"
-#define NEARZERO 1E-8
+using aikido::common::FuzzyZero;
 
 //==============================================================================
 MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
@@ -34,7 +33,7 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
       stateSpace, metaskeleton, bn, maxStepSize, jointLimitPadding)
   , mGoalPose(goalPose)
   , mGoalTolerance(goalTolerance)
-  , mConversionRatioFromRadiusToMeter(r)
+  , mConversionRatioFromRadianToMeter(r)
   , mPositionTolerance(positionTolerance)
   , mAngularTolerance(angularTolerance)
   , mStartPose(bn->getTransform())
@@ -49,19 +48,21 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
   mDesiredTwist = computeGeodesicTwist(mStartPose, mGoalPose);
   mDirection = mDesiredTwist.tail<3>();
   mRotation = mDesiredTwist.head<3>();
-  if (mDirection.norm() > NEARZERO)
+
+  // Zero out small motions too small to execute
+  if (mDirection.norm() > mGoalTolerance)
     mDirection.normalize();
   else
-    mDirection = Eigen::Vector3d::Zero();
-  if (mRotation.norm() > NEARZERO)
+    mDirection = mDesiredTwist.tail<3>() = Eigen::Vector3d::Zero();
+  if (mRotation.norm() > mGoalTolerance * mConversionRatioFromRadianToMeter)
     mRotation.normalize();
   else
-    mRotation = Eigen::Vector3d::Zero();
+    mRotation = mDesiredTwist.head<3>() = Eigen::Vector3d::Zero();
 
   mDesiredTwist.normalize();
 
   mLastPoseError = std::make_shared<double>(computeGeodesicDistance(
-      mStartPose, mGoalPose, mConversionRatioFromRadiusToMeter));
+      mStartPose, mGoalPose, mConversionRatioFromRadianToMeter));
 }
 
 //==============================================================================
@@ -83,7 +84,7 @@ MoveEndEffectorPoseVectorField::evaluateCartesianStatus(
 
   // Check arrival at goal
   double poseError = computeGeodesicDistance(
-      pose, mGoalPose, mConversionRatioFromRadiusToMeter);
+      pose, mGoalPose, mConversionRatioFromRadianToMeter);
 
   // Check for deviation from the desired trajectory.
   const Eigen::Vector6d startTwist = computeGeodesicTwist(mStartPose, pose);
@@ -95,7 +96,7 @@ MoveEndEffectorPoseVectorField::evaluateCartesianStatus(
   double movedAngle = angle.transpose() * mRotation;
   double orientationError = (angle - movedAngle * mRotation).norm();
 
-  if (fabs(orientationError) > mAngularTolerance && movedAngle > NEARZERO)
+  if (fabs(orientationError) > mAngularTolerance && !FuzzyZero(movedAngle))
   {
     dtwarn << "Deviated from orientation constraint: ("
            << fabs(orientationError) << " > " << mAngularTolerance << ")"
@@ -103,7 +104,7 @@ MoveEndEffectorPoseVectorField::evaluateCartesianStatus(
     return VectorFieldPlannerStatus::TERMINATE;
   }
 
-  if (positionDeviation > mPositionTolerance && movedDistance > NEARZERO)
+  if (positionDeviation > mPositionTolerance && !FuzzyZero(movedDistance))
   {
     dtwarn << "Deviated from straight-line constraint: "
            << fabs(positionDeviation) << " > " << mPositionTolerance << ")"

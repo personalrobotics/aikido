@@ -28,10 +28,10 @@ public:
   /// \param[in] metaskeleton MetaSkeleton to plan with
   /// \param[in] bn Body node of end-effector.
   /// \param[in] goalPose Desired end-effector pose.
-  /// \param[in] goalTolerance Stop when within this value of goal pose.
+  /// \param[in] goalTolerance Geodesic Distance from goal to stop planning.
   /// \param[in] r Conversion of radius to meters in computing goalTolerance.
-  /// \param[in] positionTolerance Constraint tolerance in meters.
-  /// \param[in] angularTolerance Constraint tolerance in radians.
+  /// \param[in] positionTolerance Straight-line constraint tolerance in meters.
+  /// \param[in] angularTolerance Rotation deviation tolerance in radians.
   /// \param[in] maxStepSize The maximum step size used to guarantee
   /// that the integrator does not step out of joint limits.
   /// \param[in] jointLimitPadding If less then this distance to joint
@@ -65,7 +65,7 @@ protected:
   double mGoalTolerance;
 
   /// Conversion ratio from radius to meter.
-  double mConversionRatioFromRadiusToMeter;
+  double mConversionRatioFromRadianToMeter;
 
   /// Tolerance of linear deviation error.
   double mPositionTolerance;
