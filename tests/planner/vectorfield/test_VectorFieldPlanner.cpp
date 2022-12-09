@@ -448,7 +448,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseAsOffsetTest)
       mStateSpace,
       mSkel,
       distanceTolerance,
-      angularTolerance / positionTolerance,
+      1.0,
       positionTolerance,
       angularTolerance,
       initialStepSize,
@@ -544,7 +544,7 @@ TEST_F(VectorFieldPlannerTest, PlanToEndEffectorPoseTest)
   mSkel->setPositions(goalConfig);
   Eigen::Isometry3d targetPose = mBodynode->getTransform();
 
-  double goalTolerance = 0.01;
+  double goalTolerance = 0.015;
   double initialStepSize = 0.05;
   double r = 1.0;
   double positionTolerance = 0.01;

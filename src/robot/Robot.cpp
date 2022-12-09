@@ -642,12 +642,13 @@ trajectory::TrajectoryPtr Robot::planToTwist(
     return nullptr;
   }
 
-  // Check offset
-  auto distance = offset.norm();
+  // Check angle
   auto angle = rotation.norm();
-  if (distance == 0 || angle == 0)
-    return nullptr;
-  auto axis = rotation / angle;
+  if (angle == 0)
+  {
+    dtwarn << "Zero Rotation. Use PlanToOffset instead." << std::endl;
+  }
+  auto axis = (angle == 0) ? rotation : rotation / angle;
 
   // Create the problem.
   auto startPose = bn->getTransform();
@@ -659,6 +660,7 @@ trajectory::TrajectoryPtr Robot::planToTwist(
 
   // Default to VectorFieldParameter
   auto dartPlanner = planner;
+  std::shared_ptr<aikido::planner::Planner::Result> result;
   if (!dartPlanner)
   {
     using planner::vectorfield::
@@ -668,18 +670,22 @@ trajectory::TrajectoryPtr Robot::planToTwist(
         = std::make_shared<VectorFieldConfigurationToEndEffectorPosePlanner>(
             mStateSpace,
             getMetaSkeleton(),
-            vfParams.distanceTolerance,
-            vfParams.angularTolerance / vfParams.positionTolerance,
+            vfParams.goalTolerance,
+            vfParams.angleDistanceRatio,
             vfParams.positionTolerance,
             vfParams.angularTolerance,
             vfParams.initialStepSize,
             vfParams.jointLimitTolerance,
             vfParams.constraintCheckResolution,
             vfParams.timeout);
+    result = std::make_shared<
+        VectorFieldConfigurationToEndEffectorPosePlanner::Result>();
   }
 
   // Solve the problem with the DART planner.
-  auto rawPlan = dartPlanner->plan(problem, /* result */ nullptr);
+  auto rawPlan = dartPlanner->plan(problem, result.get());
+  if (!rawPlan && result)
+    dtwarn << result->getMessage() << std::endl;
 
   // Postprocess if enabled or provided
   auto postprocessor

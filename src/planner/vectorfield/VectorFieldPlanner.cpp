@@ -98,7 +98,7 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
     // no enough waypoints cached to make a trajectory output.
     if (result)
     {
-      result->setMessage("No segment cached.");
+      result->setMessage("No segment cached. Timeout?");
     }
     return nullptr;
   }

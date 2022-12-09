@@ -1,6 +1,8 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_
 
+#include <limits>
+
 #include "aikido/planner/vectorfield/BodyNodePoseVectorField.hpp"
 
 namespace aikido {
@@ -76,7 +78,11 @@ protected:
 
   /// Cache for desired twist between start and goal.
   Eigen::Vector6d mDesiredTwist;
-  Eigen::Vector6d mNormalizedTwist;
+  Eigen::Vector3d mDirection;
+  Eigen::Vector3d mRotation;
+
+  /// Cache of last pose error
+  std::shared_ptr<double> mLastPoseError;
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

@@ -1,5 +1,7 @@
 #include "aikido/planner/vectorfield/MoveEndEffectorPoseVectorField.hpp"
 
+#include <cmath>
+
 #include <dart/dynamics/BodyNode.hpp>
 #include <dart/math/MathTypes.hpp>
 #include <dart/optimizer/Function.hpp>
@@ -12,6 +14,9 @@
 namespace aikido {
 namespace planner {
 namespace vectorfield {
+
+// Define whether vector is "near zero"
+#define NEARZERO 1E-8
 
 //==============================================================================
 MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
@@ -42,9 +47,21 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
     throw std::invalid_argument("Angular tolerance is negative");
 
   mDesiredTwist = computeGeodesicTwist(mStartPose, mGoalPose);
-  mNormalizedTwist = computeGeodesicTwist(mStartPose, mGoalPose);
-  mNormalizedTwist.head<3>().normalize();
-  mNormalizedTwist.tail<3>().normalize();
+  mDirection = mDesiredTwist.tail<3>();
+  mRotation = mDesiredTwist.head<3>();
+  if (mDirection.norm() > NEARZERO)
+    mDirection.normalize();
+  else
+    mDirection = Eigen::Vector3d::Zero();
+  if (mRotation.norm() > NEARZERO)
+    mRotation.normalize();
+  else
+    mRotation = Eigen::Vector3d::Zero();
+
+  mDesiredTwist.normalize();
+
+  mLastPoseError = std::make_shared<double>(computeGeodesicDistance(
+      mStartPose, mGoalPose, mConversionRatioFromRadiusToMeter));
 }
 
 //==============================================================================
@@ -52,8 +69,9 @@ bool MoveEndEffectorPoseVectorField::evaluateCartesianVelocity(
     const Eigen::Isometry3d& /* pose */,
     Eigen::Vector6d& cartesianVelocity) const
 {
-  using aikido::planner::vectorfield::computeGeodesicTwist;
-  cartesianVelocity = mDesiredTwist;
+  // Speed up large movements
+  double scale = std::max(*mLastPoseError, 1.0);
+  cartesianVelocity = scale * mDesiredTwist;
   return true;
 }
 
@@ -62,28 +80,22 @@ VectorFieldPlannerStatus
 MoveEndEffectorPoseVectorField::evaluateCartesianStatus(
     const Eigen::Isometry3d& pose) const
 {
+
   // Check arrival at goal
   double poseError = computeGeodesicDistance(
       pose, mGoalPose, mConversionRatioFromRadiusToMeter);
 
-  if (poseError < mGoalTolerance)
-  {
-    return VectorFieldPlannerStatus::CACHE_AND_TERMINATE;
-  }
-
   // Check for deviation from the desired trajectory.
   const Eigen::Vector6d startTwist = computeGeodesicTwist(mStartPose, pose);
-  const Eigen::Vector3d direction = mNormalizedTwist.tail<3>();
   const Eigen::Vector3d position = startTwist.tail<3>();
-  double movedDistance = position.transpose() * direction;
-  double positionDeviation = (position - movedDistance * direction).norm();
+  double movedDistance = position.transpose() * mDirection;
+  double positionDeviation = (position - movedDistance * mDirection).norm();
 
   const Eigen::Vector3d angle = startTwist.head<3>();
-  const Eigen::Vector3d rotation = mNormalizedTwist.head<3>();
-  double movedAngle = angle.transpose() * rotation;
-  double orientationError = (angle - movedAngle * rotation).norm();
+  double movedAngle = angle.transpose() * mRotation;
+  double orientationError = (angle - movedAngle * mRotation).norm();
 
-  if (fabs(orientationError) > mAngularTolerance)
+  if (fabs(orientationError) > mAngularTolerance && movedAngle > NEARZERO)
   {
     dtwarn << "Deviated from orientation constraint: ("
            << fabs(orientationError) << " > " << mAngularTolerance << ")"
@@ -91,13 +103,26 @@ MoveEndEffectorPoseVectorField::evaluateCartesianStatus(
     return VectorFieldPlannerStatus::TERMINATE;
   }
 
-  if (positionDeviation > mPositionTolerance)
+  if (positionDeviation > mPositionTolerance && movedDistance > NEARZERO)
   {
     dtwarn << "Deviated from straight-line constraint: "
            << fabs(positionDeviation) << " > " << mPositionTolerance << ")"
            << std::endl;
     return VectorFieldPlannerStatus::TERMINATE;
   }
+
+  // Cache if within goal range
+  if (poseError < mGoalTolerance)
+  {
+    return VectorFieldPlannerStatus::CACHE_AND_CONTINUE;
+  }
+
+  // End if error increases
+  if (poseError > (*mLastPoseError))
+  {
+    return VectorFieldPlannerStatus::TERMINATE;
+  }
+  *mLastPoseError = poseError;
 
   return VectorFieldPlannerStatus::CONTINUE;
 }
