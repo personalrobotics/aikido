@@ -61,8 +61,7 @@ MoveEndEffectorPoseVectorField::MoveEndEffectorPoseVectorField(
 
   mDesiredTwist.normalize();
 
-  mLastPoseError = std::make_shared<double>(computeGeodesicDistance(
-      mStartPose, mGoalPose, mConversionRatioFromRadianToMeter));
+  mLastPoseError = std::make_shared<double>(std::numeric_limits<double>::max());
 }
 
 //==============================================================================
@@ -70,9 +69,7 @@ bool MoveEndEffectorPoseVectorField::evaluateCartesianVelocity(
     const Eigen::Isometry3d& /* pose */,
     Eigen::Vector6d& cartesianVelocity) const
 {
-  // Speed up large movements
-  double scale = std::max(*mLastPoseError, 1.0);
-  cartesianVelocity = scale * mDesiredTwist;
+  cartesianVelocity = mDesiredTwist;
   return true;
 }
 
@@ -119,7 +116,8 @@ MoveEndEffectorPoseVectorField::evaluateCartesianStatus(
   }
 
   // End if error increases
-  if (poseError > (*mLastPoseError))
+  if (poseError >= (*mLastPoseError)
+      || FuzzyZero(poseError - *(mLastPoseError)))
   {
     return VectorFieldPlannerStatus::TERMINATE;
   }

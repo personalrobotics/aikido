@@ -18,3 +18,6 @@ target_link_libraries(test_SplineProblem "${PROJECT_NAME}_common")
 
 aikido_add_test(test_string test_string.cpp)
 target_link_libraries(test_string "${PROJECT_NAME}_common")
+
+aikido_add_test(test_common_util test_util.cpp)
+target_link_libraries(test_common_util "${PROJECT_NAME}_common")
