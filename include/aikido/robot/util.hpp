@@ -25,15 +25,18 @@ namespace robot {
 namespace util {
 
 /// Default Vector Field Planner Parameters
-/// Suitable for ADA-robot end-effector offsets
+/// Suitable for ADA-robot end-effector movements
 const std::vector<double> defaultVFParams{
-    0.03,  // distanceTolerance
+    0.03,  // distanceTolerance (offset-only)
     0.004, // positionTolerance
     0.01,  // angularTolerance
     0.01,  // initialStepSize
     1e-3,  // jointlimitTolerance
     1e-3,  // constraintCheckResolution
-    1.0};  // timeout
+    1.0,   // timeout (s)
+    0.01,  // goalTolerance (twist-only)
+    1.0    // angle-to-distance ratio (twist-only)
+};
 
 /// Paramters for Vector Field Planner
 struct VectorFieldPlannerParameters
@@ -58,14 +61,18 @@ struct VectorFieldPlannerParameters
       double jointLimitTolerance = defaultVFParams[4],
       double constraintCheckResolution = defaultVFParams[5],
       std::chrono::duration<double> timeout
-      = std::chrono::duration<double>(defaultVFParams[6]))
+      = std::chrono::duration<double>(defaultVFParams[6]),
+      double goalTolerance = defaultVFParams[7],
+      double angleDistanceRatio = defaultVFParams[8])
     : distanceTolerance(distanceTolerance)
     , positionTolerance(positionTolerance)
     , angularTolerance(angularTolerance)
     , initialStepSize(initialStepSize)
     , jointLimitTolerance(jointLimitTolerance)
     , constraintCheckResolution(constraintCheckResolution)
-    , timeout(timeout){
+    , timeout(timeout)
+    , goalTolerance(goalTolerance)
+    , angleDistanceRatio(angleDistanceRatio){
           // Do nothing
       };
 
@@ -76,6 +83,8 @@ struct VectorFieldPlannerParameters
   double jointLimitTolerance;
   double constraintCheckResolution;
   std::chrono::duration<double> timeout;
+  double goalTolerance;
+  double angleDistanceRatio;
 };
 
 struct CRRTPlannerParameters

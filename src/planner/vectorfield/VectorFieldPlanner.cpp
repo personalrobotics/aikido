@@ -98,7 +98,7 @@ aikido::trajectory::UniqueInterpolatedPtr followVectorField(
     // no enough waypoints cached to make a trajectory output.
     if (result)
     {
-      result->setMessage("No segment cached.");
+      result->setMessage("No segment cached. Timeout?");
     }
     return nullptr;
   }
@@ -153,11 +153,8 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
   {
     throw std::runtime_error("MetaSkeleton doesn't have any body nodes.");
   }
-  auto robot = metaskeleton->getBodyNode(0)->getSkeleton();
-  std::lock_guard<std::mutex> lock(robot->getMutex());
-  // TODO(JS): The above code should be replaced by
-  // std::lock_guard<std::mutex> lock(metaskeleton->getLockableReference())
-  // once https://github.com/dartsim/dart/pull/1011 is released.
+  auto mutex = metaskeleton->getLockableReference();
+  std::lock_guard<::dart::common::LockableReference> lock(*mutex);
 
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
@@ -198,19 +195,30 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 
 //==============================================================================
 aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const dart::dynamics::BodyNodePtr& bn,
-    const aikido::constraint::TestablePtr& constraint,
+    const dart::dynamics::ConstBodyNodePtr& bn,
+    const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
-    double poseErrorTolerance,
+    double goalTolerance,
     double conversionRatioInGeodesicDistance,
+    double positionTolerance,
+    double angularTolerance,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,
     std::chrono::duration<double> timelimit,
     planner::Planner::Result* result)
 {
+  // ensure that no two planners run at the same time
+  if (metaskeleton->getNumBodyNodes() == 0)
+  {
+    throw std::runtime_error("MetaSkeleton doesn't have any body nodes.");
+  }
+  auto mutex = metaskeleton->getLockableReference();
+  std::lock_guard<::dart::common::LockableReference> lock(*mutex);
+
   // TODO: Check compatibility between MetaSkeleton and MetaSkeletonStateSpace
 
   // Save the current state of the space
@@ -218,28 +226,29 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
       metaskeleton, MetaSkeletonStateSaver::Options::POSITIONS);
   DART_UNUSED(saver);
 
+  stateSpace->setState(metaskeleton.get(), &startState);
+
   auto vectorfield
       = dart::common::make_aligned_shared<MoveEndEffectorPoseVectorField>(
           stateSpace,
           metaskeleton,
           bn,
           goalPose,
-          poseErrorTolerance,
+          goalTolerance,
           conversionRatioInGeodesicDistance,
+          positionTolerance,
+          angularTolerance,
           initialStepSize,
           jointLimitTolerance);
 
   auto compoundConstraint
-      = std::make_shared<aikido::constraint::TestableIntersection>(stateSpace);
+      = std::make_shared<constraint::TestableIntersection>(stateSpace);
   compoundConstraint->addConstraint(constraint);
   compoundConstraint->addConstraint(
       constraint::dart::createTestableBounds(stateSpace));
-
-  auto startState
-      = stateSpace->getScopedStateFromMetaSkeleton(metaskeleton.get());
   return followVectorField(
       *vectorfield,
-      *startState,
+      startState,
       *compoundConstraint,
       timelimit,
       initialStepSize,

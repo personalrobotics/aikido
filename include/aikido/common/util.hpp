@@ -1,6 +1,7 @@
 #ifndef AIKIDO_COMMON_UTIL_HPP_
 #define AIKIDO_COMMON_UTIL_HPP_
 
+#include <cmath>
 #include <future>
 
 namespace aikido {
@@ -23,6 +24,16 @@ inline std::future<T> make_ready_future(T obj)
   auto promise = std::promise<T>();
   promise.set_value(obj);
   return promise.get_future();
+}
+
+/// Check for a value near-zero
+#ifndef AIKIDO_COMMON_NEARZERO
+#define AIKIDO_COMMON_NEARZERO 1E-8
+#endif
+
+inline bool FuzzyZero(double value, double tol = AIKIDO_COMMON_NEARZERO)
+{
+  return (abs(value) <= tol);
 }
 
 } // namespace common

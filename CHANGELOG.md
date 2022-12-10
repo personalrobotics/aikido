@@ -7,7 +7,6 @@
   * Fixed bug in RosTrajectoryExecutor [#596](https://github.com/personalrobotics/aikido/pull/596)
   * Added generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
   * Added JacobianExecutor wrapping any Velocity/EffortExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
-  * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
   * Added VisualServoingVelocityExecutor wrapping JacobianExecutor [#620](https://github.com/personalrobotics/aikido/pull/620)
   * Ignored R0 (i.e. Weld) Joints in Conversions [#623](https://github.com/personalrobotics/aikido/pull/623)
 
@@ -18,6 +17,8 @@
 * Robot
 
   * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
+  * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
+  * Added planToPoseOffset into Robot class [#628](https://github.com/personalrobotics/aikido/pull/628)
 
 * RViz
 
@@ -35,6 +36,7 @@
   * Added ConfigurationToConfigurations planner adapter: [#587](https://github.com/personalrobotics/aikido/pull/587)
   * Cleaned up planning methods in robot/util: [#588](https://github.com/personalrobotics/aikido/pull/588)
   * Added batches to ConcreteRobot's planToTSR: [#607](https://github.com/personalrobotics/aikido/pull/607)
+  * Added ConfigurationToEndEffectorPose planner type [#628](https://github.com/personalrobotics/aikido/pull/628)
 
 * Build & Testing & ETC
 

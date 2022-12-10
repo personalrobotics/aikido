@@ -1,6 +1,8 @@
 #ifndef AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_
 #define AIKIDO_PLANNER_VECTORFIELD_MOVEENDEFFECTORPOSEVECTORFIELD_HPP_
 
+#include <limits>
+
 #include "aikido/planner/vectorfield/BodyNodePoseVectorField.hpp"
 
 namespace aikido {
@@ -26,20 +28,23 @@ public:
   /// \param[in] metaskeleton MetaSkeleton to plan with
   /// \param[in] bn Body node of end-effector.
   /// \param[in] goalPose Desired end-effector pose.
-  /// \param[in] poseErrorTolerance Constraint error tolerance in meters.
-  /// \param[in] r Conversion of radius to meters in computing Geodesic
-  /// distance.
+  /// \param[in] goalTolerance Geodesic Distance from goal to stop planning.
+  /// \param[in] r Conversion of radius to meters in computing goalTolerance.
+  /// \param[in] positionTolerance Straight-line constraint tolerance in meters.
+  /// \param[in] angularTolerance Rotation deviation tolerance in radians.
   /// \param[in] maxStepSize The maximum step size used to guarantee
   /// that the integrator does not step out of joint limits.
   /// \param[in] jointLimitPadding If less then this distance to joint
   /// limit, velocity is bounded in that direction to 0.
   MoveEndEffectorPoseVectorField(
-      aikido::statespace::dart::MetaSkeletonStateSpacePtr stateSpace,
-      dart::dynamics::MetaSkeletonPtr metaskeleton,
-      dart::dynamics::BodyNodePtr bn,
+      aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr stateSpace,
+      ::dart::dynamics::MetaSkeletonPtr metaskeleton,
+      ::dart::dynamics::ConstBodyNodePtr bn,
       const Eigen::Isometry3d& goalPose,
-      double poseErrorTolerance,
+      double goalTolerance,
       double r,
+      double positionTolerance,
+      double angularTolerance,
       double maxStepSize,
       double jointLimitPadding);
 
@@ -57,10 +62,27 @@ protected:
   Eigen::Isometry3d mGoalPose;
 
   /// Tolerance of pose error.
-  double mPoseErrorTolerance;
+  double mGoalTolerance;
 
   /// Conversion ratio from radius to meter.
-  double mConversionRatioFromRadiusToMeter;
+  double mConversionRatioFromRadianToMeter;
+
+  /// Tolerance of linear deviation error.
+  double mPositionTolerance;
+
+  /// Tolerance of angular error.
+  double mAngularTolerance;
+
+  /// Start pose of the end-effector.
+  Eigen::Isometry3d mStartPose;
+
+  /// Cache for desired twist between start and goal.
+  Eigen::Vector6d mDesiredTwist;
+  Eigen::Vector3d mDirection;
+  Eigen::Vector3d mRotation;
+
+  /// Cache of last pose error
+  std::shared_ptr<double> mLastPoseError;
 
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
