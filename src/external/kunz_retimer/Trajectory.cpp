@@ -82,7 +82,17 @@ Trajectory::Trajectory(const Path &path, const VectorXd &maxVelocity, const Vect
 		it->time = 0.0;
 		it++;
 		while(it != trajectory.end()) {
-			it->time = previous->time + (it->pathPos - previous->pathPos) / ((it->pathVel + previous->pathVel) / 2.0);
+			auto avgVel = ((it->pathVel + previous->pathVel) / 2.0);
+			auto posDiff = (it->pathPos - previous->pathPos);
+			// Check for stationary trajectory
+			if(posDiff == 0.0 && avgVel == 0.0) {
+				it->time = previous->time;
+			} else if(avgVel == 0.0) {
+				cout << "Error while calculating timing: 0 velocity" << endl;
+			}
+			else {
+				it->time = previous->time +  posDiff / avgVel;
+			}
 			previous = it;
 			it++;
 		}

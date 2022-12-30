@@ -222,6 +222,13 @@ std::future<void> Robot::executeTrajectory(
         "executeTrajectory: Active executor not a TrajectoryExecutor");
   }
 
+  // Check for empty (but valid) trajectory
+  // No need to execute, succeed silently
+  if (trajectory && trajectory->getDuration() == 0.0)
+  {
+    return common::make_ready_future();
+  }
+
   return trajectoryExecutor->execute(trajectory);
 }
 
