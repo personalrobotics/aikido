@@ -224,7 +224,7 @@ std::future<void> Robot::executeTrajectory(
 
   // Check for empty (but valid) trajectory
   // No need to execute, succeed silently
-  if (trajectory && trajectory->getDuration() == 0.0)
+  if (trajectory && aikido::common::FuzzyZero(trajectory->getDuration()))
   {
     return common::make_ready_future();
   }
