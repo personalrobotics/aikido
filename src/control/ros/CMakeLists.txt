@@ -42,10 +42,10 @@ target_include_directories("${PROJECT_NAME}_control_ros" SYSTEM
     ${control_msgs_INCLUDE_DIRS}
     ${roscpp_INCLUDE_DIRS}
     ${trajectory_msgs_INCLUDE_DIRS}
-    ${actionlib_INCLUDE_DIRS}
     ${control_msgs_INCLUDE_DIRS}
     ${roscpp_INCLUDE_DIRS}
     ${pr_control_msgs_INCLUDE_DIRS}
+    ${hardware_interface_INCLUDE_DIRS}
 )
 
 target_link_libraries("${PROJECT_NAME}_control_ros"
@@ -58,9 +58,9 @@ target_link_libraries("${PROJECT_NAME}_control_ros"
   ${control_msgs_LIBRARIES}
   ${roscpp_LIBRARIES}
   ${trajectory_msgs_LIBRARIES}
-  ${actionlib_LIBRARIES}
   ${control_msgs_LIBRARIES}
   ${roscpp_LIBRARIES}
+  ${hardware_interface_LIBRARIES}
 )
 target_compile_definitions("${PROJECT_NAME}_control_ros"
   PUBLIC AIKIDO_HAS_CONTROL_ROS

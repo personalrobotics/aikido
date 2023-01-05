@@ -34,6 +34,7 @@
   <depend>octomap_ros</depend>
   <depend>urdf</depend>
   <depend>srdfdom</depend>
+  <depend>hardware_interface</depend>
 
   <doc_depend>doxygen</doc_depend>
 
@@ -61,5 +62,6 @@
     <optional>trajectory_msgs</optional>
     <optional>visualization_msgs</optional>
     <optional>pr_control_msgs</optional>
+    <optional>hardware_interface</optional>
   </export>
 </package>
