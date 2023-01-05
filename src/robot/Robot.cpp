@@ -11,6 +11,7 @@
 #include "aikido/planner/dart/ConfigurationToEndEffectorOffset.hpp"
 #include "aikido/planner/dart/ConfigurationToTSR.hpp"
 #include "aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorOffsetPlanner.hpp"
+#include "aikido/planner/vectorfield/VectorFieldConfigurationToEndEffectorPosePlanner.hpp"
 #include "aikido/statespace/GeodesicInterpolator.hpp"
 #include "aikido/statespace/StateSpace.hpp"
 #include "aikido/statespace/dart/MetaSkeletonStateSpace.hpp"
@@ -634,6 +635,119 @@ trajectory::TrajectoryPtr Robot::planToOffset(
   return planToOffset(
       bodyNodeName,
       offset,
+      getSelfCollisionConstraint(),
+      planner,
+      trajPostProcessor);
+}
+
+//=============================================================================
+trajectory::TrajectoryPtr Robot::planToPoseOffset(
+    const std::string bodyNodeName,
+    const Eigen::Vector3d& offset,
+    const Eigen::Vector3d& rotation,
+    const constraint::TestablePtr& testableConstraint,
+    const std::shared_ptr<planner::dart::ConfigurationToEndEffectorPosePlanner>&
+        planner,
+    const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+        trajPostProcessor) const
+{
+  // Get Body Node
+  auto bn = getRootSkeleton()->getBodyNode(bodyNodeName);
+  if (!bn)
+  {
+    dtwarn << "Request body node not present in robot '" << mName << "'"
+           << std::endl;
+    return nullptr;
+  }
+
+  // Check angle
+  auto angle = rotation.norm();
+  if (angle == 0)
+  {
+    dtwarn << "Zero Rotation. Use PlanToOffset instead." << std::endl;
+  }
+  auto axis = (angle == 0) ? rotation : rotation / angle;
+
+  // Create the problem.
+  auto startPose = bn->getTransform();
+  auto goalPose = Eigen::Isometry3d::Identity();
+  goalPose.translation() = startPose.translation() + offset;
+  goalPose.linear() = Eigen::AngleAxisd(angle, axis) * startPose.linear();
+  auto problem = planner::dart::ConfigurationToEndEffectorPose(
+      mStateSpace, mMetaSkeleton, bn, goalPose, testableConstraint);
+
+  // Default to VectorFieldParameter
+  auto dartPlanner = planner;
+  std::shared_ptr<aikido::planner::Planner::Result> result;
+  if (!dartPlanner)
+  {
+    using planner::vectorfield::
+        VectorFieldConfigurationToEndEffectorPosePlanner;
+    auto vfParams = util::VectorFieldPlannerParameters();
+    dartPlanner
+        = std::make_shared<VectorFieldConfigurationToEndEffectorPosePlanner>(
+            mStateSpace,
+            getMetaSkeleton(),
+            vfParams.goalTolerance,
+            vfParams.angleDistanceRatio,
+            vfParams.positionTolerance,
+            vfParams.angularTolerance,
+            vfParams.initialStepSize,
+            vfParams.jointLimitTolerance,
+            vfParams.constraintCheckResolution,
+            vfParams.timeout);
+    result = std::make_shared<
+        VectorFieldConfigurationToEndEffectorPosePlanner::Result>();
+  }
+
+  // Solve the problem with the DART planner.
+  auto rawPlan = dartPlanner->plan(problem, result.get());
+  if (!rawPlan && result)
+    dtwarn << result->getMessage() << std::endl;
+
+  // Postprocess if enabled or provided
+  auto postprocessor
+      = (trajPostProcessor)
+            ? trajPostProcessor
+            : ((mEnablePostProcessing) ? mDefaultPostProcessor : nullptr);
+  if (rawPlan && postprocessor)
+  {
+    // Cast to interpolated or spline:
+    auto interpolated
+        = dynamic_cast<const aikido::trajectory::Interpolated*>(rawPlan.get());
+    if (interpolated)
+    {
+      return postprocessor->postprocess(
+          *interpolated, *(cloneRNG().get()), testableConstraint);
+    }
+
+    auto spline
+        = dynamic_cast<const aikido::trajectory::Spline*>(rawPlan.get());
+    if (spline)
+    {
+      return postprocessor->postprocess(
+          *spline, *(cloneRNG().get()), testableConstraint);
+    }
+
+    // Else return raw path
+  }
+  return rawPlan;
+}
+
+//=============================================================================
+trajectory::TrajectoryPtr Robot::planToPoseOffset(
+    const std::string bodyNodeName,
+    const Eigen::Vector3d& offset,
+    const Eigen::Vector3d& rotation,
+    const std::shared_ptr<planner::dart::ConfigurationToEndEffectorPosePlanner>&
+        planner,
+    const std::shared_ptr<aikido::planner::TrajectoryPostProcessor>
+        trajPostProcessor) const
+{
+  return planToPoseOffset(
+      bodyNodeName,
+      offset,
+      rotation,
       getSelfCollisionConstraint(),
       planner,
       trajPostProcessor);

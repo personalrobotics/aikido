@@ -83,26 +83,31 @@ aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorOffset(
 /// \param[in] bn Body node of the end-effector.
 /// \param[in] constraint Trajectory-wide constraint that must be satisfied.
 /// \param[in] goalPose Desired end-effector pose.
-/// \param[in] poseErrorTolerance How a planned trajectory is allowed to
-/// deviated from a straight line segment defined by the direction and the
-/// distance.
-/// \param[in] conversionRatioInGeodesicDistance Conversion ratio from radius to
-/// meter in computing geodesic distance.
+/// \param[in] goalTolerance Geodesic distance from goal to stop planning
+/// \param[in] conversionRatioInGeodesicDistance Conversion ratio from radian to
+/// meter in computing geodesic distance
+/// \param[in] positionTolerance How a planned trajectory is allowed to deviate
+/// from a straight line segment.
+/// \param[in] angularTolerance How a planned trajectory is allowed to
+/// deviate from a straight rotation.
 /// \param[in] initialStepSize Initial step size.
-/// \param[in] jointLimitTolerance If less then this distance to joint
-/// limit, velocity is bounded in that direction to 0.
+/// \param[in] jointLimitTolerance If less then this distance to joint limit,
+/// velocity is bounded in that direction to 0.
 /// \param[in] constraintCheckResolution Resolution used in constraint checking.
 /// \param[in] timelimit Timeout in seconds.
-/// \param[out] result information about success or failure.
-/// \return Trajectory or \c nullptr if planning failed.
+/// \param[out] result Information about success or failure.
+/// \return Trajectory or \c nullptr if plannin failed.
 aikido::trajectory::UniqueInterpolatedPtr planToEndEffectorPose(
-    const aikido::statespace::dart::MetaSkeletonStateSpacePtr& stateSpace,
+    const aikido::statespace::dart::ConstMetaSkeletonStateSpacePtr& stateSpace,
+    const statespace::dart::MetaSkeletonStateSpace::State& startState,
     ::dart::dynamics::MetaSkeletonPtr metaskeleton,
-    const ::dart::dynamics::BodyNodePtr& bn,
-    const aikido::constraint::TestablePtr& constraint,
+    const ::dart::dynamics::ConstBodyNodePtr& bn,
+    const aikido::constraint::ConstTestablePtr& constraint,
     const Eigen::Isometry3d& goalPose,
-    double poseErrorTolerance,
+    double goalTolerance,
     double conversionRatioInGeodesicDistance,
+    double positionTolerance,
+    double angularTolerance,
     double initialStepSize,
     double jointLimitTolerance,
     double constraintCheckResolution,
