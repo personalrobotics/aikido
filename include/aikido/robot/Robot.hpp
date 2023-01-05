@@ -413,6 +413,12 @@ public:
   // Utility function to get root skeleton
   dart::dynamics::SkeletonPtr getRootSkeleton();
 
+  // Utility function to get Default VF Params
+  util::VectorFieldPlannerParameters getVFParams() const;
+
+  // Utility function to set Default VF Params
+  void setVFParams(util::VectorFieldPlannerParameters params);
+
 protected:
   std::string mName;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
@@ -447,6 +453,9 @@ protected:
   using ConfigurationMap
       = std::unordered_map<std::string, const Eigen::VectorXd>;
   ConfigurationMap mNamedConfigurations;
+
+  // Parameters for Default VF Planners
+  util::VectorFieldPlannerParameters mVFParams;
 };
 
 } // namespace robot
