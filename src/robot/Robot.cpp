@@ -118,17 +118,17 @@ void Robot::clearExecutors()
 //==============================================================================
 void Robot::deactivateExecutor()
 {
-  if (!mActiveExecutor.empty())
+  if (mActiveExecutor >= 0)
   {
     mExecutors[mActiveExecutor]->releaseDofs();
-    mActiveExecutor.clear();
+    mActiveExecutor = -1;
   }
 }
 
 //==============================================================================
 aikido::control::ExecutorPtr Robot::getActiveExecutor()
 {
-  if (!mActiveExecutor.empty())
+  if (mActiveExecutor >= 0)
   {
     return mExecutors[mActiveExecutor];
   }
@@ -136,67 +136,73 @@ aikido::control::ExecutorPtr Robot::getActiveExecutor()
 }
 
 //==============================================================================
-std::string Robot::registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName)
+int Robot::registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName)
 {
   if (!executor)
   {
-    return std::string();
-  }
-
-  if(!desiredName.empty() && mExecutors.find(desiredName) != mExecutors.end())
-  {
-    return std::string();
-  }
-
-  std::string name;
-
-  if(desiredName.empty())
-  {
-    name = std::to_string(mExecutors.size());
-  }
-  else
-  {
-    name = desiredName;
+    return -1;
   }
 
   executor->releaseDofs();
-  mExecutors[name] = executor;
-  mExecutorsInsertionOrder.push_back(name);
-  
-  return name;
+  mExecutors.push_back(executor);         
+
+  if(!desiredName.empty())
+  {
+    if(mExecutorsNameMap.find(desiredName) != mExecutorsNameMap.end() && mActiveExecutor == mExecutorsNameMap[desiredName])
+    {
+      deactivateExecutor();
+    }
+    mExecutorsNameMap[desiredName] = mExecutors.size() - 1;
+  }
+
+  return mExecutors.size() - 1;
 }
 
 //==============================================================================
-bool Robot::activateExecutor(std::string id)
+bool Robot::activateExecutor(const int id)
 {
   // Deactivate active executor
   deactivateExecutor();
 
   // Validate input
-  if (mExecutors.find(id) == mExecutors.end())
+  if (id < 0 || (size_t)id >= mExecutors.size())
   {
+    dtwarn << "Could not activate executor as id is invalid."
+       << std::endl;
     return false;
   }
 
   // If we can register the executor, activate it
   if (mExecutors[id]->registerDofs())
   {
-    mActiveExecutor = id;
+    mActiveExecutor = (int)id;
     return true;
   }
   return false;
 }
 
 //==============================================================================
+bool Robot::activateExecutor(const std::string name)
+{
+  // Validate input
+  if (mExecutorsNameMap.find(name) == mExecutorsNameMap.end())
+  {
+    return false;
+  }
+
+  return activateExecutor(mExecutorsNameMap[name]);
+}
+
+//==============================================================================
 bool Robot::activateExecutor(const aikido::control::ExecutorType type)
 {
   // Search for last added executor of given type
-  for (auto id = mExecutorsInsertionOrder.rbegin(); id != mExecutorsInsertionOrder.rend(); id++)
+  for (int i = mExecutors.size() - 1; i >= 0; i--)
   {
-    auto types = mExecutors[*id]->getTypes();
+    auto types = mExecutors[i]->getTypes();
     if (types.find(type) != types.end())
     {
-      return activateExecutor(*id);
+      return activateExecutor(i);
     }
   }
 
@@ -225,7 +231,7 @@ std::future<void> Robot::executeTrajectory(
     const trajectory::TrajectoryPtr& trajectory)
 {
   // Retrieve active executor
-  if (mActiveExecutor.empty())
+  if (mActiveExecutor < 0)
   {
     return common::make_exceptional_future<void>(
         "executeTrajectory: No active executor");
@@ -250,7 +256,7 @@ void Robot::cancelAllCommands(
     const std::vector<std::string> excludedSubrobots)
 {
   // Cancel this trajectory
-  if (!mActiveExecutor.empty())
+  if (mActiveExecutor >= 0)
   {
     mExecutors[mActiveExecutor]->cancel();
   }
@@ -288,7 +294,7 @@ void Robot::step(const std::chrono::system_clock::time_point& timepoint)
         getRootSkeleton()->getMutex());
   }
 
-  if (!mActiveExecutor.empty())
+  if (mActiveExecutor >= 0)
   {
     mExecutors[mActiveExecutor]->step(timepoint);
   }
@@ -390,14 +396,14 @@ constraint::TestablePtr Robot::getWorldCollisionConstraint(
 }
 
 //=============================================================================
-std::shared_ptr<Robot> Robot::registerSubRobot(
+bool Robot::validateSubRobot(
     dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name)
 {
   // Ensure name is unique
   if (mSubRobots.find(name) != mSubRobots.end())
   {
     dtwarn << "Subrobot '" << name << "' already exists." << std::endl;
-    return nullptr;
+    return false;
   }
 
   // Ensure all body nodes in skeleton are owned by this robot
@@ -408,7 +414,7 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
       dtwarn << "Subrobot '" << name << "'' contains body node "
              << bodyNode->getName() << " not in parent MetaSkeleton."
              << std::endl;
-      return nullptr;
+      return false;
     }
   }
 
@@ -422,9 +428,21 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
       {
         dtwarn << "Subrobot '" << name << "'' overlaps existing subrobot "
                << subrobot.first << " at DoF " << dofName << "." << std::endl;
-        return nullptr;
+        return false;
       }
     }
+  }
+
+  return true;
+}
+
+//=============================================================================
+std::shared_ptr<Robot> Robot::registerSubRobot(
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name)
+{
+  if (!validateSubRobot(refSkeleton, name))
+  {
+    return nullptr;
   }
 
   // Create the subrobot.
@@ -858,12 +876,6 @@ trajectory::TrajectoryPtr Robot::planToTSR(
 std::string Robot::getName() const
 {
   return mName;
-}
-
-//=============================================================================
-std::set<std::string> Robot::getDofs() const
-{
-  return mDofs;
 }
 
 //=============================================================================

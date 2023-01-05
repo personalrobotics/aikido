@@ -8,7 +8,7 @@ std::future<int> Robot::executeJointCommand(
     const std::chrono::duration<double>& timeout)
 {
   // Retrieve active executor
-  if (mActiveExecutor.empty())
+  if (mActiveExecutor < 0)
   {
     return common::make_exceptional_future<int>(
         "executeJointCommand: No active executor");

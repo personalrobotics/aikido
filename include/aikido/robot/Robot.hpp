@@ -309,8 +309,8 @@ public:
   ///
   /// \param[in] executor The Executor to add to the inactive list.
   /// \param[in] desiredName The desired name for the executor.
-  /// \return A robot-unique non-empty string ID (empty implies failure)
-  virtual std::string registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName = "");
+  /// \return A robot-unique non-negative ID (negative implies failure)
+  virtual int registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName = "");
 
   ///
   /// Deactivates the current active executor.
@@ -320,7 +320,19 @@ public:
   ///
   /// \param[in] id of executor on executor list
   /// \return True if successful. If false, all executors are inactive.
-  virtual bool activateExecutor(std::string id);
+  virtual bool activateExecutor(const int id);
+
+  ///
+  /// Convenience:
+  /// Activates executor using name
+  /// Deactivates the current active executor.
+  /// Sets an executor from the inactive executor list to be the
+  /// active executor.
+  /// Holds and releases DoFs as needed.
+  ///
+  /// \param[in] id of executor on executor list
+  /// \return True if successful. If false, all executors are inactive.
+  virtual bool activateExecutor(const std::string name);
 
   ///
   /// Convenience:
@@ -372,9 +384,6 @@ public:
   // Gets the (sub)robot's name
   std::string getName() const;
 
-  // Gets the (sub)robot's DoFs
-  std::set<std::string> getDofs() const;
-
   // Gets a copy of the (sub)robot's metaskeleton at the current state
   dart::dynamics::MetaSkeletonPtr getMetaSkeletonClone() const;
 
@@ -421,13 +430,13 @@ protected:
   std::string mName;
   dart::dynamics::MetaSkeletonPtr mMetaSkeleton;
   aikido::statespace::dart::MetaSkeletonStateSpacePtr mStateSpace;
-  
+
   // Currently active executor
-  std::string mActiveExecutor{std::string()};
-  // Executors indexed by name
-  std::unordered_map<std::string, aikido::control::ExecutorPtr> mExecutors;
-  // Keeps track of order of addition of Executors
-  std::vector<std::string> mExecutorsInsertionOrder;
+  int mActiveExecutor{-1};
+  // Executors indexed by id (higher id has more priority)
+  std::vector<aikido::control::ExecutorPtr> mExecutors;
+  // Keeps track of executor name (if used)
+  std::unordered_map<std::string, int> mExecutorsNameMap;
 
   // Subrobot and Joint Management
   Robot* mParentRobot{nullptr};
@@ -456,6 +465,18 @@ protected:
   using ConfigurationMap
       = std::unordered_map<std::string, const Eigen::VectorXd>;
   ConfigurationMap mNamedConfigurations;
+
+  ///
+  /// Checks validity of subrobot for registration:
+  /// name should be unique.
+  /// All body nodes in skeleton should be owned by this robot.
+  /// Subrobot DoFs should be disjoint.
+  ///
+  /// \param[in] metaSkeleton The referential skeleton corresponding to the
+  /// subrobot. \param[in] name Name of the subrobot.
+  virtual bool validateSubRobot(
+      dart::dynamics::ReferentialSkeletonPtr refSkeleton,
+      const std::string& name);
 };
 
 } // namespace robot

@@ -41,12 +41,7 @@ public:
 
   ///
   /// Construct a new RosRobot as subrobot.
-  ///
-  /// \param[in] refSkeleton The metaskeleton defining the robot.
-  /// \param[in] rootRobot Pointer to parent robot
-  /// \param[in] collisionDetector Parent robot's collision detector
-  /// \param[in] collisionFilter Parent robot's collision filter
-  /// \param[in] name Unique Name of sub-robot
+  /// Documentation Inherited
   RosRobot(
       dart::dynamics::ReferentialSkeletonPtr refSkeleton,
       Robot* rootRobot,
@@ -84,44 +79,38 @@ public:
 
   ///
   /// Loads the controller. Throws a runtime_error if controller cannot be
-  /// loaded. Add an (executor, controller, control mode) to the inactive
+  /// loaded. Adds an (executor, controller, control mode) to the inactive
   /// (executor, controller, control mode) list Releases DoFs held by executor
   /// if held.
   ///
   /// \param[in] executor The Executor to add to the inactive list.
+  /// \param[in] desiredName The desired name for the executor.
   /// \param[in] controllerName The corresponding controller to load and add to
-  /// the inactive list. \param[in] controllerMode The corresponding control
-  /// mode to add to the inactive list. \return A robot-unique non-negative ID
-  /// (negative implies failure)
-  std::string registerExecutor(
+  /// the inactive list. 
+  /// \param[in] controllerMode The corresponding control mode to add to the 
+  /// inactive list. 
+  /// \return A robot-unique non-negative ID (negative implies failure)
+  int registerExecutor(
       aikido::control::ExecutorPtr executor,
+      std::string desiredName,
       std::string controllerName,
-      hardware_interface::JointCommandModes controllerMode,
-      std::string desiredName);
+      hardware_interface::JointCommandModes controllerMode);
 
   ///
   /// Loads the controller. Throws a runtime_error if controller cannot be
-  /// loaded. Add an (executor, controller) to the inactive (executor,
+  /// loaded. Adds an (executor, controller) to the inactive (executor,
   /// controller, control mode) list Operations on this executor do not affect
   /// the control mode. Releases DoFs held by executor if held.
   ///
   /// \param[in] executor The Executor to add to the inactive list.
+  /// \param[in] desiredName The desired name for the executor.
   /// \param[in] controllerName The corresponding controller to load and add to
-  /// the inactive list. \return A robot-unique non-negative ID (negative
-  /// implies failure)
-  std::string registerExecutor(
-      aikido::control::ExecutorPtr executor, 
-      std::string controllerName,
-      std::string desiredName);
-
-  ///
-  /// Add an executor to the inactive executors list.
-  /// Operations on this executor do not affect the controller or control mode.
-  /// Releases DoFs held by executor if held.
-  ///
-  /// \param[in] executor The Executor to add to the inactive list.
+  /// the inactive list. 
   /// \return A robot-unique non-negative ID (negative implies failure)
-  std::string registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName = "") override;
+  int registerExecutor(
+      aikido::control::ExecutorPtr executor, 
+      std::string desiredName,
+      std::string controllerName);
 
   ///
   /// Deactivates the current active executor.
@@ -131,9 +120,10 @@ public:
   ///
   /// \param[in] id of executor on executor list
   /// \return True if successful. If false, all executors are inactive.
-  bool activateExecutor(std::string id) override; 
+  bool activateExecutor(const int id) override;
 
-  using Robot::activateExecutor; // This un-hides Robot::activateExecutor(const aikido::control::ExecutorType type)
+  // This un-hides Robot::activateExecutor(const aikido::control::ExecutorType type) and Robot::activateExecutor(std::string id)
+  using Robot::activateExecutor; 
 
   ///
   /// Sets the ros controller service client which enables controller loading.
@@ -155,6 +145,24 @@ public:
   /// \param[in] rosJointModeCommandClient ros joint mode command client.
   void setRosJointModeCommandClient(
       const std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>& rosJointModeCommandClient);
+
+protected:
+  std::unordered_map<int, hardware_interface::JointCommandModes> mRosControllerModes;
+  std::unordered_map<int, std::string> mRosControllerNames;
+
+  // Ros node associated with this robot.
+  std::shared_ptr<::ros::NodeHandle> mNode;
+
+  // Ros load controller service client.
+  std::shared_ptr<::ros::ServiceClient> mRosLoadControllerServiceClient;
+
+  // Ros switch controller service client.
+  std::shared_ptr<::ros::ServiceClient> mRosSwitchControllerServiceClient;
+
+  // Ros joint mode command client.
+  // Default is nullptr so mode switching is impossible.
+  std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>
+      mRosJointModeCommandClient; 
 
   ///
   /// Starts the controller with name startControllerName.
@@ -195,24 +203,6 @@ public:
   /// \return True if successful. Otherwise false.
   bool switchControllerMode(
       const hardware_interface::JointCommandModes jointMode);
-
-protected:
-  std::unordered_map<std::string, hardware_interface::JointCommandModes> mRosControllerModes;
-  std::unordered_map<std::string, std::string> mRosControllerNames;
-
-  // Ros node associated with this robot.
-  std::shared_ptr<::ros::NodeHandle> mNode;
-
-  // Ros load controller service client.
-  std::shared_ptr<::ros::ServiceClient> mRosLoadControllerServiceClient;
-
-  // Ros switch controller service client.
-  std::shared_ptr<::ros::ServiceClient> mRosSwitchControllerServiceClient;
-
-  // Ros joint mode command client.
-  std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>
-      mRosJointModeCommandClient; // default is null ptr so mode switching is
-                                    // impossible
 };
 
 } // namespace ros
