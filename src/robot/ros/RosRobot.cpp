@@ -15,13 +15,11 @@ RosRobot::RosRobot(
     const dart::common::Uri& srdf,
     const std::string name,
     const bool addDefaultExecutors,
-    const dart::common::ResourceRetrieverPtr& retriever,
-    const ::ros::NodeHandle& node)
+    const dart::common::ResourceRetrieverPtr& retriever)
   : Robot(
       aikido::io::loadSkeletonFromURDF(retriever, urdf),
       name,
       addDefaultExecutors)
-  , mNode(node)
   , mRosLoadControllerServiceClient(nullptr)
   , mRosSwitchControllerServiceClient(nullptr)
   , mRosJointModeCommandClient(nullptr)
@@ -90,7 +88,8 @@ void RosRobot::deactivateExecutor()
 {
   if (mActiveExecutor >= 0)
   {
-    if (!mRosControllerNames[mActiveExecutor].empty()
+    if (mRosControllerNames.find(mActiveExecutor) != mRosControllerNames.end()
+        && isControllerActive(mRosControllerNames[mActiveExecutor])
         && !stopController(mRosControllerNames[mActiveExecutor]))
     {
       throw std::runtime_error(
@@ -166,6 +165,13 @@ bool RosRobot::activateExecutor(const int id)
   }
 
   return Robot::activateExecutor(id);
+}
+
+//=============================================================================
+void RosRobot::setRosListControllersServiceClient(
+      const std::shared_ptr<::ros::ServiceClient>& rosListControllersServiceClient)
+{
+  mRosListControllersServiceClient = rosListControllersServiceClient;
 }
 
 //=============================================================================
@@ -272,6 +278,22 @@ bool RosRobot::switchControllerMode(
     return false;
   }
   return true;
+}
+
+//=============================================================================
+bool RosRobot::isControllerActive(const std::string controllerName)
+{
+  controller_manager_msgs::ListControllers srv;
+
+  mRosListControllersServiceClient->call(srv);
+
+  for(int i=0; i<(int)srv.response.controller.size(); i++)
+  {
+    if (srv.response.controller[i].name == controllerName && srv.response.controller[i].state == std::string("running"))
+      return true;
+  }
+
+  return false;
 }
 
 } // namespace ros

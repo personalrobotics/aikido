@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include <controller_manager_msgs/ListControllers.h>
 #include <controller_manager_msgs/LoadController.h>
 #include <controller_manager_msgs/SwitchController.h>
 #include <dart/utils/urdf/DartLoader.hpp>
@@ -26,18 +27,13 @@ public:
   /// \param[in] srdf The path to the robot's SRDF.
   /// \param[in] name The name of the robot.
   /// \param[in] retriever Retriever to access resources (urdf/srdf).
-  /// \param[in] rosControllerManagerServerName The name of the controller
-  ///            manager server.
-  /// \param[in] rosJointModeServerName The name of the joint
-  ///            mode controller actionlib client.
   RosRobot(
       const dart::common::Uri& urdf,
       const dart::common::Uri& srdf,
       const std::string name,
       const bool addDefaultExecutors,
       const dart::common::ResourceRetrieverPtr& retriever
-      = std::make_shared<aikido::io::CatkinResourceRetriever>(),
-      const ::ros::NodeHandle& node = ::ros::NodeHandle());
+      = std::make_shared<aikido::io::CatkinResourceRetriever>());
 
   ///
   /// Construct a new RosRobot as subrobot.
@@ -126,16 +122,23 @@ public:
   using Robot::activateExecutor; 
 
   ///
+  /// Sets the ros controller service client which enables controller listing.
+  ///
+  /// \param[in] rosListControllersServiceClient ros list controller service client.
+  void setRosListControllersServiceClient(
+      const std::shared_ptr<::ros::ServiceClient>& rosListControllersServiceClient); 
+
+  ///
   /// Sets the ros controller service client which enables controller loading.
   ///
-  /// \param[in] rosControllerServiceClient ros controller service client.
+  /// \param[in] rosLoadControllerServiceClient ros load controller service client.
   void setRosLoadControllerServiceClient(
       const std::shared_ptr<::ros::ServiceClient>& rosLoadControllerServiceClient); 
 
   ///
   /// Sets the ros controller service client which enables controller switching.
   ///
-  /// \param[in] rosControllerServiceClient ros controller service client.
+  /// \param[in] rosSwitchControllerServiceClient ros switch controller service client.
   void setRosSwitchControllerServiceClient(
       const std::shared_ptr<::ros::ServiceClient>& rosSwitchControllerServiceClient);
 
@@ -150,11 +153,11 @@ protected:
   std::unordered_map<int, hardware_interface::JointCommandModes> mRosControllerModes;
   std::unordered_map<int, std::string> mRosControllerNames;
 
-  // Ros node associated with this robot.
-  const ::ros::NodeHandle mNode;
-
   // Ros load controller service client.
   std::shared_ptr<::ros::ServiceClient> mRosLoadControllerServiceClient;
+
+  // Ros list controller service client.
+  std::shared_ptr<::ros::ServiceClient> mRosListControllersServiceClient;
 
   // Ros switch controller service client.
   std::shared_ptr<::ros::ServiceClient> mRosSwitchControllerServiceClient;
@@ -203,6 +206,13 @@ protected:
   /// \return True if successful. Otherwise false.
   bool switchControllerMode(
       const hardware_interface::JointCommandModes jointMode);
+
+  ///
+  /// Checks if the controller with name controllerName is active.
+  ///
+  /// \param[in] controllerName name of controller to check.
+  /// \return True if controller is active. Otherwise false.
+  bool isControllerActive(const std::string controllerName);
 };
 
 } // namespace ros
