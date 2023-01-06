@@ -11,7 +11,7 @@
 #include <ros/callback_queue.h>
 #include <ros/ros.h>
 
-// ros_controls
+// ros_control
 #include <hardware_interface/joint_mode_interface.h>
 
 namespace aikido {

@@ -35,6 +35,7 @@
   <depend>urdf</depend>
   <depend>srdfdom</depend>
   <depend>hardware_interface</depend>
+  <depend>controller_manager_msgs</depend>
 
   <doc_depend>doxygen</doc_depend>
 
@@ -63,5 +64,6 @@
     <optional>visualization_msgs</optional>
     <optional>pr_control_msgs</optional>
     <optional>hardware_interface</optional>
+    <optional>controller_manager_msgs</optional>
   </export>
 </package>

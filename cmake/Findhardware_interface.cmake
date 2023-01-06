@@ -17,7 +17,6 @@ pkg_check_modules(PC_hardware_interface hardware_interface QUIET)
 
 # Include directories
 find_path(hardware_interface_INCLUDE_DIRS
-# Rajat ToDo: NAMES hardware_interface/?
   HINTS ${PC_hardware_interface_INCLUDE_DIRS}
 )
 

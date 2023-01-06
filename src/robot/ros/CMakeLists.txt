@@ -10,6 +10,9 @@ aikido_check_package(srdfdom "aikido::robot::ros" "srdfdom")
 find_package(pr_control_msgs QUIET MODULE)
 aikido_check_package(pr_control_msgs "aikido::control::ros" "pr_control_msgs")
 
+find_package(controller_manager_msgs QUIET MODULE)
+aikido_check_package(controller_manager_msgs "aikido::control::ros" "controller_manager_msgs")
+
 #==============================================================================
 # Libraries
 #
@@ -24,6 +27,7 @@ target_include_directories("${PROJECT_NAME}_robot_ros" SYSTEM
     ${urdf_INCLUDE_DIRS}
     ${srdfdom_INCLUDE_DIRS}
     ${pr_control_msgs_INCLUDE_DIRS}
+    ${controller_manager_msgs_INCLUDE_DIRS}
 )
 
 target_link_libraries("${PROJECT_NAME}_robot_ros"
@@ -43,6 +47,7 @@ target_link_libraries("${PROJECT_NAME}_robot_ros"
   ${DART_LIBRARIES}
   ${srdfdom_LIBRARIES}
   ${urdf_LIBRARIES}
+  ${controller_manager_msgs_LIBRARIES}
 )
 target_compile_definitions("${PROJECT_NAME}_robot_ros"
   PUBLIC AIKIDO_HAS_ROBOT_ROS
