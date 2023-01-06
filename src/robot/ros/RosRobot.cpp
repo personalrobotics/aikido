@@ -15,15 +15,17 @@ RosRobot::RosRobot(
     const dart::common::Uri& srdf,
     const std::string name,
     const bool addDefaultExecutors,
-    const dart::common::ResourceRetrieverPtr& retriever)
+    const dart::common::ResourceRetrieverPtr& retriever,
+    const ::ros::NodeHandle& node,
+    const std::string modeControllerName)
   : Robot(
       aikido::io::loadSkeletonFromURDF(retriever, urdf),
       name,
       addDefaultExecutors)
-  , mRosLoadControllerServiceClient(nullptr)
-  , mRosSwitchControllerServiceClient(nullptr)
-  , mRosJointModeCommandClient(nullptr)
+  , mNode(node)
 {
+
+  setRosControllerClients(modeControllerName);
 
   // Read the SRDF for disabled collision pairs.
   urdf::Model urdfModel;
@@ -40,6 +42,21 @@ RosRobot::RosRobot(
     auto body1 = mMetaSkeleton->getBodyNode(disabledPair.link2_);
     mSelfCollisionFilter->addBodyNodePairToBlackList(body0, body1);
   }
+}
+
+//==============================================================================
+RosRobot::RosRobot(
+      dart::dynamics::ReferentialSkeletonPtr refSkeleton,
+      Robot* rootRobot,
+      dart::collision::CollisionDetectorPtr collisionDetector,
+      std::shared_ptr<dart::collision::BodyNodeCollisionFilter> collisionFilter,
+      const std::string name,
+      const ::ros::NodeHandle& node,
+      const std::string modeControllerName)
+    : Robot(refSkeleton, rootRobot, collisionDetector, collisionFilter, name)
+    , mNode(node)
+{
+  setRosControllerClients(modeControllerName);
 }
 
 //==============================================================================
@@ -69,7 +86,7 @@ void RosRobot::step(const std::chrono::system_clock::time_point& timepoint)
 
 //=============================================================================
 RobotPtr RosRobot::registerSubRobot(
-    dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name)
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name, const std::string& modeControllerName)
 {
   if (!validateSubRobot(refSkeleton, name))
   {
@@ -78,7 +95,7 @@ RobotPtr RosRobot::registerSubRobot(
 
   // Create the sub RosRobot.
   auto subRosRobot = std::make_shared<RosRobot>(
-      refSkeleton, this, mCollisionDetector, mSelfCollisionFilter, name);
+      refSkeleton, this, mCollisionDetector, mSelfCollisionFilter, name, modeControllerName);
   mSubRobots[name] = subRosRobot;
   return subRosRobot;
 }
@@ -168,31 +185,31 @@ bool RosRobot::activateExecutor(const int id)
 }
 
 //=============================================================================
-void RosRobot::setRosListControllersServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosListControllersServiceClient)
+void RosRobot::setRosControllerClients(const std::string modeControllerName)
 {
-  mRosListControllersServiceClient = rosListControllersServiceClient;
-}
+  mRosListControllersServiceClient = std::make_shared<::ros::ServiceClient>(
+      mNode.serviceClient<controller_manager_msgs::ListControllers>(
+      "controller_manager/list_controllers")); 
 
-//=============================================================================
-void RosRobot::setRosLoadControllerServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosLoadControllerServiceClient)
-{
-  mRosLoadControllerServiceClient = rosLoadControllerServiceClient;
-}
+  mRosLoadControllerServiceClient = std::make_shared<::ros::ServiceClient>(
+      mNode.serviceClient<controller_manager_msgs::LoadController>(
+      "controller_manager/load_controller"));  
 
-//=============================================================================
-void RosRobot::setRosSwitchControllerServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosSwitchControllerServiceClient)
-{
-  mRosSwitchControllerServiceClient = rosSwitchControllerServiceClient;
-}
+  mRosSwitchControllerServiceClient = std::make_shared<::ros::ServiceClient>(
+      mNode.serviceClient<controller_manager_msgs::SwitchController>(
+      "controller_manager/switch_controller"));
 
-//=============================================================================
-void RosRobot::setRosJointModeCommandClient(
-      const std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>& rosJointModeCommandClient)
-{
-  mRosJointModeCommandClient = rosJointModeCommandClient;
+  if(!modeControllerName.empty())
+  {
+    mRosJointModeCommandClient = std::make_shared<aikido::control::ros::RosJointModeCommandClient>(
+        mNode,
+        modeControllerName + "/joint_mode_command",
+        std::vector<std::string>{"joint_mode"});
+  }
+  else
+  {
+    mRosJointModeCommandClient = nullptr;
+  } 
 }
 
 //=============================================================================

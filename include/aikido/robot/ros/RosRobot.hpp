@@ -27,13 +27,16 @@ public:
   /// \param[in] srdf The path to the robot's SRDF.
   /// \param[in] name The name of the robot.
   /// \param[in] retriever Retriever to access resources (urdf/srdf).
+  /// \param[in] node ROS node handle.
   RosRobot(
       const dart::common::Uri& urdf,
       const dart::common::Uri& srdf,
       const std::string name,
       const bool addDefaultExecutors,
       const dart::common::ResourceRetrieverPtr& retriever
-      = std::make_shared<aikido::io::CatkinResourceRetriever>());
+      = std::make_shared<aikido::io::CatkinResourceRetriever>(),
+      const ::ros::NodeHandle& node = ::ros::NodeHandle(),
+      const std::string modeControllerName = "");
 
   ///
   /// Construct a new RosRobot as subrobot.
@@ -43,10 +46,9 @@ public:
       Robot* rootRobot,
       dart::collision::CollisionDetectorPtr collisionDetector,
       std::shared_ptr<dart::collision::BodyNodeCollisionFilter> collisionFilter,
-      const std::string name)
-    : Robot(refSkeleton, rootRobot, collisionDetector, collisionFilter, name)
-  {
-  }
+      const std::string name,
+      const ::ros::NodeHandle& node = ::ros::NodeHandle(),
+      const std::string modeControllerName = "");
 
   /// Destructor.
   virtual ~RosRobot() = default;
@@ -63,10 +65,12 @@ public:
   /// Must be disjoint from other subrobots.
   ///
   /// \param[in] metaSkeleton The referential skeleton corresponding to the
-  /// subrobot. \param[in] name Name of the subrobot.
+  /// subrobot. 
+  /// \param[in] name Name of the subrobot.
   RobotPtr registerSubRobot(
       dart::dynamics::ReferentialSkeletonPtr refSkeleton,
-      const std::string& name) override;
+      const std::string& name,
+      const std::string& modeControllerName = "");
 
   ///
   /// Stops the controller corresponding to this executor and deactivates
@@ -122,42 +126,23 @@ public:
   using Robot::activateExecutor; 
 
   ///
-  /// Sets the ros controller service client which enables controller listing.
+  /// Sets the ros controller clients which enable controller listing, loading, switching and mode switching.
   ///
-  /// \param[in] rosListControllersServiceClient ros list controller service client.
-  void setRosListControllersServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosListControllersServiceClient); 
-
-  ///
-  /// Sets the ros controller service client which enables controller loading.
-  ///
-  /// \param[in] rosLoadControllerServiceClient ros load controller service client.
-  void setRosLoadControllerServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosLoadControllerServiceClient); 
-
-  ///
-  /// Sets the ros controller service client which enables controller switching.
-  ///
-  /// \param[in] rosSwitchControllerServiceClient ros switch controller service client.
-  void setRosSwitchControllerServiceClient(
-      const std::shared_ptr<::ros::ServiceClient>& rosSwitchControllerServiceClient);
-
-  ///
-  /// Sets the ros joint mode command client which enables controller mode switching.
-  ///
-  /// \param[in] rosJointModeCommandClient ros joint mode command client.
-  void setRosJointModeCommandClient(
-      const std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>& rosJointModeCommandClient);
+  /// \param[in] modeControllerName ros joint mode command client namespace.
+  void setRosControllerClients(const std::string modeControllerName);
 
 protected:
   std::unordered_map<int, hardware_interface::JointCommandModes> mRosControllerModes;
   std::unordered_map<int, std::string> mRosControllerNames;
 
-  // Ros load controller service client.
-  std::shared_ptr<::ros::ServiceClient> mRosLoadControllerServiceClient;
+  // Ros node associated with this robot.
+  ::ros::NodeHandle mNode;
 
   // Ros list controller service client.
   std::shared_ptr<::ros::ServiceClient> mRosListControllersServiceClient;
+
+  // Ros load controller service client.  
+  std::shared_ptr<::ros::ServiceClient> mRosLoadControllerServiceClient;
 
   // Ros switch controller service client.
   std::shared_ptr<::ros::ServiceClient> mRosSwitchControllerServiceClient;
