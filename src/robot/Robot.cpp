@@ -222,6 +222,13 @@ std::future<void> Robot::executeTrajectory(
         "executeTrajectory: Active executor not a TrajectoryExecutor");
   }
 
+  // Check for empty (but valid) trajectory
+  // No need to execute, succeed silently
+  if (trajectory && aikido::common::FuzzyZero(trajectory->getDuration()))
+  {
+    return common::make_ready_future();
+  }
+
   return trajectoryExecutor->execute(trajectory);
 }
 
