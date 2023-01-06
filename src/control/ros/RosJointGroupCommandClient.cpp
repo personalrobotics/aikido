@@ -13,7 +13,7 @@ using std::chrono::milliseconds;
 RosJointGroupCommandClient::RosJointGroupCommandClient(
     const ::ros::NodeHandle& node,
     const std::string& serverName,
-    std::vector<std::string> jointNames,
+    const std::vector<std::string> jointNames,
     const std::chrono::milliseconds connectionTimeout,
     const std::chrono::milliseconds connectionPollingPeriod)
   : mNode(node)

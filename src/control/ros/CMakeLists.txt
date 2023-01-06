@@ -22,11 +22,6 @@ aikido_check_package(control_msgs "aikido::control::ros" "control_msgs")
 find_package(pr_control_msgs QUIET MODULE)
 aikido_check_package(pr_control_msgs "aikido::control::ros" "pr_control_msgs")
 
-# Note: Intentionally use "Module" mode because the config file imports "gtest",
-# "tests", and "run_tests" that conflict with the targets defined by Aikido.
-find_package(hardware_interface QUIET MODULE)
-aikido_check_package(hardware_interface "aikido::control::ros" "hardware_interface")
-
 #==============================================================================
 # Libraries
 #
@@ -63,7 +58,7 @@ target_link_libraries("${PROJECT_NAME}_control_ros"
   ${control_msgs_LIBRARIES}
   ${roscpp_LIBRARIES}
   ${trajectory_msgs_LIBRARIES}
-  ${pr_control_msgs_LIBRARIES}
+  ${control_msgs_LIBRARIES}
   ${roscpp_LIBRARIES}
   ${hardware_interface_LIBRARIES}
 )

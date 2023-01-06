@@ -309,7 +309,7 @@ public:
   ///
   /// \param[in] executor The Executor to add to the inactive list.
   /// \param[in] desiredName The desired name for the executor.
-  /// \return A robot-unique non-negative ID (negative implies failure)
+  /// \return A robot-unique non-negative ID (negative implies failure).
   virtual int registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName = "");
 
   ///

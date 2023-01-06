@@ -31,10 +31,10 @@ public:
   RosJointGroupCommandClient(
       const ::ros::NodeHandle& node,
       const std::string& serverName,
-      std::vector<std::string> jointNames,
-      std::chrono::milliseconds connectionTimeout
+      const std::vector<std::string> jointNames,
+      const std::chrono::milliseconds connectionTimeout
       = std::chrono::milliseconds{1000},
-      std::chrono::milliseconds connectionPollingPeriod
+      const std::chrono::milliseconds connectionPollingPeriod
       = std::chrono::milliseconds{20});
 
   virtual ~RosJointGroupCommandClient();
@@ -64,7 +64,7 @@ private:
 
   void transitionCallback(GoalHandle handle);
 
-  ::ros::NodeHandle mNode;
+  const ::ros::NodeHandle mNode;
   ::ros::CallbackQueue mCallbackQueue;
   JointGroupCommandActionClient mClient;
   JointGroupCommandActionClient::GoalHandle mGoalHandle;

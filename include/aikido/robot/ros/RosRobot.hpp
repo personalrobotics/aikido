@@ -37,7 +37,7 @@ public:
       const bool addDefaultExecutors,
       const dart::common::ResourceRetrieverPtr& retriever
       = std::make_shared<aikido::io::CatkinResourceRetriever>(),
-      std::shared_ptr<::ros::NodeHandle> node = nullptr);
+      const ::ros::NodeHandle& node = ::ros::NodeHandle());
 
   ///
   /// Construct a new RosRobot as subrobot.
@@ -74,13 +74,13 @@ public:
 
   ///
   /// Stops the controller corresponding to this executor and deactivates
-  /// executor.
+  /// executor. Throws a runtime_error if controller cannot be stopped.
   void deactivateExecutor() override;
 
   ///
-  /// Loads the controller. Throws a runtime_error if controller cannot be
+  /// Loads the controller. Warns if controller cannot be
   /// loaded. Adds an (executor, controller, control mode) to the inactive
-  /// (executor, controller, control mode) list Releases DoFs held by executor
+  /// (executor, controller, control mode) list. Releases DoFs held by executor
   /// if held.
   ///
   /// \param[in] executor The Executor to add to the inactive list.
@@ -89,7 +89,7 @@ public:
   /// the inactive list. 
   /// \param[in] controllerMode The corresponding control mode to add to the 
   /// inactive list. 
-  /// \return A robot-unique non-negative ID (negative implies failure)
+  /// \return A robot-unique non-negative ID (negative implies failure).
   int registerExecutor(
       aikido::control::ExecutorPtr executor,
       std::string desiredName,
@@ -97,16 +97,16 @@ public:
       hardware_interface::JointCommandModes controllerMode);
 
   ///
-  /// Loads the controller. Throws a runtime_error if controller cannot be
+  /// Loads the controller. Warns if controller cannot be
   /// loaded. Adds an (executor, controller) to the inactive (executor,
-  /// controller, control mode) list Operations on this executor do not affect
+  /// controller, control mode) list. Operations on this executor do not affect
   /// the control mode. Releases DoFs held by executor if held.
   ///
   /// \param[in] executor The Executor to add to the inactive list.
   /// \param[in] desiredName The desired name for the executor.
   /// \param[in] controllerName The corresponding controller to load and add to
   /// the inactive list. 
-  /// \return A robot-unique non-negative ID (negative implies failure)
+  /// \return A robot-unique non-negative ID (negative implies failure).
   int registerExecutor(
       aikido::control::ExecutorPtr executor, 
       std::string desiredName,
@@ -151,7 +151,7 @@ protected:
   std::unordered_map<int, std::string> mRosControllerNames;
 
   // Ros node associated with this robot.
-  std::shared_ptr<::ros::NodeHandle> mNode;
+  const ::ros::NodeHandle mNode;
 
   // Ros load controller service client.
   std::shared_ptr<::ros::ServiceClient> mRosLoadControllerServiceClient;

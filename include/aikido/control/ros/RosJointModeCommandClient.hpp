@@ -55,12 +55,12 @@ public:
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosJointModeCommandClient(
-      ::ros::NodeHandle node,
+      const ::ros::NodeHandle& node,
       const std::string& serverName,
-      std::vector<std::string> jointNames,
-      std::chrono::milliseconds connectionTimeout
+      const std::vector<std::string> jointNames,
+      const std::chrono::milliseconds connectionTimeout
       = std::chrono::milliseconds{1000},
-      std::chrono::milliseconds connectionPollingPeriod
+      const std::chrono::milliseconds connectionPollingPeriod
       = std::chrono::milliseconds{20});
 
   virtual ~RosJointModeCommandClient();
@@ -88,7 +88,7 @@ private:
 
   void transitionCallback(GoalHandle handle);
 
-  ::ros::NodeHandle mNode;
+  const ::ros::NodeHandle mNode;
   ::ros::CallbackQueue mCallbackQueue;
   JointModeCommandActionClient mClient;
   JointModeCommandActionClient::GoalHandle mGoalHandle;

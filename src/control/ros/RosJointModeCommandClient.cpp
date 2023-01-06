@@ -11,12 +11,12 @@ using std::chrono::milliseconds;
 
 //==============================================================================
 RosJointModeCommandClient::RosJointModeCommandClient(
-    ::ros::NodeHandle node,
+    const ::ros::NodeHandle& node,
     const std::string& serverName,
-    std::vector<std::string> jointNames,
+    const std::vector<std::string> jointNames,
     const std::chrono::milliseconds connectionTimeout,
     const std::chrono::milliseconds connectionPollingPeriod)
-  : mNode(std::move(node))
+  : mNode(node)
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mJointNames(std::move(jointNames))

@@ -16,24 +16,16 @@ RosRobot::RosRobot(
     const std::string name,
     const bool addDefaultExecutors,
     const dart::common::ResourceRetrieverPtr& retriever,
-    std::shared_ptr<::ros::NodeHandle> node)
+    const ::ros::NodeHandle& node)
   : Robot(
       aikido::io::loadSkeletonFromURDF(retriever, urdf),
       name,
       addDefaultExecutors)
+  , mNode(node)
   , mRosLoadControllerServiceClient(nullptr)
   , mRosSwitchControllerServiceClient(nullptr)
   , mRosJointModeCommandClient(nullptr)
 {
-  // Set up ROS Node
-  if (!node)
-  {
-    mNode = std::make_shared<::ros::NodeHandle>();
-  }
-  else
-  {
-    mNode = node;
-  }
 
   // Read the SRDF for disabled collision pairs.
   urdf::Model urdfModel;
@@ -55,6 +47,9 @@ RosRobot::RosRobot(
 //==============================================================================
 void RosRobot::step(const std::chrono::system_clock::time_point& timepoint)
 {
+  if(mRosJointModeCommandClient)
+    mRosJointModeCommandClient->step();
+
   // Lock only if root robot
   std::unique_ptr<std::lock_guard<std::mutex>> lock;
   if (!mParentRobot)
@@ -62,9 +57,6 @@ void RosRobot::step(const std::chrono::system_clock::time_point& timepoint)
     lock = std::make_unique<std::lock_guard<std::mutex>>(
         getRootSkeleton()->getMutex());
   }
-
-  if(mRosJointModeCommandClient)
-    mRosJointModeCommandClient->step();
 
   if (mActiveExecutor >= 0)
   {
@@ -265,7 +257,7 @@ bool RosRobot::switchControllerMode(
     return false;
   }
 
-  // Currently we only send the same control mode to each joint
+  // ToDo: Send different control modes to each joint
   auto future = mRosJointModeCommandClient->execute(
       std::vector<hardware_interface::JointCommandModes>(
           1, jointMode));
