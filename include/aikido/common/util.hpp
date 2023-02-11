@@ -26,6 +26,13 @@ inline std::future<T> make_ready_future(T obj)
   return promise.get_future();
 }
 
+inline std::future<void> make_ready_future()
+{
+  auto promise = std::promise<void>();
+  promise.set_value();
+  return promise.get_future();
+}
+
 /// Check for a value near-zero
 #ifndef AIKIDO_COMMON_NEARZERO
 #define AIKIDO_COMMON_NEARZERO 1E-8

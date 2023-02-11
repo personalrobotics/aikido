@@ -246,6 +246,13 @@ std::future<void> Robot::executeTrajectory(
         "executeTrajectory: Active executor not a TrajectoryExecutor");
   }
 
+  // Check for empty (but valid) trajectory
+  // No need to execute, succeed silently
+  if (trajectory && aikido::common::FuzzyZero(trajectory->getDuration()))
+  {
+    return common::make_ready_future();
+  }
+
   return trajectoryExecutor->execute(trajectory);
 }
 
@@ -595,18 +602,17 @@ trajectory::TrajectoryPtr Robot::planToOffset(
   {
     using planner::vectorfield::
         VectorFieldConfigurationToEndEffectorOffsetPlanner;
-    auto vfParams = util::VectorFieldPlannerParameters();
     dartPlanner
         = std::make_shared<VectorFieldConfigurationToEndEffectorOffsetPlanner>(
             mStateSpace,
             getMetaSkeleton(),
-            vfParams.distanceTolerance,
-            vfParams.positionTolerance,
-            vfParams.angularTolerance,
-            vfParams.initialStepSize,
-            vfParams.jointLimitTolerance,
-            vfParams.constraintCheckResolution,
-            vfParams.timeout);
+            mVFParams.distanceTolerance,
+            mVFParams.positionTolerance,
+            mVFParams.angularTolerance,
+            mVFParams.initialStepSize,
+            mVFParams.jointLimitTolerance,
+            mVFParams.constraintCheckResolution,
+            mVFParams.timeout);
   }
 
   // Solve the problem with the DART planner.
@@ -701,19 +707,18 @@ trajectory::TrajectoryPtr Robot::planToPoseOffset(
   {
     using planner::vectorfield::
         VectorFieldConfigurationToEndEffectorPosePlanner;
-    auto vfParams = util::VectorFieldPlannerParameters();
     dartPlanner
         = std::make_shared<VectorFieldConfigurationToEndEffectorPosePlanner>(
             mStateSpace,
             getMetaSkeleton(),
-            vfParams.goalTolerance,
-            vfParams.angleDistanceRatio,
-            vfParams.positionTolerance,
-            vfParams.angularTolerance,
-            vfParams.initialStepSize,
-            vfParams.jointLimitTolerance,
-            vfParams.constraintCheckResolution,
-            vfParams.timeout);
+            mVFParams.goalTolerance,
+            mVFParams.angleDistanceRatio,
+            mVFParams.positionTolerance,
+            mVFParams.angularTolerance,
+            mVFParams.initialStepSize,
+            mVFParams.jointLimitTolerance,
+            mVFParams.constraintCheckResolution,
+            mVFParams.timeout);
     result = std::make_shared<
         VectorFieldConfigurationToEndEffectorPosePlanner::Result>();
   }
@@ -1003,6 +1008,20 @@ dart::dynamics::SkeletonPtr Robot::getRootSkeleton()
 
   // Root robot should be a real skeleton
   return mMetaSkeleton->getBodyNode(0)->getSkeleton();
+}
+
+//=============================================================================
+// Utility function to get Default VF Params
+util::VectorFieldPlannerParameters Robot::getVFParams() const
+{
+  return mVFParams;
+}
+
+//=============================================================================
+// Utility function to set Default VF Params
+void Robot::setVFParams(util::VectorFieldPlannerParameters params)
+{
+  mVFParams = params;
 }
 
 } // namespace robot

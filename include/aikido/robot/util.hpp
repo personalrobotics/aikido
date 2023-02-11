@@ -33,7 +33,7 @@ const std::vector<double> defaultVFParams{
     0.01,  // initialStepSize
     1e-3,  // jointlimitTolerance
     1e-3,  // constraintCheckResolution
-    1.0,   // timeout (s)
+    1.5,   // timeout (s)
     0.01,  // goalTolerance (twist-only)
     1.0    // angle-to-distance ratio (twist-only)
 };

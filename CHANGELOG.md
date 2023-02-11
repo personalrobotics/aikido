@@ -39,6 +39,7 @@
   * Cleaned up planning methods in robot/util: [#588](https://github.com/personalrobotics/aikido/pull/588)
   * Added batches to ConcreteRobot's planToTSR: [#607](https://github.com/personalrobotics/aikido/pull/607)
   * Added ConfigurationToEndEffectorPose planner type [#628](https://github.com/personalrobotics/aikido/pull/628)
+  * Have KunzRetimer handle empty trajectories [#629](https://github.com/personalrobotics/aikido/pull/629)
 
 * Build & Testing & ETC
 
