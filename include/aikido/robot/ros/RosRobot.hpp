@@ -65,7 +65,7 @@ public:
   /// Must be disjoint from other subrobots.
   ///
   /// \param[in] metaSkeleton The referential skeleton corresponding to the
-  /// subrobot. 
+  /// subrobot.
   /// \param[in] name Name of the subrobot.
   RobotPtr registerSubRobot(
       dart::dynamics::ReferentialSkeletonPtr refSkeleton,
@@ -86,9 +86,9 @@ public:
   /// \param[in] executor The Executor to add to the inactive list.
   /// \param[in] desiredName The desired name for the executor.
   /// \param[in] controllerName The corresponding controller to load and add to
-  /// the inactive list. 
-  /// \param[in] controllerMode The corresponding control mode to add to the 
-  /// inactive list. 
+  /// the inactive list.
+  /// \param[in] controllerMode The corresponding control mode to add to the
+  /// inactive list.
   /// \return A robot-unique non-negative ID (negative implies failure).
   int registerExecutor(
       aikido::control::ExecutorPtr executor,
@@ -105,10 +105,10 @@ public:
   /// \param[in] executor The Executor to add to the inactive list.
   /// \param[in] desiredName The desired name for the executor.
   /// \param[in] controllerName The corresponding controller to load and add to
-  /// the inactive list. 
+  /// the inactive list.
   /// \return A robot-unique non-negative ID (negative implies failure).
   int registerExecutor(
-      aikido::control::ExecutorPtr executor, 
+      aikido::control::ExecutorPtr executor,
       std::string desiredName,
       std::string controllerName);
 
@@ -122,17 +122,20 @@ public:
   /// \return True if successful. If false, all executors are inactive.
   bool activateExecutor(const int id) override;
 
-  // This un-hides Robot::activateExecutor(const aikido::control::ExecutorType type) and Robot::activateExecutor(std::string id)
-  using Robot::activateExecutor; 
+  // This un-hides Robot::activateExecutor(const aikido::control::ExecutorType
+  // type) and Robot::activateExecutor(std::string id)
+  using Robot::activateExecutor;
 
   ///
-  /// Sets the ros controller clients which enable controller listing, loading, switching and mode switching.
+  /// Sets the ros controller clients which enable controller listing, loading,
+  /// switching and mode switching.
   ///
   /// \param[in] modeControllerName ros joint mode command client namespace.
   void setRosControllerClients(const std::string modeControllerName);
 
 protected:
-  std::unordered_map<int, hardware_interface::JointCommandModes> mRosControllerModes;
+  std::unordered_map<int, hardware_interface::JointCommandModes>
+      mRosControllerModes;
   std::unordered_map<int, std::string> mRosControllerNames;
 
   // Ros node associated with this robot.
@@ -141,7 +144,7 @@ protected:
   // Ros list controller service client.
   std::shared_ptr<::ros::ServiceClient> mRosListControllersServiceClient;
 
-  // Ros load controller service client.  
+  // Ros load controller service client.
   std::shared_ptr<::ros::ServiceClient> mRosLoadControllerServiceClient;
 
   // Ros switch controller service client.
@@ -150,7 +153,7 @@ protected:
   // Ros joint mode command client.
   // Default is nullptr so mode switching is impossible.
   std::shared_ptr<aikido::control::ros::RosJointModeCommandClient>
-      mRosJointModeCommandClient; 
+      mRosJointModeCommandClient;
 
   ///
   /// Starts the controller with name startControllerName.
@@ -174,7 +177,7 @@ protected:
   /// \param[in] stopControllersNames list of names of controllers to stop.
   /// \return True if successful. Otherwise false.
   bool switchControllers(
-      const std::vector<std::string> startControllersNames, 
+      const std::vector<std::string> startControllersNames,
       const std::vector<std::string> stopControllersNames);
 
   ///

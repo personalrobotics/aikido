@@ -136,7 +136,8 @@ aikido::control::ExecutorPtr Robot::getActiveExecutor()
 }
 
 //==============================================================================
-int Robot::registerExecutor(aikido::control::ExecutorPtr executor, std::string desiredName)
+int Robot::registerExecutor(
+    aikido::control::ExecutorPtr executor, std::string desiredName)
 {
   if (!executor)
   {
@@ -144,11 +145,12 @@ int Robot::registerExecutor(aikido::control::ExecutorPtr executor, std::string d
   }
 
   executor->releaseDofs();
-  mExecutors.push_back(executor);         
+  mExecutors.push_back(executor);
 
-  if(!desiredName.empty())
+  if (!desiredName.empty())
   {
-    if(mExecutorsNameMap.find(desiredName) != mExecutorsNameMap.end() && mActiveExecutor == mExecutorsNameMap[desiredName])
+    if (mExecutorsNameMap.find(desiredName) != mExecutorsNameMap.end()
+        && mActiveExecutor == mExecutorsNameMap[desiredName])
     {
       deactivateExecutor();
     }
@@ -167,8 +169,7 @@ bool Robot::activateExecutor(const int id)
   // Validate input
   if (id < 0 || (size_t)id >= mExecutors.size())
   {
-    dtwarn << "Could not activate executor as id is invalid."
-       << std::endl;
+    dtwarn << "Could not activate executor as id is invalid." << std::endl;
     return false;
   }
 

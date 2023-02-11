@@ -46,15 +46,15 @@ RosRobot::RosRobot(
 
 //==============================================================================
 RosRobot::RosRobot(
-      dart::dynamics::ReferentialSkeletonPtr refSkeleton,
-      Robot* rootRobot,
-      dart::collision::CollisionDetectorPtr collisionDetector,
-      std::shared_ptr<dart::collision::BodyNodeCollisionFilter> collisionFilter,
-      const std::string name,
-      const ::ros::NodeHandle& node,
-      const std::string modeControllerName)
-    : Robot(refSkeleton, rootRobot, collisionDetector, collisionFilter, name)
-    , mNode(node)
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton,
+    Robot* rootRobot,
+    dart::collision::CollisionDetectorPtr collisionDetector,
+    std::shared_ptr<dart::collision::BodyNodeCollisionFilter> collisionFilter,
+    const std::string name,
+    const ::ros::NodeHandle& node,
+    const std::string modeControllerName)
+  : Robot(refSkeleton, rootRobot, collisionDetector, collisionFilter, name)
+  , mNode(node)
 {
   setRosControllerClients(modeControllerName);
 }
@@ -62,7 +62,7 @@ RosRobot::RosRobot(
 //==============================================================================
 void RosRobot::step(const std::chrono::system_clock::time_point& timepoint)
 {
-  if(mRosJointModeCommandClient)
+  if (mRosJointModeCommandClient)
     mRosJointModeCommandClient->step();
 
   // Lock only if root robot
@@ -86,7 +86,9 @@ void RosRobot::step(const std::chrono::system_clock::time_point& timepoint)
 
 //=============================================================================
 RobotPtr RosRobot::registerSubRobot(
-    dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name, const std::string& modeControllerName)
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton,
+    const std::string& name,
+    const std::string& modeControllerName)
 {
   if (!validateSubRobot(refSkeleton, name))
   {
@@ -95,7 +97,12 @@ RobotPtr RosRobot::registerSubRobot(
 
   // Create the sub RosRobot.
   auto subRosRobot = std::make_shared<RosRobot>(
-      refSkeleton, this, mCollisionDetector, mSelfCollisionFilter, name, modeControllerName);
+      refSkeleton,
+      this,
+      mCollisionDetector,
+      mSelfCollisionFilter,
+      name,
+      modeControllerName);
   mSubRobots[name] = subRosRobot;
   return subRosRobot;
 }
@@ -133,13 +140,12 @@ int RosRobot::registerExecutor(
 
 int RosRobot::registerExecutor(
     aikido::control::ExecutorPtr executor,
-    std::string desiredName, 
+    std::string desiredName,
     std::string controllerName)
 {
   if (!controllerName.empty() && !loadController(controllerName))
   {
-    dtwarn << "Could not load controller: " + controllerName
-           << std::endl;
+    dtwarn << "Could not load controller: " + controllerName << std::endl;
     return -1;
   }
   int id = Robot::registerExecutor(executor, desiredName);
@@ -159,8 +165,7 @@ bool RosRobot::activateExecutor(const int id)
   // Validate input
   if (id < 0 || (size_t)id >= mExecutors.size())
   {
-    dtwarn << "Could not activate executor as id is invalid."
-           << std::endl;
+    dtwarn << "Could not activate executor as id is invalid." << std::endl;
     return false;
   }
 
@@ -176,7 +181,7 @@ bool RosRobot::activateExecutor(const int id)
       && !switchControllerMode(mRosControllerModes[id]))
   {
     dtwarn << "Could not switch controller mode to: "
-           + aikido::control::ros::intFromMode(mRosControllerModes[id])
+                  + aikido::control::ros::intFromMode(mRosControllerModes[id])
            << std::endl;
     return false;
   }
@@ -189,27 +194,28 @@ void RosRobot::setRosControllerClients(const std::string modeControllerName)
 {
   mRosListControllersServiceClient = std::make_shared<::ros::ServiceClient>(
       mNode.serviceClient<controller_manager_msgs::ListControllers>(
-      "controller_manager/list_controllers")); 
+          "controller_manager/list_controllers"));
 
   mRosLoadControllerServiceClient = std::make_shared<::ros::ServiceClient>(
       mNode.serviceClient<controller_manager_msgs::LoadController>(
-      "controller_manager/load_controller"));  
+          "controller_manager/load_controller"));
 
   mRosSwitchControllerServiceClient = std::make_shared<::ros::ServiceClient>(
       mNode.serviceClient<controller_manager_msgs::SwitchController>(
-      "controller_manager/switch_controller"));
+          "controller_manager/switch_controller"));
 
-  if(!modeControllerName.empty())
+  if (!modeControllerName.empty())
   {
-    mRosJointModeCommandClient = std::make_shared<aikido::control::ros::RosJointModeCommandClient>(
-        mNode,
-        modeControllerName + "/joint_mode_command",
-        std::vector<std::string>{"joint_mode"});
+    mRosJointModeCommandClient
+        = std::make_shared<aikido::control::ros::RosJointModeCommandClient>(
+            mNode,
+            modeControllerName + "/joint_mode_command",
+            std::vector<std::string>{"joint_mode"});
   }
   else
   {
     mRosJointModeCommandClient = nullptr;
-  } 
+  }
 }
 
 //=============================================================================
@@ -231,19 +237,23 @@ bool RosRobot::loadController(const std::string loadControllerName)
 //=============================================================================
 bool RosRobot::startController(const std::string startControllerName)
 {
-  return switchControllers(std::vector<std::string>{startControllerName}, std::vector<std::string>{});
+  return switchControllers(
+      std::vector<std::string>{startControllerName},
+      std::vector<std::string>{});
 }
 
 //=============================================================================
 bool RosRobot::stopController(const std::string stopControllerName)
 {
   cancelAllCommands();
-  return switchControllers(std::vector<std::string>{}, std::vector<std::string>{stopControllerName});
+  return switchControllers(
+      std::vector<std::string>{}, std::vector<std::string>{stopControllerName});
 }
 
 //=============================================================================
 bool RosRobot::switchControllers(
-    const std::vector<std::string> startControllersNames, const std::vector<std::string> stopControllersNames)
+    const std::vector<std::string> startControllersNames,
+    const std::vector<std::string> stopControllersNames)
 {
   if (!mRosSwitchControllerServiceClient)
   {
@@ -258,10 +268,11 @@ bool RosRobot::switchControllers(
   srv.request.stop_controllers = startControllersNames;
   srv.request.strictness
       = controller_manager_msgs::SwitchControllerRequest::BEST_EFFORT;
-  mRosSwitchControllerServiceClient->call(srv); // Don't care about response code
+  mRosSwitchControllerServiceClient->call(
+      srv); // Don't care about response code
 
   // Actual command
-  srv.request.start_controllers = startControllersNames;  
+  srv.request.start_controllers = startControllersNames;
   srv.request.stop_controllers = stopControllersNames;
   srv.request.strictness
       = controller_manager_msgs::SwitchControllerRequest::STRICT;
@@ -282,8 +293,7 @@ bool RosRobot::switchControllerMode(
 
   // ToDo: Send different control modes to each joint
   auto future = mRosJointModeCommandClient->execute(
-      std::vector<hardware_interface::JointCommandModes>(
-          1, jointMode));
+      std::vector<hardware_interface::JointCommandModes>(1, jointMode));
   try
   {
     future.get();
@@ -304,9 +314,10 @@ bool RosRobot::isControllerActive(const std::string controllerName)
 
   mRosListControllersServiceClient->call(srv);
 
-  for(int i=0; i<(int)srv.response.controller.size(); i++)
+  for (int i = 0; i < (int)srv.response.controller.size(); i++)
   {
-    if (srv.response.controller[i].name == controllerName && srv.response.controller[i].state == std::string("running"))
+    if (srv.response.controller[i].name == controllerName
+        && srv.response.controller[i].state == std::string("running"))
       return true;
   }
 

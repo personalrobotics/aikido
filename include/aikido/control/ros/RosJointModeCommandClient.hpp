@@ -67,7 +67,7 @@ public:
 
   /// Send command to ROS server for execution.
   /// \param[in] goal target joint command mode of target positions for each
-  /// joint 
+  /// joint
   /// \param[in] timeout How long until command should expire
   std::future<int> execute(
       const std::vector<hardware_interface::JointCommandModes>& goal);
