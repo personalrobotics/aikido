@@ -8,6 +8,7 @@
   * Added generic and position/velocity/effort Executor types [#602](https://github.com/personalrobotics/aikido/pull/602)
   * Added JacobianExecutor wrapping any Velocity/EffortExecutor [#605](https://github.com/personalrobotics/aikido/pull/605)
   * Added VisualServoingVelocityExecutor wrapping JacobianExecutor [#620](https://github.com/personalrobotics/aikido/pull/620)
+  * Added functionality for controller switching when changing Executor [#621](https://github.com/personalrobotics/aikido/pull/621)
   * Ignored R0 (i.e. Weld) Joints in Conversions [#623](https://github.com/personalrobotics/aikido/pull/623)
 
 * IO
@@ -19,6 +20,7 @@
   * Simplify Robot API [#593](https://github.com/personalrobotics/aikido/pull/593)
   * Implemented generic Executors into Robot class [#614](https://github.com/personalrobotics/aikido/pull/614)
   * Added planToPoseOffset into Robot class [#628](https://github.com/personalrobotics/aikido/pull/628)
+  * Added controller switching to RosRobot [#621](https://github.com/personalrobotics/aikido/pull/621)
 
 * RViz
 

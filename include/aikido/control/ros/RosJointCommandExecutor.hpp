@@ -32,7 +32,7 @@ public:
   /// \param[in] connectionTimeout Timeout for server connection.
   /// \param[in] connectionPollingPeriod Polling period for server connection.
   RosJointCommandExecutor(
-      ::ros::NodeHandle node,
+      const ::ros::NodeHandle& node,
       const std::string& controllerName,
       const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
       std::chrono::milliseconds connectionTimeout

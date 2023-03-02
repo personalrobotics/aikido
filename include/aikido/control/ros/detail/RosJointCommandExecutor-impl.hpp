@@ -24,7 +24,7 @@ static std::vector<std::string> jointNamesFromDofs(
 //==============================================================================
 template <ExecutorType T>
 RosJointCommandExecutor<T>::RosJointCommandExecutor(
-    ::ros::NodeHandle node,
+    const ::ros::NodeHandle& node,
     const std::string& controllerName,
     const std::vector<dart::dynamics::DegreeOfFreedom*>& dofs,
     const std::chrono::milliseconds connectionTimeout,

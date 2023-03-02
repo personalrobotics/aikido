@@ -7,6 +7,9 @@ aikido_check_package(urdf "aikido::robot::ros" "urdf")
 find_package(srdfdom QUIET)
 aikido_check_package(srdfdom "aikido::robot::ros" "srdfdom")
 
+find_package(pr_control_msgs QUIET MODULE)
+aikido_check_package(pr_control_msgs "aikido::control::ros" "pr_control_msgs")
+
 #==============================================================================
 # Libraries
 #
@@ -20,6 +23,7 @@ target_include_directories("${PROJECT_NAME}_robot_ros" SYSTEM
     ${DART_INCLUDE_DIRS}
     ${urdf_INCLUDE_DIRS}
     ${srdfdom_INCLUDE_DIRS}
+    ${pr_control_msgs_INCLUDE_DIRS}
 )
 
 target_link_libraries("${PROJECT_NAME}_robot_ros"

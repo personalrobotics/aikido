@@ -11,6 +11,8 @@
   <!-- Required dependencies -->
   <depend>boost</depend>
   <depend>dartsim</depend>
+  <depend>dartsim_ikfast</depend>
+  <depend>dartsim_odelcpsolver</depend>
   <depend>eigen</depend>
   <depend>ompl</depend>
   <depend>python</depend>
@@ -34,6 +36,8 @@
   <depend>octomap_ros</depend>
   <depend>urdf</depend>
   <depend>srdfdom</depend>
+  <depend>hardware_interface</depend>
+  <depend>controller_manager_msgs</depend>
 
   <doc_depend>doxygen</doc_depend>
 
@@ -61,5 +65,7 @@
     <optional>trajectory_msgs</optional>
     <optional>visualization_msgs</optional>
     <optional>pr_control_msgs</optional>
+    <optional>hardware_interface</optional>
+    <optional>controller_manager_msgs</optional>
   </export>
 </package>

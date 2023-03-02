@@ -52,7 +52,7 @@ std::string getFollowJointTrajectoryErrorMessage(int32_t errorCode)
 
 //==============================================================================
 RosTrajectoryExecutor::RosTrajectoryExecutor(
-    ::ros::NodeHandle node,
+    const ::ros::NodeHandle& node,
     const std::string& serverName,
     double waypointTimestep,
     double goalTimeTolerance,
@@ -64,7 +64,7 @@ RosTrajectoryExecutor::RosTrajectoryExecutor(
       checkNull(metaskeleton)->getDofs(),
       std::set<ExecutorType>{ExecutorType::READONLY})
   , mMetaSkeleton{metaskeleton}
-  , mNode{std::move(node)}
+  , mNode{node}
   , mCallbackQueue{}
   , mClient{mNode, serverName, &mCallbackQueue}
   , mWaypointTimestep{waypointTimestep}
@@ -124,6 +124,7 @@ void RosTrajectoryExecutor::validate(const trajectory::Trajectory* traj)
 
   mValidatedTrajectories.emplace(traj);
 }
+
 //==============================================================================
 std::future<void> RosTrajectoryExecutor::execute(
     const trajectory::ConstTrajectoryPtr& traj, const ::ros::Time& startTime)

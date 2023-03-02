@@ -1,4 +1,4 @@
-#include "aikido/control/ros/RosJointGroupCommandClient.hpp"
+#include "aikido/control/ros/RosJointModeCommandClient.hpp"
 
 #include "aikido/control/ros/Conversions.hpp"
 #include "aikido/control/ros/util.hpp"
@@ -10,7 +10,7 @@ namespace ros {
 using std::chrono::milliseconds;
 
 //==============================================================================
-RosJointGroupCommandClient::RosJointGroupCommandClient(
+RosJointModeCommandClient::RosJointModeCommandClient(
     const ::ros::NodeHandle& node,
     const std::string& serverName,
     const std::vector<std::string> jointNames,
@@ -30,41 +30,29 @@ RosJointGroupCommandClient::RosJointGroupCommandClient(
 }
 
 //==============================================================================
-RosJointGroupCommandClient::~RosJointGroupCommandClient()
+RosJointModeCommandClient::~RosJointModeCommandClient()
 {
   // Do nothing.
 }
 
 //==============================================================================
-std::future<int> RosJointGroupCommandClient::execute(
-    ExecutorType type, const std::vector<double>& goal, ::ros::Duration timeout)
+std::future<int> RosJointModeCommandClient::execute(
+    const std::vector<hardware_interface::JointCommandModes>& goal)
 {
   auto promise = new std::promise<int>();
 
   // Convert goal positions and joint names to jointstate
   // Will check for size matching in the positionsToJointState function
-  pr_control_msgs::JointGroupCommandGoal commandGoal;
+  pr_control_msgs::JointModeCommandGoal commandGoal;
   commandGoal.joint_names = mJointNames;
-  commandGoal.command.time_from_start = timeout;
-  switch (type)
-  {
-    case ExecutorType::POSITION:
-      commandGoal.command.positions = goal;
-      break;
-    case ExecutorType::VELOCITY:
-      commandGoal.command.velocities = goal;
-      break;
-    case ExecutorType::EFFORT:
-      commandGoal.command.effort = goal;
-      break;
-    default:
-      promise->set_exception(std::make_exception_ptr(
-          std::runtime_error("Unsupported command type.")));
-      return promise->get_future();
-  }
+
+  std::vector<int> goal_modes;
+  for (auto mode : goal)
+    goal_modes.push_back(intFromMode(mode));
+  commandGoal.modes = goal_modes;
 
   bool waitForServer = waitForActionServer<
-      pr_control_msgs::JointGroupCommandAction,
+      pr_control_msgs::JointModeCommandAction,
       std::chrono::milliseconds,
       std::chrono::milliseconds>(
       mClient, mCallbackQueue, mConnectionTimeout, mConnectionPollingPeriod);
@@ -94,16 +82,16 @@ std::future<int> RosJointGroupCommandClient::execute(
 
     mGoalHandle = mClient.sendGoal(
         commandGoal,
-        boost::bind(&RosJointGroupCommandClient::transitionCallback, this, _1));
+        boost::bind(&RosJointModeCommandClient::transitionCallback, this, _1));
 
     return mPromise->get_future();
   }
 }
 
 //==============================================================================
-void RosJointGroupCommandClient::transitionCallback(GoalHandle handle)
+void RosJointModeCommandClient::transitionCallback(GoalHandle handle)
 {
-  int error_code = 0;
+  int success = 0;
 
   if (handle != mGoalHandle)
   {
@@ -123,11 +111,11 @@ void RosJointGroupCommandClient::transitionCallback(GoalHandle handle)
     if (result)
     {
       // Communicate error code
-      error_code = result->error_code;
-      if (result->error_code)
+      success = result->success;
+      if (!success)
       {
-        message << result->error_string;
-        ROS_WARN_STREAM_NAMED("RosJointGroupCommandClient", message.str());
+        message << result->message;
+        ROS_WARN_STREAM_NAMED("RosJointModeCommandClient", message.str());
       }
     }
     else
@@ -138,7 +126,7 @@ void RosJointGroupCommandClient::transitionCallback(GoalHandle handle)
 
     if (isSuccessful)
     {
-      mPromise->set_value(error_code);
+      mPromise->set_value(success);
     }
     else
     {
@@ -151,7 +139,7 @@ void RosJointGroupCommandClient::transitionCallback(GoalHandle handle)
 }
 
 //==============================================================================
-void RosJointGroupCommandClient::step()
+void RosJointModeCommandClient::step()
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning.
@@ -167,7 +155,7 @@ void RosJointGroupCommandClient::step()
 }
 
 //==============================================================================
-void RosJointGroupCommandClient::cancel()
+void RosJointModeCommandClient::cancel()
 {
   std::lock_guard<std::mutex> lock(mMutex);
   DART_UNUSED(lock); // Suppress unused variable warning.

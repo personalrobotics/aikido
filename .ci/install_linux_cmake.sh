@@ -5,8 +5,6 @@ set -ex
 $SUDO apt-get -qq update
 $SUDO apt-get -y install lsb-release software-properties-common
 
-$SUDO apt-add-repository -y ppa:dartsim/ppa
-
 $SUDO apt-get -qq update
 
 # Build tools
@@ -24,7 +22,9 @@ fi
 # Required dependencies
 $SUDO apt-get -y install \
   libboost-filesystem-dev \
-  libdart6-all-dev \
+  libdart-all-dev \
+  libdart-external-ikfast-dev \
+  libdart-external-odelcpsolver-dev \
   libompl-dev
 
 # Optional dependencies

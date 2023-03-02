@@ -136,7 +136,8 @@ aikido::control::ExecutorPtr Robot::getActiveExecutor()
 }
 
 //==============================================================================
-int Robot::registerExecutor(aikido::control::ExecutorPtr executor)
+int Robot::registerExecutor(
+    aikido::control::ExecutorPtr executor, std::string desiredName)
 {
   if (!executor)
   {
@@ -145,11 +146,22 @@ int Robot::registerExecutor(aikido::control::ExecutorPtr executor)
 
   executor->releaseDofs();
   mExecutors.push_back(executor);
+
+  if (!desiredName.empty())
+  {
+    if (mExecutorsNameMap.find(desiredName) != mExecutorsNameMap.end()
+        && mActiveExecutor == mExecutorsNameMap[desiredName])
+    {
+      deactivateExecutor();
+    }
+    mExecutorsNameMap[desiredName] = mExecutors.size() - 1;
+  }
+
   return mExecutors.size() - 1;
 }
 
 //==============================================================================
-bool Robot::activateExecutor(int id)
+bool Robot::activateExecutor(const int id)
 {
   // Deactivate active executor
   deactivateExecutor();
@@ -157,6 +169,7 @@ bool Robot::activateExecutor(int id)
   // Validate input
   if (id < 0 || (size_t)id >= mExecutors.size())
   {
+    dtwarn << "Could not activate executor as id is invalid." << std::endl;
     return false;
   }
 
@@ -167,6 +180,18 @@ bool Robot::activateExecutor(int id)
     return true;
   }
   return false;
+}
+
+//==============================================================================
+bool Robot::activateExecutor(const std::string name)
+{
+  // Validate input
+  if (mExecutorsNameMap.find(name) == mExecutorsNameMap.end())
+  {
+    return false;
+  }
+
+  return activateExecutor(mExecutorsNameMap[name]);
 }
 
 //==============================================================================
@@ -379,14 +404,14 @@ constraint::TestablePtr Robot::getWorldCollisionConstraint(
 }
 
 //=============================================================================
-std::shared_ptr<Robot> Robot::registerSubRobot(
+bool Robot::validateSubRobot(
     dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name)
 {
   // Ensure name is unique
   if (mSubRobots.find(name) != mSubRobots.end())
   {
     dtwarn << "Subrobot '" << name << "' already exists." << std::endl;
-    return nullptr;
+    return false;
   }
 
   // Ensure all body nodes in skeleton are owned by this robot
@@ -397,7 +422,7 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
       dtwarn << "Subrobot '" << name << "'' contains body node "
              << bodyNode->getName() << " not in parent MetaSkeleton."
              << std::endl;
-      return nullptr;
+      return false;
     }
   }
 
@@ -411,9 +436,21 @@ std::shared_ptr<Robot> Robot::registerSubRobot(
       {
         dtwarn << "Subrobot '" << name << "'' overlaps existing subrobot "
                << subrobot.first << " at DoF " << dofName << "." << std::endl;
-        return nullptr;
+        return false;
       }
     }
+  }
+
+  return true;
+}
+
+//=============================================================================
+std::shared_ptr<Robot> Robot::registerSubRobot(
+    dart::dynamics::ReferentialSkeletonPtr refSkeleton, const std::string& name)
+{
+  if (!validateSubRobot(refSkeleton, name))
+  {
+    return nullptr;
   }
 
   // Create the subrobot.
