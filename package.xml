@@ -11,6 +11,8 @@
   <!-- Required dependencies -->
   <depend>boost</depend>
   <depend>dartsim</depend>
+  <depend>dartsim_ikfast</depend>
+  <depend>dartsim_odelcpsolver</depend>
   <depend>eigen</depend>
   <depend>ompl</depend>
   <depend>python</depend>

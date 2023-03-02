@@ -23,7 +23,13 @@ fi
 $SUDO apt-get -y install \
   libboost-filesystem-dev \
   libdart-all-dev \
+  libdart-external-ikfast-dev \
+  libdart-external-odelcpsolver-dev \
   libompl-dev
+
+
+
+
 
 # Optional dependencies
 $SUDO apt-get -y install \
