@@ -27,6 +27,10 @@ $SUDO apt-get -y install \
   libdart-external-odelcpsolver-dev \
   libompl-dev
 
+
+
+
+
 # Optional dependencies
 $SUDO apt-get -y install \
   libtinyxml2-dev \
