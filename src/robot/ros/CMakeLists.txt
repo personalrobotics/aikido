@@ -30,6 +30,8 @@ target_link_libraries("${PROJECT_NAME}_robot_ros"
   PUBLIC
   "${PROJECT_NAME}_robot"
   "${PROJECT_NAME}_common"
+  "${PROJECT_NAME}_control"
+  "${PROJECT_NAME}_control_ros"
   "${PROJECT_NAME}_io"
   "${PROJECT_NAME}_planner"
   "${PROJECT_NAME}_planner_ompl"
@@ -50,9 +52,11 @@ target_compile_definitions("${PROJECT_NAME}_robot_ros"
 
 add_component(${PROJECT_NAME} robot_ros)
 add_component_targets(${PROJECT_NAME} robot_ros "${PROJECT_NAME}_robot_ros")
-add_component_dependencies(${PROJECT_NAME} robot_ros 
+add_component_dependencies(${PROJECT_NAME} robot_ros
   robot
   common
+  control
+  control_ros
   io
   planner
   planner_ompl
