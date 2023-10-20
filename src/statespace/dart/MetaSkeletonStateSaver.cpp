@@ -8,13 +8,15 @@ namespace dart {
 
 //==============================================================================
 MetaSkeletonStateSaver::MetaSkeletonStateSaver(
-    ::dart::dynamics::MetaSkeletonPtr metaskeleton, int options)
+    ::dart::dynamics::MetaSkeletonPtr metaskeleton, Options options)
   : mMetaSkeleton(std::move(metaskeleton)), mOptions(std::move(options))
 {
-  if (mOptions & Options::POSITIONS)
+  if ((mOptions & Options::POSITIONS) != Options::NONE)
+  {
     mPositions = mMetaSkeleton->getPositions();
+  }
 
-  if (mOptions & Options::POSITION_LIMITS)
+  if ((mOptions & Options::POSITION_LIMITS) != Options::NONE)
   {
     mPositionLowerLimits = mMetaSkeleton->getPositionLowerLimits();
     mPositionUpperLimits = mMetaSkeleton->getPositionUpperLimits();
@@ -24,7 +26,7 @@ MetaSkeletonStateSaver::MetaSkeletonStateSaver(
 //==============================================================================
 MetaSkeletonStateSaver::~MetaSkeletonStateSaver()
 {
-  if (mOptions & Options::POSITIONS)
+  if ((mOptions & Options::POSITIONS) != Options::NONE)
   {
     if (static_cast<std::size_t>(mPositions.size())
         != mMetaSkeleton->getNumDofs())
@@ -36,7 +38,7 @@ MetaSkeletonStateSaver::~MetaSkeletonStateSaver()
     mMetaSkeleton->setPositions(mPositions);
   }
 
-  if (mOptions & Options::POSITION_LIMITS)
+  if ((mOptions & Options::POSITION_LIMITS) != Options::NONE)
   {
     if (static_cast<std::size_t>(mPositionLowerLimits.size())
         != mMetaSkeleton->getNumDofs())

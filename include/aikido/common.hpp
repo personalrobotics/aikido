@@ -1,3 +1,4 @@
+#include "aikido/common/EnumFlags.hpp"
 #include "aikido/common/ExecutorMultiplexer.hpp"
 #include "aikido/common/ExecutorThread.hpp"
 #include "aikido/common/PseudoInverse.hpp"
